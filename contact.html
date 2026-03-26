@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kontakt – Max Mustermann</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* Jotform-iFrame responsive machen */
+    .jotform-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .jotform-wrapper iframe {
+      display: block;
+      width: 100%;
+      min-height: 600px;
+      border: none;
+    }
+    /* Ladeindikator */
+    .jotform-loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--card); flex-direction: column; gap: 12px;
+    }
+    .jotform-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">MM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html" class="active">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / Kontakt</div>
+      <h1 class="section-title">Kontakt aufnehmen</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Ich freue mich auf Ihre Anfrage und melde mich innerhalb von 24 Stunden.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:48px;align-items:start">
+
+        <!-- Kontaktinfo -->
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:22px;color:var(--bright);margin-bottom:20px">Direktkontakt</h2>
+
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start">
+              <span style="font-size:22px">📧</span>
+              <div>
+                <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:3px">E-MAIL</div>
+                <a href="mailto:max@mustermann.de" style="color:var(--gold);text-decoration:none">max@mustermann.de</a>
+              </div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start">
+              <span style="font-size:22px">📞</span>
+              <div>
+                <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:3px">TELEFON</div>
+                <span style="color:var(--text)">+49 (0) 123 456 789</span>
+              </div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start">
+              <span style="font-size:22px">📍</span>
+              <div>
+                <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:3px">ADRESSE</div>
+                <span style="color:var(--text)">Musterstraße 1<br/>10115 Berlin</span>
+              </div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start">
+              <span style="font-size:22px">🕐</span>
+              <div>
+                <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:3px">ERREICHBARKEIT</div>
+                <span style="color:var(--text);font-size:14px">Mo–Fr: 9:00–18:00 Uhr</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ JOTFORM EINBETTUNG ═══════════════════════════════
+             SO TAUSCHST DU DAS FORMULAR AUS:
+             1. Gehe zu jotform.com → Dein Formular öffnen
+             2. "Publish" → "Embed" → "iFrame" auswählen
+             3. Kopiere die Form-ID aus der URL (z. B. 241234567890)
+             4. Ersetze DEINE_JOTFORM_ID unten durch diese Zahl
+             5. Fertig – das Formular erscheint direkt auf der Seite
+        ═══════════════════════════════════════════════════════ -->
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:22px;color:var(--bright);margin-bottom:20px">Kontaktformular</h2>
+
+          <div class="jotform-wrapper" id="jotform-wrapper">
+            <!-- Ladeindikator (verschwindet wenn iFrame geladen) -->
+            <div class="jotform-loading" id="jotform-loading">
+              <div class="jotform-spinner"></div>
+              <span style="color:var(--muted);font-size:14px">Formular wird geladen…</span>
+            </div>
+
+            <!--
+              ══════════════════════════════════════════════
+              HIER DEINE JOTFORM-ID EINFÜGEN:
+              Ersetze "DEINE_JOTFORM_ID" mit deiner echten ID.
+              Beispiel: src="https://form.jotform.com/241234567890"
+              ══════════════════════════════════════════════
+            -->
+            <iframe
+              id="jotform-iframe"
+              src="https://form.jotform.com/DEINE_JOTFORM_ID"
+              title="Kontaktformular"
+              allow="geolocation; microphone; camera"
+              allowfullscreen
+              scrolling="yes"
+              onload="document.getElementById('jotform-loading').style.display='none'"
+              style="display:none"
+            ></iframe>
+
+          </div>
+
+          <!-- Fallback wenn iFrame nicht geladen wird -->
+          <div id="jotform-fallback" style="display:none">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px">
+              <p style="color:var(--text-dim);margin-bottom:20px">
+                Das Formular konnte nicht geladen werden. Bitte nutze unseren Direktkontakt.
+              </p>
+              <a href="mailto:max@mustermann.de" class="btn btn-primary">E-Mail senden</a>
+            </div>
+          </div>
+
+          <p style="font-size:12px;color:var(--muted);margin-top:12px;font-family:var(--font-mono)">
+            Ihre Daten werden verschlüsselt übertragen und nicht an Dritte weitergegeben. (DSGVO-konform)
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Max Mustermann.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /**
+     * Jotform iFrame anzeigen sobald es bereit ist.
+     * Falls die Form-ID noch ein Platzhalter ist, zeige Fallback.
+     */
+    const iframe = document.getElementById('jotform-iframe');
+
+    // Prüfen ob echte ID eingetragen wurde
+    if (iframe.src.includes('DEINE_JOTFORM_ID')) {
+      document.getElementById('jotform-loading').style.display = 'none';
+      document.getElementById('jotform-fallback').style.display = 'block';
+    } else {
+      iframe.style.display = 'block';
+      // Timeout-Fallback: nach 10 Sek. Fehlermeldung
+      setTimeout(() => {
+        if (document.getElementById('jotform-loading').style.display !== 'none') {
+          document.getElementById('jotform-loading').style.display = 'none';
+          document.getElementById('jotform-fallback').style.display = 'block';
+        }
+      }, 10000);
+    }
+
+    // Dynamische Höhenanpassung (Jotform sendet postMessage)
+    window.addEventListener('message', (e) => {
+      if (e.origin !== 'https://form.jotform.com') return;
+      try {
+        const data = JSON.parse(e.data);
+        if (data.action === 'setHeight' && data.height) {
+          iframe.style.minHeight = data.height + 'px';
+        }
+      } catch {}
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Über mich – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">MM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html" class="active">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / Über mich</div>
+      <h1 class="section-title">Über mich</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Finanzberater und Controller aus Leidenschaft</p>
+    </div>
+  </div>
+
+  <!-- ÜBER MICH BEREICH -->
+  <section class="section">
+    <div class="container">
+      <div class="about-grid">
+
+        <!-- Profilbild -->
+        <div>
+          <div class="about-photo">👤</div>
+          <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px">
+              <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px">STANDORT</div>
+              <div style="color:var(--bright);font-size:15px">📍 Berlin, Deutschland</div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px">
+              <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px">ERFAHRUNG</div>
+              <div style="color:var(--bright);font-size:15px">⭐ 10+ Jahre</div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px">
+              <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px">SPRACHEN</div>
+              <div style="color:var(--bright);font-size:15px">🌍 Deutsch, Englisch</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Über-mich-Text & Timeline -->
+        <div>
+          <h2 class="section-title">Tommy Möller</h2>
+          <div class="gold-line"></div>
+
+          <p style="color:var(--text-dim);font-size:16px;line-height:1.85;margin-bottom:20px">
+            [PLATZHALTER: Ersetze diesen Text durch deine persönliche Vorstellung. Wer bist du, 
+            was treibt dich an? Was macht dich als Berater einzigartig?]
+          </p>
+          <p style="color:var(--text-dim);font-size:16px;line-height:1.85;margin-bottom:32px">
+            [PLATZHALTER: Zweiter Absatz – z. B. dein Beratungsansatz, deine Werte, was du 
+            deinen Mandanten bieten möchtest. Maximal 3–4 Sätze.]
+          </p>
+
+          <h3 style="font-family:var(--font-serif);font-size:22px;color:var(--bright);margin-bottom:20px">Werdegang</h3>
+
+          <!-- Lebenslauf-Timeline -->
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="timeline-year">04/2024 – heute</div>
+                <div class="timeline-role">[PLATZHALTER: Aktuelle Position]</div>
+                <div class="timeline-company">DB BBG GmbH · Berlin</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="timeline-year">2014 – 2018</div>
+                <div class="timeline-role">[PLATZHALTER: Frühere Position]</div>
+                <div class="timeline-company">[Unternehmen] · München</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="timeline-year">2010 – 2014</div>
+                <div class="timeline-role">Studium Betriebswirtschaftslehre</div>
+                <div class="timeline-company">[Universität] · [Stadt]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOADS (rollenbasiert) -->
+  <section class="downloads-section">
+    <div class="container">
+      <h2 class="section-title">Dokumente & Downloads</h2>
+      <div class="gold-line"></div>
+      <p class="section-subtitle" id="download-access-hint">
+        Bitte <a href="login.html" style="color:var(--gold)">melde dich an</a>, um Dokumente herunterzuladen.
+      </p>
+
+      <!-- Dokumente-Grid (wird per JS befüllt) -->
+      <div class="downloads-grid" id="downloads-grid"></div>
+
+      <!-- Admin: Upload-Bereich (nur für Admins sichtbar) -->
+      <div id="admin-upload-section" style="display:none;margin-top:40px">
+        <h3 style="font-family:var(--font-serif);color:var(--bright);margin-bottom:16px">
+          📤 Dokument hochladen <span style="font-size:13px;color:var(--gold);font-family:var(--font-mono)">[ADMIN]</span>
+        </h3>
+        <div class="upload-area" id="upload-area">
+          <div class="upload-icon">📄</div>
+          <p class="upload-text">Datei hierher ziehen oder klicken zum Auswählen</p>
+          <p style="font-size:13px;color:var(--muted);margin-top:6px">PDF, DOCX, ZIP – max. 10 MB</p>
+          <input type="file" id="file-input" style="display:none" accept=".pdf,.docx,.zip,.xlsx" />
+        </div>
+        <div id="upload-form" style="display:none;margin-top:16px">
+          <div class="form-group">
+            <label class="form-label">Dateiname (angezeigt)</label>
+            <input type="text" class="form-input" id="doc-name" placeholder="z. B. Lebenslauf 2024" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Zugriff</label>
+            <select class="form-input" id="doc-access">
+              <option value="user">Registrierte Nutzer</option>
+              <option value="admin">Nur Admin</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="uploadDocument()">Speichern</button>
+          <button class="btn btn-ghost" style="margin-left:10px" onclick="cancelUpload()">Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller. Alle Rechte vorbehalten.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /**
+     * Dokumente aus localStorage laden (Demo).
+     * In Produktion: GET /api/documents über Backend.
+     */
+    function getDocuments() {
+      try { return JSON.parse(localStorage.getItem('documents') || '[]'); } catch { return []; }
+    }
+    function saveDocuments(docs) {
+      localStorage.setItem('documents', JSON.stringify(docs));
+    }
+
+    // Demo-Dokumente vorbelegen falls leer
+    if (!localStorage.getItem('documents')) {
+      saveDocuments([
+        { id: 1, name: 'Lebenslauf Tommy Möller', filename: 'lebenslauf.pdf', size: '245 KB', access: 'user', uploadedAt: Date.now() },
+        { id: 2, name: 'Referenzliste 2024',        filename: 'referenzen.pdf', size: '128 KB', access: 'user', uploadedAt: Date.now() },
+        { id: 3, name: 'Zertifikate & Abschlüsse',  filename: 'zertifikate.pdf', size: '512 KB', access: 'admin', uploadedAt: Date.now() },
+      ]);
+    }
+
+    /**
+     * Dokumente rendern – rollenbasierte Sichtbarkeit
+     * Regel: Admin sieht alles | User sieht 'user'-Dokumente | Gast sieht nur gesperrte Hinweise
+     */
+    function renderDocuments() {
+      const user     = Auth.getCurrentUser();
+      const isAdmin  = Auth.isAdmin();
+      const isUser   = user !== null;
+      const docs     = getDocuments();
+      const grid     = document.getElementById('downloads-grid');
+      const hint     = document.getElementById('download-access-hint');
+
+      if (isUser) hint.textContent = isAdmin ? '🔑 Admin: Vollzugriff auf alle Dokumente.' : '📂 Du kannst freigegebene Dokumente herunterladen.';
+
+      grid.innerHTML = docs.map(doc => {
+        const canAccess = isAdmin || (isUser && doc.access === 'user');
+        return `
+          <div class="download-card">
+            <div class="download-icon">📄</div>
+            <div class="download-info">
+              <div class="download-name">${escHtml(doc.name)}</div>
+              <div class="download-size">${escHtml(doc.size)} · ${doc.access === 'admin' ? 'Nur Admin' : 'Registrierte Nutzer'}</div>
+              ${canAccess
+                ? `<a href="#" onclick="downloadDoc(${doc.id})" style="font-size:12px;color:var(--gold)">⬇ Herunterladen</a>`
+                : `<div class="download-locked">🔒 Login erforderlich</div>`
+              }
+            </div>
+            ${isAdmin ? `<button onclick="deleteDoc(${doc.id})" class="btn btn-danger btn-sm" style="padding:5px 10px;font-size:11px">✕</button>` : ''}
+          </div>`;
+      }).join('');
+
+      // Admin-Upload anzeigen
+      if (isAdmin) document.getElementById('admin-upload-section').style.display = 'block';
+    }
+
+    function downloadDoc(id) {
+      // Demo: In Produktion => GET /api/documents/:id/download mit Auth-Header
+      showToast('Download gestartet (Demo)', 'success');
+    }
+
+    function deleteDoc(id) {
+      if (!confirm('Dokument löschen?')) return;
+      const docs = getDocuments().filter(d => d.id !== id);
+      saveDocuments(docs);
+      renderDocuments();
+      showToast('Dokument gelöscht', 'success');
+    }
+
+    /* ── Upload-Logik ── */
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput  = document.getElementById('file-input');
+    let selectedFile = null;
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault(); uploadArea.classList.remove('dragover');
+      const f = e.dataTransfer.files[0];
+      if (f) handleFileSelect(f);
+    });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFileSelect(e.target.files[0]); });
+
+    function handleFileSelect(file) {
+      selectedFile = file;
+      document.getElementById('doc-name').value = file.name.replace(/\.[^/.]+$/, '');
+      document.getElementById('upload-form').style.display = 'block';
+    }
+
+    function uploadDocument() {
+      const name = document.getElementById('doc-name').value.trim();
+      const access = document.getElementById('doc-access').value;
+      if (!name || !selectedFile) { showToast('Bitte Datei und Name angeben', 'error'); return; }
+      // Validation
+      if (!Validator.maxLength(name, 80)) { showToast('Name zu lang (max. 80 Zeichen)', 'error'); return; }
+
+      const docs = getDocuments();
+      const newDoc = {
+        id: Date.now(), name, filename: selectedFile.name,
+        size: (selectedFile.size / 1024).toFixed(0) + ' KB',
+        access, uploadedAt: Date.now()
+      };
+      docs.unshift(newDoc);
+      saveDocuments(docs);
+      cancelUpload();
+      renderDocuments();
+      showToast('Dokument gespeichert!', 'success');
+    }
+
+    function cancelUpload() {
+      selectedFile = null;
+      fileInput.value = '';
+      document.getElementById('upload-form').style.display = 'none';
+      document.getElementById('doc-name').value = '';
+    }
+
+    renderDocuments();
+  </script>
+</body>
+</html>

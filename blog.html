@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog – Max Mustermann</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">MM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / Blog</div>
+      <h1 class="section-title">Blog</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Steuertipps, Finanzwissen und Controlling-Praxis</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Admin: Neuen Post erstellen -->
+      <div id="admin-new-post" style="display:none;margin-bottom:40px">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px">
+          <h3 style="font-family:var(--font-serif);color:var(--bright);margin-bottom:20px">
+            ✏ Neuen Beitrag erstellen <span style="font-size:13px;color:var(--gold);font-family:var(--font-mono)">[ADMIN]</span>
+          </h3>
+          <div class="form-group">
+            <label class="form-label">Titel</label>
+            <input type="text" class="form-input" id="post-title" placeholder="Beitrags-Titel..." maxlength="120" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategorie</label>
+            <select class="form-input" id="post-category">
+              <option value="Steuerrecht">Steuerrecht</option>
+              <option value="Controlling">Controlling</option>
+              <option value="Finanzplanung">Finanzplanung</option>
+              <option value="Umsatzsteuer">Umsatzsteuer</option>
+              <option value="GmbH">GmbH</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Inhalt</label>
+            <textarea class="form-input" id="post-content" rows="8" placeholder="Schreibe deinen Beitrag..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="createPost()">Veröffentlichen</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('admin-new-post').style.display='none'">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog-Grid -->
+      <div class="blog-grid" id="blog-grid"></div>
+
+    </div>
+  </section>
+
+  <!-- Einzelner Blogpost (Modal-Ersatz) -->
+  <div id="post-detail" style="display:none">
+    <div style="background:var(--surface);border-top:1px solid var(--border)">
+      <div class="container" style="padding-top:40px;padding-bottom:0">
+        <button onclick="closePost()" class="btn btn-ghost btn-sm">← Zurück zum Blog</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <article class="blog-post-body" id="post-body-content" style="padding-top:40px"></article>
+
+      <!-- Kommentarbereich -->
+      <div class="comments-section" id="comments-section">
+        <h3 style="font-family:var(--font-serif);font-size:24px;color:var(--bright);margin-bottom:24px">
+          Kommentare <span id="comment-count" style="color:var(--muted);font-size:16px">(0)</span>
+        </h3>
+
+        <!-- Kommentar-Formular -->
+        <div class="comment-form" id="comment-form-wrap">
+          <h4 style="color:var(--bright);margin-bottom:18px;font-size:16px">Kommentar hinterlassen</h4>
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <!-- maxlength verhindert überlange Inputs (DoS / XSS-Vorstufe) -->
+            <input type="text" class="form-input" id="comment-name" placeholder="Dein Name" maxlength="60" />
+            <div class="form-error" id="err-name">Bitte gib deinen Namen ein (max. 60 Zeichen).</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kommentar *</label>
+            <!-- maxlength: verhindert Spam mit riesigen Texten -->
+            <textarea class="form-input" id="comment-text" rows="4" placeholder="Dein Kommentar..." maxlength="1000"></textarea>
+            <div class="form-error" id="err-comment">Bitte gib einen Kommentar ein (max. 1000 Zeichen).</div>
+          </div>
+          <!-- Honeypot-Feld: Sichtbar nur für Bots, Menschen lassen es leer -->
+          <input type="text" name="website" id="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitComment()">Kommentar absenden</button>
+        </div>
+
+        <div class="comment-list" id="comment-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Max Mustermann.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ═══ BLOG-DATENVERWALTUNG (localStorage Demo) ═══════════════
+    function getPosts()  { try { return JSON.parse(localStorage.getItem('blog_posts') || '[]'); } catch { return []; } }
+    function savePosts(p){ localStorage.setItem('blog_posts', JSON.stringify(p)); }
+    function getComments(postId) { try { return JSON.parse(localStorage.getItem('comments_' + postId) || '[]'); } catch { return []; } }
+    function saveComments(postId, c) { localStorage.setItem('comments_' + postId, JSON.stringify(c)); }
+
+    // Demo-Posts
+    if (!localStorage.getItem('blog_posts')) {
+      savePosts([
+        {
+          id: 1, title: '§ 35 EStG – Warum Einzelunternehmer kaum Gewerbesteuer zahlen',
+          category: 'Steuerrecht', createdAt: Date.now() - 864e5 * 3,
+          excerpt: 'Die Gewerbesteueranrechnung nach § 35 EStG ist eines der mächtigsten Instrumente im deutschen Steuerrecht – und wird häufig unterschätzt.',
+          content: `<h2>Die wichtigste Norm, die kaum jemand kennt</h2>
+<p>§ 35 EStG ermöglicht es Einzelunternehmern und Gesellschaftern von Personengesellschaften, die gezahlte Gewerbesteuer auf ihre Einkommensteuer anzurechnen. Das klingt technisch – ist aber in der Praxis enorm relevant.</p>
+<h2>Die Berechnung im Detail</h2>
+<p>Der Anrechnungsbetrag berechnet sich als: <code>Steuermessbetrag × 3,8</code>. Bei einem Hebesatz von 400 % entspricht die gezahlte Gewerbesteuer exakt dem Anrechnungsbetrag – die Belastung wird vollständig neutralisiert.</p>
+<h2>Fazit</h2>
+<p>Wer als Einzelunternehmer in einer Gemeinde mit Hebesatz bis 400 % ansässig ist, zahlt unter dem Strich keine Gewerbesteuer. Diese Erkenntnis ist zentral für jede Rechtsformberatung.</p>`
+        },
+        {
+          id: 2, title: 'Working Capital optimieren: So befreist du gebundenes Kapital',
+          category: 'Controlling', createdAt: Date.now() - 864e5 * 1,
+          excerpt: 'Der Cash Conversion Cycle (CCC) ist der Schlüssel zur Liquiditätsoptimierung. Eine Reduktion um 10 Tage kann bei mittleren Unternehmen 100.000 € freisetzen.',
+          content: `<h2>Was ist Working Capital?</h2>
+<p>Working Capital = Umlaufvermögen − kurzfristige Verbindlichkeiten. Es zeigt, wie viel Kapital im operativen Prozess gebunden ist.</p>
+<h2>Der Cash Conversion Cycle</h2>
+<p>CCC = DSO + DIO − DPO. Je niedriger, desto besser. Jeder eingesparte Tag CCC setzt Kapital frei, das nicht mehr fremdfinanziert werden muss.</p>
+<h2>Die drei Stellschrauben</h2>
+<p>1. <strong>Forderungsmanagement (DSO senken)</strong>: Frühzahler-Rabatte, straffes Mahnwesen.<br/>2. <strong>Lagerhaltung (DIO senken)</strong>: Just-in-Time, ABC-Analyse.<br/>3. <strong>Lieferantenmanagement (DPO erhöhen)</strong>: Zahlungsziele aushandeln.</p>`
+        }
+      ]);
+    }
+
+    let currentPostId = null;
+
+    // ═══ BLOG-GRID RENDERN ═══════════════════════════════════════
+    function renderBlogGrid() {
+      const posts   = getPosts();
+      const isAdmin = Auth.isAdmin();
+      const grid    = document.getElementById('blog-grid');
+
+      if (isAdmin) document.getElementById('admin-new-post').style.display = 'block';
+
+      if (!posts.length) {
+        grid.innerHTML = '<p style="color:var(--text-dim)">Noch keine Beiträge vorhanden.</p>';
+        return;
+      }
+
+      grid.innerHTML = posts.map(post => `
+        <div class="blog-card animate-in">
+          <div class="blog-card-body">
+            <div class="blog-meta">
+              <span class="blog-category">${escHtml(post.category)}</span>
+              <span class="blog-date">${formatDate(post.createdAt)}</span>
+            </div>
+            <h2 class="blog-title">${escHtml(post.title)}</h2>
+            <p class="blog-excerpt">${escHtml(post.excerpt)}</p>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <a href="#" class="blog-read-more" onclick="openPost(${post.id})">Weiterlesen →</a>
+              ${isAdmin ? `<button onclick="deletePost(${post.id})" class="btn btn-danger btn-sm" style="padding:5px 10px;font-size:11px">✕ Löschen</button>` : ''}
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    // ═══ POST ÖFFNEN ══════════════════════════════════════════════
+    function openPost(id) {
+      const post = getPosts().find(p => p.id === id);
+      if (!post) return;
+      currentPostId = id;
+
+      document.getElementById('blog-grid').closest('.section').style.display = 'none';
+      document.getElementById('post-detail').style.display = 'block';
+
+      document.getElementById('post-body-content').innerHTML = `
+        <div class="blog-meta" style="margin-bottom:16px">
+          <span class="blog-category">${escHtml(post.category)}</span>
+          <span class="blog-date">${formatDate(post.createdAt)}</span>
+        </div>
+        <h1 class="blog-post-title">${escHtml(post.title)}</h1>
+        <div class="gold-line"></div>
+        <div style="margin-top:32px">${post.content}</div>`;
+
+      renderComments(id);
+      window.scrollTo(0,0);
+    }
+
+    function closePost() {
+      currentPostId = null;
+      document.getElementById('post-detail').style.display = 'none';
+      document.getElementById('blog-grid').closest('.section').style.display = 'block';
+    }
+
+    // ═══ KOMMENTARE ═══════════════════════════════════════════════
+    function renderComments(postId) {
+      const comments = getComments(postId);
+      const isAdmin  = Auth.isAdmin();
+      document.getElementById('comment-count').textContent = `(${comments.length})`;
+
+      document.getElementById('comment-list').innerHTML = comments.map((c, i) => `
+        <div class="comment-item">
+          <div class="comment-header">
+            <!-- escHtml verhindert XSS aus gespeicherten Kommentaren -->
+            <span class="comment-author">${escHtml(c.author)}</span>
+            <span class="comment-timestamp">${formatDateTime(c.timestamp)}</span>
+          </div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          ${isAdmin ? `<div class="comment-actions"><button class="comment-delete" onclick="deleteComment(${postId}, ${i})">🗑 Löschen</button></div>` : ''}
+        </div>`).join('');
+    }
+
+    /**
+     * Kommentar absenden
+     * Sicherheitsmaßnahmen:
+     * 1. Honeypot-Feld prüfen (Anti-Bot)
+     * 2. maxLength-Validierung (verhindert riesige Payloads)
+     * 3. escHtml beim Rendern (XSS-Schutz)
+     * 4. Timestamp serverseitig setzen (in Produktion)
+     */
+    function submitComment() {
+      // Honeypot-Check: Wenn Feld ausgefüllt → Spam/Bot
+      if (document.getElementById('honeypot').value !== '') return;
+
+      const name = document.getElementById('comment-name').value.trim();
+      const text = document.getElementById('comment-text').value.trim();
+      let valid  = true;
+
+      if (!Validator.notEmpty(name) || !Validator.maxLength(name, 60)) {
+        document.getElementById('err-name').classList.add('show'); valid = false;
+      } else { document.getElementById('err-name').classList.remove('show'); }
+
+      if (!Validator.notEmpty(text) || !Validator.maxLength(text, 1000)) {
+        document.getElementById('err-comment').classList.add('show'); valid = false;
+      } else { document.getElementById('err-comment').classList.remove('show'); }
+
+      if (!valid || !currentPostId) return;
+
+      const comments = getComments(currentPostId);
+      comments.push({ author: name, text, timestamp: Date.now() });
+      saveComments(currentPostId, comments);
+
+      document.getElementById('comment-name').value = '';
+      document.getElementById('comment-text').value = '';
+      renderComments(currentPostId);
+      showToast('Kommentar veröffentlicht!', 'success');
+    }
+
+    function deleteComment(postId, index) {
+      if (!Auth.isAdmin()) return;
+      const comments = getComments(postId);
+      comments.splice(index, 1);
+      saveComments(postId, comments);
+      renderComments(postId);
+      showToast('Kommentar gelöscht', 'success');
+    }
+
+    // ═══ ADMIN: POST ERSTELLEN / LÖSCHEN ══════════════════════════
+    function createPost() {
+      if (!Auth.isAdmin()) return;
+      const title   = document.getElementById('post-title').value.trim();
+      const content = document.getElementById('post-content').value.trim();
+      const cat     = document.getElementById('post-category').value;
+      if (!title || !content) { showToast('Titel und Inhalt erforderlich', 'error'); return; }
+      if (!Validator.maxLength(title, 120)) { showToast('Titel zu lang', 'error'); return; }
+
+      const posts = getPosts();
+      posts.unshift({
+        id: Date.now(), title, category: cat,
+        excerpt: content.replace(/<[^>]*>/g, '').slice(0, 160) + '…',
+        content, createdAt: Date.now()
+      });
+      savePosts(posts);
+      document.getElementById('post-title').value = '';
+      document.getElementById('post-content').value = '';
+      renderBlogGrid();
+      showToast('Beitrag veröffentlicht!', 'success');
+    }
+
+    function deletePost(id) {
+      if (!Auth.isAdmin()) return;
+      if (!confirm('Beitrag löschen?')) return;
+      savePosts(getPosts().filter(p => p.id !== id));
+      localStorage.removeItem('comments_' + id);
+      renderBlogGrid();
+      showToast('Beitrag gelöscht', 'success');
+    }
+
+    window.openPost   = openPost;
+    window.closePost  = closePost;
+    window.createPost = createPost;
+    window.deletePost = deletePost;
+    window.submitComment = submitComment;
+    window.deleteComment = deleteComment;
+
+    renderBlogGrid();
+  </script>
+</body>
+</html>

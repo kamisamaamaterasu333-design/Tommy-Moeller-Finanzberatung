@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Datenschutz – Max Mustermann</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">MM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html" data-i18n="nav.home">Start</a></li>
+        <li><a href="about.html" data-i18n="nav.about">Über mich</a></li>
+        <li><a href="services.html" data-i18n="nav.services">Dienstleistungen</a></li>
+        <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+        <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" data-i18n="nav.login">Login</a></li>
+        <li><div class="lang-switcher"></div></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="../index.html" data-i18n="breadcrumb.home">Start</a> /
+        <span data-i18n="privacy.title">Datenschutzerklärung</span>
+      </div>
+      <h1 class="section-title" data-i18n="privacy.title">Datenschutzerklärung</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Gemäß DSGVO / GDPR · Stand: 2024</p>
+    </div>
+  </div>
+
+  <!-- Inhaltsverzeichnis -->
+  <section class="section" style="padding-bottom:0">
+    <div class="container" style="max-width:760px">
+      <div class="card" style="padding:20px 24px">
+        <h3 style="font-size:15px;color:var(--gold);font-family:var(--font-mono);letter-spacing:1px;margin-bottom:12px">INHALT</h3>
+        <ol style="color:var(--text-dim);font-size:14px;line-height:2.2;padding-left:20px">
+          <li><a href="#verantwortlicher" style="color:var(--text-dim);text-decoration:none">Verantwortlicher</a></li>
+          <li><a href="#erhobene-daten" style="color:var(--text-dim);text-decoration:none">Welche Daten werden erhoben?</a></li>
+          <li><a href="#rechtsgrundlage" style="color:var(--text-dim);text-decoration:none">Rechtsgrundlagen der Verarbeitung</a></li>
+          <li><a href="#cookies" style="color:var(--text-dim);text-decoration:none">Cookies & localStorage</a></li>
+          <li><a href="#drittdienste" style="color:var(--text-dim);text-decoration:none">Drittdienste (Jotform, Google Fonts)</a></li>
+          <li><a href="#newsletter" style="color:var(--text-dim);text-decoration:none">Newsletter</a></li>
+          <li><a href="#betroffenenrechte" style="color:var(--text-dim);text-decoration:none">Ihre Rechte als betroffene Person</a></li>
+          <li><a href="#hosting" style="color:var(--text-dim);text-decoration:none">Hosting (GitHub Pages)</a></li>
+          <li><a href="#sicherheit" style="color:var(--text-dim);text-decoration:none">Datensicherheit</a></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:760px">
+
+      <!-- 1. VERANTWORTLICHER -->
+      <div class="card" id="verantwortlicher" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          1. Verantwortlicher (Art. 4 Nr. 7 DSGVO)
+        </h2>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Verantwortlich für die Datenverarbeitung auf dieser Website ist:<br/><br/>
+          <strong style="color:var(--bright)">[PLATZHALTER: Dein vollständiger Name]</strong><br/>
+          [Straße und Hausnummer]<br/>
+          [PLZ] [Stadt]<br/><br/>
+          E-Mail: <a href="mailto:[deine@email.de]" style="color:var(--gold)">[deine@email.de]</a><br/>
+          Telefon: [+49 (0) XXX XXXXXXXX]
+        </p>
+      </div>
+
+      <!-- 2. ERHOBENE DATEN -->
+      <div class="card" id="erhobene-daten" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          2. Welche Daten werden erhoben?
+        </h2>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">2.1 Beim Besuch der Website</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Beim Besuch unserer Website werden durch den Hosting-Anbieter (GitHub Pages)
+          automatisch Server-Logfiles gespeichert. Diese enthalten:
+          IP-Adresse (anonymisiert), Browser-Typ, Betriebssystem, Referrer-URL,
+          Datum und Uhrzeit des Zugriffs. Diese Daten sind für uns nicht einsehbar
+          und werden von GitHub verarbeitet (siehe Abschnitt 8).
+        </p>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">2.2 Kontaktformular (Jotform)</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Wenn Sie das Kontaktformular ausfüllen, werden Ihre eingegebenen Daten
+          (Name, E-Mail, Nachricht) an Jotform Inc. (USA) übermittelt und dort verarbeitet.
+          Jotform ist EU-U.S. Data Privacy Framework zertifiziert. Details:
+          <a href="https://www.jotform.com/privacy/" target="_blank" rel="noopener"
+             style="color:var(--gold)">jotform.com/privacy</a>
+        </p>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">2.3 Newsletter</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Bei der Newsletter-Anmeldung speichern wir Ihre E-Mail-Adresse, die
+          gewählte Sprache und den Anmeldezeitpunkt. Die Verarbeitung erfolgt auf
+          Basis Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Sie können sich
+          jederzeit abmelden.
+        </p>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">2.4 Blog-Kommentare</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Bei der Abgabe eines Kommentars werden Name, Kommentartext und
+          Zeitstempel gespeichert. In der Demo-Version erfolgt die Speicherung
+          ausschließlich lokal in Ihrem Browser (localStorage), nicht auf einem Server.
+        </p>
+      </div>
+
+      <!-- 3. RECHTSGRUNDLAGEN -->
+      <div class="card" id="rechtsgrundlage" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          3. Rechtsgrundlagen der Verarbeitung (Art. 6 DSGVO)
+        </h2>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead>
+            <tr style="background:var(--surface)">
+              <th style="padding:10px;text-align:left;color:var(--gold);font-family:var(--font-mono);font-size:12px;border-bottom:2px solid var(--gold)">Verarbeitungsvorgang</th>
+              <th style="padding:10px;text-align:left;color:var(--gold);font-family:var(--font-mono);font-size:12px;border-bottom:2px solid var(--gold)">Rechtsgrundlage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text-dim)">Kontaktanfragen</td>
+              <td style="padding:10px;color:var(--text-dim)">Art. 6 Abs. 1 lit. b DSGVO (Vertragsanbahnung)</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);background:var(--surface)">
+              <td style="padding:10px;color:var(--text-dim)">Newsletter</td>
+              <td style="padding:10px;color:var(--text-dim)">Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;color:var(--text-dim)">Login / Session</td>
+              <td style="padding:10px;color:var(--text-dim)">Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung)</td>
+            </tr>
+            <tr style="background:var(--surface)">
+              <td style="padding:10px;color:var(--text-dim)">Blog-Kommentare</td>
+              <td style="padding:10px;color:var(--text-dim)">Art. 6 Abs. 1 lit. a DSGVO (Einwilligung durch Abgabe)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. COOKIES / LOCALSTORAGE -->
+      <div class="card" id="cookies" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          4. Cookies & localStorage
+        </h2>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75;margin-bottom:14px">
+          Diese Website verwendet <strong style="color:var(--bright)">keine Tracking-Cookies</strong> und kein Analytics.
+          Der Browser-Speicher (localStorage) wird ausschließlich für technisch
+          notwendige Funktionen verwendet:
+        </p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead>
+            <tr style="background:var(--surface)">
+              <th style="padding:10px;text-align:left;color:var(--gold);font-family:var(--font-mono);font-size:12px;border-bottom:2px solid var(--gold)">Schlüssel</th>
+              <th style="padding:10px;text-align:left;color:var(--gold);font-family:var(--font-mono);font-size:12px;border-bottom:2px solid var(--gold)">Inhalt</th>
+              <th style="padding:10px;text-align:left;color:var(--gold);font-family:var(--font-mono);font-size:12px;border-bottom:2px solid var(--gold)">Zweck</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;font-family:var(--font-mono);font-size:12px;color:var(--cyan)">current_user</td>
+              <td style="padding:10px;color:var(--text-dim)">Nutzername, Rolle (kein Passwort)</td>
+              <td style="padding:10px;color:var(--text-dim)">Login-Session</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);background:var(--surface)">
+              <td style="padding:10px;font-family:var(--font-mono);font-size:12px;color:var(--cyan)">preferred_lang</td>
+              <td style="padding:10px;color:var(--text-dim)">„de" oder „en"</td>
+              <td style="padding:10px;color:var(--text-dim)">Sprachauswahl merken</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:10px;font-family:var(--font-mono);font-size:12px;color:var(--cyan)">blog_posts</td>
+              <td style="padding:10px;color:var(--text-dim)">Blog-Beiträge</td>
+              <td style="padding:10px;color:var(--text-dim)">Demo-Datenspeicherung</td>
+            </tr>
+            <tr style="background:var(--surface)">
+              <td style="padding:10px;font-family:var(--font-mono);font-size:12px;color:var(--cyan)">newsletter_subscribers</td>
+              <td style="padding:10px;color:var(--text-dim)">E-Mail, Status</td>
+              <td style="padding:10px;color:var(--text-dim)">Newsletter-Anmeldungen</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:14px">
+          <p style="color:var(--gold);font-size:14px">
+            ⓘ Alle localStorage-Daten verbleiben ausschließlich in Ihrem Browser und
+            werden nicht an Server übertragen. Sie können diese jederzeit über die
+            Browser-Einstellungen löschen (F12 → Application → Local Storage).
+          </p>
+        </div>
+      </div>
+
+      <!-- 5. DRITTDIENSTE -->
+      <div class="card" id="drittdienste" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          5. Drittdienste
+        </h2>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">5.1 Google Fonts</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Diese Seite lädt Schriftarten von Google Fonts (fonts.googleapis.com). Dabei
+          wird Ihre IP-Adresse an Google LLC, USA, übertragen. Rechtsgrundlage: Art. 6
+          Abs. 1 lit. f DSGVO (berechtigtes Interesse an einheitlicher Darstellung).
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener"
+             style="color:var(--gold)">Google Datenschutzerklärung</a>
+        </p>
+        <h3 style="color:var(--gold);font-size:15px;margin:14px 0 8px">5.2 Jotform (Kontaktformular)</h3>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Das Kontaktformular wird als iFrame von Jotform Inc. eingebettet. Beim Laden
+          des Formulars wird eine Verbindung zu Jotform-Servern aufgebaut. Jotform
+          speichert Formulareinträge auf Servern in den USA (DPF-zertifiziert).
+          Datenschutzbeauftragter: privacy@jotform.com
+        </p>
+      </div>
+
+      <!-- 6. NEWSLETTER -->
+      <div class="card" id="newsletter" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          6. Newsletter
+        </h2>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Mit der Newsletter-Anmeldung erteilen Sie uns eine Einwilligung zur
+          Verarbeitung Ihrer E-Mail-Adresse für den Versand unseres Newsletters
+          (Art. 6 Abs. 1 lit. a DSGVO). <strong style="color:var(--bright)">Double-Opt-In:</strong>
+          Nach der Anmeldung erhalten Sie eine Bestätigungs-E-Mail. Erst nach
+          Klick auf den Bestätigungslink ist die Anmeldung abgeschlossen.
+        </p>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75;margin-top:10px">
+          <strong style="color:var(--bright)">Abmeldung:</strong> Sie können den Newsletter
+          jederzeit über den Abmelde-Link in jeder E-Mail oder durch Kontaktaufnahme
+          per E-Mail abbestellen. Die Einwilligung ist jederzeit ohne Angabe von Gründen
+          widerrufbar.
+        </p>
+      </div>
+
+      <!-- 7. BETROFFENENRECHTE -->
+      <div class="card" id="betroffenenrechte" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          7. Ihre Rechte (Art. 15–22 DSGVO)
+        </h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Art. 15 – Auskunft</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Auskunft über gespeicherte Daten</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Art. 16 – Berichtigung</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Korrektur unrichtiger Daten</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Art. 17 – Löschung</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Löschung Ihrer Daten</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Art. 21 – Widerspruch</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Widerspruch gegen Verarbeitung</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Art. 20 – Portabilität</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Datenübertragbarkeit</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:5px">Beschwerde</div>
+            <div style="color:var(--text-dim);font-size:13px">Recht auf Beschwerde bei einer Aufsichtsbehörde</div>
+          </div>
+        </div>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75;margin-top:16px">
+          Zur Ausübung Ihrer Rechte wenden Sie sich per E-Mail an:
+          <a href="mailto:[deine@email.de]" style="color:var(--gold)">[deine@email.de]</a>
+        </p>
+      </div>
+
+      <!-- 8. HOSTING -->
+      <div class="card" id="hosting" style="margin-bottom:20px">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          8. Hosting – GitHub Pages
+        </h2>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Diese Website wird auf GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St,
+          San Francisco, CA 94107, USA) gehostet. GitHub erfasst Server-Logfiles,
+          die technische Informationen enthalten. GitHub Inc. ist unter dem EU-U.S.
+          Data Privacy Framework (DPF) zertifiziert.
+          <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement"
+             target="_blank" rel="noopener" style="color:var(--gold)">GitHub Datenschutzerklärung</a>
+        </p>
+      </div>
+
+      <!-- 9. SICHERHEIT -->
+      <div class="card" id="sicherheit">
+        <h2 style="font-family:var(--font-serif);font-size:20px;color:var(--bright);margin-bottom:14px">
+          9. Datensicherheit
+        </h2>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75">
+          Diese Website nutzt HTTPS-Verschlüsselung (TLS), bereitgestellt durch
+          GitHub Pages. Die Übertragung Ihrer Daten ist damit verschlüsselt.
+          Passwörter werden niemals im Klartext gespeichert. Formularinhalte
+          werden vor der Verarbeitung auf XSS und unzulässige Eingaben geprüft.
+        </p>
+        <p style="color:var(--text-dim);font-size:15px;line-height:1.75;margin-top:10px">
+          <strong style="color:var(--bright)">Stand:</strong> Januar 2024.
+          Diese Datenschutzerklärung wird bei Änderungen der Datenverarbeitung
+          aktualisiert.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">MM<span>.</span></div>
+          <p class="footer-tagline">Finanz- & Steuerexperte</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer.nav">Navigation</h4>
+          <ul>
+            <li><a href="../index.html" data-i18n="nav.home">Start</a></li>
+            <li><a href="about.html" data-i18n="nav.about">Über mich</a></li>
+            <li><a href="services.html" data-i18n="nav.services">Dienstleistungen</a></li>
+            <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer.legal">Rechtliches</h4>
+          <ul>
+            <li><a href="imprint.html" data-i18n="footer.imprint">Impressum</a></li>
+            <li><a href="privacy.html" data-i18n="footer.privacy">Datenschutz</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Max Mustermann. Alle Rechte vorbehalten.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
