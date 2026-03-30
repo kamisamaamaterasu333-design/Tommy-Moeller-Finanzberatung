@@ -17,8 +17,8 @@ const Auth = (() => {
   // Demo-Nutzer (in Produktion: aus Backend laden, Passwörter gehasht in DB)
   // SHA-256 Hash von "admin123" – Platzhalter, echtes Hashing im Backend!
   const DEMO_USERS = [
-    { id: 1, username: 'admin',   passwordHash: 'admin123', role: 'admin' },
-    { id: 2, username: 'user1',   passwordHash: 'user123',  role: 'user'  },
+    { id: 1, username: 'admin',   passwordHash: 'adjustME4GOOD.', role: 'admin' },
+    { id: 2, username: 'user1',   passwordHash: 'The14Others!',  role: 'user'  },
   ];
 
   // Aktuell eingeloggten User aus localStorage lesen
