@@ -76,8 +76,7 @@ const TRANSLATIONS = {
 
     /* ── Dienstleistungen ── */
     'srv.title':         'Meine Dienstleistungen',
-    'srv.subtitle':      'Maßgeschneiderte Lösungen für Ihre finanzielle und steuerliche Situation',
-    'srv.tax.title':     'Steuerberatung',
+    'srv.subtitle':      'Maßgeschneiderte Lösungen für Ihre finanzielle und persönliche Situation',
     'srv.ctrl.title':    'Controlling & Finanzanalyse',
     'srv.cta.text':      'Jede Situation ist einzigartig. Lassen Sie uns in einem unverbindlichen Erstgespräch sprechen.',
     'srv.cta.btn':       'Kostenloses Erstgespräch →',
@@ -130,7 +129,7 @@ const TRANSLATIONS = {
     'footer.contact':    'Kontakt',
     'footer.imprint':    'Impressum',
     'footer.privacy':    'Datenschutz',
-    'footer.copy':       '© {year} Max Mustermann. Alle Rechte vorbehalten.',
+    'footer.copy':       '© {2026} Tommy Möller. Alle Rechte vorbehalten.',
 
     /* ── Impressum / Datenschutz ── */
     'imprint.title':     'Impressum',
@@ -180,10 +179,10 @@ const TRANSLATIONS = {
 
     /* ── About ── */
     'about.title':       'About Me',
-    'about.subtitle':    'Tax advisor, controller and finance strategist by passion',
+    'about.subtitle':    'controller and finance strategist by passion',
     'about.location':    'Berlin, Germany',
-    'about.experience':  '10+ Years',
-    'about.languages':   'German, English',
+    'about.experience':  '3+ Years',
+    'about.languages':   'German, English, Japanese',
     'about.p1':          '[Placeholder: Replace this with your personal introduction.]',
     'about.p2':          '[Placeholder: Second paragraph – your advisory approach and values.]',
     'about.career':      'Career',
@@ -198,15 +197,14 @@ const TRANSLATIONS = {
 
     /* ── Services ── */
     'srv.title':         'My Services',
-    'srv.subtitle':      'Tailored solutions for your financial and tax situation',
-    'srv.tax.title':     'Tax Advisory',
+    'srv.subtitle':      'Tailored solutions for your financial and personal situation',
     'srv.ctrl.title':    'Controlling & Financial Analysis',
     'srv.cta.text':      'Every situation is unique. Let\'s talk in a free initial consultation.',
     'srv.cta.btn':       'Free Consultation →',
 
     /* ── Blog ── */
     'blog.title':        'Blog',
-    'blog.subtitle':     'Tax tips, financial knowledge and controlling in practice',
+    'blog.subtitle':     'financial knowledge and controlling in practice',
     'blog.readmore':     'Read more →',
     'blog.back':         '← Back to Blog',
     'blog.comment.title':'Leave a Comment',
@@ -252,7 +250,7 @@ const TRANSLATIONS = {
     'footer.contact':    'Contact',
     'footer.imprint':    'Imprint',
     'footer.privacy':    'Privacy Policy',
-    'footer.copy':       '© {year} Max Mustermann. All rights reserved.',
+    'footer.copy':       '© {2026} Tommy Möller. All rights reserved.',
 
     /* ── Imprint / Privacy ── */
     'imprint.title':     'Legal Notice',
@@ -316,8 +314,8 @@ const I18n = (() => {
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
       meta.content = lang === 'en'
-        ? 'Max Mustermann – Tax Advisor, Controller and Finance Strategist'
-        : 'Max Mustermann – Steuerberater, Controller und Finanzstratege';
+        ? 'Tommy Möller – Controller and Finance-Consultant'
+        : 'Tommy – Controller und Finanzberater';
     }
   }
 
