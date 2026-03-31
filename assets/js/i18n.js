@@ -34,23 +34,23 @@ const TRANSLATIONS = {
     /* ── Homepage Hero ── */
     'hero.eyebrow':    'Willkommen',
     'hero.title':      'Tommy Möller',
-    'hero.subtitle':   'Planung & Steuerung · Controlling · Finanzanalyse',
+    'hero.subtitle':   'Controlling · Finanzberatung',
     'hero.text':       'Referent Planung und Steuerung mit Expertise in Power BI, SAP ERP und der Automatisierung von Finanzprozessen.',
     'hero.cta1':       'Meine Leistungen',
     'hero.cta2':       'Kontakt aufnehmen',
     'hero.stat1.num':  '3+',
     'hero.stat1.lbl':  'Jahre Erfahrung',
     'hero.stat2.num':  'M.Sc.',
-    'hero.stat2.lbl':  'FACT – Note 2,0',
+    'hero.stat2.lbl':  'FACT – spezialisierung im Controlling',
     'hero.stat3.num':  'DB',
     'hero.stat3.lbl':  'BahnbauGruppe',
 
     /* ── Teaser ── */
-    'teaser.tax.title':  'Planung & Steuerung',
+    'teaser.tax.title':  'Controlling',
     'teaser.tax.text':   'Monatliches Berichtswesen, P&L-Kommentierung und Budget-Forecasting für die Geschäftsführung.',
     'teaser.tax.link':   'Mehr erfahren →',
     'teaser.ctrl.title': 'Prozessautomatisierung',
-    'teaser.ctrl.text':  'Automatisierung von Reporting-Prozessen mit Power Automate, SharePoint und Power BI.',
+    'teaser.ctrl.text':  'Automatisierung von Reporting-Prozessen mit Power Automate, IBM, Power BI und mehr.',
     'teaser.ctrl.link':  'Mehr erfahren →',
     'teaser.acc.title':  'IT-Controlling',
     'teaser.acc.text':   'Planung von IT-Projekten, kaufmännischer Ansprechpartner und monatliches Reporting zu IT-Kosten.',
@@ -77,13 +77,13 @@ const TRANSLATIONS = {
     /* ── Dienstleistungen ── */
     'srv.title':         'Meine Dienstleistungen',
     'srv.subtitle':      'Maßgeschneiderte Lösungen für Ihre finanzielle und persönliche Situation',
-    'srv.ctrl.title':    'Controlling & Finanzanalyse',
+    'srv.ctrl.title':    'Controlling & Finanzberatung',
     'srv.cta.text':      'Jede Situation ist einzigartig. Lassen Sie uns in einem unverbindlichen Erstgespräch sprechen.',
     'srv.cta.btn':       'Kostenloses Erstgespräch →',
 
     /* ── Blog ── */
     'blog.title':        'Blog',
-    'blog.subtitle':     'Steuertipps, Finanzwissen und Controlling-Praxis',
+    'blog.subtitle':     'Finanzwissen und Controlling-Praxis',
     'blog.readmore':     'Weiterlesen →',
     'blog.back':         '← Zurück zum Blog',
     'blog.comment.title':'Kommentar hinterlassen',
@@ -105,7 +105,7 @@ const TRANSLATIONS = {
     'contact.tel.label': 'TELEFON',
     'contact.mail.label':'E-MAIL',
     'contact.hours.label':'ERREICHBARKEIT',
-    'contact.hours.val': 'Mo–Fr: 9:00–18:00 Uhr',
+    'contact.hours.val': 'Mo–Fr: 17:00–20:00 Uhr, Sa: ab 9:00-20:00',
 
     /* ── Login ── */
     'login.title':       'Anmelden',
@@ -117,8 +117,8 @@ const TRANSLATIONS = {
 
     /* ── Newsletter ── */
     'nl.title':          'Newsletter',
-    'nl.subtitle':       'Bleiben Sie informiert – Steuertipps und Finanzwissen direkt ins Postfach.',
-    'nl.placeholder':    'Ihre E-Mail-Adresse',
+    'nl.subtitle':       'Bleiben Sie informiert – Controlling- und Finanzwissen direkt ins Postfach.',
+    'nl.placeholder':    'kamisamaamaterasu333@gmail.com',
     'nl.btn':            'Jetzt anmelden',
     'nl.success':        'Danke! Sie erhalten eine Bestätigungs-E-Mail.',
     'nl.privacy':        'Kein Spam. Jederzeit abmeldbar. Datenschutz beachten.',
@@ -154,37 +154,37 @@ const TRANSLATIONS = {
 
     /* ── Homepage Hero ── */
     'hero.eyebrow':    'Welcome',
-    'hero.title':      'Max Mustermann',
-    'hero.subtitle':   'Tax Advisor · Controller · Finance Strategist',
-    'hero.text':       'I help businesses and individuals understand, optimise and strategically manage their financial situation for long-term success.',
+    'hero.title':      'Tommy möller',
+    'hero.subtitle':   'Controlling · Financial Consulting',
+    'hero.text':       '‘Planning and Controlling Specialist with expertise in Power BI, SAP ERP, and the automation of financial processes',
     'hero.cta1':       'My Services',
     'hero.cta2':       'Get in Touch',
-    'hero.stat1.num':  '10+',
+    'hero.stat1.num':  '3+',
     'hero.stat1.lbl':  'Years Experience',
-    'hero.stat2.num':  '200+',
-    'hero.stat2.lbl':  'Satisfied Clients',
-    'hero.stat3.num':  '98%',
-    'hero.stat3.lbl':  'Success Rate',
+    'hero.stat2.num':  'M.Sc',
+    'hero.stat2.lbl':  'FACT – Specialization in Controlling',
+    'hero.stat3.num':  'DB',
+    'hero.stat3.lbl':  'Bahnbau Gruppe GmbH',
 
     /* ── Teaser ── */
-    'teaser.tax.title':  'Tax Advisory',
-    'teaser.tax.text':   'Individual tax optimisation for private individuals, freelancers and businesses.',
-    'teaser.tax.link':   'Learn more →',
-    'teaser.ctrl.title': 'Controlling',
-    'teaser.ctrl.text':  'KPI analysis, budget planning and financial reporting for well-informed decisions.',
-    'teaser.ctrl.link':  'Learn more →',
-    'teaser.acc.title':  'Annual Accounts',
-    'teaser.acc.text':   'Professional preparation of annual financial statements under HGB and IFRS.',
+    ‘teaser.tax.title’:  ‘Controlling’,
+    'teaser.tax.text’:   ‘Monthly reporting, P&L commentary, and budget forecasting for management.’,
+    'teaser.tax.link':   'Learn more →’,
+    'teaser.ctrl.title’: ‘Process Automation’,
+    'teaser.ctrl.text’:  ‘Automation of reporting processes with Power Automate, IBM, Power BI, and more.’,
+    'teaser.ctrl.link':  'Learn more →’,
+    'teaser.acc.title’:  ‘IT Controlling’,
+    'teaser.acc.text’:   ‘Planning of IT projects, business liaison, and monthly reporting on IT costs.’,
     'teaser.acc.link':   'Learn more →',
 
-    /* ── About ── */
-    'about.title':       'About Me',
-    'about.subtitle':    'controller and finance strategist by passion',
-    'about.location':    'Berlin, Germany',
-    'about.experience':  '3+ Years',
-    'about.languages':   'German, English, Japanese',
-    'about.p1':          '[Placeholder: Replace this with your personal introduction.]',
-    'about.p2':          '[Placeholder: Second paragraph – your advisory approach and values.]',
+    /* ── About me ── */
+    'about.title':       'About me’,
+    'about.subtitle’:    ‘Planning & Control Specialist · Controller · Financial Analyst’,
+    'about.location’:    ‘Erkner / Berlin’,
+    'about.experience’:  ‘3+ years of professional experience’,
+    'about.languages’:   'German (C2) · English (C1) · Japanese (A2)',
+    'about.p1’:          ‘Dedicated Planning and Controlling Specialist with over 3 years of experience in budget planning and IT controlling.’,
+    'about.p2’:          ‘Strong analytical skills and in-depth knowledge of controlling enable me to make a significant contribution to optimizing business processes.’,
     'about.career':      'Career',
     'about.dl.title':    'Documents & Downloads',
     'about.dl.subtitle.guest':  'Please log in to download documents.',
@@ -197,9 +197,9 @@ const TRANSLATIONS = {
 
     /* ── Services ── */
     'srv.title':         'My Services',
-    'srv.subtitle':      'Tailored solutions for your financial and personal situation',
-    'srv.ctrl.title':    'Controlling & Financial Analysis',
-    'srv.cta.text':      'Every situation is unique. Let\'s talk in a free initial consultation.',
+    'srv.subtitle':      'Tailored solutions for your financial and personal situation’,
+    'srv.ctrl.title’:    ‘Controlling & Financial Consulting’,
+    'srv.cta.text’:      ‘Every situation is unique. Let's talk during a no-obligation initial consultation.’,
     'srv.cta.btn':       'Free Consultation →',
 
     /* ── Blog ── */
