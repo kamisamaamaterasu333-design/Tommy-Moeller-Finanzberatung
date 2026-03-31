@@ -238,7 +238,7 @@ const TRANSLATIONS = {
 
     /* ── Newsletter ── */
     'nl.title':          'Newsletter',
-    'nl.subtitle':       'Stay informed – tax tips and financial insights delivered to your inbox.',
+    'nl.subtitle':       'Stay informed – receive the latest in controlling and finance news straight to your inbox.',
     'nl.placeholder':    'Your email address',
     'nl.btn':            'Subscribe',
     'nl.success':        'Thank you! You will receive a confirmation email.',
