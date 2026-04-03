@@ -129,30 +129,21 @@
     function getComments(postId) { try { return JSON.parse(localStorage.getItem('comments_' + postId) || '[]'); } catch { return []; } }
     function saveComments(postId, c) { localStorage.setItem('comments_' + postId, JSON.stringify(c)); }
 
-    // Demo-Posts
-const POSTS_VERSION = 2; // Diese Zahl erhöhst du jedes Mal, wenn du die Demo-Posts änderst
+// Demo-Posts
+const POSTS_VERSION = 2; // Erhöhe diese Zahl, wenn du die Posts wieder änderst
 
-// Nur überschreiben, wenn die Version veraltet ist
 if (localStorage.getItem('blog_posts_version') !== String(POSTS_VERSION)) {
-  savePosts([/* deine neuen Posts */]);
-  localStorage.setItem('blog_posts_version', POSTS_VERSION);
-}
-        {
-          id: 1, title: 'Reformpläne der Krankenkasse',
-          category: 'Finanztip', createdAt: Date.now() - 864e5 * 3,
-          excerpt: 'Der gesetzlichen Krankenversicherung (GKV) soll 2027 ein derbes Minus con 15,3 Mrd. € erleiden.',
-          content: `<h2>Es gibt 66 Voschläge. Wir werden auf die wichtigsten hier eingehen.</h2>
-<p>1) Familienversicherung auf dem Spiel – aber nicht für alle 
-Der vielleicht am heißesten diskutierte Vorschlag betrifft die Familienversicherung. Die funktioniert so: Ehepartner ohne Einkommen oder mit Minijob sind kostenlos mitversichert, wenn der andere normal arbeitet und gesetzlich versichert ist. 
-Das soll eingeschränkt werden und nur noch gelten, wenn Du ohne Einkommen bist und Kinder unter sechs Jahren oder pflegebedürftige Angehörige hast. Alle anderen sollen im Monat 240 € für die GKV zahlen. Betroffen wären insgesamt 1,77 Mio. Menschen – vor allem Frauen. Die Regelung wäre für die betroffenen Personen auch ein Anreiz, in einem Midi-Job oder Vollzeit zu arbeiten.
-Wie viel bringt das? 3,5 Mrd. € für 2027.</p>
+  savePosts([
+    {
+      id: 1, title: 'Reformpläne der Krankenkasse',
+      category: 'Finanztip', createdAt: Date.now() - 864e5 * 3,
+      excerpt: 'Der gesetzlichen Krankenversicherung (GKV) soll 2027 ein derbes Minus von 15,3 Mrd. € erleiden.',
+      content: `<h2>Es gibt 66 Vorschläge. Wir werden auf die wichtigsten hier eingehen.</h2>
+<p>1) </p>Der Vorschlag zur Änderung der Familienversicherung sieht vor, dass Ehepartner ohne Einkommen oder mit einem Minijob nur dann kostenlos mitversichert sind, wenn sie Kinder unter sechs Jahren oder pflegebedürftige Angehörige haben. Ansonsten müssten sie monatlich 240 € für die gesetzliche Krankenversicherung zahlen.</p>
 
 <p>2) Die Zuzahlung für verschreibungspflichtige Medikamente wird erhöht: von mindestens 5 € und maximal 10 € auf mindestens 7,50 € und maximal 15 € pro Medikament. Dies führt zu höheren jährlichen Ausgaben (z. B. 150 € statt 100 € für zehn Medikamente). Die Zuzahlung wird an die Grundlohnrate gekoppelt, steigert sich also jährlich mit den Löhnen.</p>
 
-<p>3) Die Preise für Rauchen, Alkohol und zuckerhaltige Getränke sollen steigen, um gesundes Verhalten zu fördern und den Staatshaushalt zu stärken.
-Die Tabaksteuer soll erhöht werden, was eine Schachtel Zigaretten bis 2031 um ca. 50 Cent teurer macht. Dies würde den Preis von 9 € auf etwa 11,50 € erhöhen.
-Auch Spirituosen wie Likör sollen um etwa 10 % teurer werden. Zuckerhaltige Getränke werden nur dann teurer, wenn sie einen bestimmten Zuckergehalt überschreiten.
-Die erwarteten Einnahmen für 2027 belaufen sich auf etwa 1,2 Mrd. € aus der Tabaksteuer, 570 Mio. € aus Alkohol und 100 Mio. € aus zuckerhaltigen Getränken.</p>`
+<p>3) Die Preise für Rauchen, Alkohol und zuckerhaltige Getränke sollen steigen, um gesundes Verhalten zu fördern und den Staatshaushalt zu stärken. Die Tabaksteuer soll erhöht werden, was eine Schachtel Zigaretten bis 2031 um ca. 50 Cent teurer macht. Dies würde den Preis von 9 € auf etwa 11,50 € erhöhen. Auch Spirituosen wie Likör sollen um etwa 10 % teurer werden. Zuckerhaltige Getränke werden nur dann teurer, wenn sie einen bestimmten Zuckergehalt überschreiten. Die erwarteten Einnahmen für 2027 belaufen sich auf etwa 1,2 Mrd. € aus der Tabaksteuer, 570 Mio. € aus Alkohol und 100 Mio. € aus zuckerhaltigen Getränken.</p>`
         },
         {
           id: 2, title: 'Working Capital optimieren: So befreist du gebundenes Kapital',
@@ -166,6 +157,8 @@ Die erwarteten Einnahmen für 2027 belaufen sich auf etwa 1,2 Mrd. € aus der T
 <p>1. <strong>Forderungsmanagement (DSO senken)</strong>: Frühzahler-Rabatte, straffes Mahnwesen.<br/>2. <strong>Lagerhaltung (DIO senken)</strong>: Just-in-Time, ABC-Analyse.<br/>3. <strong>Lieferantenmanagement (DPO erhöhen)</strong>: Zahlungsziele aushandeln.</p>`
         }
       ]);
+      // Speichert die Versionsnummer, damit dieser Block beim nächsten Laden übersprungen wird
+      localStorage.setItem('blog_posts_version', POSTS_VERSION);
     }
 
     let currentPostId = null;
