@@ -130,8 +130,13 @@
     function saveComments(postId, c) { localStorage.setItem('comments_' + postId, JSON.stringify(c)); }
 
     // Demo-Posts
-    if (!localStorage.getItem('blog_posts')) {
-      savePosts([
+const POSTS_VERSION = 2; // Diese Zahl erhöhst du jedes Mal, wenn du die Demo-Posts änderst
+
+// Nur überschreiben, wenn die Version veraltet ist
+if (localStorage.getItem('blog_posts_version') !== String(POSTS_VERSION)) {
+  savePosts([/* deine neuen Posts */]);
+  localStorage.setItem('blog_posts_version', POSTS_VERSION);
+}
         {
           id: 1, title: 'Reformpläne der Krankenkasse',
           category: 'Finanztip', createdAt: Date.now() - 864e5 * 3,
