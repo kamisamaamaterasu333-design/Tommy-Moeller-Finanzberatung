@@ -36,19 +36,20 @@
 
       <form id="login-form" novalidate>
         <div class="form-group">
-          <label class="form-label" for="username">Benutzername</label>
+          <!-- Supabase Auth benötigt eine E-Mail-Adresse statt einem Benutzernamen -->
+          <label class="form-label" for="login-email">E-Mail</label>
           <input
-            type="text" class="form-input" id="username"
-            placeholder="Dein Benutzername"
-            autocomplete="username"
-            maxlength="40"
+            type="email" class="form-input" id="login-email"
+            placeholder="deine@email.de"
+            autocomplete="email"
+            maxlength="100"
             required
           />
         </div>
         <div class="form-group">
-          <label class="form-label" for="password">Passwort</label>
+          <label class="form-label" for="login-password">Passwort</label>
           <input
-            type="password" class="form-input" id="password"
+            type="password" class="form-input" id="login-password"
             placeholder="••••••••"
             autocomplete="current-password"
             maxlength="100"
@@ -60,59 +61,70 @@
         </button>
       </form>
 
-      <!-- Demo-Hinweis (in Produktion entfernen!) -->
-      <div style="margin-top:24px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:var(--r);padding:14px">
-        <div style="font-size:11px;color:var(--gold);font-family:var(--font-mono);letter-spacing:1px;margin-bottom:8px">DEMO-ZUGANGSDATEN</div>
-        <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);line-height:2">
-        <strong style="color:var(--bright)">User:</strong>  User_NameX / User4ever.
-        </div>
-      </div>
-
       <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--muted)">
         <a href="../index.html" style="color:var(--gold);text-decoration:none">← Zurück zur Website</a>
       </p>
     </div>
   </div>
 
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/main.js"></script>
   <script>
-    // Weiterleitungsziel aus URL-Parameter lesen
-    const urlParams   = new URLSearchParams(window.location.search);
-    const redirectTo  = urlParams.get('redirect') || '../index.html';
+    const { createClient } = supabase;
+    const db = createClient(
+      'https://kalonkzgzbpsndkuznqp.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
+    );
 
-    // Wenn bereits eingeloggt: weiterleiten
-    if (Auth.isLoggedIn()) window.location.href = redirectTo;
+    // Weiterleitungsziel aus URL-Parameter lesen (Rückwärtskompatibilität)
+    const urlParams  = new URLSearchParams(window.location.search);
+    const redirectTo = urlParams.get('redirect') || 'blog.html';
 
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    // Falls bereits eingeloggt → sofort weiterleiten
+    db.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = redirectTo;
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
       const errEl    = document.getElementById('login-error');
       const btn      = document.getElementById('login-btn');
 
-      // Basic-Validation
-      if (!username || !password) {
-        errEl.textContent = 'Bitte Benutzername und Passwort eingeben.';
-        errEl.style.display = 'block'; return;
+      // Grundlegende Validierung
+      if (!email || !password) {
+        errEl.textContent   = 'Bitte E-Mail und Passwort eingeben.';
+        errEl.style.display = 'block';
+        return;
       }
 
-      btn.disabled = true;
+      // Button deaktivieren, damit kein Doppelklick möglich ist
+      btn.disabled    = true;
       btn.textContent = 'Wird geprüft…';
+      errEl.style.display = 'none';
 
-      // Kleines Delay simuliert Server-Request (verhindert auch Timing-Attacks)
-      setTimeout(() => {
-        const result = Auth.login(username, password);
-        if (result.success) {
-          showToast('Willkommen zurück, ' + result.user.username + '!', 'success');
-          setTimeout(() => window.location.href = redirectTo, 800);
-        } else {
-          errEl.textContent = result.error;
-          errEl.style.display = 'block';
-          document.getElementById('password').value = '';
-          btn.disabled = false;
-          btn.textContent = 'Anmelden';
-        }
-      }, 600);
+      // Supabase v2: signInWithPassword (nicht mehr das veraltete signIn)
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        // Benutzerfreundliche Fehlermeldung statt technischer Fehlercodes
+        errEl.textContent = (
+          error.message.includes('Invalid login credentials')
+            ? 'E-Mail oder Passwort falsch. Bitte erneut versuchen.'
+            : 'Fehler beim Anmelden. Bitte versuche es erneut.'
+        );
+        errEl.style.display = 'block';
+        document.getElementById('login-password').value = '';
+        btn.disabled    = false;
+        btn.textContent = 'Anmelden';
+      } else {
+        // Erfolgreich eingeloggt
+        showToast('Willkommen zurück!', 'success');
+        setTimeout(() => window.location.href = redirectTo, 800);
+      }
     });
   </script>
 </body>
