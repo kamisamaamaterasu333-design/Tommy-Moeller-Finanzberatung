@@ -16,7 +16,7 @@
         <li><a href="services.html">Dienstleistungen</a></li>
         <li><a href="blog.html" class="active">Blog</a></li>
         <li><a href="contact.html">Kontakt</a></li>
-        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" id="nav-login-btn">Login</a></li>
       </ul>
       <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
     </div>
@@ -52,7 +52,19 @@
               <option value="Finanzplanung">Finanzplanung</option>
               <option value="Umsatzsteuer">Umsatzsteuer</option>
               <option value="GmbH">GmbH</option>
+              <option value="Finanztip">Finanztip</option>
             </select>
+          </div>
+          <!-- Bildupload mit Vorschau -->
+          <div class="form-group">
+            <label class="form-label">Beitragsbild (optional)</label>
+            <input type="file" class="form-input" id="post-image" accept="image/*"
+                   onchange="handleImageUpload(event)" />
+            <img id="image-preview"
+                 style="display:none;max-width:100%;margin-top:12px;border-radius:8px;border:1px solid var(--border)" />
+            <button id="image-remove-btn"
+                    style="display:none;margin-top:8px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer"
+                    onclick="removeImage()">✕ Bild entfernen</button>
           </div>
           <div class="form-group">
             <label class="form-label">Inhalt</label>
@@ -93,13 +105,11 @@
           <h4 style="color:var(--bright);margin-bottom:18px;font-size:16px">Kommentar hinterlassen</h4>
           <div class="form-group">
             <label class="form-label">Name *</label>
-            <!-- maxlength verhindert überlange Inputs (DoS / XSS-Vorstufe) -->
             <input type="text" class="form-input" id="comment-name" placeholder="Dein Name" maxlength="60" />
             <div class="form-error" id="err-name">Bitte gib deinen Namen ein (max. 60 Zeichen).</div>
           </div>
           <div class="form-group">
             <label class="form-label">Kommentar *</label>
-            <!-- maxlength: verhindert Spam mit riesigen Texten -->
             <textarea class="form-input" id="comment-text" rows="4" placeholder="Dein Kommentar..." maxlength="1000"></textarea>
             <div class="form-error" id="err-comment">Bitte gib einen Kommentar ein (max. 1000 Zeichen).</div>
           </div>
@@ -119,100 +129,131 @@
     </div>
   </footer>
 
+  <!-- 1. Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 2. Dein bestehendes main.js (enthält escHtml, showToast, formatDate usw.) -->
   <script src="../assets/js/main.js"></script>
+
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ═══ BLOG-DATENVERWALTUNG (localStorage Demo) ═══════════════
-    function getPosts()  { try { return JSON.parse(localStorage.getItem('blog_posts') || '[]'); } catch { return []; } }
-    function savePosts(p){ localStorage.setItem('blog_posts', JSON.stringify(p)); }
-    function getComments(postId) { try { return JSON.parse(localStorage.getItem('comments_' + postId) || '[]'); } catch { return []; } }
-    function saveComments(postId, c) { localStorage.setItem('comments_' + postId, JSON.stringify(c)); }
+    // ═══ SUPABASE INITIALISIERUNG ════════════════════════════════════
+    const { createClient } = supabase;
+    const db = createClient(
+      'https://kalonkzgzbpsndkuznqp.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
+    );
 
-// Demo-Posts
-const POSTS_VERSION = 2; // Erhöhe diese Zahl, wenn du die Posts wieder änderst
+    let currentPostId  = null;
+    let currentUser    = null;
+    let postImageFile  = null;
 
-if (localStorage.getItem('blog_posts_version') !== String(POSTS_VERSION)) {
-  savePosts([
-    {
-      id: 1, title: 'Reformpläne der Krankenkasse',
-      category: 'Finanztip', createdAt: Date.now() - 864e5 * 3,
-      excerpt: 'Der gesetzlichen Krankenversicherung (GKV) soll 2027 ein derbes Minus von 15,3 Mrd. € erleiden.',
-      content: `<h2>Es gibt 66 Vorschläge. Wir werden auf die wichtigsten hier eingehen.</h2>
-<p>1) Der Vorschlag zur Änderung der Familienversicherung sieht vor, dass Ehepartner ohne Einkommen oder mit einem Minijob nur dann kostenlos mitversichert sind, wenn sie Kinder unter sechs Jahren oder pflegebedürftige Angehörige haben. Ansonsten müssten sie monatlich 240 € für die gesetzliche Krankenversicherung zahlen.</p>
+    // ═══ LOGIN-STATUS ÜBERWACHEN ─────────────────────────────────────
+    // Supabase prüft beim Laden automatisch, ob eine Session existiert.
+    // onAuthStateChange wird bei Login, Logout und beim ersten Laden aufgerufen.
+    db.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user ?? null;
 
-<p>2) Die Zuzahlung für verschreibungspflichtige Medikamente wird erhöht: von mindestens 5 € und maximal 10 € auf mindestens 7,50 € und maximal 15 € pro Medikament. Dies führt zu höheren jährlichen Ausgaben (z. B. 150 € statt 100 € für zehn Medikamente). Die Zuzahlung wird an die Grundlohnrate gekoppelt, steigert sich also jährlich mit den Löhnen.</p>
+      // Admin-Panel ein-/ausblenden
+      document.getElementById('admin-new-post').style.display = currentUser ? 'block' : 'none';
 
-<p>3) Die Preise für Rauchen, Alkohol und zuckerhaltige Getränke sollen steigen, um gesundes Verhalten zu fördern und den Staatshaushalt zu stärken. Die Tabaksteuer soll erhöht werden, was eine Schachtel Zigaretten bis 2031 um ca. 50 Cent teurer macht. Dies würde den Preis von 9 € auf etwa 11,50 € erhöhen. Auch Spirituosen wie Likör sollen um etwa 10 % teurer werden. Zuckerhaltige Getränke werden nur dann teurer, wenn sie einen bestimmten Zuckergehalt überschreiten. Die erwarteten Einnahmen für 2027 belaufen sich auf etwa 1,2 Mrd. € aus der Tabaksteuer, 570 Mio. € aus Alkohol und 100 Mio. € aus zuckerhaltigen Getränken.</p>`
-        },
-        {
-          id: 2, title: 'Working Capital optimieren: So befreist du gebundenes Kapital',
-          category: 'Controlling', createdAt: Date.now() - 864e5 * 1,
-          excerpt: 'Der Cash Conversion Cycle (CCC) ist der Schlüssel zur Liquiditätsoptimierung. Eine Reduktion um 10 Tage kann bei mittleren Unternehmen 100.000 € freisetzen.',
-          content: `<h2>Was ist Working Capital?</h2>
-<p>Working Capital = Umlaufvermögen − kurzfristige Verbindlichkeiten. Es zeigt, wie viel Kapital im operativen Prozess gebunden ist.</p>
-<h2>Der Cash Conversion Cycle</h2>
-<p>CCC = DSO + DIO − DPO. Je niedriger, desto besser. Jeder eingesparte Tag CCC setzt Kapital frei, das nicht mehr fremdfinanziert werden muss.</p>
-<h2>Die drei Stellschrauben</h2>
-<p>1. <strong>Forderungsmanagement (DSO senken)</strong>: Frühzahler-Rabatte, straffes Mahnwesen.<br/>2. <strong>Lagerhaltung (DIO senken)</strong>: Just-in-Time, ABC-Analyse.<br/>3. <strong>Lieferantenmanagement (DPO erhöhen)</strong>: Zahlungsziele aushandeln.</p>`
+      // Navbar-Button: eingeloggt → "Logout" anzeigen
+      const navBtn = document.getElementById('nav-login-btn');
+      if (navBtn) {
+        if (currentUser) {
+          navBtn.textContent = 'Logout';
+          navBtn.href        = '#';
+          navBtn.onclick     = async (e) => {
+            e.preventDefault();
+            await db.auth.signOut();
+            showToast('Erfolgreich abgemeldet', 'success');
+          };
+        } else {
+          navBtn.textContent = 'Login';
+          navBtn.href        = 'login.html';
+          navBtn.onclick     = null;
         }
-      ]);
-      // Speichert die Versionsnummer, damit dieser Block beim nächsten Laden übersprungen wird
-      localStorage.setItem('blog_posts_version', POSTS_VERSION);
+      }
+
+      renderBlogGrid();
+    });
+
+    // ═══ POSTS LADEN ─────────────────────────────────────────────────
+    async function getPosts() {
+      const { data, error } = await db
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) { console.error('Fehler beim Laden der Posts:', error); return []; }
+      return data || [];
     }
 
-    let currentPostId = null;
+    // ═══ BLOG-GRID RENDERN ───────────────────────────────────────────
+    async function renderBlogGrid() {
+      const grid = document.getElementById('blog-grid');
+      grid.innerHTML = '<p style="color:var(--muted)">Beiträge werden geladen…</p>';
 
-    // ═══ BLOG-GRID RENDERN ═══════════════════════════════════════
-    function renderBlogGrid() {
-      const posts   = getPosts();
-      const isAdmin = Auth.isAdmin();
-      const grid    = document.getElementById('blog-grid');
-
-      if (isAdmin) document.getElementById('admin-new-post').style.display = 'block';
+      const posts   = await getPosts();
+      const isAdmin = !!currentUser;
 
       if (!posts.length) {
-        grid.innerHTML = '<p style="color:var(--text-dim)">Noch keine Beiträge vorhanden.</p>';
+        grid.innerHTML = '<p style="color:var(--muted)">Noch keine Beiträge vorhanden.</p>';
         return;
       }
 
       grid.innerHTML = posts.map(post => `
         <div class="blog-card animate-in">
+          ${post.image_url
+            ? `<img src="${post.image_url}" alt="${escHtml(post.title)}"
+                    style="width:100%;height:200px;object-fit:cover;
+                           border-radius:var(--r-lg) var(--r-lg) 0 0" />`
+            : ''}
           <div class="blog-card-body">
             <div class="blog-meta">
               <span class="blog-category">${escHtml(post.category)}</span>
-              <span class="blog-date">${formatDate(post.createdAt)}</span>
+              <span class="blog-date">${formatDate(new Date(post.created_at).getTime())}</span>
             </div>
             <h2 class="blog-title">${escHtml(post.title)}</h2>
-            <p class="blog-excerpt">${escHtml(post.excerpt)}</p>
+            <p class="blog-excerpt">${escHtml(post.excerpt || '')}</p>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <a href="#" class="blog-read-more" onclick="openPost(${post.id})">Weiterlesen →</a>
-              ${isAdmin ? `<button onclick="deletePost(${post.id})" class="btn btn-danger btn-sm" style="padding:5px 10px;font-size:11px">✕ Löschen</button>` : ''}
+              <a href="#" class="blog-read-more"
+                 onclick="openPost('${post.id}');return false;">Weiterlesen →</a>
+              ${isAdmin
+                ? `<button onclick="deletePost('${post.id}','${post.image_path || ''}')"
+                           class="btn btn-danger btn-sm"
+                           style="padding:5px 10px;font-size:11px">✕ Löschen</button>`
+                : ''}
             </div>
           </div>
         </div>`).join('');
     }
 
-    // ═══ POST ÖFFNEN ══════════════════════════════════════════════
-    function openPost(id) {
-      const post = getPosts().find(p => p.id === id);
-      if (!post) return;
+    // ═══ POST ÖFFNEN ─────────────────────────────────────────────────
+    async function openPost(id) {
+      const { data: post, error } = await db
+        .from('posts').select('*').eq('id', id).single();
+      if (error || !post) return;
       currentPostId = id;
 
       document.getElementById('blog-grid').closest('.section').style.display = 'none';
       document.getElementById('post-detail').style.display = 'block';
 
       document.getElementById('post-body-content').innerHTML = `
+        ${post.image_url
+          ? `<img src="${post.image_url}" alt="${escHtml(post.title)}"
+                 style="width:100%;max-height:450px;object-fit:cover;
+                        border-radius:var(--r-lg);margin-bottom:32px" />`
+          : ''}
         <div class="blog-meta" style="margin-bottom:16px">
           <span class="blog-category">${escHtml(post.category)}</span>
-          <span class="blog-date">${formatDate(post.createdAt)}</span>
+          <span class="blog-date">${formatDate(new Date(post.created_at).getTime())}</span>
         </div>
         <h1 class="blog-post-title">${escHtml(post.title)}</h1>
         <div class="gold-line"></div>
         <div style="margin-top:32px">${post.content}</div>`;
 
-      renderComments(id);
-      window.scrollTo(0,0);
+      await renderComments(id);
+      window.scrollTo(0, 0);
     }
 
     function closePost() {
@@ -221,108 +262,172 @@ if (localStorage.getItem('blog_posts_version') !== String(POSTS_VERSION)) {
       document.getElementById('blog-grid').closest('.section').style.display = 'block';
     }
 
-    // ═══ KOMMENTARE ═══════════════════════════════════════════════
-    function renderComments(postId) {
-      const comments = getComments(postId);
-      const isAdmin  = Auth.isAdmin();
-      document.getElementById('comment-count').textContent = `(${comments.length})`;
+    // ═══ POST ERSTELLEN ──────────────────────────────────────────────
+    async function createPost() {
+      if (!currentUser) return;
+      const title   = document.getElementById('post-title').value.trim();
+      const content = document.getElementById('post-content').value.trim();
+      const cat     = document.getElementById('post-category').value;
 
-      document.getElementById('comment-list').innerHTML = comments.map((c, i) => `
+      if (!title || !content) { showToast('Titel und Inhalt erforderlich', 'error'); return; }
+      if (title.length > 120)  { showToast('Titel zu lang (max. 120 Zeichen)', 'error'); return; }
+
+      let image_url  = null;
+      let image_path = null;
+
+      // Bild hochladen, falls ausgewählt
+      if (postImageFile) {
+        image_path = `${Date.now()}_${postImageFile.name}`;
+        const { error: uploadError } = await db.storage
+          .from('blog-images')
+          .upload(image_path, postImageFile);
+
+        if (uploadError) {
+          showToast('Bild-Upload fehlgeschlagen: ' + uploadError.message, 'error');
+          return;
+        }
+        // Öffentliche URL abrufen
+        const { data: urlData } = db.storage
+          .from('blog-images')
+          .getPublicUrl(image_path);
+        image_url = urlData.publicUrl;
+      }
+
+      const { error } = await db.from('posts').insert({
+        title,
+        category: cat,
+        content,
+        image_url,
+        image_path,
+        excerpt: content.replace(/<[^>]*>/g, '').slice(0, 160) + '…'
+      });
+
+      if (error) { showToast('Fehler beim Speichern: ' + error.message, 'error'); return; }
+
+      document.getElementById('post-title').value   = '';
+      document.getElementById('post-content').value = '';
+      removeImage();
+      await renderBlogGrid();
+      showToast('Beitrag veröffentlicht!', 'success');
+    }
+
+    // ═══ POST LÖSCHEN ────────────────────────────────────────────────
+    async function deletePost(id, imagePath) {
+      if (!currentUser || !confirm('Beitrag wirklich löschen?')) return;
+
+      // Bild aus Storage entfernen (falls vorhanden)
+      if (imagePath) {
+        await db.storage.from('blog-images').remove([imagePath]);
+      }
+      // Kommentare werden durch ON DELETE CASCADE automatisch mitgelöscht
+      const { error } = await db.from('posts').delete().eq('id', id);
+      if (error) { showToast('Fehler beim Löschen', 'error'); return; }
+
+      await renderBlogGrid();
+      showToast('Beitrag gelöscht', 'success');
+    }
+
+    // ═══ BILDVORSCHAU ────────────────────────────────────────────────
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith('image/')) {
+        showToast('Bitte nur Bilddateien hochladen (JPG, PNG, WebP…)', 'error');
+        return;
+      }
+      postImageFile = file;
+      const reader  = new FileReader();
+      reader.onload = e => {
+        const preview       = document.getElementById('image-preview');
+        preview.src         = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('image-remove-btn').style.display = 'inline-block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage() {
+      postImageFile = null;
+      document.getElementById('post-image').value          = '';
+      document.getElementById('image-preview').style.display    = 'none';
+      document.getElementById('image-remove-btn').style.display = 'none';
+    }
+
+    // ═══ KOMMENTARE ──────────────────────────────────────────────────
+    async function renderComments(postId) {
+      const { data: comments } = await db
+        .from('comments')
+        .select('*')
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true });
+
+      const isAdmin = !!currentUser;
+      const list    = comments || [];
+
+      document.getElementById('comment-count').textContent = `(${list.length})`;
+      document.getElementById('comment-list').innerHTML = list.map(c => `
         <div class="comment-item">
           <div class="comment-header">
-            <!-- escHtml verhindert XSS aus gespeicherten Kommentaren -->
             <span class="comment-author">${escHtml(c.author)}</span>
-            <span class="comment-timestamp">${formatDateTime(c.timestamp)}</span>
+            <span class="comment-timestamp">
+              ${formatDateTime(new Date(c.created_at).getTime())}
+            </span>
           </div>
           <div class="comment-text">${escHtml(c.text)}</div>
-          ${isAdmin ? `<div class="comment-actions"><button class="comment-delete" onclick="deleteComment(${postId}, ${i})">🗑 Löschen</button></div>` : ''}
+          ${isAdmin
+            ? `<div class="comment-actions">
+                 <button class="comment-delete"
+                         onclick="deleteComment('${c.id}')">🗑 Löschen</button>
+               </div>`
+            : ''}
         </div>`).join('');
     }
 
-    /**
-     * Kommentar absenden
-     * Sicherheitsmaßnahmen:
-     * 1. Honeypot-Feld prüfen (Anti-Bot)
-     * 2. maxLength-Validierung (verhindert riesige Payloads)
-     * 3. escHtml beim Rendern (XSS-Schutz)
-     * 4. Timestamp serverseitig setzen (in Produktion)
-     */
-    function submitComment() {
-      // Honeypot-Check: Wenn Feld ausgefüllt → Spam/Bot
+    async function submitComment() {
+      // Honeypot-Check: Wenn Feld ausgefüllt → Bot
       if (document.getElementById('honeypot').value !== '') return;
 
-      const name = document.getElementById('comment-name').value.trim();
-      const text = document.getElementById('comment-text').value.trim();
-      let valid  = true;
+      const author = document.getElementById('comment-name').value.trim();
+      const text   = document.getElementById('comment-text').value.trim();
+      let valid    = true;
 
-      if (!Validator.notEmpty(name) || !Validator.maxLength(name, 60)) {
+      if (!author || author.length > 60) {
         document.getElementById('err-name').classList.add('show'); valid = false;
       } else { document.getElementById('err-name').classList.remove('show'); }
 
-      if (!Validator.notEmpty(text) || !Validator.maxLength(text, 1000)) {
+      if (!text || text.length > 1000) {
         document.getElementById('err-comment').classList.add('show'); valid = false;
       } else { document.getElementById('err-comment').classList.remove('show'); }
 
       if (!valid || !currentPostId) return;
 
-      const comments = getComments(currentPostId);
-      comments.push({ author: name, text, timestamp: Date.now() });
-      saveComments(currentPostId, comments);
+      const { error } = await db.from('comments').insert({
+        post_id: currentPostId, author, text
+      });
+
+      if (error) { showToast('Kommentar konnte nicht gespeichert werden', 'error'); return; }
 
       document.getElementById('comment-name').value = '';
       document.getElementById('comment-text').value = '';
-      renderComments(currentPostId);
+      await renderComments(currentPostId);
       showToast('Kommentar veröffentlicht!', 'success');
     }
 
-    function deleteComment(postId, index) {
-      if (!Auth.isAdmin()) return;
-      const comments = getComments(postId);
-      comments.splice(index, 1);
-      saveComments(postId, comments);
-      renderComments(postId);
+    async function deleteComment(commentId) {
+      if (!currentUser) return;
+      await db.from('comments').delete().eq('id', commentId);
+      await renderComments(currentPostId);
       showToast('Kommentar gelöscht', 'success');
     }
 
-    // ═══ ADMIN: POST ERSTELLEN / LÖSCHEN ══════════════════════════
-    function createPost() {
-      if (!Auth.isAdmin()) return;
-      const title   = document.getElementById('post-title').value.trim();
-      const content = document.getElementById('post-content').value.trim();
-      const cat     = document.getElementById('post-category').value;
-      if (!title || !content) { showToast('Titel und Inhalt erforderlich', 'error'); return; }
-      if (!Validator.maxLength(title, 120)) { showToast('Titel zu lang', 'error'); return; }
-
-      const posts = getPosts();
-      posts.unshift({
-        id: Date.now(), title, category: cat,
-        excerpt: content.replace(/<[^>]*>/g, '').slice(0, 160) + '…',
-        content, createdAt: Date.now()
-      });
-      savePosts(posts);
-      document.getElementById('post-title').value = '';
-      document.getElementById('post-content').value = '';
-      renderBlogGrid();
-      showToast('Beitrag veröffentlicht!', 'success');
-    }
-
-    function deletePost(id) {
-      if (!Auth.isAdmin()) return;
-      if (!confirm('Beitrag löschen?')) return;
-      savePosts(getPosts().filter(p => p.id !== id));
-      localStorage.removeItem('comments_' + id);
-      renderBlogGrid();
-      showToast('Beitrag gelöscht', 'success');
-    }
-
-    window.openPost   = openPost;
-    window.closePost  = closePost;
-    window.createPost = createPost;
-    window.deletePost = deletePost;
-    window.submitComment = submitComment;
-    window.deleteComment = deleteComment;
-
-    renderBlogGrid();
+    // Funktionen global verfügbar machen (für onclick-Attribute im HTML)
+    window.openPost          = openPost;
+    window.closePost         = closePost;
+    window.createPost        = createPost;
+    window.deletePost        = deletePost;
+    window.submitComment     = submitComment;
+    window.deleteComment     = deleteComment;
+    window.handleImageUpload = handleImageUpload;
+    window.removeImage       = removeImage;
   </script>
 </body>
 </html>
