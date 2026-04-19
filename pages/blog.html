@@ -34,15 +34,17 @@
   <section class="section">
     <div class="container">
 
-      <!-- Admin: Neuen Post erstellen -->
+      <!-- Admin: Neuen Post erstellen (nur für eingeloggte Admins sichtbar) -->
       <div id="admin-new-post" style="display:none;margin-bottom:40px">
         <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px">
           <h3 style="font-family:var(--font-serif);color:var(--bright);margin-bottom:20px">
-            ✏ Neuen Beitrag erstellen <span style="font-size:13px;color:var(--gold);font-family:var(--font-mono)">[ADMIN]</span>
+            ✏ Neuen Beitrag erstellen
+            <span style="font-size:13px;color:var(--gold);font-family:var(--font-mono)">[ADMIN]</span>
           </h3>
           <div class="form-group">
             <label class="form-label">Titel</label>
-            <input type="text" class="form-input" id="post-title" placeholder="Beitrags-Titel..." maxlength="120" />
+            <input type="text" class="form-input" id="post-title"
+                   placeholder="Beitrags-Titel..." maxlength="120" />
           </div>
           <div class="form-group">
             <label class="form-label">Kategorie</label>
@@ -58,21 +60,27 @@
           <!-- Bildupload mit Vorschau -->
           <div class="form-group">
             <label class="form-label">Beitragsbild (optional)</label>
-            <input type="file" class="form-input" id="post-image" accept="image/*"
-                   onchange="handleImageUpload(event)" />
+            <input type="file" class="form-input" id="post-image"
+                   accept="image/*" onchange="handleImageUpload(event)" />
             <img id="image-preview"
-                 style="display:none;max-width:100%;margin-top:12px;border-radius:8px;border:1px solid var(--border)" />
+                 style="display:none;max-width:100%;margin-top:12px;
+                        border-radius:8px;border:1px solid var(--border)" />
             <button id="image-remove-btn"
-                    style="display:none;margin-top:8px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer"
+                    style="display:none;margin-top:8px;font-size:12px;
+                           color:var(--muted);background:none;border:none;cursor:pointer"
                     onclick="removeImage()">✕ Bild entfernen</button>
           </div>
           <div class="form-group">
             <label class="form-label">Inhalt</label>
-            <textarea class="form-input" id="post-content" rows="8" placeholder="Schreibe deinen Beitrag..."></textarea>
+            <textarea class="form-input" id="post-content" rows="8"
+                      placeholder="Schreibe deinen Beitrag..."></textarea>
           </div>
           <div style="display:flex;gap:10px">
             <button class="btn btn-primary" onclick="createPost()">Veröffentlichen</button>
-            <button class="btn btn-ghost" onclick="document.getElementById('admin-new-post').style.display='none'">Abbrechen</button>
+            <button class="btn btn-ghost"
+                    onclick="document.getElementById('admin-new-post').style.display='none'">
+              Abbrechen
+            </button>
           </div>
         </div>
       </div>
@@ -83,7 +91,7 @@
     </div>
   </section>
 
-  <!-- Einzelner Blogpost (Modal-Ersatz) -->
+  <!-- Einzelner Blogpost -->
   <div id="post-detail" style="display:none">
     <div style="background:var(--surface);border-top:1px solid var(--border)">
       <div class="container" style="padding-top:40px;padding-bottom:0">
@@ -100,21 +108,22 @@
           Kommentare <span id="comment-count" style="color:var(--muted);font-size:16px">(0)</span>
         </h3>
 
-        <!-- Kommentar-Formular -->
         <div class="comment-form" id="comment-form-wrap">
           <h4 style="color:var(--bright);margin-bottom:18px;font-size:16px">Kommentar hinterlassen</h4>
           <div class="form-group">
             <label class="form-label">Name *</label>
-            <input type="text" class="form-input" id="comment-name" placeholder="Dein Name" maxlength="60" />
+            <input type="text" class="form-input" id="comment-name"
+                   placeholder="Dein Name" maxlength="60" />
             <div class="form-error" id="err-name">Bitte gib deinen Namen ein (max. 60 Zeichen).</div>
           </div>
           <div class="form-group">
             <label class="form-label">Kommentar *</label>
-            <textarea class="form-input" id="comment-text" rows="4" placeholder="Dein Kommentar..." maxlength="1000"></textarea>
+            <textarea class="form-input" id="comment-text" rows="4"
+                      placeholder="Dein Kommentar..." maxlength="1000"></textarea>
             <div class="form-error" id="err-comment">Bitte gib einen Kommentar ein (max. 1000 Zeichen).</div>
           </div>
-          <!-- Honeypot-Feld: Sichtbar nur für Bots, Menschen lassen es leer -->
-          <input type="text" name="website" id="honeypot" style="display:none" tabindex="-1" autocomplete="off" />
+          <input type="text" name="website" id="honeypot"
+                 style="display:none" tabindex="-1" autocomplete="off" />
           <button class="btn btn-primary" onclick="submitComment()">Kommentar absenden</button>
         </div>
 
@@ -125,39 +134,37 @@
 
   <footer class="footer">
     <div class="container">
-      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Tommy Möller.</p>
+      </div>
     </div>
   </footer>
 
-  <!-- 1. Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- 2. Dein bestehendes main.js (enthält escHtml, showToast, formatDate usw.) -->
   <script src="../assets/js/main.js"></script>
-
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ═══ SUPABASE INITIALISIERUNG ════════════════════════════════════
+    // ═══ SUPABASE ════════════════════════════════════════════════════
     const { createClient } = supabase;
     const db = createClient(
       'https://kalonkzgzbpsndkuznqp.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
     );
 
-    let currentPostId  = null;
-    let currentUser    = null;
-    let postImageFile  = null;
+    let currentPostId = null;
+    let currentUser   = null;
+    let postImageFile = null;
 
     // ═══ LOGIN-STATUS ÜBERWACHEN ─────────────────────────────────────
-    // Supabase prüft beim Laden automatisch, ob eine Session existiert.
-    // onAuthStateChange wird bei Login, Logout und beim ersten Laden aufgerufen.
     db.auth.onAuthStateChange((event, session) => {
       currentUser = session?.user ?? null;
 
-      // Admin-Panel ein-/ausblenden
-      document.getElementById('admin-new-post').style.display = currentUser ? 'block' : 'none';
+      // Admin-Formular ein-/ausblenden
+      document.getElementById('admin-new-post').style.display =
+        currentUser ? 'block' : 'none';
 
-      // Navbar-Button: eingeloggt → "Logout" anzeigen
+      // Navbar-Button
       const navBtn = document.getElementById('nav-login-btn');
       if (navBtn) {
         if (currentUser) {
@@ -184,7 +191,10 @@
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false });
-      if (error) { console.error('Fehler beim Laden der Posts:', error); return []; }
+      if (error) {
+        console.error('Fehler beim Laden der Posts:', error.message);
+        return [];
+      }
       return data || [];
     }
 
@@ -197,7 +207,10 @@
       const isAdmin = !!currentUser;
 
       if (!posts.length) {
-        grid.innerHTML = '<p style="color:var(--muted)">Noch keine Beiträge vorhanden.</p>';
+        // Unterschiedliche Meldung je nachdem ob Admin eingeloggt oder nicht
+        grid.innerHTML = isAdmin
+          ? '<p style="color:var(--muted)">Noch keine Beiträge vorhanden. Erstelle deinen ersten Beitrag mit dem Formular oben.</p>'
+          : '<p style="color:var(--muted)">Noch keine Beiträge vorhanden.</p>';
         return;
       }
 
@@ -269,40 +282,38 @@
       const content = document.getElementById('post-content').value.trim();
       const cat     = document.getElementById('post-category').value;
 
-      if (!title || !content) { showToast('Titel und Inhalt erforderlich', 'error'); return; }
-      if (title.length > 120)  { showToast('Titel zu lang (max. 120 Zeichen)', 'error'); return; }
+      if (!title || !content) {
+        showToast('Titel und Inhalt erforderlich', 'error'); return;
+      }
+      if (title.length > 120) {
+        showToast('Titel zu lang (max. 120 Zeichen)', 'error'); return;
+      }
 
       let image_url  = null;
       let image_path = null;
 
-      // Bild hochladen, falls ausgewählt
       if (postImageFile) {
         image_path = `${Date.now()}_${postImageFile.name}`;
-        const { error: uploadError } = await db.storage
-          .from('blog-images')
-          .upload(image_path, postImageFile);
+        const { error: uploadErr } = await db.storage
+          .from('blog-images').upload(image_path, postImageFile);
 
-        if (uploadError) {
-          showToast('Bild-Upload fehlgeschlagen: ' + uploadError.message, 'error');
+        if (uploadErr) {
+          showToast('Bild-Upload fehlgeschlagen: ' + uploadErr.message, 'error');
           return;
         }
-        // Öffentliche URL abrufen
         const { data: urlData } = db.storage
-          .from('blog-images')
-          .getPublicUrl(image_path);
+          .from('blog-images').getPublicUrl(image_path);
         image_url = urlData.publicUrl;
       }
 
       const { error } = await db.from('posts').insert({
-        title,
-        category: cat,
-        content,
-        image_url,
-        image_path,
+        title, category: cat, content, image_url, image_path,
         excerpt: content.replace(/<[^>]*>/g, '').slice(0, 160) + '…'
       });
 
-      if (error) { showToast('Fehler beim Speichern: ' + error.message, 'error'); return; }
+      if (error) {
+        showToast('Fehler beim Speichern: ' + error.message, 'error'); return;
+      }
 
       document.getElementById('post-title').value   = '';
       document.getElementById('post-content').value = '';
@@ -314,15 +325,11 @@
     // ═══ POST LÖSCHEN ────────────────────────────────────────────────
     async function deletePost(id, imagePath) {
       if (!currentUser || !confirm('Beitrag wirklich löschen?')) return;
-
-      // Bild aus Storage entfernen (falls vorhanden)
       if (imagePath) {
         await db.storage.from('blog-images').remove([imagePath]);
       }
-      // Kommentare werden durch ON DELETE CASCADE automatisch mitgelöscht
       const { error } = await db.from('posts').delete().eq('id', id);
       if (error) { showToast('Fehler beim Löschen', 'error'); return; }
-
       await renderBlogGrid();
       showToast('Beitrag gelöscht', 'success');
     }
@@ -337,9 +344,9 @@
       postImageFile = file;
       const reader  = new FileReader();
       reader.onload = e => {
-        const preview       = document.getElementById('image-preview');
-        preview.src         = e.target.result;
-        preview.style.display = 'block';
+        const p = document.getElementById('image-preview');
+        p.src = e.target.result;
+        p.style.display = 'block';
         document.getElementById('image-remove-btn').style.display = 'inline-block';
       };
       reader.readAsDataURL(file);
@@ -355,13 +362,12 @@
     // ═══ KOMMENTARE ──────────────────────────────────────────────────
     async function renderComments(postId) {
       const { data: comments } = await db
-        .from('comments')
-        .select('*')
+        .from('comments').select('*')
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
-      const isAdmin = !!currentUser;
       const list    = comments || [];
+      const isAdmin = !!currentUser;
 
       document.getElementById('comment-count').textContent = `(${list.length})`;
       document.getElementById('comment-list').innerHTML = list.map(c => `
@@ -383,7 +389,6 @@
     }
 
     async function submitComment() {
-      // Honeypot-Check: Wenn Feld ausgefüllt → Bot
       if (document.getElementById('honeypot').value !== '') return;
 
       const author = document.getElementById('comment-name').value.trim();
@@ -404,7 +409,9 @@
         post_id: currentPostId, author, text
       });
 
-      if (error) { showToast('Kommentar konnte nicht gespeichert werden', 'error'); return; }
+      if (error) {
+        showToast('Kommentar konnte nicht gespeichert werden', 'error'); return;
+      }
 
       document.getElementById('comment-name').value = '';
       document.getElementById('comment-text').value = '';
@@ -419,7 +426,6 @@
       showToast('Kommentar gelöscht', 'success');
     }
 
-    // Funktionen global verfügbar machen (für onclick-Attribute im HTML)
     window.openPost          = openPost;
     window.closePost         = closePost;
     window.createPost        = createPost;
