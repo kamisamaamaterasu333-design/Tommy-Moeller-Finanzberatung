@@ -5,6 +5,55 @@
   <title>Blog – Tommy Möller</title>
   <link rel="stylesheet" href="../assets/css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <!-- Quill Rich-Text-Editor -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
+  <style>
+    /* Quill-Editor ans Website-Design anpassen */
+    .ql-toolbar.ql-snow {
+      background: var(--surface, #1a1a2e);
+      border: 1px solid var(--border, #333) !important;
+      border-bottom: none !important;
+      border-radius: 8px 8px 0 0;
+    }
+    .ql-container.ql-snow {
+      background: var(--surface, #1a1a2e);
+      border: 1px solid var(--border, #333) !important;
+      border-radius: 0 0 8px 8px;
+      min-height: 200px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--text, #e0e0e0);
+    }
+    .ql-editor { min-height: 200px; color: var(--text, #e0e0e0); }
+    .ql-editor.ql-blank::before { color: var(--muted, #666); font-style: normal; }
+    /* Toolbar-Icons weiß/hell färben */
+    .ql-snow .ql-stroke { stroke: var(--text, #ccc) !important; }
+    .ql-snow .ql-fill  { fill:   var(--text, #ccc) !important; }
+    .ql-snow .ql-picker-label { color: var(--text, #ccc) !important; }
+    .ql-snow .ql-picker-options {
+      background: var(--card, #222) !important;
+      border-color: var(--border, #333) !important;
+      color: var(--text, #ccc) !important;
+    }
+    .ql-snow .ql-active .ql-stroke,
+    .ql-snow button:hover .ql-stroke { stroke: var(--gold, #c9a84c) !important; }
+    .ql-snow .ql-active .ql-fill,
+    .ql-snow button:hover .ql-fill   { fill:   var(--gold, #c9a84c) !important; }
+    /* Quill-Inhalte im Blog-Artikel schön darstellen */
+    .blog-post-body h1,
+    .blog-post-body h2,
+    .blog-post-body h3 { margin: 1.4em 0 0.5em; color: var(--bright); font-family: var(--font-serif); }
+    .blog-post-body p  { margin-bottom: 1em; line-height: 1.75; }
+    .blog-post-body ul,
+    .blog-post-body ol { margin: 0.8em 0 1em 1.5em; line-height: 1.9; }
+    .blog-post-body li { margin-bottom: 0.4em; }
+    .blog-post-body strong { color: var(--bright); }
+    .blog-post-body blockquote {
+      border-left: 3px solid var(--gold, #c9a84c);
+      margin: 1.2em 0; padding: 0.5em 1em;
+      color: var(--muted); font-style: italic;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar" id="navbar">
@@ -72,8 +121,10 @@
           </div>
           <div class="form-group">
             <label class="form-label">Inhalt</label>
-            <textarea class="form-input" id="post-content" rows="8"
-                      placeholder="Schreibe deinen Beitrag..."></textarea>
+            <!-- Quill ersetzt das Textarea – die Toolbar zeigt Word-ähnliche Optionen -->
+            <div id="quill-editor" style="border-radius:8px"></div>
+            <!-- Verstecktes Feld, das den HTML-Inhalt für Supabase enthält -->
+            <input type="hidden" id="post-content" />
           </div>
           <div style="display:flex;gap:10px">
             <button class="btn btn-primary" onclick="createPost()">Veröffentlichen</button>
@@ -141,9 +192,39 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
   <script src="../assets/js/main.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ═══ QUILL EDITOR INITIALISIEREN ─────────────────────────────────
+    // Toolbar-Optionen: alle wichtigen Word-ähnlichen Formatierungen
+    const quill = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Schreibe deinen Beitrag hier…',
+      modules: {
+        toolbar: [
+          // Überschriften und Absatz
+          [{ header: [1, 2, 3, false] }],
+          // Fett, Kursiv, Unterstrichen, Durchgestrichen
+          ['bold', 'italic', 'underline', 'strike'],
+          // Textfarbe und Hintergrundfarbe
+          [{ color: [] }, { background: [] }],
+          // Listen: Aufzählung (●) und nummerierte Liste (1. 2. 3.)
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          // Einrückung
+          [{ indent: '-1' }, { indent: '+1' }],
+          // Ausrichtung
+          [{ align: [] }],
+          // Zitat und Code
+          ['blockquote', 'code-block'],
+          // Link einfügen
+          ['link'],
+          // Formatierung löschen
+          ['clean']
+        ]
+      }
+    });
 
     // ═══ SUPABASE ════════════════════════════════════════════════════
     const { createClient } = supabase;
@@ -279,10 +360,14 @@
     async function createPost() {
       if (!currentUser) return;
       const title   = document.getElementById('post-title').value.trim();
-      const content = document.getElementById('post-content').value.trim();
       const cat     = document.getElementById('post-category').value;
 
-      if (!title || !content) {
+      // Inhalt aus Quill als HTML holen
+      const content = quill.getSemanticHTML().trim();
+      // Reiner Text für den Excerpt (ohne HTML-Tags)
+      const plainText = quill.getText().trim();
+
+      if (!title || plainText.length < 2) {
         showToast('Titel und Inhalt erforderlich', 'error'); return;
       }
       if (title.length > 120) {
@@ -308,15 +393,15 @@
 
       const { error } = await db.from('posts').insert({
         title, category: cat, content, image_url, image_path,
-        excerpt: content.replace(/<[^>]*>/g, '').slice(0, 160) + '…'
+        excerpt: plainText.slice(0, 160) + (plainText.length > 160 ? '…' : '')
       });
 
       if (error) {
         showToast('Fehler beim Speichern: ' + error.message, 'error'); return;
       }
 
-      document.getElementById('post-title').value   = '';
-      document.getElementById('post-content').value = '';
+      document.getElementById('post-title').value = '';
+      quill.setContents([]); // Quill-Editor leeren
       removeImage();
       await renderBlogGrid();
       showToast('Beitrag veröffentlicht!', 'success');
