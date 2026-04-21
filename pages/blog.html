@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -39,19 +40,63 @@
     .ql-snow button:hover .ql-stroke { stroke: var(--gold, #c9a84c) !important; }
     .ql-snow .ql-active .ql-fill,
     .ql-snow button:hover .ql-fill   { fill:   var(--gold, #c9a84c) !important; }
-    /* Quill-Inhalte im Blog-Artikel schön darstellen */
-    .blog-post-body h1,
-    .blog-post-body h2,
-    .blog-post-body h3 { margin: 1.4em 0 0.5em; color: var(--bright); font-family: var(--font-serif); }
-    .blog-post-body p  { margin-bottom: 1em; line-height: 1.75; }
-    .blog-post-body ul,
-    .blog-post-body ol { margin: 0.8em 0 1em 1.5em; line-height: 1.9; }
-    .blog-post-body li { margin-bottom: 0.4em; }
-    .blog-post-body strong { color: var(--bright); }
-    .blog-post-body blockquote {
-      border-left: 3px solid var(--gold, #c9a84c);
-      margin: 1.2em 0; padding: 0.5em 1em;
-      color: var(--muted); font-style: italic;
+    /* ── Quill-Inhalte im Blog-Artikel korrekt darstellen ────────────
+       !important nötig, weil main.css viele Elemente global zurücksetzt */
+    .post-content-render p {
+      display: block !important;
+      margin-bottom: 1.1em !important;
+      line-height: 1.8 !important;
+    }
+    .post-content-render h1,
+    .post-content-render h2,
+    .post-content-render h3 {
+      display: block !important;
+      margin: 1.5em 0 0.6em !important;
+      color: var(--bright) !important;
+      font-family: var(--font-serif) !important;
+    }
+    .post-content-render h1 { font-size: 2em !important; }
+    .post-content-render h2 { font-size: 1.5em !important; }
+    .post-content-render h3 { font-size: 1.2em !important; }
+    /* Listen: Einträge untereinander */
+    .post-content-render ul,
+    .post-content-render ol {
+      display: block !important;
+      margin: 0.8em 0 1.2em 1.8em !important;
+    }
+    .post-content-render ul { list-style-type: disc !important; }
+    .post-content-render ol { list-style-type: decimal !important; }
+    .post-content-render li {
+      display: list-item !important;
+      margin-bottom: 0.5em !important;
+      line-height: 1.75 !important;
+    }
+    /* Quill fügt ein .ql-ui Element in Listen ein – verstecken */
+    .post-content-render .ql-ui { display: none !important; }
+    .post-content-render strong { font-weight: 700 !important; color: var(--bright) !important; }
+    .post-content-render em     { font-style: italic !important; }
+    .post-content-render u      { text-decoration: underline !important; }
+    .post-content-render s      { text-decoration: line-through !important; }
+    .post-content-render blockquote {
+      display: block !important;
+      border-left: 3px solid var(--gold, #c9a84c) !important;
+      margin: 1.2em 0 !important;
+      padding: 0.6em 1.2em !important;
+      color: var(--muted) !important;
+      font-style: italic !important;
+    }
+    .post-content-render pre {
+      display: block !important;
+      background: rgba(0,0,0,0.3) !important;
+      border-radius: 6px !important;
+      padding: 1em !important;
+      margin: 1em 0 !important;
+      font-family: var(--font-mono) !important;
+      font-size: 13px !important;
+    }
+    .post-content-render a {
+      color: var(--gold, #c9a84c) !important;
+      text-decoration: underline !important;
     }
   </style>
 </head>
@@ -344,7 +389,7 @@
         </div>
         <h1 class="blog-post-title">${escHtml(post.title)}</h1>
         <div class="gold-line"></div>
-        <div style="margin-top:32px">${post.content}</div>`;
+        <div class="post-content-render" style="margin-top:32px">${post.content}</div>`;
 
       await renderComments(id);
       window.scrollTo(0, 0);
@@ -362,8 +407,8 @@
       const title   = document.getElementById('post-title').value.trim();
       const cat     = document.getElementById('post-category').value;
 
-      // Inhalt aus Quill als HTML holen
-      const content = quill.getSemanticHTML().trim();
+      // Inhalt aus Quill als HTML holen (root.innerHTML ist zuverlässiger)
+      const content   = quill.root.innerHTML.trim();
       // Reiner Text für den Excerpt (ohne HTML-Tags)
       const plainText = quill.getText().trim();
 
