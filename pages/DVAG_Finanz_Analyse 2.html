@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DVAG – Finanzielles Glück lässt sich planen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --gold: #2563eb;
+    --gold-dark: #1d4ed8;
+    --gold-light: #dbeafe;
+    --schutzengel: #0369a1;
+    --wohnen: #7c3aed;
+    --sparen: #059669;
+    --konsum: #d97706;
+    --bg: #f8fafc;
+    --white: #FFFFFF;
+    --gray: #64748b;
+    --gray-light: #f1f5f9;
+    --dark: #1e293b;
+    --border: #e2e8f0;
+    --input-bg: #ffffff;
+    --header-bg: #0f172a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ===== HEADER ===== */
+  .top-header {
+    background: var(--header-bg);
+    color: var(--white);
+    padding: 0;
+    display: flex;
+    align-items: stretch;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+
+  .logo-area {
+    background: #1e40af;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 230px;
+  }
+
+  .dvag-logo {
+    width: 36px; height: 36px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #1e40af;
+    flex-shrink: 0;
+  }
+
+  .logo-text { line-height: 1.2; }
+  .logo-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--white); }
+  .logo-text span { font-size: 10px; color: rgba(255,255,255,0.75); letter-spacing: 0.04em; }
+
+  .header-title {
+    flex: 1;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  .header-title p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+  }
+
+  .btn-print {
+    background: var(--gold);
+    color: var(--white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s;
+  }
+  .btn-print:hover { background: var(--gold-dark); }
+
+  .btn-reset {
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { color: white; border-color: rgba(255,255,255,0.6); }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 220px;
+    background: var(--header-bg);
+    flex-shrink: 0;
+    padding: 16px 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .sidebar-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    padding: 12px 18px 4px;
+    font-weight: 600;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.65);
+    font-size: 12.5px;
+    font-weight: 400;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .nav-item:hover {
+    background: rgba(201,168,76,0.12);
+    color: var(--gold-light);
+    border-left-color: var(--gold);
+  }
+
+  .nav-item.active {
+    background: rgba(201,168,76,0.2);
+    color: var(--gold-light);
+    border-left-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    flex: 1;
+    padding: 24px;
+    max-width: 960px;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ===== SECTION HEADER ===== */
+  .section-header {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-header h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+
+  .section-header p {
+    color: var(--gray);
+    font-size: 13px;
+  }
+
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold-dark);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+
+  /* ===== FORM ELEMENTS ===== */
+  .form-row {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 13.5px;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--dark);
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(201,168,76,0.2);
+  }
+
+  input[readonly] {
+    background: #F5F0E0;
+    color: var(--gold-dark);
+    font-weight: 700;
+    border-color: var(--gold-light);
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  .euro-input {
+    position: relative;
+  }
+  .euro-input::before {
+    content: '€';
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    font-size: 13px;
+    z-index: 1;
+  }
+  .euro-input input { padding-left: 22px; }
+
+  /* ===== TABLES ===== */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+
+  .data-table th {
+    background: var(--header-bg);
+    color: var(--gold-light);
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .data-table td {
+    padding: 5px 6px;
+    border-bottom: 1px solid var(--gray-light);
+    vertical-align: middle;
+  }
+
+  .data-table tr:hover td { background: #FDFBF0; }
+
+  .data-table input[type="text"],
+  .data-table input[type="number"],
+  .data-table input[type="date"] {
+    padding: 5px 7px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+
+  .data-table .sum-row td {
+    background: var(--gold-light);
+    font-weight: 700;
+    color: var(--gold-dark);
+    padding: 8px 10px;
+  }
+
+  /* ===== BUDGET OVERVIEW ===== */
+  .budget-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .budget-card {
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+    color: white;
+  }
+
+  .budget-card.schutzengel { background: var(--schutzengel); }
+  .budget-card.wohnen { background: var(--wohnen); }
+  .budget-card.sparen { background: var(--sparen); }
+  .budget-card.konsum { background: var(--konsum); color: var(--dark); }
+
+  .budget-card .bc-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+
+  .budget-card .bc-pct {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .budget-card .bc-amount {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  .budget-card .bc-target {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 3px;
+  }
+
+  .traffic-light {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .tl-green { background: #4CAF50; }
+  .tl-yellow { background: #FFC107; }
+  .tl-red { background: #F44336; }
+
+  /* ===== GOAL CARDS ===== */
+  .goals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .goal-item {
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .goal-item.selected {
+    border-color: var(--gold);
+    background: #FDFBF0;
+  }
+
+  .goal-item.top-selected {
+    border-color: var(--gold-dark);
+    background: var(--gold-light);
+  }
+
+  .goal-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .goal-info h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: var(--dark);
+  }
+
+  .goal-info p {
+    font-size: 11px;
+    color: var(--gray);
+    line-height: 1.3;
+  }
+
+  .goal-rank {
+    margin-left: auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    display: none;
+  }
+
+  /* ===== SAVER TYPE ===== */
+  .saver-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .saver-card {
+    border-radius: 6px;
+    padding: 18px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .saver-card.negativ { background: #FFF0F0; border-color: #FFCCCC; }
+  .saver-card.amateur { background: #FFF8E8; border-color: #FFE0A0; }
+  .saver-card.profi   { background: #F0FFF0; border-color: #A8E0A8; }
+
+  .saver-card.selected.negativ { border-color: #CC4444; box-shadow: 0 0 0 3px rgba(204,68,68,0.2); }
+  .saver-card.selected.amateur { border-color: #CC8800; box-shadow: 0 0 0 3px rgba(204,136,0,0.2); }
+  .saver-card.selected.profi   { border-color: #4CAF50; box-shadow: 0 0 0 3px rgba(76,175,80,0.2); }
+
+  .saver-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .saver-card ul { text-align: left; font-size: 12px; color: var(--gray); list-style: none; }
+  .saver-card ul li::before { content: '→ '; color: inherit; }
+
+  .slider-container { margin: 10px 0; }
+  .slider-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--gold);
+    height: 6px;
+  }
+
+  /* ===== CHECKBOX / RADIO ===== */
+  .check-group { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 16px; height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ===== SUMME BAR ===== */
+  .sum-bar {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .sum-bar .label { font-size: 12px; font-weight: 700; color: var(--gold-dark); }
+  .sum-bar .value { font-size: 18px; font-weight: 700; color: var(--gold-dark); }
+
+  /* ===== NOTICE ===== */
+  .notice {
+    background: #FFF8E8;
+    border-left: 4px solid var(--gold);
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    font-size: 12.5px;
+    color: var(--gray);
+    margin-bottom: 14px;
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    .top-header, .sidebar, .header-actions { display: none !important; }
+    .layout { display: block; }
+    .main { max-width: 100%; padding: 0; }
+    .section { display: block !important; }
+    .card { page-break-inside: avoid; break-inside: avoid; }
+    .data-table { page-break-inside: avoid; break-inside: avoid; }
+    .section-header { page-break-after: avoid; break-after: avoid; }
+    body { font-size: 12px; }
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .budget-grid { grid-template-columns: 1fr 1fr; }
+    .goals-grid { grid-template-columns: 1fr; }
+    .saver-types { grid-template-columns: 1fr; }
+    .form-row.cols-4 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ===== PROGRESS ===== */
+  .section-progress {
+    display: flex;
+    gap: 3px;
+    padding: 10px 18px;
+    margin-top: auto;
+  }
+
+  .prog-dot {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+
+  .prog-dot.done { background: var(--gold); }
+  .prog-dot.active { background: var(--gold-light); }
+
+  .nav-footer {
+    padding: 14px 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: 8px;
+  }
+
+  .nav-footer button {
+    width: 100%;
+    background: var(--gold);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: background 0.2s;
+  }
+
+  .nav-footer button:hover { background: var(--gold-dark); }
+  .nav-footer button.secondary {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 0;
+  }
+
+  /* Color accents for category headers */
+  .cat-schutzengel { border-top: 3px solid var(--schutzengel); }
+  .cat-wohnen      { border-top: 3px solid var(--wohnen); }
+  .cat-sparen      { border-top: 3px solid var(--sparen); }
+  .cat-konsum      { border-top: 3px solid var(--konsum); }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <div class="logo-area">
+    <div class="dvag-logo">TM.</div>
+    <div class="logo-text">
+      <strong>Tommy Möller</strong>
+      <span>Finanzberatung &amp; Controlling</span>
+    </div>
+  </div>
+  <div class="header-title">
+    <div>
+      <h1>Persönliche Finanz-Analyse</h1>
+      <p>Maßgeschneiderte Beratung für Ihre finanzielle Situation</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-reset" onclick="resetForm()">↺ Zurücksetzen</button>
+    <button class="btn-print" onclick="window.print()">🖨 Drucken / PDF</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Abschnitte</div>
+    <a class="nav-item active" onclick="showSection('s-daten')" href="#">
+      <span class="nav-dot" style="background:#C9A84C"></span> Persönliche Daten
+    </a>
+    <a class="nav-item" onclick="showSection('s-ziele')" href="#">
+      <span class="nav-dot" style="background:#C9A84C"></span> Wünsche & Ziele
+    </a>
+    <a class="nav-item" onclick="showSection('s-sparertyp')" href="#">
+      <span class="nav-dot" style="background:#C9A84C"></span> Sparertyp
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Finanzen</div>
+    <a class="nav-item" onclick="showSection('s-einnahmen')" href="#">
+      <span class="nav-dot" style="background:#C9A84C"></span> Einnahmen & Ausgaben
+    </a>
+    <a class="nav-item" onclick="showSection('s-sparwunsch')" href="#">
+      <span class="nav-dot" style="background:#4D7A1F"></span> Sparwunsch
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Absicherung</div>
+    <a class="nav-item" onclick="showSection('s-schutzengel')" href="#">
+      <span class="nav-dot" style="background:#D4892A"></span> Gesundheit & Risiko
+    </a>
+    <a class="nav-item" onclick="showSection('s-wohnen')" href="#">
+      <span class="nav-dot" style="background:#8B1A1A"></span> Wohnsituation
+    </a>
+    <a class="nav-item" onclick="showSection('s-altersversorgung')" href="#">
+      <span class="nav-dot" style="background:#4D7A1F"></span> Altersversorgung
+    </a>
+    <a class="nav-item" onclick="showSection('s-vermoegen')" href="#">
+      <span class="nav-dot" style="background:#4D7A1F"></span> Vermögensaufbau
+    </a>
+    <a class="nav-item" onclick="showSection('s-konsum')" href="#">
+      <span class="nav-dot" style="background:#B8A020"></span> Konsumausgaben
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Abschluss</div>
+    <a class="nav-item" onclick="showSection('s-datenschutz')" href="#">
+      <span class="nav-dot" style="background:#C9A84C"></span> Datenschutz
+    </a>
+
+    <div class="nav-footer">
+      <button onclick="nextSection()">Weiter →</button>
+      <button class="secondary" onclick="window.print()">Drucken / PDF</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ===== 1. PERSÖNLICHE DATEN ===== -->
+    <div class="section active" id="s-daten">
+      <div class="section-header">
+        <h2>Ihre persönlichen Daten</h2>
+        <p>Bitte füllen Sie alle relevanten Felder aus. Pflichtangaben sind freiwillig — je vollständiger, desto präziser die Beratung.</p>
+      </div>
+
+      <div class="notice">💡 Alle Angaben erfolgen auf freiwilliger Basis und werden vertraulich behandelt.</div>
+
+      <div class="card">
+        <div class="card-title">Person A</div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Titel</label><input type="text" id="a_titel" placeholder="z.B. Dr."></div>
+          <div class="form-group" style="grid-column:span 2"><label>Name, Vornamen</label><input type="text" id="a_name" placeholder="Nachname, Vorname"></div>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Geburtsdatum</label><input type="date" id="a_geburt"></div>
+          <div class="form-group"><label>Geburtsort</label><input type="text" id="a_geburtsort" placeholder="Ort"></div>
+          <div class="form-group"><label>Staatsangehörigkeit</label><input type="text" id="a_staat" placeholder="z.B. Deutsch"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Familienstand</label>
+            <select id="a_familienstand">
+              <option value="">-- bitte wählen --</option>
+              <option>ledig</option><option>verheiratet</option><option>geschieden</option><option>verwitwet</option><option>eingetragene Lebenspartnerschaft</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Raucher?</label>
+            <div class="check-group" style="margin-top:8px">
+              <label class="check-item"><input type="radio" name="a_raucher" value="ja"> Ja</label>
+              <label class="check-item"><input type="radio" name="a_raucher" value="nein" checked> Nein</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Beruf / Tätigkeit</label><input type="text" id="a_beruf" placeholder="Aktuelle Tätigkeit"></div>
+          <div class="form-group"><label>Arbeitgeber</label><input type="text" id="a_arbeitgeber" placeholder="Arbeitgeber"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>E-Mail privat</label><input type="email" id="a_email_p" placeholder="name@beispiel.de"></div>
+          <div class="form-group"><label>E-Mail geschäftlich</label><input type="email" id="a_email_g" placeholder="name@firma.de"></div>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Telefon privat</label><input type="tel" id="a_tel_p" placeholder="0000 / 000000"></div>
+          <div class="form-group"><label>Telefon geschäftlich</label><input type="tel" id="a_tel_g" placeholder="0000 / 000000"></div>
+          <div class="form-group"><label>Handy</label><input type="tel" id="a_handy" placeholder="0000 / 000000"></div>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group" style="grid-column:span 2"><label>Straße / Hausnummer</label><input type="text" id="a_strasse" placeholder="Musterstraße 1"></div>
+          <div class="form-group"><label>PLZ / Ort</label><input type="text" id="a_plz" placeholder="12345 Musterstadt"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>IBAN</label><input type="text" id="a_iban" placeholder="DE00 0000 0000 0000 0000 00"></div>
+          <div class="form-group"><label>BIC</label><input type="text" id="a_bic" placeholder="BELADEBE"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Steuerberater</label><input type="text" id="a_steuer" placeholder="Name des Steuerberaters"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Kinder</div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Kind 1 (Name + Geburtsdatum)</label><input type="text" id="kind1" placeholder="Name, TT.MM.JJJJ"></div>
+          <div class="form-group"><label>Kind 2 (Name + Geburtsdatum)</label><input type="text" id="kind2" placeholder="Name, TT.MM.JJJJ"></div>
+          <div class="form-group"><label>Kind 3 (Name + Geburtsdatum)</label><input type="text" id="kind3" placeholder="Name, TT.MM.JJJJ"></div>
+          <div class="form-group"><label>Kind 4 (Name + Geburtsdatum)</label><input type="text" id="kind4" placeholder="Name, TT.MM.JJJJ"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Person B (Partner / Ehepartner)</div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Titel</label><input type="text" id="b_titel"></div>
+          <div class="form-group" style="grid-column:span 2"><label>Name, Vornamen</label><input type="text" id="b_name" placeholder="Nachname, Vorname"></div>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Geburtsdatum</label><input type="date" id="b_geburt"></div>
+          <div class="form-group"><label>Geburtsort</label><input type="text" id="b_geburtsort"></div>
+          <div class="form-group"><label>Staatsangehörigkeit</label><input type="text" id="b_staat" placeholder="z.B. Deutsch"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Beruf / Tätigkeit</label><input type="text" id="b_beruf"></div>
+          <div class="form-group"><label>Arbeitgeber</label><input type="text" id="b_arbeitgeber"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>E-Mail privat</label><input type="email" id="b_email_p"></div>
+          <div class="form-group"><label>Handy</label><input type="tel" id="b_handy"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>IBAN</label><input type="text" id="b_iban"></div>
+          <div class="form-group"><label>BIC</label><input type="text" id="b_bic"></div>
+        </div>
+        <div class="form-group" style="margin-top:10px"><label>Raucher?</label>
+          <div class="check-group" style="margin-top:6px">
+            <label class="check-item"><input type="radio" name="b_raucher" value="ja"> Ja</label>
+            <label class="check-item"><input type="radio" name="b_raucher" value="nein" checked> Nein</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Nächster Termin</div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Beratungstermin (Datum)</label><input type="date" id="termin_beratung"></div>
+          <div class="form-group"><label>Uhrzeit</label><input type="text" id="termin_beratung_zeit" placeholder="z.B. 14:30 Uhr"></div>
+          <div class="form-group"><label>Informationstermin (Datum)</label><input type="date" id="termin_info"></div>
+          <div class="form-group"><label>Uhrzeit</label><input type="text" id="termin_info_zeit" placeholder="z.B. 10:00 Uhr"></div>
+        </div>
+        <div class="form-group" style="margin-top:10px"><label>Notizen</label><textarea id="notizen_termin" placeholder="Weitere Hinweise zum Termin..."></textarea></div>
+      </div>
+    </div>
+
+    <!-- ===== 2. WÜNSCHE UND ZIELE ===== -->
+    <div class="section" id="s-ziele">
+      <div class="section-header">
+        <h2>Ihre Wünsche und Ziele</h2>
+        <p>Klicken Sie auf die Themen, die Ihnen wichtig sind. Wählen Sie anschließend Ihre Top-3-Ziele.</p>
+      </div>
+
+      <div class="notice">💡 Klicken Sie auf eine Kachel um sie auszuwählen. Die drei wichtigsten Ziele werden automatisch priorisiert.</div>
+
+      <div class="card">
+        <div class="card-title">Darauf legen Sie besonders großen Wert</div>
+        <div class="goals-grid" id="goals-grid">
+          <div class="goal-item" data-goal="foerderung" onclick="toggleGoal(this)">
+            <div class="goal-icon">🏛️</div>
+            <div class="goal-info">
+              <h4>Staatliche Förderungen & Steuerersparnisse</h4>
+              <p>Steuerlast minimieren · Förderungen nutzen</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="bildung" onclick="toggleGoal(this)">
+            <div class="goal-icon">🎓</div>
+            <div class="goal-info">
+              <h4>Aus-/Weiterbildung der Kinder</h4>
+              <p>Vorsorge für Ausbildung, Studium & Berufsstart</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="altersversorgung" onclick="toggleGoal(this)">
+            <div class="goal-icon">👴</div>
+            <div class="goal-info">
+              <h4>Altersversorgung</h4>
+              <p>Sorgenfrei in Rente · Vor Berufsunfähigkeit schützen</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="vermoegensabsicherung" onclick="toggleGoal(this)">
+            <div class="goal-icon">🛡️</div>
+            <div class="goal-info">
+              <h4>Vermögensabsicherung</h4>
+              <p>Versicherungsschutz optimieren · Lebensstandard sichern</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="wohneigentum" onclick="toggleGoal(this)">
+            <div class="goal-icon">🏡</div>
+            <div class="goal-info">
+              <h4>Wohneigentum</h4>
+              <p>Mietfrei wohnen · Finanzierung verbessern</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="gesundheit" onclick="toggleGoal(this)">
+            <div class="goal-icon">🏥</div>
+            <div class="goal-info">
+              <h4>Gesundheits-/Risikovorsorge</h4>
+              <p>Optimale Behandlung · Schutz im Pflegefall</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="vermoegensaufbau" onclick="toggleGoal(this)">
+            <div class="goal-icon">🐷</div>
+            <div class="goal-info">
+              <h4>Privater Vermögensaufbau</h4>
+              <p>Rücklagen bilden · Kapital aufbauen</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="einkommen" onclick="toggleGoal(this)">
+            <div class="goal-icon">💰</div>
+            <div class="goal-info">
+              <h4>Einkommen</h4>
+              <p>Interesse an einem zusätzlichen Einkommen</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+          <div class="goal-item" data-goal="privatkredit" onclick="toggleGoal(this)">
+            <div class="goal-icon">💳</div>
+            <div class="goal-info">
+              <h4>Privatkredit</h4>
+              <p>Kleine Rate · Geringe Zinsen</p>
+            </div>
+            <div class="goal-rank"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Weitere Wünsche und Ziele</div>
+        <textarea id="weitere_ziele" placeholder="Was liegt Ihnen noch am Herzen? Geben Sie hier Ihre weiteren Wünsche ein..." style="min-height:100px"></textarea>
+      </div>
+
+      <div class="card" style="background:#FDFBF0; border-color:var(--gold)">
+        <div class="card-title">🏆 Ihre Top-3-Ziele (automatisch ermittelt)</div>
+        <div id="top3-display" style="color:var(--gray); font-size:13px; padding:8px 0">
+          Noch keine Ziele ausgewählt. Klicken Sie oben auf die Kacheln.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. SPARERTYP ===== -->
+    <div class="section" id="s-sparertyp">
+      <div class="section-header">
+        <h2>Die drei Sparertypen</h2>
+        <p>Warum nur 10 % vermögend werden – und wo stehen Sie?</p>
+      </div>
+
+      <div class="saver-types">
+        <div class="saver-card negativ" id="type-negativ" onclick="selectSaverType('negativ', 'heute')">
+          <h3 style="color:#CC4444">⚠️ Negativ</h3>
+          <ul>
+            <li>Dispo / Überziehung</li>
+            <li>Konsumenten-Kredite</li>
+            <li>Mahnungen</li>
+            <li>Gebühren & Zinsen</li>
+          </ul>
+        </div>
+        <div class="saver-card amateur" id="type-amateur" onclick="selectSaverType('amateur', 'heute')">
+          <h3 style="color:#CC8800">📊 Amateur</h3>
+          <ul>
+            <li>Plus/Minus Null</li>
+            <li>Erträge / Zinsen</li>
+            <li>Konsum</li>
+            <li>Sparbuch</li>
+          </ul>
+        </div>
+        <div class="saver-card profi" id="type-profi" onclick="selectSaverType('profi', 'heute')">
+          <h3 style="color:#2E7D32">🏆 Profi</h3>
+          <ul>
+            <li>Disziplin</li>
+            <li>Strategie</li>
+            <li>Zwei-Konten-Modell</li>
+            <li>Vermögensaufbau</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Selbsteinschätzung: Wo stehen Sie heute?</div>
+        <div class="slider-container">
+          <div class="slider-label"><span>Negativ</span><span>Amateur</span><span>Profi</span></div>
+          <input type="range" id="slider_heute" min="0" max="100" value="40" oninput="updateSliderDisplay('heute')">
+          <div style="text-align:center; font-size:12px; color:var(--gray); margin-top:6px" id="slider_heute_label">Aktuell: Amateur</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Ziel: Wo wollen Sie hin?</div>
+        <div class="slider-container">
+          <div class="slider-label"><span>Negativ</span><span>Amateur</span><span>Profi</span></div>
+          <input type="range" id="slider_ziel" min="0" max="100" value="85" oninput="updateSliderDisplay('ziel')">
+          <div style="text-align:center; font-size:12px; color:var(--gray); margin-top:6px" id="slider_ziel_label">Ziel: Profi</div>
+        </div>
+      </div>
+
+      <div class="card" style="background:#F0FFF0; border-color:#A8E0A8">
+        <div class="card-title" style="color:#2E7D32">💡 Die Formel zum finanziellen Glück</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:10px">
+          <div style="text-align:center; padding:12px; background:var(--schutzengel); color:white; border-radius:6px">
+            <div style="font-size:24px;font-weight:700">10%</div>
+            <div style="font-size:11px;margin-top:4px">Schutzengel</div>
+          </div>
+          <div style="text-align:center; padding:12px; background:var(--wohnen); color:white; border-radius:6px">
+            <div style="font-size:24px;font-weight:700">30%</div>
+            <div style="font-size:11px;margin-top:4px">Wohnen</div>
+          </div>
+          <div style="text-align:center; padding:12px; background:var(--sparen); color:white; border-radius:6px">
+            <div style="font-size:24px;font-weight:700">30%</div>
+            <div style="font-size:11px;margin-top:4px">Sparen</div>
+          </div>
+          <div style="text-align:center; padding:12px; background:var(--konsum); color:var(--dark); border-radius:6px">
+            <div style="font-size:24px;font-weight:700">30%</div>
+            <div style="font-size:11px;margin-top:4px">Leben / Konsum</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4. EINNAHMEN & AUSGABEN ===== -->
+    <div class="section" id="s-einnahmen">
+      <div class="section-header">
+        <h2>Einnahmen & Ausgaben</h2>
+        <p>Geben Sie Ihre monatlichen Einnahmen und Ausgaben ein. Summen werden automatisch berechnet.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Ihr Haushaltseinkommen</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Einkommensart</th>
+              <th>Monatsbrutto (€)</th>
+              <th>Monatsnetto (€)</th>
+              <th>Anzahl Monate</th>
+              <th>Netto gesamt (€/Jahr)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Haupteinkommen A</td>
+              <td><input type="number" id="ein_a_brutto" placeholder="0,00" min="0" step="50" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_a_netto" placeholder="0,00" min="0" step="50" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_a_monate" value="12" min="1" max="12" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_a_gesamt" readonly></td>
+            </tr>
+            <tr>
+              <td>Haupteinkommen B</td>
+              <td><input type="number" id="ein_b_brutto" placeholder="0,00" min="0" step="50" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_b_netto" placeholder="0,00" min="0" step="50" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_b_monate" value="12" min="1" max="12" oninput="calcEinkommen()"></td>
+              <td><input type="number" id="ein_b_gesamt" readonly></td>
+            </tr>
+            <tr>
+              <td>Kindergeld</td>
+              <td></td>
+              <td><input type="number" id="kindergeld" placeholder="0,00" min="0" oninput="calcEinkommen()"></td>
+              <td>12</td>
+              <td><input type="number" id="kindergeld_gesamt" readonly></td>
+            </tr>
+            <tr>
+              <td>Nebenverdienst</td>
+              <td></td>
+              <td><input type="number" id="neben" placeholder="0,00" min="0" oninput="calcEinkommen()"></td>
+              <td>12</td>
+              <td><input type="number" id="neben_gesamt" readonly></td>
+            </tr>
+            <tr>
+              <td>Sonstiges</td>
+              <td></td>
+              <td><input type="number" id="sonst_ein" placeholder="0,00" min="0" oninput="calcEinkommen()"></td>
+              <td>12</td>
+              <td><input type="number" id="sonst_ein_gesamt" readonly></td>
+            </tr>
+            <tr class="sum-row">
+              <td colspan="4">🏠 Haushaltseinkommen (Netto mtl.)</td>
+              <td><input type="number" id="haushalt_netto" readonly style="font-size:15px"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="budget-grid" id="budget-overview">
+        <div class="budget-card schutzengel">
+          <div class="bc-label">🕊 Schutzengel</div>
+          <div class="bc-pct">10%</div>
+          <div class="bc-amount" id="soll_schutz">0 €</div>
+          <div class="bc-target">Soll-Wert</div>
+        </div>
+        <div class="budget-card wohnen">
+          <div class="bc-label">🏠 Wohnen</div>
+          <div class="bc-pct">30%</div>
+          <div class="bc-amount" id="soll_wohnen">0 €</div>
+          <div class="bc-target">Soll-Wert</div>
+        </div>
+        <div class="budget-card sparen">
+          <div class="bc-label">🐷 Sparen</div>
+          <div class="bc-pct">30%</div>
+          <div class="bc-amount" id="soll_sparen">0 €</div>
+          <div class="bc-target">Soll-Wert</div>
+        </div>
+        <div class="budget-card konsum">
+          <div class="bc-label">🛒 Leben/Konsum</div>
+          <div class="bc-pct">30%</div>
+          <div class="bc-amount" id="soll_konsum">0 €</div>
+          <div class="bc-target">Soll-Wert</div>
+        </div>
+      </div>
+
+      <!-- SCHUTZENGEL -->
+      <div class="card cat-schutzengel">
+        <div class="card-title" style="color:var(--schutzengel)">🕊 Schutzengel — Absicherung</div>
+        <table class="data-table">
+          <thead><tr><th>Position</th><th>Betrag mtl. (€)</th></tr></thead>
+          <tbody>
+            <tr><td>Berufsunfähigkeitsversicherung</td><td><input type="number" id="sg_bu" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>KV-Zusatz</td><td><input type="number" id="sg_kv" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Pflegeversicherung</td><td><input type="number" id="sg_pflege" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Risiko-Lebensversicherung</td><td><input type="number" id="sg_risiko" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Unfallversicherung</td><td><input type="number" id="sg_unfall" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Privathaftpflicht</td><td><input type="number" id="sg_haftpflicht" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Hausrat</td><td><input type="number" id="sg_hausrat" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Glas</td><td><input type="number" id="sg_glas" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Wohngebäude</td><td><input type="number" id="sg_wohngebaeude" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Rechtsschutz</td><td><input type="number" id="sg_rechtsschutz" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>KFZ-Versicherung</td><td><input type="number" id="sg_kfz" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Sonstige</td><td><input type="number" id="sg_sonst" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr class="sum-row"><td>Summe Schutzengel</td><td><input type="number" id="sum_schutzengel" readonly></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WOHNEN -->
+      <div class="card cat-wohnen">
+        <div class="card-title" style="color:var(--wohnen)">🏠 Wohnen</div>
+        <table class="data-table">
+          <thead><tr><th>Position</th><th>Betrag mtl. (€)</th></tr></thead>
+          <tbody>
+            <tr><td>Miete / Finanzierungsrate</td><td><input type="number" id="wo_miete" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Nebenkosten</td><td><input type="number" id="wo_neben" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Strom</td><td><input type="number" id="wo_strom" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Gas / Heizung</td><td><input type="number" id="wo_gas" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Müll / Wasser</td><td><input type="number" id="wo_muell" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Telefon / Internet</td><td><input type="number" id="wo_tel" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Garage</td><td><input type="number" id="wo_garage" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Grundsteuer (mtl.)</td><td><input type="number" id="wo_grundsteuer" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Rundfunkbeitrag</td><td><input type="number" id="wo_rundfunk" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr class="sum-row"><td>Summe Wohnen</td><td><input type="number" id="sum_wohnen" readonly></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SPAREN -->
+      <div class="card cat-sparen">
+        <div class="card-title" style="color:var(--sparen)">🐷 Sparen</div>
+        <table class="data-table">
+          <thead><tr><th>Position</th><th>Betrag mtl. (€)</th><th>Horizont</th></tr></thead>
+          <tbody>
+            <tr><td>Girokonto (Rücklage)</td><td><input type="number" id="sp_giro" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">kurz</td></tr>
+            <tr><td>Tagesgeld</td><td><input type="number" id="sp_tages" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">kurz</td></tr>
+            <tr><td>Sparbuch</td><td><input type="number" id="sp_sparbuch" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">kurz</td></tr>
+            <tr><td>Bausparen</td><td><input type="number" id="sp_bausparen" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">mittel</td></tr>
+            <tr><td>Fonds / Depot</td><td><input type="number" id="sp_fonds" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">mittel</td></tr>
+            <tr><td>Riester</td><td><input type="number" id="sp_riester" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">lang</td></tr>
+            <tr><td>Basis-Rente</td><td><input type="number" id="sp_basis" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">lang</td></tr>
+            <tr><td>Private Rentenversicherung</td><td><input type="number" id="sp_prv" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">lang</td></tr>
+            <tr><td>Private Lebensversicherung</td><td><input type="number" id="sp_plv" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">lang</td></tr>
+            <tr><td>BAV (netto)</td><td><input type="number" id="sp_bav" placeholder="0" min="0" oninput="calcAusgaben()"></td><td style="font-size:11px;color:var(--gray)">lang</td></tr>
+            <tr class="sum-row"><td colspan="2">Summe Sparen</td><td><input type="number" id="sum_sparen" readonly></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- LEBEN/KONSUM -->
+      <div class="card cat-konsum">
+        <div class="card-title" style="color:var(--gold-dark)">🛒 Leben / Konsum</div>
+        <table class="data-table">
+          <thead><tr><th>Position</th><th>Betrag mtl. (€)</th></tr></thead>
+          <tbody>
+            <tr><td>Privatkredit / Ratenzahlung</td><td><input type="number" id="lk_kredit" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Leasing</td><td><input type="number" id="lk_leasing" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Beiträge (Vereine etc.)</td><td><input type="number" id="lk_beitraege" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Handy (Vertrag)</td><td><input type="number" id="lk_handy" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Ernährung / Lebensmittel</td><td><input type="number" id="lk_ernaehrung" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Bekleidung</td><td><input type="number" id="lk_kleidung" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Kita / Kinder</td><td><input type="number" id="lk_kita" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Vergnügen / Ausgehen</td><td><input type="number" id="lk_vergn" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Mobilität / Sprit</td><td><input type="number" id="lk_mobil" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Geschenke</td><td><input type="number" id="lk_geschenke" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Gesundheit / Apotheke</td><td><input type="number" id="lk_gesundheit" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Haustiere</td><td><input type="number" id="lk_haustiere" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Urlaub (mtl. Rücklage)</td><td><input type="number" id="lk_urlaub" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Streaming / Abonnements</td><td><input type="number" id="lk_streaming" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr><td>Sonstiges</td><td><input type="number" id="lk_sonst" placeholder="0" min="0" oninput="calcAusgaben()"></td></tr>
+            <tr class="sum-row"><td>Summe Leben/Konsum</td><td><input type="number" id="sum_konsum" readonly></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ÜBERSICHT -->
+      <div class="card" style="background:#2C2410; color:white; border-color:#2C2410">
+        <div class="card-title" style="color:var(--gold-light); border-color:rgba(255,255,255,0.1)">📊 Auswertung</div>
+        <table class="data-table" style="color:white">
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <th>Orientierungswert</th>
+              <th>Ist (€ mtl.)</th>
+              <th>Differenz (€ mtl.)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--schutzengel); font-weight:600">🕊 Schutzengel</td>
+              <td style="color:rgba(255,255,255,0.7)">10 %</td>
+              <td><input type="number" id="disp_schutz" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+              <td><input type="number" id="diff_schutz" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+            </tr>
+            <tr>
+              <td style="color:#EF9A9A; font-weight:600">🏠 Wohnen</td>
+              <td style="color:rgba(255,255,255,0.7)">30 %</td>
+              <td><input type="number" id="disp_wohnen" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+              <td><input type="number" id="diff_wohnen" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+            </tr>
+            <tr>
+              <td style="color:#A5D6A7; font-weight:600">🐷 Sparen</td>
+              <td style="color:rgba(255,255,255,0.7)">30 %</td>
+              <td><input type="number" id="disp_sparen" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+              <td><input type="number" id="diff_sparen" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+            </tr>
+            <tr>
+              <td style="color:#FFF176; font-weight:600">🛒 Leben/Konsum</td>
+              <td style="color:rgba(255,255,255,0.7)">30 %</td>
+              <td><input type="number" id="disp_konsum" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+              <td><input type="number" id="diff_konsum" readonly style="background:#3A3020; border-color:#5A4A30; color:white"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center">
+          <span style="font-size:14px; font-weight:600; color:var(--gold-light)">Monatlicher Überschuss</span>
+          <span style="font-size:22px; font-weight:700; color:var(--gold)" id="ueberschuss_display">0,00 €</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5. SPARWUNSCH ===== -->
+    <div class="section" id="s-sparwunsch">
+      <div class="section-header">
+        <h2>Ihr Sparwunsch</h2>
+        <p>Definieren Sie Ihre konkreten Ziele mit Kapitalbedarf und Zeitraum.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Ihre Top-3-Vorhaben</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Wunsch / Ziel</th>
+              <th>Kapitalbedarf (€)</th>
+              <th>Zeitpunkt</th>
+              <th>Mtl. nötiger Sparbetrag (€)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:700; color:var(--gold-dark)">1</td>
+              <td><input type="text" id="sw_ziel1" placeholder="z.B. Eigenheim"></td>
+              <td><input type="number" id="sw_kapital1" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+              <td><input type="text" id="sw_zeit1" placeholder="z.B. 2030"></td>
+              <td><input type="number" id="sw_mtl1" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700; color:var(--gold-dark)">2</td>
+              <td><input type="text" id="sw_ziel2" placeholder="z.B. Studium Kind"></td>
+              <td><input type="number" id="sw_kapital2" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+              <td><input type="text" id="sw_zeit2" placeholder="z.B. 2032"></td>
+              <td><input type="number" id="sw_mtl2" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700; color:var(--gold-dark)">3</td>
+              <td><input type="text" id="sw_ziel3" placeholder="z.B. Altersvorsorge"></td>
+              <td><input type="number" id="sw_kapital3" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+              <td><input type="text" id="sw_zeit3" placeholder="z.B. 2045"></td>
+              <td><input type="number" id="sw_mtl3" placeholder="0" min="0" oninput="calcSparwunsch()"></td>
+            </tr>
+            <tr class="sum-row">
+              <td colspan="4">Summe monatlicher Sparbedarf</td>
+              <td><input type="number" id="sw_summe" readonly></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 Ihr ermittelter Überschuss</div>
+        <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap">
+          <div style="flex:1; min-width:160px">
+            <label>Überschuss aus Einnahmen/Ausgaben (€ mtl.)</label>
+            <input type="number" id="sw_ueberschuss" placeholder="Aus Abschnitt Einnahmen/Ausgaben" oninput="calcSparwunsch()">
+          </div>
+          <div style="flex:1; min-width:160px">
+            <label>Monatlicher Sparwunsch gesamt (€)</label>
+            <input type="number" id="sw_wunsch_gesamt" placeholder="0" oninput="calcSparwunsch()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Aufteilung des monatlichen Sparwunsches</div>
+        <div class="form-row cols-4">
+          <div class="form-group">
+            <label style="color:var(--sparen)">Kurzfristig (€)</label>
+            <div class="euro-input"><input type="number" id="sw_kurz" placeholder="0" min="0"></div>
+          </div>
+          <div class="form-group">
+            <label style="color:var(--sparen)">Mittelfristig (€)</label>
+            <div class="euro-input"><input type="number" id="sw_mittel" placeholder="0" min="0"></div>
+          </div>
+          <div class="form-group">
+            <label style="color:var(--sparen)">Langfristig (€)</label>
+            <div class="euro-input"><input type="number" id="sw_lang" placeholder="0" min="0"></div>
+          </div>
+          <div class="form-group">
+            <label style="color:var(--schutzengel)">Schutzengel (€)</label>
+            <div class="euro-input"><input type="number" id="sw_schutzengel" placeholder="0" min="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6. GESUNDHEIT & RISIKO ===== -->
+    <div class="section" id="s-schutzengel">
+      <div class="section-header">
+        <h2>Gesundheits-/Risikovorsorge <span class="category-badge" style="background:var(--schutzengel); color:white">🕊 Schutzengel</span></h2>
+        <p>Wie haben Sie sich gegen Krankheit, Unfall oder Vermögensschaden abgesichert?</p>
+      </div>
+
+      <div class="card cat-schutzengel">
+        <div class="card-title" style="color:var(--schutzengel)">Bestehende Verträge</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:800px">
+          <thead>
+            <tr>
+              <th>Art</th>
+              <th>A/B</th>
+              <th>Gesellschaft</th>
+              <th>Vertragsnummer</th>
+              <th>Beginn</th>
+              <th>Ablauf</th>
+              <th>Leistung / Summe</th>
+              <th>Beitrag (mtl. €)</th>
+            </tr>
+          </thead>
+          <tbody id="vers-tbody">
+          </tbody>
+          <tfoot>
+            <tr class="sum-row">
+              <td colspan="7">Summe Beiträge</td>
+              <td><input type="number" id="vers_summe" readonly></td>
+            </tr>
+          </tfoot>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Optimierungsbereitschaft</div>
+        <p style="font-size:13px; margin-bottom:12px">Sind Sie bereit, bestehende Verträge zu optimieren, wenn Sie erkennen, dass Sie Ihre Wünsche und Ziele schneller erreichen werden?</p>
+        <div class="form-row cols-2">
+          <div class="form-group">
+            <label>Person A</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="optim_a" value="ja"> Ja</label>
+              <label class="check-item"><input type="radio" name="optim_a" value="nein"> Nein</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Person B</label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="optim_b" value="ja"> Ja</label>
+              <label class="check-item"><input type="radio" name="optim_b" value="nein"> Nein</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 7. WOHNSITUATION ===== -->
+    <div class="section" id="s-wohnen">
+      <div class="section-header">
+        <h2>Ihre Wohnsituation <span class="category-badge" style="background:var(--wohnen); color:white">🏠 Wohnen</span></h2>
+      </div>
+
+      <div class="card cat-wohnen">
+        <div class="card-title" style="color:var(--wohnen)">Mieter oder Eigentümer?</div>
+        <div class="check-group" style="margin-bottom:16px">
+          <label class="check-item"><input type="radio" name="wohn_status" value="mieter" onchange="toggleWohnstatus()"> Mieter</label>
+          <label class="check-item"><input type="radio" name="wohn_status" value="eigentuemer" onchange="toggleWohnstatus()"> Eigentümer</label>
+        </div>
+
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Wohnfläche (m²)</label><input type="number" id="wohn_flaeche" placeholder="0"></div>
+          <div class="form-group"><label>Kaltmiete mtl. (€) — nur Mieter</label><input type="number" id="wohn_miete" placeholder="0"></div>
+          <div class="form-group"><label>Nebenkosten mtl. (€)</label><input type="number" id="wohn_neben" placeholder="0"></div>
+        </div>
+
+        <div class="form-row cols-4" style="margin-top:10px">
+          <div class="form-group"><label>Objektart</label>
+            <select id="wohn_art">
+              <option value="">-- wählen --</option>
+              <option>Wohnung</option>
+              <option>Einfamilienhaus</option>
+              <option>Reihenhaus</option>
+              <option>Doppelhaushälfte</option>
+              <option>Sonstiges</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Baujahr (nur Eigentümer)</label><input type="number" id="wohn_baujahr" placeholder="z.B. 1985"></div>
+          <div class="form-group"><label>Verkehrswert (€)</label><input type="number" id="wohn_verkehrswert" placeholder="0"></div>
+          <div class="form-group"><label>Grundstücksgröße (m²)</label><input type="number" id="wohn_grundstueck" placeholder="0"></div>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Stockwerk(e)</label><input type="text" id="wohn_stock" placeholder="z.B. EG + OG"></div>
+          <div class="form-group"><label>Nutzfläche (m²)</label><input type="number" id="wohn_nutz" placeholder="0"></div>
+          <div class="form-group">
+            <label>Ausstattung</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; font-size:12px">
+              <label class="check-item"><input type="checkbox" id="wohn_keller"> Keller</label>
+              <label class="check-item"><input type="checkbox" id="wohn_dach"> DG ausgebaut</label>
+              <label class="check-item"><input type="checkbox" id="wohn_garage"> Garage/Carport</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Energie-Verträge</div>
+        <table class="data-table">
+          <thead><tr><th>Art</th><th>Anbieter</th><th>Vertragsnummer</th><th>Vertragsende</th><th>Jahresverbrauch</th><th>Beitrag (€/Jahr)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Strom</td>
+              <td><input type="text" id="ener_strom_anb" placeholder="Anbieter"></td>
+              <td><input type="text" id="ener_strom_nr" placeholder="Nr."></td>
+              <td><input type="date" id="ener_strom_ende"></td>
+              <td><input type="text" id="ener_strom_verb" placeholder="kWh/Jahr"></td>
+              <td><input type="number" id="ener_strom_beit" placeholder="0"></td>
+            </tr>
+            <tr>
+              <td>Gas</td>
+              <td><input type="text" id="ener_gas_anb" placeholder="Anbieter"></td>
+              <td><input type="text" id="ener_gas_nr" placeholder="Nr."></td>
+              <td><input type="date" id="ener_gas_ende"></td>
+              <td><input type="text" id="ener_gas_verb" placeholder="kWh/Jahr"></td>
+              <td><input type="number" id="ener_gas_beit" placeholder="0"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Immobilienwunsch</div>
+        <p style="font-size:13px; margin-bottom:12px">Möchten Sie (weiteres) Wohneigentum erwerben, wenn es finanziell möglich ist?</p>
+        <div class="check-group" style="margin-bottom:14px">
+          <label class="check-item"><input type="radio" name="immo_wunsch" value="ja"> Ja</label>
+          <label class="check-item"><input type="radio" name="immo_wunsch" value="nein"> Nein</label>
+        </div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>Objektart</label><input type="text" id="immo_art" placeholder="z.B. Einfamilienhaus"></div>
+          <div class="form-group"><label>Preis / Kosten (€)</label><input type="number" id="immo_preis" placeholder="0"></div>
+          <div class="form-group"><label>Zeitpunkt</label><input type="text" id="immo_zeit" placeholder="z.B. 2027"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Bauplatz vorhanden?</label>
+            <div class="check-group" style="margin-top:6px">
+              <label class="check-item"><input type="checkbox"> Ja</label>
+            </div>
+          </div>
+          <div class="form-group"><label>Anschrift Bauplatz</label><input type="text" id="immo_bauplatz" placeholder="Adresse"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Bestehende Immobilienfinanzierungen</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:850px" id="immo-fin-table">
+          <thead><tr><th>Art</th><th>A/B</th><th>Gesellschaft</th><th>Vertragsnr.</th><th>Beginn</th><th>Ablauf</th><th>Darlehenssumme (€)</th><th>Restschuld (€)</th><th>Zinssatz (%)</th><th>Rate (€/mtl.)</th></tr></thead>
+          <tbody id="immo-fin-tbody"></tbody>
+          <tfoot><tr class="sum-row"><td colspan="9">Summe Restschuld / Rate</td><td><input type="number" id="immo_fin_summe" readonly></td></tr></tfoot>
+        </table>
+        </div>
+        <button onclick="addImmoRow()" style="margin-top:10px; background:var(--gold); color:white; border:none; padding:7px 14px; border-radius:4px; cursor:pointer; font-size:12px">+ Zeile hinzufügen</button>
+      </div>
+    </div>
+
+    <!-- ===== 8. ALTERSVERSORGUNG ===== -->
+    <div class="section" id="s-altersversorgung">
+      <div class="section-header">
+        <h2>Ihre Altersversorgung <span class="category-badge" style="background:var(--sparen); color:white">🐷 Sparen</span></h2>
+        <p>Was haben Sie für Ihre private Zukunftssicherung getan?</p>
+      </div>
+
+      <div class="card cat-sparen">
+        <div class="card-title" style="color:var(--sparen)">Bestehende Altersvorsorge-Verträge</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:850px">
+          <thead>
+            <tr><th>Art</th><th>A/B</th><th>Gesellschaft</th><th>Vertragsnr.</th><th>Vertragssumme / Leistung (€)</th><th>Guthaben / RKW (€)</th><th>Beitrag mtl. (€)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Riester</td><td>A</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0" id="av_riester_a_sum"></td><td><input type="number" placeholder="0" id="av_riester_a_gut"></td><td><input type="number" placeholder="0" id="av_riester_a_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Riester</td><td>B</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0" id="av_riester_b_sum"></td><td><input type="number" placeholder="0" id="av_riester_b_gut"></td><td><input type="number" placeholder="0" id="av_riester_b_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Basis-Rente</td><td>A</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0" id="av_basis_a_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Basis-Rente</td><td>B</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0" id="av_basis_b_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Priv. LV/RV</td><td>A</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0" id="av_lv_a_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Priv. LV/RV</td><td>B</td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0" id="av_lv_b_beit" oninput="calcAltersvorsorge()"></td></tr>
+            <tr><td>Betriebliche AV</td><td></td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Nr."></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0"></td><td><input type="number" placeholder="0" id="av_bav_beit" oninput="calcAltersvorsorge()"></td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="sum-row"><td colspan="6">Summe monatliche Beiträge</td><td><input type="number" id="av_summe_beit" readonly></td></tr>
+          </tfoot>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Rentenansprüche (Renteninformation)</div>
+        <div class="form-row cols-2">
+          <div class="card" style="border-color:var(--border); padding:14px">
+            <div style="font-weight:700; margin-bottom:10px; color:var(--gold-dark)">Person A</div>
+            <div class="form-group" style="margin-bottom:8px"><label>Rente wegen voller Erwerbsminderung (€/Monat)</label><input type="number" id="rente_a_em" placeholder="0"></div>
+            <div class="form-group"><label>Höhe künftige Altersrente (€/Monat)</label><input type="number" id="rente_a_alt" placeholder="0"></div>
+          </div>
+          <div class="card" style="border-color:var(--border); padding:14px">
+            <div style="font-weight:700; margin-bottom:10px; color:var(--gold-dark)">Person B</div>
+            <div class="form-group" style="margin-bottom:8px"><label>Rente wegen voller Erwerbsminderung (€/Monat)</label><input type="number" id="rente_b_em" placeholder="0"></div>
+            <div class="form-group"><label>Höhe künftige Altersrente (€/Monat)</label><input type="number" id="rente_b_alt" placeholder="0"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Rentenwünsche</div>
+        <div class="form-row cols-2">
+          <div>
+            <div style="font-weight:700; margin-bottom:10px; color:var(--gold-dark)">Person A</div>
+            <div class="form-group" style="margin-bottom:12px"><label>Wunschrente (€/Monat)</label><div class="euro-input"><input type="number" id="wunsch_a" placeholder="0"></div></div>
+            <div class="form-group"><label>Bis wann möchten Sie arbeiten?</label>
+              <div class="check-group" style="margin-top:6px; flex-wrap:wrap">
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="62"> 62</label>
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="63"> 63</label>
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="64"> 64</label>
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="65"> 65</label>
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="66"> 66</label>
+                <label class="check-item"><input type="radio" name="rente_alter_a" value="67" checked> 67</label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:700; margin-bottom:10px; color:var(--gold-dark)">Person B</div>
+            <div class="form-group" style="margin-bottom:12px"><label>Wunschrente (€/Monat)</label><div class="euro-input"><input type="number" id="wunsch_b" placeholder="0"></div></div>
+            <div class="form-group"><label>Bis wann möchten Sie arbeiten?</label>
+              <div class="check-group" style="margin-top:6px; flex-wrap:wrap">
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="62"> 62</label>
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="63"> 63</label>
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="64"> 64</label>
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="65"> 65</label>
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="66"> 66</label>
+                <label class="check-item"><input type="radio" name="rente_alter_b" value="67" checked> 67</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 9. VERMÖGENSAUFBAU ===== -->
+    <div class="section" id="s-vermoegen">
+      <div class="section-header">
+        <h2>Ihr privater Vermögensaufbau <span class="category-badge" style="background:var(--sparen); color:white">🐷 Sparen</span></h2>
+        <p>Welche Sparformen nutzen Sie derzeit?</p>
+      </div>
+
+      <div class="card cat-sparen">
+        <div class="card-title" style="color:var(--sparen)">Bestehende Sparformen</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:800px">
+          <thead>
+            <tr><th>Art</th><th>A/B</th><th>Gesellschaft</th><th>IBAN / WKN</th><th>Bezeichnung / Tarif</th><th>Guthaben (€)</th><th>Beitrag mtl. (€)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Konto</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Bank"></td><td><input type="text" placeholder="IBAN"></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="number" placeholder="0" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Tagesgeld</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Bank"></td><td><input type="text" placeholder="IBAN"></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Sparbuch</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Bank"></td><td><input type="text" placeholder="Nr."></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Bausparen</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="Vertragsnr."></td><td><input type="text" placeholder="Tarif"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Depot</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Bank / Broker"></td><td><input type="text" placeholder="Depot-Nr."></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Investmentfonds</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Gesellschaft"></td><td><input type="text" placeholder="WKN/ISIN"></td><td><input type="text" placeholder="Fondsname"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Wertpapiere</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Bank"></td><td><input type="text" placeholder="WKN/ISIN"></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+            <tr><td>Edelmetalle</td><td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td><td><input type="text" placeholder="Ort / Depot"></td><td><input type="text" placeholder="Bezeichnung"></td><td><input type="text" placeholder="z.B. Gold, Silber"></td><td><input type="number" placeholder="0" class="vm-gut" oninput="calcVermoegen()"></td><td><input type="number" placeholder="0" class="vm-beit" oninput="calcVermoegen()"></td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="sum-row"><td colspan="5">Summe Guthaben / Beiträge</td><td><input type="number" id="vm_sum_gut" readonly></td><td><input type="number" id="vm_sum_beit" readonly></td></tr>
+          </tfoot>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Optimierungsinteresse</div>
+        <p style="font-size:13px; margin-bottom:12px">Sind Sie an einer Überprüfung und eventuellen Optimierung Ihrer Anlageformen interessiert?</p>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Person A</label>
+            <div class="check-group"><label class="check-item"><input type="radio" name="opt_vm_a" value="ja"> Ja</label><label class="check-item"><input type="radio" name="opt_vm_a" value="nein"> Nein</label></div>
+          </div>
+          <div class="form-group"><label>Person B</label>
+            <div class="check-group"><label class="check-item"><input type="radio" name="opt_vm_b" value="ja"> Ja</label><label class="check-item"><input type="radio" name="opt_vm_b" value="nein"> Nein</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 10. KONSUMAUSGABEN ===== -->
+    <div class="section" id="s-konsum">
+      <div class="section-header">
+        <h2>Konsumausgaben im Detail <span class="category-badge" style="background:var(--konsum); color:var(--dark)">🛒 Konsum</span></h2>
+        <p>Welche Konsumentenkredite und festen Ausgaben bestehen aktuell?</p>
+      </div>
+
+      <div class="card cat-konsum">
+        <div class="card-title" style="color:var(--gold-dark)">Kredite & Leasingverträge</div>
+        <div style="overflow-x:auto">
+        <table class="data-table" style="min-width:800px">
+          <thead><tr><th>Art</th><th>A/B</th><th>Gesellschaft</th><th>Vertragsnr.</th><th>Beginn</th><th>Ablauf</th><th>Darlehenssumme (€)</th><th>Restschuld (€)</th><th>Zinssatz (%)</th><th>Rate/Beitrag (€/mtl.)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Privatkredit</td>
+              <td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td>
+              <td><input type="text" placeholder="Bank"></td>
+              <td><input type="text" placeholder="Nr."></td>
+              <td><input type="date"></td>
+              <td><input type="date"></td>
+              <td><input type="number" placeholder="0"></td>
+              <td><input type="number" placeholder="0"></td>
+              <td><input type="number" placeholder="0" step="0.01"></td>
+              <td><input type="number" placeholder="0" class="konsum-beit" oninput="calcKonsumSum()"></td>
+            </tr>
+            <tr>
+              <td>Leasing</td>
+              <td><select style="width:60px"><option>-</option><option>A</option><option>B</option></select></td>
+              <td><input type="text" placeholder="Leasinggeber"></td>
+              <td><input type="text" placeholder="Nr."></td>
+              <td><input type="date"></td>
+              <td><input type="date"></td>
+              <td><input type="number" placeholder="0"></td>
+              <td><input type="number" placeholder="0"></td>
+              <td><input type="number" placeholder="0" step="0.01"></td>
+              <td><input type="number" placeholder="0" class="konsum-beit" oninput="calcKonsumSum()"></td>
+            </tr>
+          </tbody>
+          <tfoot><tr class="sum-row"><td colspan="9">Summe monatliche Raten</td><td><input type="number" id="konsum_summe" readonly></td></tr></tfoot>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Mitgliedschaften & Abonnements</div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Vereine / Hobby (Notizen + Betrag)</label><textarea id="konsum_vereine" placeholder="z.B. Sportverein 25€/Monat, Musikschule 60€/Monat..."></textarea></div>
+          <div class="form-group"><label>Abonnements (Notizen + Betrag)</label><textarea id="konsum_abos" placeholder="z.B. Netflix 15€, Spotify 10€, Zeitschrift 8€..."></textarea></div>
+          <div class="form-group"><label>Handyverträge (Notizen + Betrag)</label><textarea id="konsum_handy" placeholder="z.B. Person A: 30€, Person B: 25€..."></textarea></div>
+          <div class="form-group"><label>Weitere Mitgliedschaften</label><textarea id="konsum_mitgl" placeholder="z.B. ADAC 7€/Monat, VdK..."></textarea></div>
+        </div>
+      </div>
+
+      <div class="form-group" style="padding:0">
+        <div class="form-group"><label>Weitere Notizen</label><textarea id="konsum_notizen" placeholder="Sonstige Anmerkungen zu Konsumausgaben..."></textarea></div>
+      </div>
+    </div>
+
+    <!-- ===== 11. DATENSCHUTZ ===== -->
+    <div class="section" id="s-datenschutz">
+      <div class="section-header">
+        <h2>Datenschutz & Abschluss</h2>
+        <p>Einwilligungserklärung und Terminvereinbarung</p>
+      </div>
+
+      <div class="card" style="background:#FFF8E8; border-color:var(--gold)">
+        <div class="card-title">ℹ️ Datenschutzhinweis</div>
+        <p style="font-size:12.5px; line-height:1.7; color:var(--gray)">
+          Mit unserer umfassenden Allfinanz-Beratung helfen wir Ihnen, Ihre individuellen Ziele zu erreichen. Ihr Vermögensberater verarbeitet Ihre Daten zur Ermittlung Ihres persönlichen Finanzierungsbedarfs in einem gemeinsamen Bestandssystem der Deutsche Vermögensberatung AG DVAG. Weitere Informationen unter <strong>www.datenschutz.dvag</strong>.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Einwilligungserklärung</div>
+        <div style="font-size:12.5px; color:var(--gray); line-height:1.7; margin-bottom:16px">
+          Ich willige ein, dass die von mir zur Verfügung gestellten Daten erhoben und für die Zwecke der Finanzberatung verarbeitet werden, um meinen Absicherungs- und Vorsorgebedarf zu ermitteln und Angebotsvorschläge zu erstellen.
+        </div>
+
+        <div class="form-row cols-2">
+          <div class="card" style="padding:14px; border-color:var(--border)">
+            <div style="font-weight:700; margin-bottom:12px; color:var(--gold-dark)">Person A</div>
+            <div class="form-group" style="margin-bottom:8px"><label>Vorname, Name</label><input type="text" id="einw_a_name" placeholder="Vollständiger Name"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Anschrift</label><input type="text" id="einw_a_anschrift" placeholder="Straße, PLZ Ort"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Telefon (freiwillig)</label><input type="tel" id="einw_a_tel"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>E-Mail (freiwillig)</label><input type="email" id="einw_a_email"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Ort, Datum</label><input type="text" id="einw_a_datum" placeholder="Musterstadt, TT.MM.JJJJ"></div>
+            <div class="form-group"><label>Unterschrift (Name eintragen)</label><input type="text" id="einw_a_unterschrift" style="border-bottom:2px solid var(--dark); border-top:none; border-left:none; border-right:none; border-radius:0; background:transparent"></div>
+          </div>
+          <div class="card" style="padding:14px; border-color:var(--border)">
+            <div style="font-weight:700; margin-bottom:12px; color:var(--gold-dark)">Person B</div>
+            <div class="form-group" style="margin-bottom:8px"><label>Vorname, Name</label><input type="text" id="einw_b_name" placeholder="Vollständiger Name"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Anschrift</label><input type="text" id="einw_b_anschrift" placeholder="Straße, PLZ Ort"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Telefon (freiwillig)</label><input type="tel" id="einw_b_tel"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>E-Mail (freiwillig)</label><input type="email" id="einw_b_email"></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Ort, Datum</label><input type="text" id="einw_b_datum" placeholder="Musterstadt, TT.MM.JJJJ"></div>
+            <div class="form-group"><label>Unterschrift (Name eintragen)</label><input type="text" id="einw_b_unterschrift" style="border-bottom:2px solid var(--dark); border-top:none; border-left:none; border-right:none; border-radius:0; background:transparent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Einwilligung E-Mail & Telefonwerbung</div>
+        <p style="font-size:12.5px; color:var(--gray); margin-bottom:12px">Ich bin damit einverstanden, dass Tommy Möller mich informiert über ähnliche oder ergänzende Leistungen zur Risikoabsicherung, Altersvorsorge, Kapitalanlage oder weitere Finanzprodukte:</p>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" id="einw_email"> Per E-Mail</label>
+          <label class="check-item"><input type="checkbox" id="einw_tel"> Per Telefon</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Bewertung des heutigen Termins</div>
+        <div class="form-group" style="margin-bottom:14px"><label>Wie waren Sie vor dem Termin eingestellt?</label>
+          <div class="check-group" style="margin-top:6px; flex-wrap:wrap">
+            <label class="check-item"><input type="radio" name="bewertung_vorher" value="skeptisch"> Skeptisch</label>
+            <label class="check-item"><input type="radio" name="bewertung_vorher" value="neutral"> Neutral</label>
+            <label class="check-item"><input type="radio" name="bewertung_vorher" value="neugierig"> Neugierig</label>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px"><label>Wie sind Sie nach dem Termin eingestellt?</label>
+          <div class="check-group" style="margin-top:6px; flex-wrap:wrap">
+            <label class="check-item"><input type="radio" name="bewertung_nachher" value="wie_vorher"> Wie vorher</label>
+            <label class="check-item"><input type="radio" name="bewertung_nachher" value="positiv_ueberrascht"> Bin positiv überrascht</label>
+            <label class="check-item"><input type="radio" name="bewertung_nachher" value="angetan"> Bin äußerst angetan</label>
+          </div>
+        </div>
+        <div class="form-group"><label>Warum?</label><textarea id="bewertung_warum" placeholder="Ihre Begründung..."></textarea></div>
+        <div class="form-group" style="margin-top:10px"><label>Wem werden Sie von der heutigen Beratung erzählen?</label><textarea id="bewertung_weiterempfehlung" placeholder="z.B. Familie, Freunde, Kollegen..."></textarea></div>
+      </div>
+
+      <div style="text-align:center; padding:20px; background:var(--header-bg); border-radius:8px; color:var(--gold-light)">
+        <div style="font-family:'Inter', sans-serif; font-size:20px; font-weight:700; margin-bottom:8px">Auf gute Zusammenarbeit!</div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.5)">Tommy Möller · Finanzberatung &amp; Controlling · Erkner</div>
+        <button class="btn-print" style="margin-top:14px; font-size:14px; padding:10px 24px" onclick="window.print()">🖨️ Analyse drucken / Als PDF speichern</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ===== SECTIONS =====
+const sections = ['s-daten','s-ziele','s-sparertyp','s-einnahmen','s-sparwunsch','s-schutzengel','s-wohnen','s-altersversorgung','s-vermoegen','s-konsum','s-datenschutz'];
+let currentIdx = 0;
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx = sections.indexOf(id);
+  if (idx >= 0) currentIdx = idx;
+  document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function nextSection() {
+  if (currentIdx < sections.length - 1) {
+    currentIdx++;
+    showSection(sections[currentIdx]);
+  }
+}
+
+// ===== GOALS =====
+let selectedGoals = [];
+
+function toggleGoal(el) {
+  const goal = el.dataset.goal;
+  if (selectedGoals.includes(goal)) {
+    selectedGoals = selectedGoals.filter(g => g !== goal);
+    el.classList.remove('selected','top-selected');
+    el.querySelector('.goal-rank').style.display = 'none';
+  } else {
+    selectedGoals.push(goal);
+    el.classList.add('selected');
+  }
+  updateGoalRanks();
+  updateTop3Display();
+}
+
+function updateGoalRanks() {
+  document.querySelectorAll('.goal-item').forEach(el => {
+    const goal = el.dataset.goal;
+    const rank = selectedGoals.indexOf(goal);
+    const rankEl = el.querySelector('.goal-rank');
+    if (rank >= 0) {
+      rankEl.style.display = 'flex';
+      rankEl.textContent = rank + 1;
+      el.classList.add('selected');
+      if (rank < 3) {
+        el.classList.add('top-selected');
+        rankEl.style.background = 'var(--gold-dark)';
+      } else {
+        el.classList.remove('top-selected');
+        rankEl.style.background = 'var(--gray)';
+      }
+    } else {
+      rankEl.style.display = 'none';
+      el.classList.remove('selected','top-selected');
+    }
+  });
+}
+
+function updateTop3Display() {
+  const names = {
+    foerderung: 'Staatliche Förderungen & Steuerersparnisse',
+    bildung: 'Aus-/Weiterbildung der Kinder',
+    altersversorgung: 'Altersversorgung',
+    vermoegensabsicherung: 'Vermögensabsicherung',
+    wohneigentum: 'Wohneigentum',
+    gesundheit: 'Gesundheits-/Risikovorsorge',
+    vermoegensaufbau: 'Privater Vermögensaufbau',
+    einkommen: 'Einkommen / Nebeneinkommen',
+    privatkredit: 'Privatkredit'
+  };
+  const top3 = selectedGoals.slice(0, 3);
+  const el = document.getElementById('top3-display');
+  if (top3.length === 0) {
+    el.innerHTML = '<span style="color:var(--gray)">Noch keine Ziele ausgewählt.</span>';
+  } else {
+    el.innerHTML = top3.map((g, i) =>
+      `<div style="padding:8px 12px; margin-bottom:6px; background:var(--white); border:1px solid var(--gold); border-radius:4px; display:flex; align-items:center; gap:10px">
+        <span style="width:24px; height:24px; background:var(--gold-dark); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0">${i+1}</span>
+        <span style="font-size:13px; font-weight:600; color:var(--dark)">${names[g]}</span>
+      </div>`
+    ).join('');
+  }
+}
+
+// ===== SAVER TYPE =====
+function selectSaverType(type, context) {
+  // just visual for now
+}
+
+function updateSliderDisplay(which) {
+  const val = document.getElementById('slider_' + which).value;
+  const labels = ['Negativ', 'Eher Negativ', 'Amateur', 'Eher Profi', 'Profi'];
+  const idx = Math.floor(val / 25);
+  const label = labels[Math.min(idx, 4)];
+  const prefix = which === 'heute' ? 'Aktuell: ' : 'Ziel: ';
+  document.getElementById('slider_' + which + '_label').textContent = prefix + label;
+}
+
+// ===== CALCULATIONS =====
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? (parseFloat(el.value) || 0) : 0;
+}
+
+function setVal(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v % 1 !== 0 ? v.toFixed(2) : v;
+}
+
+function calcEinkommen() {
+  const a_net = val('ein_a_netto'), a_mon = Math.min(val('ein_a_monate') || 12, 12);
+  const b_net = val('ein_b_netto'), b_mon = Math.min(val('ein_b_monate') || 12, 12);
+  const kg = val('kindergeld'), nb = val('neben'), so = val('sonst_ein');
+
+  // Netto Gesamt (€/Jahr) = netto × monate (max 12)
+  const a_ges = a_net * a_mon;
+  const b_ges = b_net * b_mon;
+  const kg_ges = kg * 12;
+  const nb_ges = nb * 12;
+  const so_ges = so * 12;
+
+  setVal('ein_a_gesamt', Math.round(a_ges * 100) / 100);
+  setVal('ein_b_gesamt', Math.round(b_ges * 100) / 100);
+  setVal('kindergeld_gesamt', kg_ges);
+  setVal('neben_gesamt', nb_ges);
+  setVal('sonst_ein_gesamt', so_ges);
+
+  // Haushaltseinkommen = Jahressumme / 12 → monatlicher Wert für Budgetrechnung
+  const gesamt_annual = a_ges + b_ges + kg_ges + nb_ges + so_ges;
+  const gesamt = gesamt_annual / 12;
+  setVal('haushalt_netto', Math.round(gesamt * 100) / 100);
+
+  // Update Soll-Werte
+  document.getElementById('soll_schutz').textContent = fmt(gesamt * 0.10);
+  document.getElementById('soll_wohnen').textContent = fmt(gesamt * 0.30);
+  document.getElementById('soll_sparen').textContent = fmt(gesamt * 0.30);
+  document.getElementById('soll_konsum').textContent = fmt(gesamt * 0.30);
+
+  calcAusgaben();
+}
+
+function fmt(n) {
+  return Math.round(n) + ' €';
+}
+
+function calcAusgaben() {
+  const sg_ids = ['sg_bu','sg_kv','sg_pflege','sg_risiko','sg_unfall','sg_haftpflicht','sg_hausrat','sg_glas','sg_wohngebaeude','sg_rechtsschutz','sg_kfz','sg_sonst'];
+  const wo_ids = ['wo_miete','wo_neben','wo_strom','wo_gas','wo_muell','wo_tel','wo_garage','wo_grundsteuer','wo_rundfunk'];
+  const sp_ids = ['sp_giro','sp_tages','sp_sparbuch','sp_bausparen','sp_fonds','sp_riester','sp_basis','sp_prv','sp_plv','sp_bav'];
+  const lk_ids = ['lk_kredit','lk_leasing','lk_beitraege','lk_handy','lk_ernaehrung','lk_kleidung','lk_kita','lk_vergn','lk_mobil','lk_geschenke','lk_gesundheit','lk_haustiere','lk_urlaub','lk_streaming','lk_sonst'];
+
+  const sg = sg_ids.reduce((s, id) => s + val(id), 0);
+  const wo = wo_ids.reduce((s, id) => s + val(id), 0);
+  const sp = sp_ids.reduce((s, id) => s + val(id), 0);
+  const lk = lk_ids.reduce((s, id) => s + val(id), 0);
+
+  setVal('sum_schutzengel', sg);
+  setVal('sum_wohnen', wo);
+  setVal('sum_sparen', sp);
+  setVal('sum_konsum', lk);
+
+  setVal('disp_schutz', sg);
+  setVal('disp_wohnen', wo);
+  setVal('disp_sparen', sp);
+  setVal('disp_konsum', lk);
+
+  const netto = val('haushalt_netto');
+  const diff_sg = netto * 0.10 - sg;
+  const diff_wo = netto * 0.30 - wo;
+  const diff_sp = netto * 0.30 - sp;
+  const diff_lk = netto * 0.30 - lk;
+
+  setVal('diff_schutz', Math.round(diff_sg * 100) / 100);
+  setVal('diff_wohnen', Math.round(diff_wo * 100) / 100);
+  setVal('diff_sparen', Math.round(diff_sp * 100) / 100);
+  setVal('diff_konsum', Math.round(diff_lk * 100) / 100);
+
+  const ueberschuss = netto - sg - wo - sp - lk;
+  document.getElementById('ueberschuss_display').textContent =
+    (ueberschuss >= 0 ? '+' : '') + ueberschuss.toFixed(2) + ' €';
+  document.getElementById('ueberschuss_display').style.color =
+    ueberschuss >= 0 ? '#90EE90' : '#FF8A80';
+
+  // Auto-fill überschuss in Sparwunsch
+  const swEl = document.getElementById('sw_ueberschuss');
+  if (swEl && !swEl.dataset.manual) swEl.value = Math.round(ueberschuss);
+}
+
+function calcSparwunsch() {
+  const mtl1 = val('sw_mtl1'), mtl2 = val('sw_mtl2'), mtl3 = val('sw_mtl3');
+  setVal('sw_summe', mtl1 + mtl2 + mtl3);
+}
+
+function calcAltersvorsorge() {
+  const ids = ['av_riester_a_beit','av_riester_b_beit','av_basis_a_beit','av_basis_b_beit','av_lv_a_beit','av_lv_b_beit','av_bav_beit'];
+  const sum = ids.reduce((s, id) => s + val(id), 0);
+  setVal('av_summe_beit', sum);
+}
+
+function calcVermoegen() {
+  const gutInputs = document.querySelectorAll('.vm-gut');
+  const beitInputs = document.querySelectorAll('.vm-beit');
+  let gut = 0, beit = 0;
+  gutInputs.forEach(el => gut += parseFloat(el.value) || 0);
+  beitInputs.forEach(el => beit += parseFloat(el.value) || 0);
+  setVal('vm_sum_gut', gut);
+  setVal('vm_sum_beit', beit);
+}
+
+function calcKonsumSum() {
+  const inputs = document.querySelectorAll('.konsum-beit');
+  let sum = 0;
+  inputs.forEach(el => sum += parseFloat(el.value) || 0);
+  setVal('konsum_summe', sum);
+}
+
+// ===== VERSICHERUNGS-TABELLE initialisieren =====
+function initVersTable() {
+  const arten = [
+    'Berufsunfähigkeit A','Berufsunfähigkeit B','KV-Status A','KV-Status B',
+    'Krankenzusatz','Pflege','Risiko-LV','Unfall','Privathaftpflicht',
+    'Hausrat','Glas','Wohngebäude','Rechtsschutz','KFZ'
+  ];
+  const tbody = document.getElementById('vers-tbody');
+  arten.forEach(art => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-size:12px; white-space:nowrap">${art}</td>
+      <td><select style="width:55px"><option>-</option><option>A</option><option>B</option></select></td>
+      <td><input type="text" placeholder="Gesellschaft"></td>
+      <td><input type="text" placeholder="Vertragsnr."></td>
+      <td><input type="date"></td>
+      <td><input type="date"></td>
+      <td><input type="number" placeholder="0"></td>
+      <td><input type="number" placeholder="0" class="vers-beit" oninput="calcVersBeitraege()"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function calcVersBeitraege() {
+  const inputs = document.querySelectorAll('.vers-beit');
+  let sum = 0;
+  inputs.forEach(el => sum += parseFloat(el.value) || 0);
+  setVal('vers_summe', sum);
+}
+
+// ===== IMMOBILIEN FINANZIERUNGEN =====
+function initImmoTable() {
+  for (let i = 0; i < 3; i++) addImmoRow();
+}
+
+function addImmoRow() {
+  const tbody = document.getElementById('immo-fin-tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="Art"></td>
+    <td><select style="width:55px"><option>-</option><option>A</option><option>B</option></select></td>
+    <td><input type="text" placeholder="Gesellschaft"></td>
+    <td><input type="text" placeholder="Vertragsnr."></td>
+    <td><input type="date"></td>
+    <td><input type="date"></td>
+    <td><input type="number" placeholder="0"></td>
+    <td><input type="number" placeholder="0"></td>
+    <td><input type="number" placeholder="0" step="0.01"></td>
+    <td><input type="number" placeholder="0" class="immo-rate" oninput="calcImmoSum()"></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function calcImmoSum() {
+  const inputs = document.querySelectorAll('.immo-rate');
+  let sum = 0;
+  inputs.forEach(el => sum += parseFloat(el.value) || 0);
+  setVal('immo_fin_summe', sum);
+}
+
+// ===== RESET =====
+function resetForm() {
+  if (confirm('Alle eingegebenen Daten wirklich löschen?')) {
+    document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="tel"], textarea, select').forEach(el => {
+      if (el.type === 'number') el.value = '';
+      else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    selectedGoals = [];
+    updateGoalRanks();
+    updateTop3Display();
+    showSection('s-daten');
+  }
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  initVersTable();
+  initImmoTable();
+  updateSliderDisplay('heute');
+  updateSliderDisplay('ziel');
+});
+</script>
+</body>
+</html>
