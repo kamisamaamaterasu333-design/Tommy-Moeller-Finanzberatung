@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DVAG – Finanzielles Glück lässt sich planen</title>
+<title>Persönliche Finanz-Analyse – Tommy Möller</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -565,6 +568,163 @@
     margin-bottom: 14px;
   }
 
+  /* ===== MOBILE NAV ===== */
+  .mobile-nav-bar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    /* Header kompakter */
+    .top-header {
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .logo-area {
+      min-width: unset;
+      flex: 1;
+      padding: 10px 14px;
+    }
+    .header-title {
+      display: none;
+    }
+    .header-actions {
+      padding: 8px 12px;
+      gap: 6px;
+    }
+    .btn-print { font-size: 11px; padding: 7px 10px; }
+    .btn-reset { display: none; }
+
+    /* Sidebar ausblenden */
+    .sidebar { display: none !important; }
+
+    /* Mobile Nav Bar unter dem Header */
+    .mobile-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--dark);
+      padding: 0 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .mobile-nav-current {
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 0;
+      flex: 1;
+    }
+    .mobile-nav-arrows {
+      display: flex;
+      gap: 4px;
+    }
+    .mobile-nav-arrows button {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .mobile-nav-arrows button:active { background: var(--gold); }
+    .mobile-nav-arrows button:disabled { opacity: 0.25; cursor: default; }
+
+    /* Hamburger Menu Button */
+    .mobile-menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      padding: 8px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    /* Dropdown Overlay */
+    .mobile-nav-dropdown {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 200;
+    }
+    .mobile-nav-dropdown.open {
+      display: flex;
+      flex-direction: column;
+    }
+    .mobile-nav-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+    }
+    .mobile-nav-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--header-bg);
+      overflow-y: auto;
+      padding: 0 0 24px;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+    }
+    .mobile-nav-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .mobile-nav-panel-header span {
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .mobile-nav-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    /* Main content */
+    .main {
+      padding: 12px;
+      max-width: 100%;
+    }
+
+    /* Form rows auf 1 Spalte */
+    .form-row.cols-2,
+    .form-row.cols-3,
+    .form-row.cols-4 {
+      grid-template-columns: 1fr;
+    }
+
+    /* Budget grid auf 2 Spalten */
+    .budget-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Tabellen scrollbar machen */
+    .card { overflow-x: auto; }
+    .data-table { min-width: 480px; }
+
+    /* Section header kleiner */
+    .section-header h2 { font-size: 18px; }
+  }
+
   /* ===== PRINT ===== */
   @media print {
     .top-header, .sidebar, .header-actions { display: none !important; }
@@ -658,7 +818,65 @@
   </div>
   <div class="header-actions">
     <button class="btn-reset" onclick="resetForm()">↺ Zurücksetzen</button>
-    <button class="btn-print" onclick="window.print()">🖨 Drucken / PDF</button>
+    <button class="btn-print" onclick="saveAndPrint()">🖨 Drucken / PDF</button>
+  </div>
+</div>
+
+<!-- MOBILE NAVIGATION BAR -->
+<div class="mobile-nav-bar">
+  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  <div class="mobile-nav-current" id="mobileNavCurrent">Persönliche Daten</div>
+  <div class="mobile-nav-arrows">
+    <button id="btnPrev" onclick="mobilePrev()" disabled title="Zurück">‹</button>
+    <button id="btnNext" onclick="mobileNext()" title="Weiter">›</button>
+  </div>
+</div>
+
+<!-- MOBILE DROPDOWN MENU -->
+<div class="mobile-nav-dropdown" id="mobileNavDropdown">
+  <div class="mobile-nav-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-nav-panel">
+    <div class="mobile-nav-panel-header">
+      <span>Abschnitte</span>
+      <button class="mobile-nav-close" onclick="toggleMobileMenu()">✕</button>
+    </div>
+    <div class="sidebar-label">Allgemein</div>
+    <a class="nav-item active" onclick="mobileGoTo('s-daten', 'Persönliche Daten')" href="#">
+      <span class="nav-dot" style="background:#2563eb"></span> Persönliche Daten
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-ziele', 'Wünsche & Ziele')" href="#">
+      <span class="nav-dot" style="background:#2563eb"></span> Wünsche & Ziele
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-sparertyp', 'Sparertyp')" href="#">
+      <span class="nav-dot" style="background:#2563eb"></span> Sparertyp
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Finanzen</div>
+    <a class="nav-item" onclick="mobileGoTo('s-einnahmen', 'Einnahmen & Ausgaben')" href="#">
+      <span class="nav-dot" style="background:#059669"></span> Einnahmen & Ausgaben
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-sparwunsch', 'Sparwunsch')" href="#">
+      <span class="nav-dot" style="background:#059669"></span> Sparwunsch
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Absicherung</div>
+    <a class="nav-item" onclick="mobileGoTo('s-schutzengel', 'Gesundheit & Risiko')" href="#">
+      <span class="nav-dot" style="background:#0369a1"></span> Gesundheit & Risiko
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-wohnen', 'Wohnsituation')" href="#">
+      <span class="nav-dot" style="background:#7c3aed"></span> Wohnsituation
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-altersversorgung', 'Altersversorgung')" href="#">
+      <span class="nav-dot" style="background:#059669"></span> Altersversorgung
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-vermoegen', 'Vermögensaufbau')" href="#">
+      <span class="nav-dot" style="background:#059669"></span> Vermögensaufbau
+    </a>
+    <a class="nav-item" onclick="mobileGoTo('s-konsum', 'Konsumausgaben')" href="#">
+      <span class="nav-dot" style="background:#d97706"></span> Konsumausgaben
+    </a>
+    <div class="sidebar-label" style="margin-top:8px">Abschluss</div>
+    <a class="nav-item" onclick="mobileGoTo('s-datenschutz', 'Datenschutz')" href="#">
+      <span class="nav-dot" style="background:#2563eb"></span> Datenschutz
+    </a>
   </div>
 </div>
 
@@ -1712,8 +1930,8 @@
         <div class="card-title">Einwilligung E-Mail & Telefonwerbung</div>
         <p style="font-size:12.5px; color:var(--gray); margin-bottom:12px">Ich bin damit einverstanden, dass Tommy Möller mich informiert über ähnliche oder ergänzende Leistungen zur Risikoabsicherung, Altersvorsorge, Kapitalanlage oder weitere Finanzprodukte:</p>
         <div class="check-group">
-          <label class="check-item"><input type="checkbox" id="einw_email"> Per E-Mail</label>
-          <label class="check-item"><input type="checkbox" id="einw_tel"> Per Telefon</label>
+          <label class="check-item"><input type="checkbox" id="einw_email" onchange="handleConsentChange()"> Per E-Mail</label>
+          <label class="check-item"><input type="checkbox" id="einw_tel" onchange="handleConsentChange()"> Per Telefon</label>
         </div>
       </div>
 
@@ -1740,7 +1958,7 @@
       <div style="text-align:center; padding:20px; background:var(--header-bg); border-radius:8px; color:var(--gold-light)">
         <div style="font-family:'Inter', sans-serif; font-size:20px; font-weight:700; margin-bottom:8px">Auf gute Zusammenarbeit!</div>
         <div style="font-size:12px; color:rgba(255,255,255,0.5)">Tommy Möller · Finanzberatung &amp; Controlling · Erkner</div>
-        <button class="btn-print" style="margin-top:14px; font-size:14px; padding:10px 24px" onclick="window.print()">🖨️ Analyse drucken / Als PDF speichern</button>
+        <button class="btn-print" style="margin-top:14px; font-size:14px; padding:10px 24px" onclick="saveAndPrint()">🖨️ Analyse drucken / Als PDF speichern</button>
       </div>
     </div>
 
@@ -1750,6 +1968,7 @@
 <script>
 // ===== SECTIONS =====
 const sections = ['s-daten','s-ziele','s-sparertyp','s-einnahmen','s-sparwunsch','s-schutzengel','s-wohnen','s-altersversorgung','s-vermoegen','s-konsum','s-datenschutz'];
+const sectionLabels = ['Persönliche Daten','Wünsche & Ziele','Sparertyp','Einnahmen & Ausgaben','Sparwunsch','Gesundheit & Risiko','Wohnsituation','Altersversorgung','Vermögensaufbau','Konsumausgaben','Datenschutz'];
 let currentIdx = 0;
 
 function showSection(id) {
@@ -1759,6 +1978,13 @@ function showSection(id) {
   const idx = sections.indexOf(id);
   if (idx >= 0) currentIdx = idx;
   document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
+  // Update mobile nav
+  const label = document.getElementById('mobileNavCurrent');
+  if (label) label.textContent = sectionLabels[currentIdx] || '';
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  if (btnPrev) btnPrev.disabled = currentIdx === 0;
+  if (btnNext) btnNext.disabled = currentIdx === sections.length - 1;
   window.scrollTo(0, 0);
 }
 
@@ -1768,6 +1994,26 @@ function nextSection() {
     showSection(sections[currentIdx]);
   }
 }
+
+// ===== MOBILE NAV =====
+function toggleMobileMenu() {
+  const dd = document.getElementById('mobileNavDropdown');
+  dd.classList.toggle('open');
+}
+
+function mobileGoTo(id, label) {
+  toggleMobileMenu();
+  showSection(id);
+}
+
+function mobilePrev() {
+  if (currentIdx > 0) showSection(sections[currentIdx - 1]);
+}
+
+function mobileNext() {
+  if (currentIdx < sections.length - 1) showSection(sections[currentIdx + 1]);
+}
+
 
 // ===== GOALS =====
 let selectedGoals = [];
@@ -2050,6 +2296,158 @@ document.addEventListener('DOMContentLoaded', function() {
   updateSliderDisplay('heute');
   updateSliderDisplay('ziel');
 });
+
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://kalonkzgzbpsndkuznqp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== AUTH CHECK =====
+// TODO: Auth-Check aktivieren sobald Login-Seite mit Supabase verbunden ist
+// (async function checkAuth() {
+//   const { data: { session } } = await sb.auth.getSession();
+//   if (!session) {
+//     window.location.href = '../pages/login.html';
+//   }
+// })();
+
+// ===== COLLECT ALL FORM DATA =====
+function collectFormData() {
+  const data = {};
+  document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
+    if (el.type === 'checkbox' || el.type === 'radio') {
+      data[el.id] = el.checked;
+    } else {
+      data[el.id] = el.value;
+    }
+  });
+  return data;
+}
+
+// ===== GENERATE PDF AS BASE64 =====
+async function generatePDFBase64() {
+  const { jsPDF } = window.jspdf;
+
+  // Temporarily show all sections for capture
+  const allSections = document.querySelectorAll('.section');
+  const sidebar = document.querySelector('.sidebar');
+  const topHeader = document.querySelector('.top-header');
+  const headerActions = document.querySelector('.header-actions');
+
+  allSections.forEach(s => { s.style.display = 'block'; s.style.opacity = '1'; });
+  sidebar.style.display = 'none';
+  headerActions.style.display = 'none';
+
+  // Wait for render
+  await new Promise(r => setTimeout(r, 300));
+
+  const mainEl = document.querySelector('.main');
+  const canvas = await html2canvas(mainEl, {
+    scale: 1.2,
+    useCORS: true,
+    logging: false,
+    backgroundColor: '#f8fafc'
+  });
+
+  // Restore state
+  allSections.forEach((s, i) => {
+    s.style.display = i === 0 ? 'block' : 'none';
+    s.style.opacity = '';
+  });
+  sidebar.style.display = '';
+  headerActions.style.display = '';
+  // Re-apply active section
+  document.getElementById(sections[currentIdx])?.classList.add('active');
+
+  const imgData = canvas.toDataURL('image/jpeg', 0.85);
+  const pdf = new jsPDF('p', 'pt', 'a4');
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  const imgH = (canvas.height * pageW) / canvas.width;
+  let heightLeft = imgH;
+  let pos = 0;
+
+  pdf.addImage(imgData, 'JPEG', 0, pos, pageW, imgH);
+  heightLeft -= pageH;
+
+  while (heightLeft > 0) {
+    pos -= pageH;
+    pdf.addPage();
+    pdf.addImage(imgData, 'JPEG', 0, pos, pageW, imgH);
+    heightLeft -= pageH;
+  }
+
+  return pdf.output('datauristring').split(',')[1];
+}
+
+// ===== SAVE + EMAIL =====
+let isSaving = false;
+async function saveAndEmail(triggerPrint = false) {
+  if (isSaving) return;
+  isSaving = true;
+
+  // Show saving indicator
+  const btn = document.querySelector('.btn-print');
+  const origText = btn?.textContent || '';
+  if (btn) btn.textContent = '⏳ Wird gespeichert…';
+
+  try {
+    const formData = collectFormData();
+    const kundeName = formData['einw_a_name'] || 'Unbekannt';
+    const kundeEmail = formData['einw_a_email'] || '';
+    const einwEmail = document.getElementById('einw_email')?.checked || false;
+    const einwTel = document.getElementById('einw_tel')?.checked || false;
+
+    // Generate PDF
+    let pdfBase64 = '';
+    try {
+      pdfBase64 = await generatePDFBase64();
+    } catch (e) {
+      console.warn('PDF-Generierung fehlgeschlagen:', e);
+    }
+
+    // Save to Supabase
+    const { error: dbError } = await sb.from('finanzanalysen').insert({
+      kunde_name: kundeName,
+      kunde_email: kundeEmail,
+      einwilligung_email: einwEmail,
+      einwilligung_tel: einwTel,
+      formulardaten: formData,
+      pdf_erstellt: !!pdfBase64
+    });
+    if (dbError) console.warn('Supabase Fehler:', dbError);
+
+    // Call Edge Function for emails
+    const { error: fnError } = await sb.functions.invoke('send-finanz-email', {
+      body: { kundeName, kundeEmail, pdfBase64, einwEmail, einwTel }
+    });
+    if (fnError) console.warn('E-Mail Fehler:', fnError);
+
+    if (btn) btn.textContent = '✅ Gespeichert';
+    setTimeout(() => { if (btn) btn.textContent = origText; }, 2500);
+
+  } catch (e) {
+    console.error('Fehler beim Speichern:', e);
+    if (btn) btn.textContent = origText;
+  } finally {
+    isSaving = false;
+    if (triggerPrint) window.print();
+  }
+}
+
+// Triggered by consent checkboxes
+async function handleConsentChange() {
+  const einwEmail = document.getElementById('einw_email')?.checked;
+  const einwTel = document.getElementById('einw_tel')?.checked;
+  if (einwEmail || einwTel) {
+    await saveAndEmail(false);
+  }
+}
+
+// Print button
+async function saveAndPrint() {
+  await saveAndEmail(true);
+}
 </script>
 </body>
 </html>
