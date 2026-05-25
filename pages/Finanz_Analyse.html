@@ -876,6 +876,9 @@
   </div>
 </div>
 
+  <!-- AUTO-SAVE BADGE -->
+<div class="autosave-badge" id="autosaveBadge">💾 Automatisch gespeichert</div>
+
 <!-- LAYOUT -->
 <div class="layout">
 
@@ -2444,121 +2447,6 @@ async function handleConsentChange() {
 async function saveAndPrint() {
   await saveAndEmail(true);
 }
-</script>
- 
- <script>
-  // ===== AUTO-SAVE TO LOCALSTORAGE =====
-  
-  // List of all input IDs to track
-  const INPUT_IDS = [
-    // Personal Data Section
-    'a_titel', 'a_name', 'a_geburt', 'a_geburtsort', 'a_staat',
-    'a_familienstand', 'a_raucher', 'a_beruf', 'a_arbeitgeber',
-    'a_email_p', 'a_email_g', 'a_tel_p', 'a_tel_g', 'a_handy',
-    'a_strasse', 'a_plz', 'a_iban', 'a_bic', 'a_steuer',
-    'kind1', 'kind2', 'kind3', 'kind4',
-    // Add all other input IDs from other sections here
-  ];
-
-  // Initialize: Load saved data when page loads
-  window.addEventListener('load', () => {
-    loadDataFromLocalStorage();
-    attachAutoSaveListeners();
-  });
-
-  // Load data from localStorage
-  function loadDataFromLocalStorage() {
-    const savedData = localStorage.getItem('finanzAnalyseData');
-    if (savedData) {
-      try {
-        const data = JSON.parse(savedData);
-        
-        // Restore input values
-        Object.keys(data).forEach(key => {
-          const element = document.getElementById(key);
-          if (element) {
-            if (element.type === 'radio') {
-              const radios = document.querySelectorAll(`input[name="${element.name}"]`);
-              radios.forEach(radio => {
-                radio.checked = (radio.value === data[key]);
-              });
-            } else if (element.type === 'checkbox') {
-              element.checked = data[key];
-            } else {
-              element.value = data[key];
-            }
-          }
-        });
-        console.log('Data restored from localStorage');
-      } catch (e) {
-        console.error('Error loading data from localStorage:', e);
-      }
-    }
-  }
-
-  // Attach auto-save listeners to all inputs
-  function attachAutoSaveListeners() {
-    INPUT_IDS.forEach(id => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.addEventListener('change', saveDataToLocalStorage);
-        element.addEventListener('input', saveDataToLocalStorage);
-        
-        // For radio buttons
-        if (element.type === 'radio') {
-          const radios = document.querySelectorAll(`input[name="${element.name}"]`);
-          radios.forEach(radio => {
-            radio.addEventListener('change', saveDataToLocalStorage);
-          });
-        }
-      }
-    });
-  }
-
-  // Save data to localStorage
-  function saveDataToLocalStorage() {
-    const data = {};
-    
-    INPUT_IDS.forEach(id => {
-      const element = document.getElementById(id);
-      if (element) {
-        if (element.type === 'radio') {
-          const checked = document.querySelector(`input[name="${element.name}"]:checked`);
-          data[id] = checked ? checked.value : '';
-        } else if (element.type === 'checkbox') {
-          data[id] = element.checked;
-        } else {
-          data[id] = element.value;
-        }
-      }
-    });
-    
-    localStorage.setItem('finanzAnalyseData', JSON.stringify(data));
-    console.log('Data auto-saved to localStorage');
-  }
-
-  // Save before page unload
-  window.addEventListener('beforeunload', saveDataToLocalStorage);
-
-  // Optional: Clear saved data
-  function clearSavedData() {
-    localStorage.removeItem('finanzAnalyseData');
-    console.log('Saved data cleared');
-  }
-
-  // Modify the resetForm function to also clear localStorage
-  function resetForm() {
-    if (confirm('Möchten Sie wirklich alle Daten löschen?')) {
-      document.querySelectorAll('input, select, textarea').forEach(element => {
-        if (element.type === 'radio' || element.type === 'checkbox') {
-          element.checked = false;
-        } else {
-          element.value = '';
-        }
-      });
-      clearSavedData();
-    }
-  }
 </script>
 </body>
 </html>
