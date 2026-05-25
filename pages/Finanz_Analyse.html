@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -568,6 +569,22 @@
     margin-bottom: 14px;
   }
 
+  .autosave-badge {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+  .autosave-badge.visible { opacity: 1; }
+
   /* ===== MOBILE NAV ===== */
   .mobile-nav-bar { display: none; }
   .mobile-nav-dropdown { display: none; }
@@ -814,6 +831,7 @@
   </div>
   <div class="header-actions">
     <button class="btn-reset" onclick="resetForm()">↺ Zurücksetzen</button>
+    <button class="btn-print" onclick="exportExcel()" style="background:#059669">📊 Excel Export</button>
     <button class="btn-print" onclick="saveAndPrint()">🖨 Drucken / PDF</button>
   </div>
 </div>
@@ -876,7 +894,7 @@
   </div>
 </div>
 
-  <!-- AUTO-SAVE BADGE -->
+<!-- AUTO-SAVE BADGE -->
 <div class="autosave-badge" id="autosaveBadge">💾 Automatisch gespeichert</div>
 
 <!-- LAYOUT -->
@@ -2284,8 +2302,161 @@ function resetForm() {
     selectedGoals = [];
     updateGoalRanks();
     updateTop3Display();
+    localStorage.removeItem('finanzanalyse_data');
     showSection('s-daten');
   }
+}
+
+// ===== LOCAL STORAGE AUTO-SAVE =====
+const LS_KEY = 'finanzanalyse_data';
+let autoSaveTimer = null;
+
+function saveToLocalStorage() {
+  const data = {};
+  document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
+    if (el.type === 'checkbox' || el.type === 'radio') {
+      data[el.id] = el.checked;
+    } else {
+      data[el.id] = el.value;
+    }
+  });
+  data['__section'] = sections[currentIdx];
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+  // Show badge
+  const badge = document.getElementById('autosaveBadge');
+  if (badge) {
+    badge.classList.add('visible');
+    clearTimeout(badge._timer);
+    badge._timer = setTimeout(() => badge.classList.remove('visible'), 2000);
+  }
+}
+
+function restoreFromLocalStorage() {
+  const raw = localStorage.getItem(LS_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([id, val]) => {
+      if (id === '__section') return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        el.checked = !!val;
+      } else {
+        el.value = val ?? '';
+      }
+    });
+    // Restore section
+    if (data['__section'] && sections.includes(data['__section'])) {
+      showSection(data['__section']);
+    }
+    // Re-trigger calculations
+    calcEinkommen();
+    calcAusgaben();
+    calcSparwunsch();
+    calcAltersvorsorge();
+    calcVermoegen();
+    calcKonsumSum();
+  } catch(e) {
+    console.warn('Restore fehlgeschlagen:', e);
+  }
+}
+
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveToLocalStorage, 800);
+}
+
+// ===== EXCEL EXPORT =====
+function exportExcel() {
+  const d = collectFormData();
+  const name = d['pers_a_name'] || 'Kunde';
+  const datum = new Date().toLocaleDateString('de-DE');
+  const wb = XLSX.utils.book_new();
+
+  function sheet(title, rows) {
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{ wch: 32 }, { wch: 22 }, { wch: 22 }];
+    XLSX.utils.book_append_sheet(wb, ws, title);
+  }
+
+  // --- 1. Persönliche Daten ---
+  sheet('Persönliche Daten', [
+    ['Finanz-Analyse – Tommy Möller', '', ''],
+    ['Erstellt am:', datum, ''],
+    ['', '', ''],
+    ['PERSON A', '', ''],
+    ['Name', d['pers_a_name'] || '–', ''],
+    ['Geburtsdatum', d['pers_a_geb'] || '–', ''],
+    ['Familienstand', d['pers_a_stand'] || '–', ''],
+    ['Beruf', d['pers_a_beruf'] || '–', ''],
+    ['Nettoeinkommen (mtl.)', d['pers_a_netto'] || '–', ''],
+    ['', '', ''],
+    ['PERSON B', '', ''],
+    ['Name', d['pers_b_name'] || '–', ''],
+    ['Geburtsdatum', d['pers_b_geb'] || '–', ''],
+    ['Beruf', d['pers_b_beruf'] || '–', ''],
+    ['Nettoeinkommen (mtl.)', d['pers_b_netto'] || '–', ''],
+  ]);
+
+  // --- 2. Einnahmen & Ausgaben ---
+  const nettoA = parseFloat(d['ein_a_netto']) || 0;
+  const monateA = Math.min(parseInt(d['ein_a_monate']) || 12, 12);
+  const nettoB = parseFloat(d['ein_b_netto']) || 0;
+  const monateB = Math.min(parseInt(d['ein_b_monate']) || 12, 12);
+  const kg = parseFloat(d['kindergeld']) || 0;
+  const nb = parseFloat(d['neben']) || 0;
+  const so = parseFloat(d['sonst_ein']) || 0;
+  const jahreseinkommenA = nettoA * monateA;
+  const jahreseinkommenB = nettoB * monateB;
+  const gesamtJahr = jahreseinkommenA + jahreseinkommenB + kg*12 + nb*12 + so*12;
+  const haushaltMtl = gesamtJahr / 12;
+
+  sheet('Einnahmen & Ausgaben', [
+    ['Einnahmen', 'Monatlich (€)', 'Jährlich (€)'],
+    ['Person A Netto', nettoA, jahreseinkommenA],
+    ['Person B Netto', nettoB, jahreseinkommenB],
+    ['Kindergeld', kg, kg * 12],
+    ['Nebeneinkommen', nb, nb * 12],
+    ['Sonstiges', so, so * 12],
+    ['', '', ''],
+    ['Haushaltseinkommen (mtl.)', haushaltMtl.toFixed(2), gesamtJahr.toFixed(2)],
+    ['', '', ''],
+    ['Ausgaben (mtl.)', 'Betrag (€)', 'Soll (€)'],
+    ['Gesundheit & Risiko', parseFloat(d['sum_schutzengel']) || 0, (haushaltMtl * 0.10).toFixed(2)],
+    ['Wohnen', parseFloat(d['sum_wohnen']) || 0, (haushaltMtl * 0.30).toFixed(2)],
+    ['Sparen', parseFloat(d['sum_sparen']) || 0, (haushaltMtl * 0.30).toFixed(2)],
+    ['Konsum', parseFloat(d['sum_konsum']) || 0, (haushaltMtl * 0.30).toFixed(2)],
+  ]);
+
+  // --- 3. Altersvorsorge ---
+  sheet('Altersvorsorge', [
+    ['Produkt', 'Person', 'Monatsbeitrag (€)'],
+    ['Riester', 'A', parseFloat(d['av_riester_a_beit']) || 0],
+    ['Riester', 'B', parseFloat(d['av_riester_b_beit']) || 0],
+    ['Basis/Rürup', 'A', parseFloat(d['av_basis_a_beit']) || 0],
+    ['Basis/Rürup', 'B', parseFloat(d['av_basis_b_beit']) || 0],
+    ['Private LV/RV', 'A', parseFloat(d['av_lv_a_beit']) || 0],
+    ['Private LV/RV', 'B', parseFloat(d['av_lv_b_beit']) || 0],
+    ['Betriebliche AV', 'A/B', parseFloat(d['av_bav_beit']) || 0],
+    ['', '', ''],
+    ['Gesamt Monatsbeiträge', '', parseFloat(d['av_summe_beit']) || 0],
+  ]);
+
+  // --- 4. Sparwunsch ---
+  sheet('Sparwunsch', [
+    ['Wunsch', 'Monatlich (€)'],
+    ['Sparwunsch 1', parseFloat(d['sw_mtl1']) || 0],
+    ['Sparwunsch 2', parseFloat(d['sw_mtl2']) || 0],
+    ['Sparwunsch 3', parseFloat(d['sw_mtl3']) || 0],
+    ['Verfügbarer Überschuss', parseFloat(d['sw_ueberschuss']) || 0],
+    ['', ''],
+    ['Summe Sparwünsche', parseFloat(d['sw_summe']) || 0],
+  ]);
+
+  // Datei herunterladen
+  const filename = `Finanzanalyse_${name.replace(/\s+/g,'_')}_${datum.replace(/\./g,'-')}.xlsx`;
+  XLSX.writeFile(wb, filename);
 }
 
 // ===== INIT =====
@@ -2294,21 +2465,11 @@ document.addEventListener('DOMContentLoaded', function() {
   initImmoTable();
   updateSliderDisplay('heute');
   updateSliderDisplay('ziel');
+  restoreFromLocalStorage();
+  // Attach auto-save to all inputs
+  document.addEventListener('input', scheduleAutoSave);
+  document.addEventListener('change', scheduleAutoSave);
 });
-
-// ===== SUPABASE =====
-const SUPABASE_URL = 'https://kalonkzgzbpsndkuznqp.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ===== AUTH CHECK =====
-// TODO: Auth-Check aktivieren sobald Login-Seite mit Supabase verbunden ist
-// (async function checkAuth() {
-//   const { data: { session } } = await sb.auth.getSession();
-//   if (!session) {
-//     window.location.href = '../pages/login.html';
-//   }
-// })();
 
 // ===== COLLECT ALL FORM DATA =====
 function collectFormData() {
@@ -2404,35 +2565,6 @@ async function saveAndEmail(triggerPrint = false) {
     } catch (e) {
       console.warn('PDF-Generierung fehlgeschlagen:', e);
     }
-
-    // Save to Supabase
-    const { error: dbError } = await sb.from('finanzanalysen').insert({
-      kunde_name: kundeName,
-      kunde_email: kundeEmail,
-      einwilligung_email: einwEmail,
-      einwilligung_tel: einwTel,
-      formulardaten: formData,
-      pdf_erstellt: !!pdfBase64
-    });
-    if (dbError) console.warn('Supabase Fehler:', dbError);
-
-    // Call Edge Function for emails
-    const { error: fnError } = await sb.functions.invoke('send-finanz-email', {
-      body: { kundeName, kundeEmail, pdfBase64, einwEmail, einwTel }
-    });
-    if (fnError) console.warn('E-Mail Fehler:', fnError);
-
-    if (btn) btn.textContent = '✅ Gespeichert';
-    setTimeout(() => { if (btn) btn.textContent = origText; }, 2500);
-
-  } catch (e) {
-    console.error('Fehler beim Speichern:', e);
-    if (btn) btn.textContent = origText;
-  } finally {
-    isSaving = false;
-    if (triggerPrint) window.print();
-  }
-}
 
 // Triggered by consent checkboxes
 async function handleConsentChange() {
