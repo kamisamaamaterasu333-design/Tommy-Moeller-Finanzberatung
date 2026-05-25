@@ -2471,6 +2471,20 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('change', scheduleAutoSave);
 });
 
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://kalonkzgzbpsndkuznqp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== AUTH CHECK =====
+// TODO: Auth-Check aktivieren sobald Login-Seite mit Supabase verbunden ist
+// (async function checkAuth() {
+//   const { data: { session } } = await sb.auth.getSession();
+//   if (!session) {
+//     window.location.href = '../pages/login.html';
+//   }
+// })();
+
 // ===== COLLECT ALL FORM DATA =====
 function collectFormData() {
   const data = {};
@@ -2565,6 +2579,35 @@ async function saveAndEmail(triggerPrint = false) {
     } catch (e) {
       console.warn('PDF-Generierung fehlgeschlagen:', e);
     }
+
+    // Save to Supabase
+    const { error: dbError } = await sb.from('finanzanalysen').insert({
+      kunde_name: kundeName,
+      kunde_email: kundeEmail,
+      einwilligung_email: einwEmail,
+      einwilligung_tel: einwTel,
+      formulardaten: formData,
+      pdf_erstellt: !!pdfBase64
+    });
+    if (dbError) console.warn('Supabase Fehler:', dbError);
+
+    // Call Edge Function for emails
+    const { error: fnError } = await sb.functions.invoke('send-finanz-email', {
+      body: { kundeName, kundeEmail, pdfBase64, einwEmail, einwTel }
+    });
+    if (fnError) console.warn('E-Mail Fehler:', fnError);
+
+    if (btn) btn.textContent = '✅ Gespeichert';
+    setTimeout(() => { if (btn) btn.textContent = origText; }, 2500);
+
+  } catch (e) {
+    console.error('Fehler beim Speichern:', e);
+    if (btn) btn.textContent = origText;
+  } finally {
+    isSaving = false;
+    if (triggerPrint) window.print();
+  }
+}
 
 // Triggered by consent checkboxes
 async function handleConsentChange() {
