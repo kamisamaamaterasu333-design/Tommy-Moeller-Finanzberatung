@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produktempfehlungen – Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #0f172a;
+    --navy-2:  #1e293b;
+    --blue:    #2563eb;
+    --blue-l:  #dbeafe;
+    --green:   #059669;
+    --green-l: #d1fae5;
+    --amber:   #d97706;
+    --amber-l: #fef3c7;
+    --purple:  #7c3aed;
+    --purple-l:#ede9fe;
+    --slate:   #64748b;
+    --border:  #e2e8f0;
+    --bg:      #f8fafc;
+    --white:   #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    padding: 64px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 120%, #1e40af33, transparent);
+  }
+  .hero-label {
+    display: inline-block;
+    background: rgba(37,99,235,0.25);
+    border: 1px solid rgba(37,99,235,0.4);
+    color: #93c5fd;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: #93c5fd;
+  }
+  .hero p {
+    color: #94a3b8;
+    font-size: 16px;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  /* ── QUIZ CONTAINER ── */
+  .quiz-wrap {
+    max-width: 760px;
+    margin: -40px auto 0;
+    padding: 0 16px 80px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .quiz-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(15,23,42,0.12);
+    overflow: hidden;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--border);
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #60a5fa);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .quiz-inner {
+    padding: 36px 40px;
+  }
+  @media(max-width:600px) { .quiz-inner { padding: 24px 20px; } }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fadeUp .35s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .step-q {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 3vw, 26px);
+    color: var(--navy);
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+  .step-hint {
+    color: var(--slate);
+    font-size: 13px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* Option tiles */
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .opt {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+    user-select: none;
+    background: var(--white);
+  }
+  .opt:hover { border-color: var(--blue); background: #f0f6ff; }
+  .opt.selected { border-color: var(--blue); background: var(--blue-l); }
+  .opt-icon { font-size: 26px; margin-bottom: 6px; }
+  .opt-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .opt-sub { font-size: 11px; color: var(--slate); margin-top: 2px; }
+
+  /* Range slider */
+  .slider-wrap { margin-bottom: 28px; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--slate); margin-top: 6px; }
+  input[type=range] {
+    width: 100%; accent-color: var(--blue); height: 6px;
+    cursor: pointer;
+  }
+  .slider-val {
+    text-align: center; font-size: 24px; font-weight: 700;
+    color: var(--blue); margin-bottom: 12px;
+    font-family: 'DM Serif Display', serif;
+  }
+
+  /* Multi-select chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .chip {
+    border: 2px solid var(--border); border-radius: 24px;
+    padding: 7px 16px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .2s; background: var(--white);
+    color: var(--navy);
+  }
+  .chip:hover { border-color: var(--blue); }
+  .chip.selected { border-color: var(--blue); background: var(--blue-l); color: var(--blue); }
+
+  /* Nav buttons */
+  .quiz-nav { display: flex; gap: 10px; align-items: center; }
+  .btn-next {
+    background: var(--blue); color: white;
+    border: none; border-radius: 8px;
+    padding: 13px 28px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-next:hover { background: #1d4ed8; }
+  .btn-next:disabled { background: var(--border); color: var(--slate); cursor: default; }
+  .btn-back {
+    background: none; border: 2px solid var(--border);
+    color: var(--slate); border-radius: 8px;
+    padding: 11px 20px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-back:hover { border-color: var(--slate); color: var(--navy); }
+
+  /* ── RESULTS ── */
+  #results { display: none; padding: 36px 40px; }
+  @media(max-width:600px) { #results { padding: 24px 20px; } }
+
+  .results-header { margin-bottom: 8px; }
+  .results-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; color: var(--navy); margin-bottom: 4px;
+  }
+  .results-header p { color: var(--slate); font-size: 14px; margin-bottom: 28px; }
+
+  .profile-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue-l); border: 1px solid #bfdbfe;
+    border-radius: 8px; padding: 8px 16px;
+    font-size: 13px; font-weight: 600; color: var(--blue);
+    margin-bottom: 28px;
+  }
+
+  .rec-group { margin-bottom: 32px; }
+  .rec-group-title {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--slate);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rec-group-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .rec-cards { display: grid; gap: 12px; }
+  .rec-card {
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; display: flex; gap: 16px;
+    align-items: flex-start; transition: box-shadow .2s;
+    background: var(--white);
+    position: relative; overflow: hidden;
+  }
+  .rec-card:hover { box-shadow: 0 4px 20px rgba(15,23,42,0.08); }
+  .rec-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+  .rec-card.top::before { background: var(--blue); }
+  .rec-card.green::before { background: var(--green); }
+  .rec-card.amber::before { background: var(--amber); }
+  .rec-card.purple::before { background: var(--purple); }
+
+  .rec-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .ic-blue   { background: var(--blue-l); }
+  .ic-green  { background: var(--green-l); }
+  .ic-amber  { background: var(--amber-l); }
+  .ic-purple { background: var(--purple-l); }
+
+  .rec-body { flex: 1; min-width: 0; }
+  .rec-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .rec-sub   { font-size: 12px; color: var(--slate); margin-bottom: 8px; line-height: 1.4; }
+  .rec-tags  { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 10px; font-weight: 600; padding: 3px 8px;
+    border-radius: 4px; letter-spacing: .04em;
+  }
+  .tag-blue   { background: var(--blue-l);   color: var(--blue); }
+  .tag-green  { background: var(--green-l);  color: var(--green); }
+  .tag-amber  { background: var(--amber-l);  color: var(--amber); }
+  .tag-purple { background: var(--purple-l); color: var(--purple); }
+
+  .rec-yield {
+    text-align: right; flex-shrink: 0;
+    font-family: 'DM Serif Display', serif;
+  }
+  .rec-yield-num { font-size: 22px; color: var(--green); }
+  .rec-yield-lbl { font-size: 10px; color: var(--slate); white-space: nowrap; }
+
+  /* Restart */
+  .restart-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    padding: 0 40px 32px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: -8px;
+  }
+  @media(max-width:600px) { .restart-row { padding: 16px 20px; } }
+  .btn-restart {
+    background: none; border: 2px solid var(--border);
+    color: var(--slate); border-radius: 8px;
+    padding: 10px 18px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all .2s;
+  }
+  .btn-restart:hover { border-color: var(--slate); color: var(--navy); }
+  .btn-contact {
+    background: var(--navy); color: white;
+    border: none; border-radius: 8px;
+    padding: 10px 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-contact:hover { background: var(--blue); }
+
+  /* ── AI CHAT ── */
+  .ai-section {
+    max-width: 760px; margin: 0 auto 64px;
+    padding: 0 16px;
+  }
+  .ai-card {
+    background: var(--navy); border-radius: 16px;
+    padding: 28px 32px;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  @media(max-width:600px) { .ai-card { flex-direction: column; padding: 20px; } }
+  .ai-avatar {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .ai-body { flex: 1; }
+  .ai-body h3 {
+    font-family: 'DM Serif Display', serif;
+    color: white; font-size: 18px; margin-bottom: 6px;
+  }
+  .ai-body p { color: #94a3b8; font-size: 13px; margin-bottom: 16px; line-height: 1.5; }
+  .ai-input-row { display: flex; gap: 8px; }
+  .ai-input {
+    flex: 1; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; padding: 11px 16px;
+    color: white; font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color .2s;
+  }
+  .ai-input::placeholder { color: #475569; }
+  .ai-input:focus { border-color: #3b82f6; }
+  .ai-send {
+    background: var(--blue); border: none;
+    color: white; border-radius: 8px;
+    padding: 11px 18px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background .2s; white-space: nowrap;
+  }
+  .ai-send:hover { background: #1d4ed8; }
+
+  .ai-messages { margin-top: 16px; display: none; }
+  .ai-msg {
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; line-height: 1.5; margin-bottom: 8px;
+    animation: fadeUp .3s ease;
+  }
+  .ai-msg.user { background: rgba(37,99,235,0.25); color: #bfdbfe; text-align: right; }
+  .ai-msg.bot  { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+  .ai-typing   { color: #475569; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Produktempfehlungen</div>
+  <h1>Finden Sie das <em>richtige</em><br>Finanzprodukt</h1>
+  <p>Beantworten Sie 4 kurze Fragen — wir zeigen Ihnen passende Empfehlungen für Ihre Situation.</p>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-wrap">
+  <div class="quiz-card">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- STEP 1: Alter / Lebensphase -->
+    <div class="quiz-inner">
+      <div class="step active" id="step1">
+        <div class="step-num">Frage 1 von 4</div>
+        <div class="step-q">In welcher Lebensphase befinden Sie sich?</div>
+        <div class="step-hint">Das beeinflusst, wie weit wir vorausplanen und welche Flexibilität Sie brauchen.</div>
+        <div class="options" id="opts1">
+          <div class="opt" data-val="jung" onclick="selectOpt(this,'opts1')">
+            <div class="opt-icon">🎓</div>
+            <div class="opt-label">Berufsstart</div>
+            <div class="opt-sub">18–30 Jahre</div>
+          </div>
+          <div class="opt" data-val="aufbau" onclick="selectOpt(this,'opts1')">
+            <div class="opt-icon">🏗️</div>
+            <div class="opt-label">Aufbauphase</div>
+            <div class="opt-sub">30–45 Jahre</div>
+          </div>
+          <div class="opt" data-val="konsolidierung" onclick="selectOpt(this,'opts1')">
+            <div class="opt-icon">📈</div>
+            <div class="opt-label">Konsolidierung</div>
+            <div class="opt-sub">45–60 Jahre</div>
+          </div>
+          <div class="opt" data-val="rente" onclick="selectOpt(this,'opts1')">
+            <div class="opt-icon">🌅</div>
+            <div class="opt-label">Vorruhestand / Rente</div>
+            <div class="opt-sub">60+ Jahre</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-next" id="next1" onclick="nextStep(2)" disabled>Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Risikotyp -->
+      <div class="step" id="step2">
+        <div class="step-num">Frage 2 von 4</div>
+        <div class="step-q">Wie gehen Sie mit Risiko um?</div>
+        <div class="step-hint">Es gibt kein Richtig oder Falsch — nur was zu Ihnen passt.</div>
+        <div class="options" id="opts2">
+          <div class="opt" data-val="sicher" onclick="selectOpt(this,'opts2')">
+            <div class="opt-icon">🛡️</div>
+            <div class="opt-label">Sicherheitsorientiert</div>
+            <div class="opt-sub">Kein Verlustrisiko</div>
+          </div>
+          <div class="opt" data-val="ausgewogen" onclick="selectOpt(this,'opts2')">
+            <div class="opt-icon">⚖️</div>
+            <div class="opt-label">Ausgewogen</div>
+            <div class="opt-sub">Etwas Schwankung ok</div>
+          </div>
+          <div class="opt" data-val="wachstum" onclick="selectOpt(this,'opts2')">
+            <div class="opt-icon">🚀</div>
+            <div class="opt-label">Wachstumsorientiert</div>
+            <div class="opt-sub">Höheres Risiko ok</div>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="prevStep(1)">← Zurück</button>
+          <button class="btn-next" id="next2" onclick="nextStep(3)" disabled>Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Ziel -->
+      <div class="step" id="step3">
+        <div class="step-num">Frage 3 von 4</div>
+        <div class="step-q">Was ist Ihr wichtigstes Ziel?</div>
+        <div class="step-hint">Mehrere Auswahlen möglich.</div>
+        <div class="chips" id="chips3">
+          <div class="chip" data-val="notgroschen" onclick="toggleChip(this)">🪣 Notgroschen aufbauen</div>
+          <div class="chip" data-val="sparen" onclick="toggleChip(this)">💰 Langfristig Vermögen sparen</div>
+          <div class="chip" data-val="rente" onclick="toggleChip(this)">🧓 Altersvorsorge</div>
+          <div class="chip" data-val="haus" onclick="toggleChip(this)">🏠 Eigenheim finanzieren</div>
+          <div class="chip" data-val="etf" onclick="toggleChip(this)">📊 In ETFs / Aktien investieren</div>
+          <div class="chip" data-val="kosten" onclick="toggleChip(this)">💳 Bankkosten senken</div>
+          <div class="chip" data-val="liquidität" onclick="toggleChip(this)">💧 Geld kurzfristig parken</div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="prevStep(2)">← Zurück</button>
+          <button class="btn-next" id="next3" onclick="nextStep(4)" disabled>Weiter →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Monatliches Budget -->
+      <div class="step" id="step4">
+        <div class="step-num">Frage 4 von 4</div>
+        <div class="step-q">Wie viel können Sie monatlich investieren?</div>
+        <div class="step-hint">Auch kleine Beträge machen langfristig einen großen Unterschied.</div>
+        <div class="slider-wrap">
+          <div class="slider-val" id="sliderVal">200 €</div>
+          <input type="range" min="25" max="2000" step="25" value="200"
+            oninput="updateSlider(this.value)" id="budgetSlider">
+          <div class="slider-labels"><span>25 €</span><span>500 €</span><span>1.000 €</span><span>2.000 €</span></div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-back" onclick="prevStep(3)">← Zurück</button>
+          <button class="btn-next" onclick="showResults()">Empfehlungen anzeigen →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results">
+      <div style="padding:36px 40px 0">
+        <div class="results-header">
+          <h2>Ihre persönlichen Empfehlungen</h2>
+          <p>Basierend auf Ihrem Profil haben wir die passendsten Produkte ausgewählt.</p>
+        </div>
+        <div class="profile-badge" id="profileBadge">📋 Ihr Profil wird geladen…</div>
+        <div id="recContent"></div>
+      </div>
+      <div class="restart-row">
+        <button class="btn-restart" onclick="restartQuiz()">↺ Neu starten</button>
+        <a href="mailto:tommy@beispiel.de" class="btn-contact">📬 Beratungsgespräch anfragen</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div class="ai-section">
+  <div class="ai-card">
+    <div class="ai-avatar">🤖</div>
+    <div class="ai-body">
+      <h3>Haben Sie noch Fragen?</h3>
+      <p>Mein KI-Assistent beantwortet Ihre Fragen zu den Empfehlungen — kostenlos, sofort, ohne Wartezeit. Für eine persönliche Beratung stehe ich jederzeit zur Verfügung.</p>
+      <div class="ai-input-row">
+        <input class="ai-input" id="aiInput" placeholder="z.B. „Was ist ein ETF-Sparplan genau?"" onkeydown="if(event.key==='Enter') sendAI()">
+        <button class="ai-send" onclick="sendAI()">Senden</button>
+      </div>
+      <div class="ai-messages" id="aiMessages"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────
+const state = { phase: null, risiko: null, ziele: [], budget: 200 };
+
+// ── OPTION SELECT ──
+function selectOpt(el, groupId) {
+  document.querySelectorAll(`#${groupId} .opt`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const step = groupId.replace('opts','');
+  if (step === '1') { state.phase = el.dataset.val; enableNext('next1'); }
+  if (step === '2') { state.risiko = el.dataset.val; enableNext('next2'); }
+}
+
+function toggleChip(el) {
+  el.classList.toggle('selected');
+  state.ziele = [...document.querySelectorAll('#chips3 .chip.selected')].map(c => c.dataset.val);
+  document.getElementById('next3').disabled = state.ziele.length === 0;
+}
+
+function enableNext(id) { document.getElementById(id).disabled = false; }
+
+// ── SLIDER ──
+function updateSlider(v) {
+  state.budget = parseInt(v);
+  document.getElementById('sliderVal').textContent = parseInt(v).toLocaleString('de-DE') + ' €';
+}
+
+// ── NAVIGATION ──
+let currentStep = 1;
+const totalSteps = 4;
+
+function nextStep(n) {
+  document.getElementById(`step${currentStep}`).classList.remove('active');
+  document.getElementById(`step${n}`).classList.add('active');
+  currentStep = n;
+  updateProgress();
+}
+
+function prevStep(n) {
+  document.getElementById(`step${currentStep}`).classList.remove('active');
+  document.getElementById(`step${n}`).classList.add('active');
+  currentStep = n;
+  updateProgress();
+}
+
+function updateProgress() {
+  document.getElementById('progressBar').style.width = ((currentStep - 1) / totalSteps * 100) + '%';
+}
+
+// ── PRODUCTS DATABASE ──────────────────────────────────
+const products = {
+  girokonto: [
+    {
+      title: 'DKB Girokonto',
+      sub: 'Kostenloses Girokonto mit kostenloser Visa-Karte und weltweit kostenlosem Geldabheben.',
+      tags: [{ label: 'Kostenlos', cls: 'tag-blue' }, { label: 'Kein Auslandsentgelt', cls: 'tag-green' }],
+      icon: '💳', iconCls: 'ic-blue', cardCls: 'top',
+      yield: null
+    },
+    {
+      title: 'ING Girokonto',
+      sub: 'Keine Kontoführungsgebühren, einfache App, bis zu 1 % Cashback möglich.',
+      tags: [{ label: 'Kostenlos', cls: 'tag-blue' }, { label: 'Cashback', cls: 'tag-amber' }],
+      icon: '🏦', iconCls: 'ic-amber', cardCls: 'amber', yield: null
+    },
+  ],
+  tagesgeld: [
+    {
+      title: 'Tagesgeld – ING',
+      sub: 'Flexibel verfügbar, täglich kündbar. Ideal als Notgroschen oder kurzfristiges Parken von Geld.',
+      tags: [{ label: 'Tägl. verfügbar', cls: 'tag-green' }, { label: 'Einlagensicherung', cls: 'tag-blue' }],
+      icon: '💵', iconCls: 'ic-green', cardCls: 'green',
+      yield: '2,7 %'
+    },
+    {
+      title: 'Tagesgeld – Trade Republic',
+      sub: 'Zinsen täglich ausgezahlt, bis 100.000 € abgesichert, direkt in der App verfügbar.',
+      tags: [{ label: 'Tägl. Zinsen', cls: 'tag-green' }, { label: 'App-basiert', cls: 'tag-purple' }],
+      icon: '📱', iconCls: 'ic-purple', cardCls: 'purple',
+      yield: '3,25 %'
+    },
+  ],
+  festgeld: [
+    {
+      title: 'Festgeld 12 Monate – Raisin',
+      sub: 'Höhere Zinsen durch feste Laufzeit. Sicher und planbar für mittelfristige Sparziele.',
+      tags: [{ label: '12 Monate', cls: 'tag-blue' }, { label: 'Einlagensicherung', cls: 'tag-green' }],
+      icon: '🔒', iconCls: 'ic-blue', cardCls: 'top',
+      yield: '3,6 %'
+    },
+  ],
+  etf: [
+    {
+      title: 'ETF-Sparplan – Weltportfolio',
+      sub: 'MSCI World oder FTSE All-World als Basis. Diversifiziert, kostengünstig, langfristig bewährt.',
+      tags: [{ label: 'Breit gestreut', cls: 'tag-blue' }, { label: 'ab 25 €/mtl.', cls: 'tag-green' }, { label: 'Historisch ~7 %', cls: 'tag-amber' }],
+      icon: '🌍', iconCls: 'ic-blue', cardCls: 'top',
+      yield: '~7 % p.a.*'
+    },
+    {
+      title: 'ETF-Sparplan – jusETF / Scalable',
+      sub: 'Kostenlose Sparpläne ab 1 €, breite ETF-Auswahl, modernes Dashboard.',
+      tags: [{ label: 'Kostenloser Sparplan', cls: 'tag-green' }, { label: 'Broker-unabh.', cls: 'tag-purple' }],
+      icon: '📊', iconCls: 'ic-green', cardCls: 'green',
+      yield: 'flex.'
+    },
+  ],
+  riester: [
+    {
+      title: 'Riester-Fondssparplan',
+      sub: 'Staatlich gefördert (bis 175 €/Jahr + Kinderzulagen). Besonders attraktiv für Familien.',
+      tags: [{ label: 'Staatliche Förderung', cls: 'tag-green' }, { label: 'Steuerlich absetzbar', cls: 'tag-blue' }],
+      icon: '🏛️', iconCls: 'ic-green', cardCls: 'green',
+      yield: 'gefördert'
+    },
+  ],
+  bav: [
+    {
+      title: 'Betriebliche Altersvorsorge (bAV)',
+      sub: 'Arbeitgeber zahlt mit — steuerfreier Aufbau von Altersvorsorge direkt vom Bruttogehalt.',
+      tags: [{ label: 'Arbeitgeberzuschuss', cls: 'tag-green' }, { label: 'Brutto-Einzahlung', cls: 'tag-blue' }],
+      icon: '🏢', iconCls: 'ic-blue', cardCls: 'top',
+      yield: '+15 % AG'
+    },
+  ],
+  baufinanzierung: [
+    {
+      title: 'Bausparvertrag',
+      sub: 'Sichern Sie sich heute günstige Zinsen für Ihren Immobilientraum. Ideal zum frühzeitigen Ansparen.',
+      tags: [{ label: 'Zinssicherung', cls: 'tag-blue' }, { label: 'Staatl. Prämien mögl.', cls: 'tag-green' }],
+      icon: '🏠', iconCls: 'ic-purple', cardCls: 'purple',
+      yield: 'planbar'
+    },
+  ],
+};
+
+// ── RECOMMENDATION ENGINE ──────────────────────────────
+function getRecommendations() {
+  const recs = { primary: [], secondary: [] };
+  const { phase, risiko, ziele, budget } = state;
+
+  // Girokonto — immer wenn „kosten" gewählt
+  if (ziele.includes('kosten')) {
+    recs.primary.push(...products.girokonto);
+  }
+
+  // Notgroschen / Liquidität → Tagesgeld
+  if (ziele.includes('notgroschen') || ziele.includes('liquidität')) {
+    recs.primary.push(...products.tagesgeld);
+  }
+
+  // Kurzfristiges Sparen sicher → Festgeld
+  if ((ziele.includes('sparen') || ziele.includes('liquidität')) && risiko === 'sicher') {
+    recs.primary.push(...products.festgeld);
+  }
+
+  // ETF — ausgewogen/wachstum + jung/aufbau + budget ok
+  if ((risiko === 'ausgewogen' || risiko === 'wachstum') &&
+      (phase === 'jung' || phase === 'aufbau') &&
+      (ziele.includes('etf') || ziele.includes('sparen'))) {
+    recs.primary.push(...products.etf);
+  }
+
+  // Altersvorsorge
+  if (ziele.includes('rente')) {
+    if (phase === 'jung' || phase === 'aufbau') recs.secondary.push(...products.riester);
+    recs.secondary.push(...products.bav);
+  }
+
+  // Eigenheim
+  if (ziele.includes('haus')) {
+    recs.secondary.push(...products.baufinanzierung);
+    if (!recs.primary.some(p => p.title.includes('Tagesgeld'))) {
+      recs.primary.push(...products.tagesgeld);
+    }
+  }
+
+  // Fallback — zu sicher + kein klares Ziel
+  if (recs.primary.length === 0) {
+    recs.primary.push(...products.tagesgeld);
+  }
+
+  // Deduplizieren
+  const seen = new Set();
+  recs.primary = recs.primary.filter(p => { if (seen.has(p.title)) return false; seen.add(p.title); return true; });
+  recs.secondary = recs.secondary.filter(p => { if (seen.has(p.title)) return false; seen.add(p.title); return true; });
+
+  return recs;
+}
+
+function buildCard(p) {
+  return `
+    <div class="rec-card ${p.cardCls}">
+      <div class="rec-icon ${p.iconCls}">${p.icon}</div>
+      <div class="rec-body">
+        <div class="rec-title">${p.title}</div>
+        <div class="rec-sub">${p.sub}</div>
+        <div class="rec-tags">${p.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('')}</div>
+      </div>
+      ${p.yield ? `<div class="rec-yield"><div class="rec-yield-num">${p.yield}</div><div class="rec-yield-lbl">Rendite/Zins</div></div>` : ''}
+    </div>`;
+}
+
+function showResults() {
+  // Hide all steps
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector('.quiz-inner').style.display = 'none';
+
+  document.getElementById('progressBar').style.width = '100%';
+
+  const phaseLabels = { jung: 'Berufsstart', aufbau: 'Aufbauphase', konsolidierung: 'Konsolidierung', rente: 'Vorruhestand' };
+  const risikoLabels = { sicher: 'Sicherheitsorientiert', ausgewogen: 'Ausgewogen', wachstum: 'Wachstumsorientiert' };
+  document.getElementById('profileBadge').innerHTML =
+    `📋 ${phaseLabels[state.phase] || ''} · ${risikoLabels[state.risiko] || ''} · ${state.budget.toLocaleString('de-DE')} €/mtl.`;
+
+  const recs = getRecommendations();
+  let html = '';
+
+  if (recs.primary.length > 0) {
+    html += `<div class="rec-group">
+      <div class="rec-group-title">Empfehlungen für Sie</div>
+      <div class="rec-cards">${recs.primary.map(buildCard).join('')}</div>
+    </div>`;
+  }
+  if (recs.secondary.length > 0) {
+    html += `<div class="rec-group">
+      <div class="rec-group-title">Ergänzend empfohlen</div>
+      <div class="rec-cards">${recs.secondary.map(buildCard).join('')}</div>
+    </div>`;
+    if (recs.primary.some(p => p.yield && p.yield.includes('*'))) {
+      html += `<p style="font-size:11px;color:var(--slate);margin-top:-16px;padding-bottom:8px">* Historische Durchschnittsrendite. Keine Garantie zukünftiger Ergebnisse.</p>`;
+    }
+  }
+
+  document.getElementById('recContent').innerHTML = html;
+  document.getElementById('results').style.display = 'block';
+}
+
+function restartQuiz() {
+  state.phase = null; state.risiko = null; state.ziele = []; state.budget = 200;
+  document.getElementById('results').style.display = 'none';
+  document.querySelector('.quiz-inner').style.display = 'block';
+  document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('budgetSlider').value = 200;
+  document.getElementById('sliderVal').textContent = '200 €';
+  document.getElementById('next1').disabled = true;
+  document.getElementById('next2').disabled = true;
+  document.getElementById('next3').disabled = true;
+  currentStep = 1;
+  document.getElementById('step1').classList.add('active');
+  updateProgress();
+}
+
+// ── AI CHAT (Claude API) ───────────────────────────────
+const chatHistory = [];
+
+async function sendAI() {
+  const input = document.getElementById('aiInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const msgs = document.getElementById('aiMessages');
+  msgs.style.display = 'block';
+  msgs.innerHTML += `<div class="ai-msg user">${msg}</div>`;
+  msgs.innerHTML += `<div class="ai-msg bot ai-typing" id="typing">…</div>`;
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const context = `Du bist ein freundlicher Finanzassistent von Tommy Möller (Finanzberater aus Erkner). 
+  Das Nutzerprofil: Phase=${state.phase}, Risiko=${state.risiko}, Ziele=${state.ziele.join(',')}, Budget=${state.budget}€/mtl.
+  Beantworte kurz und klar auf Deutsch. Empfehle bei komplexen Fragen ein persönliches Gespräch mit Tommy.`;
+
+  chatHistory.push({ role: 'user', content: msg });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: context,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Ich konnte leider keine Antwort generieren.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('typing').remove();
+    msgs.innerHTML += `<div class="ai-msg bot">${reply}</div>`;
+  } catch {
+    document.getElementById('typing').remove();
+    msgs.innerHTML += `<div class="ai-msg bot">⚠️ KI momentan nicht verfügbar. Schreiben Sie Tommy direkt an.</div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+</body>
+</html>
