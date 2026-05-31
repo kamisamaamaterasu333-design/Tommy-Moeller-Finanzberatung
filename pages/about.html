@@ -6,6 +6,38 @@
   <title>Über mich – Tommy Möller</title>
   <link rel="stylesheet" href="../assets/css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css">
+<script defer src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js"
+  data-config="klaroConfig"></script>
+<script>
+var klaroConfig = {
+  version: 1,
+  lang: 'de',
+  privacyPolicy: '/pages/privacy.html',
+  services: [
+    {
+      name: 'google-fonts',
+      title: 'Google Fonts',
+      purposes: ['styling'],
+      required: false,
+      onAccept: ``,
+      onDecline: ``,
+    },
+    {
+      name: 'supabase',
+      title: 'Supabase (Datenbank)',
+      purposes: ['functional'],
+      required: true,
+    },
+    {
+      name: 'gemini',
+      title: 'Google Gemini (KI-Assistent)',
+      purposes: ['functional'],
+      required: false,
+    }
+  ]
+};
+</script>
 </head>
 <body>
 
