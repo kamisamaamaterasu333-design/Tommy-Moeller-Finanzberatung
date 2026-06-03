@@ -849,23 +849,36 @@ async function sendAI() {
 
   const phaseLabels  = { jung: 'Berufsstart', aufbau: 'Aufbauphase', konsolidierung: 'Konsolidierung', rente: 'Vorruhestand' };
   const risikoLabels = { sicher: 'Sicherheitsorientiert', ausgewogen: 'Ausgewogen', wachstum: 'Wachstumsorientiert' };
-  const context = `Nutzerprofil: Lebensphase=${phaseLabels[state.phase]||'unbekannt'}, Risikotyp=${risikoLabels[state.risiko]||'unbekannt'}, Ziele=${state.ziele.join(',')||'keine'}, Budget=${state.budget}€/mtl.`;
+  const context = `Nutzerprofil: Lebensphase=${phaseLabels[state.phase]||'unbekannt'}, Risikotyp=${risikoLabels[state.risiko]||'unbekannt'}, Ziele=${state.ziele.join(',')||'keine'}, Budget=${state.budget}€`;
 
   try {
-   const response = await fetch(
-  'https://kalonkzgzbpsndkuznqp.supabase.co/functions/v1/ai-chat',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ',
-      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
-    },
-    body: JSON.stringify({ message: msg, context })
-  }
-);
+    const response = await fetch(
+      'https://kalonkzgzbpsndkuznqp.supabase.co/functions/v1/ai-chat',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // ← apikey ENTFERNT!
+        },
+        body: JSON.stringify({ message: msg, context })
+      }
+    );
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data  = await response.json();
+    const reply = data?.reply || 'Keine Antwort erhalten.';
+    document.getElementById('typing').remove();
+    msgs.innerHTML += `<div class="ai-msg bot">${escapeHtml(reply)}</div>`;
+
+  } catch (err) {
+    console.error('AI Chat Fehler:', err);
+    document.getElementById('typing').remove();
+    msgs.innerHTML += `<div class="ai-msg bot">⚠️ Der Assistent ist momentan nicht verfügbar. <a href="contact.html" style="color:#93c5fd">Tommy direkt kontaktieren →</a></div>`;
+  }
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
 
     const data  = await response.json();
     const reply = data?.reply || 'Keine Antwort erhalten.';
