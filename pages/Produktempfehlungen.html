@@ -849,7 +849,7 @@ async function sendAI() {
 
   const phaseLabels  = { jung: 'Berufsstart', aufbau: 'Aufbauphase', konsolidierung: 'Konsolidierung', rente: 'Vorruhestand' };
   const risikoLabels = { sicher: 'Sicherheitsorientiert', ausgewogen: 'Ausgewogen', wachstum: 'Wachstumsorientiert' };
-  const context = `Nutzerprofil: Lebensphase=${phaseLabels[state.phase]||'unbekannt'}, Risikotyp=${risikoLabels[state.risiko]||'unbekannt'}, Ziele=${state.ziele.join(',')||'keine'}, Budget=${state.budget}€`;
+  const context = `Nutzerprofil: Lebensphase=${phaseLabels[state.phase]||'unbekannt'}, Risikotyp=${risikoLabels[state.risiko]||'unbekannt'}, Ziele=${state.ziele.join(',')||'keine'}, Budget=${state.budget}€/mtl.`;
 
   try {
     const response = await fetch(
@@ -857,28 +857,13 @@ async function sendAI() {
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          // ← apikey ENTFERNT!
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ message: msg, context })
       }
     );
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data  = await response.json();
-    const reply = data?.reply || 'Keine Antwort erhalten.';
-    document.getElementById('typing').remove();
-    msgs.innerHTML += `<div class="ai-msg bot">${escapeHtml(reply)}</div>`;
-
-  } catch (err) {
-    console.error('AI Chat Fehler:', err);
-    document.getElementById('typing').remove();
-    msgs.innerHTML += `<div class="ai-msg bot">⚠️ Der Assistent ist momentan nicht verfügbar. <a href="contact.html" style="color:#93c5fd">Tommy direkt kontaktieren →</a></div>`;
-  }
-
-  msgs.scrollTop = msgs.scrollHeight;
-}
 
     const data  = await response.json();
     const reply = data?.reply || 'Keine Antwort erhalten.';
