@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Agiles Controlling: Wie Controlling-Konzepte in einer VUCA-Welt flexibler, schneller und wirkungsvoller werden — Tommy Möller erklärt den Ansatz." />
+  <title>Agiles Controlling – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .blog-article { max-width: 720px; margin: 0 auto; }
+    .blog-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+    .blog-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); padding: 4px 10px; border-radius: 4px; }
+    .blog-date { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .blog-body h2 { font-family: var(--font-serif); font-size: 22px; color: var(--bright); margin: 36px 0 12px; }
+    .blog-body h3 { font-size: 16px; font-weight: 600; color: var(--gold); margin: 24px 0 8px; }
+    .blog-body p { color: var(--text-dim); font-size: 15px; line-height: 1.8; margin-bottom: 16px; }
+    .blog-body ul { color: var(--text-dim); font-size: 15px; line-height: 1.8; padding-left: 20px; margin-bottom: 16px; }
+    .blog-body li { margin-bottom: 6px; }
+    .blog-highlight { background: rgba(201,168,76,0.07); border-left: 3px solid var(--gold); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; }
+    .blog-highlight p { margin: 0; font-size: 14px; }
+    .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+    @media(max-width:600px) { .vs-grid { grid-template-columns: 1fr; } }
+    .vs-card { border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+    .vs-card.old { border-top: 3px solid #f87171; }
+    .vs-card.new { border-top: 3px solid #4ade80; }
+    .vs-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+    .vs-card.old h4 { color: #f87171; }
+    .vs-card.new h4 { color: #4ade80; }
+    .vs-card ul { font-size: 12px; color: var(--muted); padding-left: 16px; margin: 0; }
+    .vs-card li { margin-bottom: 5px; }
+    .principle-list { margin: 24px 0; }
+    .principle { display: flex; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; align-items: flex-start; background: var(--surface); }
+    .principle-icon { font-size: 20px; flex-shrink: 0; }
+    .principle-body h4 { font-size: 14px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+    .principle-body p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+    .cta-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 48px; text-align: center; }
+    .cta-box h3 { font-family: var(--font-serif); font-size: 20px; color: var(--bright); margin-bottom: 8px; }
+    .cta-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 32px; transition: color .2s; }
+    .back-link:hover { color: var(--gold); }
+    .reading-time { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="blog.html">Blog</a> / <span>Agiles Controlling</span></div>
+      <h1 class="section-title">Agiles Controlling: Steuerung in einer unsicheren Welt</h1>
+      <div class="gold-line"></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="blog-article">
+        <a href="blog.html" class="back-link">← Zurück zum Blog</a>
+
+        <div class="blog-meta">
+          <span class="blog-tag">Controlling</span>
+          <span class="blog-tag">Agiles Controlling</span>
+          <span class="blog-date">📅 Juni 2025</span>
+          <span class="reading-time">⏱ ca. 5 Min. Lesezeit</span>
+        </div>
+
+        <div class="blog-body">
+
+          <p>Ein Jahresbudget das im März bereits überholt ist. Ein Forecast der Realität kaum noch abbildet. Planungsrunden die Monate dauern und bei Fertigstellung schon veraltet sind. Viele Unternehmen kennen dieses Dilemma — und klassisches Controlling hat keine gute Antwort darauf. Agiles Controlling schon.</p>
+
+          <h2>Warum klassisches Controlling an Grenzen stößt</h2>
+          <p>Traditionelles Controlling wurde für stabile, vorhersehbare Umgebungen entwickelt. Jahrespläne, feste Budgets, monatliche Abweichungsanalysen — das funktionierte in Märkten die sich langsam veränderten. In einer VUCA-Welt (Volatility, Uncertainty, Complexity, Ambiguity) stoßen diese Konzepte an ihre Grenzen.</p>
+
+          <div class="vs-grid">
+            <div class="vs-card old">
+              <h4>⛔ Klassisches Controlling</h4>
+              <ul>
+                <li>Jährliche Budgetplanung, starr</li>
+                <li>Rückwärtsgerichtetes Reporting</li>
+                <li>Controller als Zahlenlieferant</li>
+                <li>Lange Planungszyklen (3–6 Monate)</li>
+                <li>Ein Jahresforecast</li>
+                <li>Budgetabweichung als Hauptmetrik</li>
+              </ul>
+            </div>
+            <div class="vs-card new">
+              <h4>✅ Agiles Controlling</h4>
+              <ul>
+                <li>Rollierender Forecast (4–6 Quartale)</li>
+                <li>Echtzeit-Steuerung mit KPIs</li>
+                <li>Controller als Business Partner</li>
+                <li>Kurze Planungszyklen (2–4 Wochen)</li>
+                <li>Kontinuierliche Anpassung</li>
+                <li>Wertbeitrag als Hauptmetrik</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2>Was agiles Controlling konkret bedeutet</h2>
+          <p>Agiles Controlling ist keine Revolution des gesamten Finanzwesens — es ist eine Anpassung der Steuerungslogik an die Realität schnell verändernder Märkte. Drei Kernelemente prägen den Ansatz:</p>
+
+          <h3>1. Rollierender Forecast statt starrem Jahresbudget</h3>
+          <p>Statt eines einmaligen Jahresplans wird der Forecast kontinuierlich fortgeschrieben — typischerweise über einen Horizont von 4 bis 6 rollierenden Quartalen. Wenn sich die Rahmenbedingungen ändern, passt sich der Forecast an. Das Unternehmen plant immer mit den aktuellsten Annahmen statt mit Zahlen die vor 12 Monaten entstanden sind.</p>
+
+          <h3>2. OKR als Verbindung von Strategie und Controlling</h3>
+          <p>Objectives and Key Results (OKR) sind ein Rahmenwerk das Ziele (Objectives) mit messbaren Ergebnissen (Key Results) verknüpft. Im agilen Controlling dienen OKRs als Brücke zwischen strategischer Planung und operativem Steuerungsreporting. Quartalsweise werden Ziele gesetzt, überprüft und angepasst — deutlich reaktionsschneller als klassische Jahresplanung.</p>
+
+          <h3>3. Continuous Accounting</h3>
+          <p>Anstatt Buchungen und Abschlussarbeiten am Monatsende zu bündeln, werden im Continuous Accounting Prozesse kontinuierlich automatisiert durchgeführt. Das Ergebnis: Der Monatsabschluss dauert Stunden statt Wochen, und Führungskräfte haben zu jedem Zeitpunkt ein aktuelles Bild der finanziellen Lage.</p>
+
+          <div class="blog-highlight">
+            <p>💡 <strong>Kernprinzip:</strong> Agiles Controlling bedeutet nicht Kontrolle aufzugeben — sondern die Steuerungsfrequenz an die Veränderungsgeschwindigkeit des Geschäfts anzupassen.</p>
+          </div>
+
+          <h2>Die 5 Prinzipien des agilen Controllings</h2>
+
+          <div class="principle-list">
+            <div class="principle">
+              <div class="principle-icon">🔄</div>
+              <div class="principle-body">
+                <h4>Iterativ statt einmalig planen</h4>
+                <p>Pläne sind Hypothesen. Sie werden regelmäßig überprüft und bei Bedarf angepasst — ohne Gesichtsverlust.</p>
+              </div>
+            </div>
+            <div class="principle">
+              <div class="principle-icon">⚡</div>
+              <div class="principle-body">
+                <h4>Geschwindigkeit vor Perfektion</h4>
+                <p>Ein 80%-iger Forecast der heute vorliegt ist wertvoller als ein 100%-iger der nächsten Monat fertig wird.</p>
+              </div>
+            </div>
+            <div class="principle">
+              <div class="principle-icon">🤝</div>
+              <div class="principle-body">
+                <h4>Controller als eingebetteter Partner</h4>
+                <p>Agile Controller arbeiten eng mit Teams zusammen — nicht als externe Kontrollinstanz sondern als integrierter Sparringspartner.</p>
+              </div>
+            </div>
+            <div class="principle">
+              <div class="principle-icon">📊</div>
+              <div class="principle-body">
+                <h4>Wenige, relevante KPIs</h4>
+                <p>Statt 200 Kennzahlen: 10–15 wirklich steuernde Indikatoren die das Team kennt und versteht.</p>
+              </div>
+            </div>
+            <div class="principle">
+              <div class="principle-icon">🎯</div>
+              <div class="principle-body">
+                <h4>Outcome statt Output messen</h4>
+                <p>Nicht Budgetkonformität ist das Ziel, sondern Wertbeitrag zum Unternehmenserfolg.</p>
+              </div>
+            </div>
+          </div>
+
+          <h2>Wo fängt man an?</h2>
+          <p>Agiles Controlling lässt sich schrittweise einführen — eine komplette Revolution ist nicht nötig und oft kontraproduktiv. Bewährte Einstiegspunkte sind der Wechsel vom Jahresbudget zum rollierenden Forecast, die Einführung von OKRs auf Teamebene oder die Automatisierung wiederkehrender Reporting-Prozesse.</p>
+
+          <ul>
+            <li>Mit einem Pilotbereich starten — nicht mit dem gesamten Unternehmen</li>
+            <li>Führungskräfte früh einbinden — agiles Controlling braucht kulturellen Wandel</li>
+            <li>Tooling anpassen — Excel-basierte Planung skaliert nicht mit agilen Anforderungen</li>
+            <li>Erfolge sichtbar machen — Zeitersparnis, schnellere Entscheidungen, bessere Steuerung</li>
+          </ul>
+
+          <div class="blog-highlight">
+            <p>⚠️ <strong>Aus der Praxis:</strong> Die größte Herausforderung beim agilen Controlling ist nicht die Methode — es ist die Bereitschaft des Managements, Planungsabweichungen als normalen Teil des Lernprozesses zu akzeptieren statt als Versagen.</p>
+          </div>
+
+        </div>
+
+        <div class="cta-box">
+          <h3>Controlling agiler gestalten?</h3>
+          <p>Ich begleite Unternehmen beim Übergang von starren Planungsprozessen zu agilen Steuerungskonzepten — pragmatisch, schrittweise und mit messbarem Ergebnis.</p>
+          <a href="contact.html" class="btn-primary">Gespräch anfragen →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-logo">TM<span>.</span></div><p class="footer-tagline">Controller & Finanzberater</p></div>
+        <div><h4>Navigation</h4><ul><li><a href="../index.html">Start</a></li><li><a href="about.html">Über mich</a></li><li><a href="services.html">Dienstleistungen</a></li><li><a href="contact.html">Kontakt</a></li></ul></div>
+        <div><h4>Rechtliches</h4><ul><li><a href="imprint.html">Impressum</a></li><li><a href="privacy.html">Datenschutz</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
