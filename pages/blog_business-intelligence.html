@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Business Intelligence im Controlling: Wie Daten aus BI-Systemen die Steuerung von Unternehmen revolutionieren — Tommy Möller erklärt den praktischen Einsatz." />
+  <title>Business Intelligence im Controlling – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .blog-article { max-width: 720px; margin: 0 auto; }
+    .blog-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+    .blog-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); padding: 4px 10px; border-radius: 4px; }
+    .blog-date { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .blog-body h2 { font-family: var(--font-serif); font-size: 22px; color: var(--bright); margin: 36px 0 12px; }
+    .blog-body h3 { font-size: 16px; font-weight: 600; color: var(--gold); margin: 24px 0 8px; }
+    .blog-body p  { color: var(--text-dim); font-size: 15px; line-height: 1.8; margin-bottom: 16px; }
+    .blog-body ul { color: var(--text-dim); font-size: 15px; line-height: 1.8; padding-left: 20px; margin-bottom: 16px; }
+    .blog-body li { margin-bottom: 6px; }
+    .blog-highlight { background: rgba(201,168,76,0.07); border-left: 3px solid var(--gold); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; }
+    .blog-highlight p { margin: 0; font-size: 14px; }
+    .three-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 24px 0; }
+    .col-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; }
+    .col-card .col-icon { font-size: 24px; margin-bottom: 8px; }
+    .col-card h4 { font-size: 13px; font-weight: 700; color: var(--bright); margin-bottom: 6px; }
+    .col-card p { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0; }
+    .process-steps { counter-reset: steps; margin: 24px 0; }
+    .process-step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: var(--header-bg, #0f172a); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-body h4 { font-size: 14px; font-weight: 700; color: var(--bright); margin-bottom: 4px; }
+    .step-body p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+    .cta-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 48px; text-align: center; }
+    .cta-box h3 { font-family: var(--font-serif); font-size: 20px; color: var(--bright); margin-bottom: 8px; }
+    .cta-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 32px; transition: color .2s; }
+    .back-link:hover { color: var(--gold); }
+    .reading-time { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="blog.html">Blog</a> / <span>Business Intelligence im Controlling</span></div>
+      <h1 class="section-title">Business Intelligence im Controlling</h1>
+      <div class="gold-line"></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="blog-article">
+        <a href="blog.html" class="back-link">← Zurück zum Blog</a>
+
+        <div class="blog-meta">
+          <span class="blog-tag">Controlling</span>
+          <span class="blog-tag">Business Intelligence</span>
+          <span class="blog-date">📅 Juni 2025</span>
+          <span class="reading-time">⏱ ca. 5 Min. Lesezeit</span>
+        </div>
+
+        <div class="blog-body">
+
+          <p>Daten sind das neue Öl — aber nur wenn man sie versteht und nutzt. Im Controlling entscheidet Business Intelligence darüber, ob Entscheidungen auf Bauchgefühl oder auf validen Fakten basieren. Der Unterschied zwischen beiden kann Millionen kosten.</p>
+
+          <h2>Was ist Business Intelligence im Controlling?</h2>
+          <p>Business Intelligence (BI) bezeichnet den systematischen Prozess, Rohdaten aus verschiedenen Quellen zu sammeln, aufzubereiten und in entscheidungsrelevante Informationen zu verwandeln. Für das Controlling bedeutet das: statt monatliche Excel-Berichte manuell zusammenzustellen, liefert ein BI-System täglich aktuelle Kennzahlen — automatisch, konsistent und in Echtzeit.</p>
+
+          <div class="blog-highlight">
+            <p>💡 <strong>Kernunterschied:</strong> Klassisches Reporting schaut in den Rückspiegel. BI im Controlling kombiniert Vergangenheit, Gegenwart und Prognose — und erlaubt damit echte Steuerung statt nur Dokumentation.</p>
+          </div>
+
+          <h2>Die drei Ebenen von BI im Controlling</h2>
+
+          <div class="three-cols">
+            <div class="col-card">
+              <div class="col-icon">📊</div>
+              <h4>Operatives Reporting</h4>
+              <p>Tagesaktuelle KPIs, Abweichungsanalysen, automatisierte Standardberichte für das Tagesgeschäft.</p>
+            </div>
+            <div class="col-card">
+              <div class="col-icon">🔍</div>
+              <h4>Analytisches Controlling</h4>
+              <p>Ad-hoc-Analysen, Drill-Down in Kostenstellen, Ursachenforschung bei Abweichungen.</p>
+            </div>
+            <div class="col-card">
+              <div class="col-icon">🔮</div>
+              <h4>Predictive Analytics</h4>
+              <p>Forecasting, Szenarienplanung, frühzeitige Erkennung von Risiken und Chancen.</p>
+            </div>
+          </div>
+
+          <h2>Wie BI die Controlling-Praxis verändert</h2>
+
+          <h3>Vom monatlichen Bericht zum Echtzeit-Dashboard</h3>
+          <p>Klassische Controlling-Berichte kommen oft Wochen nach dem Berichtszeitraum — wenn der Handlungsspielraum längst kleiner geworden ist. BI-Systeme wie Power BI, Tableau oder SAP Analytics Cloud liefern dieselben Informationen täglich, teilweise stündlich. Entscheidungsträger sehen Abweichungen sofort und können gegensteuern bevor sie sich zu echten Problemen entwickeln.</p>
+
+          <h3>Datenkonsistenz als unterschätzter Vorteil</h3>
+          <p>In vielen Unternehmen kursieren verschiedene Versionen der Wahrheit — die Vertriebszahlen aus CRM, die Finanzzahlen aus ERP und die Produktionszahlen aus MES weichen voneinander ab. Ein BI-System mit einem zentralen Datenmodell schafft eine <em>Single Source of Truth</em>: alle Bereiche arbeiten mit denselben, abgestimmten Zahlen.</p>
+
+          <h3>Der Controller als Business Partner</h3>
+          <p>Wenn BI-Systeme Standardberichte automatisieren, gewinnen Controller Zeit für das was wirklich wertvoll ist: Interpretation, Beratung und strategische Analyse. Der Controller wandelt sich vom Zahlenlieferanten zum Business Partner — ein Rollenwandel den viele Unternehmen noch vor sich haben.</p>
+
+          <div class="process-steps">
+            <div class="process-step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h4>Datenquellen verbinden</h4>
+                <p>ERP, CRM, HR-Systeme und externe Daten in ein zentrales Datenmodell integrieren.</p>
+              </div>
+            </div>
+            <div class="process-step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h4>KPIs definieren</h4>
+                <p>Welche Kennzahlen steuern wirklich das Geschäft? Wenige, relevante KPIs schlagen viele irrelevante.</p>
+              </div>
+            </div>
+            <div class="process-step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h4>Dashboards gestalten</h4>
+                <p>Visualisierungen die auf die Zielgruppe zugeschnitten sind — Vorstand sieht andere Dinge als Teamleiter.</p>
+              </div>
+            </div>
+            <div class="process-step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h4>Prozesse automatisieren</h4>
+                <p>Standardberichte automatisch versenden, Alerts bei Schwellenwertüberschreitungen einrichten.</p>
+              </div>
+            </div>
+          </div>
+
+          <h2>Typische BI-Tools im Controlling</h2>
+          <ul>
+            <li><strong>Microsoft Power BI</strong> — weit verbreitet, gut integriert in Office-Umgebungen, starkes Preis-Leistungs-Verhältnis</li>
+            <li><strong>SAP Analytics Cloud</strong> — ideal für SAP-Landschaften, integrierte Planung und Reporting</li>
+            <li><strong>Tableau</strong> — besonders stark in der Visualisierung komplexer Zusammenhänge</li>
+            <li><strong>Qlik Sense</strong> — assoziatives Datenmodell ermöglicht flexible Ad-hoc-Analysen</li>
+          </ul>
+
+          <div class="blog-highlight">
+            <p>⚠️ <strong>Aus der Praxis:</strong> Die größte Hürde bei BI-Projekten ist selten die Technologie — sie liegt in der Datenqualität und in der Akzeptanz der Nutzer. Ein BI-System das nicht genutzt wird, bringt keinen Mehrwert.</p>
+          </div>
+
+        </div>
+
+        <div class="cta-box">
+          <h3>BI im Controlling einführen oder optimieren?</h3>
+          <p>Als Controller mit praktischer Projekterfahrung begleite ich Sie bei der Konzeption und Umsetzung datengetriebener Controlling-Lösungen.</p>
+          <a href="contact.html" class="btn-primary">Gespräch anfragen →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-logo">TM<span>.</span></div><p class="footer-tagline">Controller & Finanzberater</p></div>
+        <div><h4>Navigation</h4><ul><li><a href="../index.html">Start</a></li><li><a href="about.html">Über mich</a></li><li><a href="services.html">Dienstleistungen</a></li><li><a href="contact.html">Kontakt</a></li></ul></div>
+        <div><h4>Rechtliches</h4><ul><li><a href="imprint.html">Impressum</a></li><li><a href="privacy.html">Datenschutz</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
