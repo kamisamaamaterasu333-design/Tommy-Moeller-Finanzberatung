@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dokumente & Links – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .res-grid { display: grid; gap: 14px; }
+    .res-card {
+      display: flex; align-items: center; gap: 16px;
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; background: var(--surface);
+      transition: border-color .2s;
+    }
+    .res-card:hover { border-color: var(--gold); }
+    .res-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; background: rgba(201,168,76,0.1);
+    }
+    .res-body { flex: 1; min-width: 0; }
+    .res-title { font-size: 15px; font-weight: 700; color: var(--bright); margin-bottom: 2px; }
+    .res-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .res-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .res-btn {
+      font-size: 12px; font-weight: 600; padding: 8px 14px;
+      border-radius: 6px; text-decoration: none; cursor: pointer;
+      border: 1px solid var(--border); color: var(--text);
+      background: transparent; transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .res-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .res-btn.danger:hover { border-color: #f87171; color: #f87171; }
+    .res-cat-badge {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--gold);
+      background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25);
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 14px; }
+    .section-divider {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+      margin: 36px 0 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Admin upload area */
+    #admin-panel { display: none; margin-bottom: 40px; }
+    .admin-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 28px;
+    }
+    .admin-box h3 {
+      font-family: var(--font-serif); color: var(--bright); margin-bottom: 20px;
+    }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .admin-tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .admin-tab.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.07); }
+    .admin-form-section { display: none; }
+    .admin-form-section.active { display: block; }
+
+    .login-required {
+      text-align: center; padding: 60px 20px;
+    }
+    .login-required h2 {
+      font-family: var(--font-serif); font-size: 24px; color: var(--bright); margin-bottom: 10px;
+    }
+    .login-required p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" id="nav-login-btn">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="services.html">Dienstleistungen</a> / <span>Dokumente & Links</span></div>
+      <h1 class="section-title">Dokumente & Links</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Vorlagen, Checklisten und nützliche Verweise für meine Kunden</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container" style="max-width:820px">
+
+      <!-- Nicht eingeloggt -->
+      <div id="not-logged-in" class="login-required" style="display:none">
+        <h2>Anmeldung erforderlich</h2>
+        <p>Dokumente und Links stehen nur eingeloggten Nutzern zur Verfügung.</p>
+        <a href="login.html" class="btn btn-primary">Zum Login</a>
+      </div>
+
+      <!-- Eingeloggter Bereich -->
+      <div id="content-area" style="display:none">
+
+        <!-- ADMIN PANEL -->
+        <div id="admin-panel">
+          <div class="admin-box">
+            <h3>✏ Neuen Eintrag hinzufügen <span style="font-size:13px;color:var(--gold);font-family:var(--font-mono)">[ADMIN]</span></h3>
+
+            <div class="admin-tabs">
+              <button class="admin-tab active" onclick="switchAdminTab('document')">📄 Dokument</button>
+              <button class="admin-tab" onclick="switchAdminTab('link')">🔗 Link</button>
+            </div>
+
+            <!-- Dokument-Upload -->
+            <div class="admin-form-section active" id="form-document">
+              <div class="form-group">
+                <label class="form-label">Titel</label>
+                <input type="text" class="form-input" id="doc-title" placeholder="z.B. Checkliste Anlage V" maxlength="120" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kategorie</label>
+                <select class="form-input" id="doc-category">
+                  <option value="Vorlagen">Vorlagen</option>
+                  <option value="Checklisten">Checklisten</option>
+                  <option value="Steuern">Steuern</option>
+                  <option value="Finanzplanung">Finanzplanung</option>
+                  <option value="Sonstiges">Sonstiges</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Beschreibung (optional)</label>
+                <input type="text" class="form-input" id="doc-description" placeholder="Kurze Beschreibung..." maxlength="200" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Datei</label>
+                <input type="file" class="form-input" id="doc-file"
+                       accept=".pdf,.xlsx,.xls,.docx,.doc,.pptx,.ppt,.html,.csv,.zip" />
+                <div style="font-size:12px;color:var(--muted);margin-top:6px">
+                  Erlaubt: PDF, Excel, Word, PowerPoint, HTML, CSV, ZIP — max. 25 MB
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="uploadDocument()">Hochladen</button>
+            </div>
+
+            <!-- Link hinzufügen -->
+            <div class="admin-form-section" id="form-link">
+              <div class="form-group">
+                <label class="form-label">Titel</label>
+                <input type="text" class="form-input" id="link-title" placeholder="z.B. Finanzanalyse Tool" maxlength="120" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kategorie</label>
+                <select class="form-input" id="link-category">
+                  <option value="Tools">Tools</option>
+                  <option value="Vorlagen">Vorlagen</option>
+                  <option value="Steuern">Steuern</option>
+                  <option value="Finanzplanung">Finanzplanung</option>
+                  <option value="Sonstiges">Sonstiges</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Beschreibung (optional)</label>
+                <input type="text" class="form-input" id="link-description" placeholder="Kurze Beschreibung..." maxlength="200" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">URL</label>
+                <input type="url" class="form-input" id="link-url" placeholder="https://..." />
+              </div>
+              <button class="btn btn-primary" onclick="addLink()">Link hinzufügen</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- DOKUMENTE -->
+        <div class="section-divider">📄 Dokumente</div>
+        <div class="res-grid" id="documents-list">
+          <div class="empty-state">Dokumente werden geladen…</div>
+        </div>
+
+        <!-- LINKS -->
+        <div class="section-divider">🔗 Links</div>
+        <div class="res-grid" id="links-list">
+          <div class="empty-state">Links werden geladen…</div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">TM<span>.</span></div>
+          <p class="footer-tagline">Controller & Finanzberater</p>
+        </div>
+        <div>
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Start</a></li>
+            <li><a href="about.html">Über mich</a></li>
+            <li><a href="services.html">Dienstleistungen</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rechtliches</h4>
+          <ul>
+            <li><a href="imprint.html">Impressum</a></li>
+            <li><a href="privacy.html">Datenschutz</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Tommy Möller.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ═══ SUPABASE ════════════════════════════════════════════════════
+    const { createClient } = supabase;
+    const db = createClient(
+      'https://kalonkzgzbpsndkuznqp.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
+    );
+
+    let currentUser = null;
+
+    // ═══ AUTH STATE ──────────────────────────────────────────────────
+    db.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user ?? null;
+
+      document.getElementById('not-logged-in').style.display = currentUser ? 'none' : 'block';
+      document.getElementById('content-area').style.display = currentUser ? 'block' : 'none';
+      document.getElementById('admin-panel').style.display = currentUser ? 'block' : 'none';
+
+      const navBtn = document.getElementById('nav-login-btn');
+      if (navBtn) {
+        if (currentUser) {
+          navBtn.textContent = 'Logout';
+          navBtn.href = '#';
+          navBtn.onclick = async (e) => {
+            e.preventDefault();
+            await db.auth.signOut();
+            showToast('Erfolgreich abgemeldet', 'success');
+          };
+        } else {
+          navBtn.textContent = 'Login';
+          navBtn.href = 'login.html';
+          navBtn.onclick = null;
+        }
+      }
+
+      if (currentUser) {
+        renderDocuments();
+        renderLinks();
+      }
+    });
+
+    // ═══ ADMIN TABS ──────────────────────────────────────────────────
+    function switchAdminTab(type) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-form-section').forEach(f => f.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('form-' + type).classList.add('active');
+    }
+
+    // ═══ DOKUMENTE ───────────────────────────────────────────────────
+    async function getDocuments() {
+      const { data, error } = await db
+        .from('documents')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) { console.error(error.message); return []; }
+      return data || [];
+    }
+
+    function fileIcon(fileName) {
+      const ext = (fileName.split('.').pop() || '').toLowerCase();
+      const map = {
+        pdf: '📕', xlsx: '📊', xls: '📊', csv: '📊',
+        docx: '📘', doc: '📘', pptx: '📙', ppt: '📙',
+        html: '🌐', zip: '🗂️'
+      };
+      return map[ext] || '📄';
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return '';
+      const kb = bytes / 1024;
+      if (kb < 1024) return Math.round(kb) + ' KB';
+      return (kb / 1024).toFixed(1) + ' MB';
+    }
+
+    async function renderDocuments() {
+      const list = document.getElementById('documents-list');
+      const docs = await getDocuments();
+      const isAdmin = !!currentUser;
+
+      if (!docs.length) {
+        list.innerHTML = '<div class="empty-state">Noch keine Dokumente vorhanden.</div>';
+        return;
+      }
+
+      list.innerHTML = docs.map(d => `
+        <div class="res-card">
+          <div class="res-icon">${fileIcon(d.file_name)}</div>
+          <div class="res-body">
+            <div class="res-title">${escHtml(d.title)}</div>
+            <div class="res-meta">
+              <span class="res-cat-badge">${escHtml(d.category)}</span>
+              ${d.description ? `<span>${escHtml(d.description)}</span>` : ''}
+              ${d.file_size ? `<span>${formatBytes(d.file_size)}</span>` : ''}
+            </div>
+          </div>
+          <div class="res-actions">
+            <a href="#" onclick="downloadDocument('${d.file_path}','${escHtml(d.file_name)}');return false;" class="res-btn">⬇ Download</a>
+            ${isAdmin ? `<button onclick="deleteDocument('${d.id}','${d.file_path}')" class="res-btn danger">✕</button>` : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    async function uploadDocument() {
+      if (!currentUser) return;
+      const title = document.getElementById('doc-title').value.trim();
+      const category = document.getElementById('doc-category').value;
+      const description = document.getElementById('doc-description').value.trim();
+      const fileInput = document.getElementById('doc-file');
+      const file = fileInput.files[0];
+
+      if (!title || !file) {
+        showToast('Titel und Datei sind erforderlich', 'error'); return;
+      }
+      if (file.size > 25 * 1024 * 1024) {
+        showToast('Datei zu groß (max. 25 MB)', 'error'); return;
+      }
+
+      const filePath = `${Date.now()}_${file.name}`;
+      const { error: uploadErr } = await db.storage.from('documents').upload(filePath, file);
+      if (uploadErr) {
+        showToast('Upload fehlgeschlagen: ' + uploadErr.message, 'error'); return;
+      }
+
+      const { error } = await db.from('documents').insert({
+        title, category, description,
+        file_path: filePath, file_name: file.name, file_size: file.size
+      });
+      if (error) {
+        showToast('Fehler beim Speichern: ' + error.message, 'error'); return;
+      }
+
+      document.getElementById('doc-title').value = '';
+      document.getElementById('doc-description').value = '';
+      fileInput.value = '';
+      await renderDocuments();
+      showToast('Dokument hochgeladen!', 'success');
+    }
+
+    async function downloadDocument(filePath, fileName) {
+      const { data, error } = await db.storage.from('documents').createSignedUrl(filePath, 60);
+      if (error) {
+        showToast('Download fehlgeschlagen', 'error'); return;
+      }
+      const a = document.createElement('a');
+      a.href = data.signedUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function deleteDocument(id, filePath) {
+      if (!currentUser || !confirm('Dokument wirklich löschen?')) return;
+      await db.storage.from('documents').remove([filePath]);
+      const { error } = await db.from('documents').delete().eq('id', id);
+      if (error) { showToast('Fehler beim Löschen', 'error'); return; }
+      await renderDocuments();
+      showToast('Dokument gelöscht', 'success');
+    }
+
+    // ═══ LINKS ───────────────────────────────────────────────────────
+    async function getLinks() {
+      const { data, error } = await db
+        .from('resource_links')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) { console.error(error.message); return []; }
+      return data || [];
+    }
+
+    async function renderLinks() {
+      const list = document.getElementById('links-list');
+      const links = await getLinks();
+      const isAdmin = !!currentUser;
+
+      if (!links.length) {
+        list.innerHTML = '<div class="empty-state">Noch keine Links vorhanden.</div>';
+        return;
+      }
+
+      list.innerHTML = links.map(l => `
+        <div class="res-card">
+          <div class="res-icon">🔗</div>
+          <div class="res-body">
+            <div class="res-title">${escHtml(l.title)}</div>
+            <div class="res-meta">
+              <span class="res-cat-badge">${escHtml(l.category)}</span>
+              ${l.description ? `<span>${escHtml(l.description)}</span>` : ''}
+            </div>
+          </div>
+          <div class="res-actions">
+            <a href="${escAttr(l.url)}" target="_blank" rel="noopener" class="res-btn">↗ Öffnen</a>
+            ${isAdmin ? `<button onclick="deleteLink('${l.id}')" class="res-btn danger">✕</button>` : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    async function addLink() {
+      if (!currentUser) return;
+      const title = document.getElementById('link-title').value.trim();
+      const category = document.getElementById('link-category').value;
+      const description = document.getElementById('link-description').value.trim();
+      const url = document.getElementById('link-url').value.trim();
+
+      if (!title || !url) {
+        showToast('Titel und URL sind erforderlich', 'error'); return;
+      }
+      try { new URL(url); } catch {
+        showToast('Bitte eine gültige URL eingeben', 'error'); return;
+      }
+
+      const { error } = await db.from('resource_links').insert({ title, category, description, url });
+      if (error) {
+        showToast('Fehler beim Speichern: ' + error.message, 'error'); return;
+      }
+
+      document.getElementById('link-title').value = '';
+      document.getElementById('link-description').value = '';
+      document.getElementById('link-url').value = '';
+      await renderLinks();
+      showToast('Link hinzugefügt!', 'success');
+    }
+
+    async function deleteLink(id) {
+      if (!currentUser || !confirm('Link wirklich löschen?')) return;
+      const { error } = await db.from('resource_links').delete().eq('id', id);
+      if (error) { showToast('Fehler beim Löschen', 'error'); return; }
+      await renderLinks();
+      showToast('Link gelöscht', 'success');
+    }
+
+    // ═══ HELPERS ─────────────────────────────────────────────────────
+    function escHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text ?? '';
+      return div.innerHTML;
+    }
+    function escAttr(text) {
+      return (text ?? '').replace(/"/g, '&quot;');
+    }
+    function showToast(msg, type) {
+      if (typeof window.showToast === 'function' && window.showToast !== showToast) {
+        window.showToast(msg, type); return;
+      }
+      alert(msg);
+    }
+
+    window.switchAdminTab    = switchAdminTab;
+    window.uploadDocument    = uploadDocument;
+    window.downloadDocument  = downloadDocument;
+    window.deleteDocument    = deleteDocument;
+    window.addLink           = addLink;
+    window.deleteLink        = deleteLink;
+  </script>
+</body>
+</html>
