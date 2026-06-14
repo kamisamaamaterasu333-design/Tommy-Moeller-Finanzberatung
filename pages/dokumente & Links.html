@@ -246,15 +246,18 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
     );
 
-    let currentUser = null;
+    const ADMIN_EMAIL = 'tommy.moeller333@gmail.com';
+let currentUser = null;
+let isAdmin = false;
 
     // ═══ AUTH STATE ──────────────────────────────────────────────────
-    db.auth.onAuthStateChange((event, session) => {
-      currentUser = session?.user ?? null;
+db.auth.onAuthStateChange((event, session) => {
+  currentUser = session?.user ?? null;
+  isAdmin = currentUser?.email === ADMIN_EMAIL;
 
-      document.getElementById('not-logged-in').style.display = currentUser ? 'none' : 'block';
-      document.getElementById('content-area').style.display = currentUser ? 'block' : 'none';
-      document.getElementById('admin-panel').style.display = currentUser ? 'block' : 'none';
+  document.getElementById('not-logged-in').style.display = currentUser ? 'none' : 'block';
+  document.getElementById('content-area').style.display = currentUser ? 'block' : 'none';
+  document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
 
       const navBtn = document.getElementById('nav-login-btn');
       if (navBtn) {
