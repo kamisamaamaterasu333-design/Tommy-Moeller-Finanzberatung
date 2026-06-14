@@ -79,6 +79,209 @@
           <a href="pages/services.html#finanzberatung" class="teaser-link" data-i18n="teaser.acc.link">Mehr erfahren →</a>
       </div>
     </div>
+  <!-- ═══ BEWERTUNGEN ═══ -->
+<section class="section" id="bewertungen">
+  <div class="container" style="max-width:720px">
+
+    <div class="page-header" style="padding:0 0 24px">
+      <h2 class="section-title" style="font-size:28px">Ihre Bewertung</h2>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Wie zufrieden sind Sie mit meinem Service?</p>
+    </div>
+
+    <!-- Nicht eingeloggt -->
+    <div id="rev-login-required" style="display:none; text-align:center; padding:40px 20px">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px">
+        Bitte melden Sie sich an, um eine Bewertung abzugeben und vorhandene Bewertungen zu sehen.
+      </p>
+      <a href="pages/login.html" class="btn btn-primary">Zum Login</a>
+    </div>
+
+    <!-- Eingeloggter Bereich -->
+    <div id="rev-content" style="display:none">
+
+      <!-- Formular -->
+      <div class="card" style="margin-bottom:32px">
+        <div class="form-group">
+          <label class="form-label">Ihr Name (wird bei der Bewertung angezeigt)</label>
+          <input type="text" class="form-input" id="rev-name" placeholder="z.B. Max M." maxlength="40" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bewertung (Schulnote)</label>
+          <div id="rev-rating-picker" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px">
+            <!-- per JS gefüllt -->
+          </div>
+          <div id="rev-rating-label" style="font-size:12px; color:var(--muted); margin-top:8px; min-height:16px"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kommentar (optional)</label>
+          <textarea class="form-input" id="rev-comment" rows="3" placeholder="Ihre Erfahrung..." maxlength="500"></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="submitReview()">Bewertung abgeben</button>
+      </div>
+
+      <!-- Letzte 3 Bewertungen -->
+      <h3 style="font-family:var(--font-serif); font-size:18px; color:var(--bright); margin-bottom:14px">
+        Neueste Bewertungen
+      </h3>
+      <div id="rev-list">
+        <p style="color:var(--muted); font-size:13px">Bewertungen werden geladen…</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .rev-rating-btn {
+    width: 44px; height: 44px; border-radius: 8px;
+    border: 2px solid var(--border); background: transparent;
+    color: var(--text); font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif;
+  }
+  .rev-rating-btn:hover { border-color: var(--gold); }
+  .rev-rating-btn.selected { border-color: var(--gold); background: rgba(201,168,76,0.12); color: var(--gold); }
+
+  .rev-item {
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 12px; background: var(--surface);
+  }
+  .rev-item-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 8px;
+  }
+  .rev-item-name { font-weight: 700; color: var(--bright); font-size: 14px; }
+  .rev-item-date { font-size: 12px; color: var(--muted); }
+  .rev-item-badge {
+    font-size: 12px; font-weight: 700; padding: 3px 10px;
+    border-radius: 6px; color: white;
+  }
+  .rev-item-text { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .rev-delete-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 12px; cursor: pointer; margin-top: 8px;
+    font-family: 'DM Sans', sans-serif; transition: color .2s;
+  }
+  .rev-delete-btn:hover { color: #f87171; }
+</style>
+
+<script>
+(function() {
+  const SUPA_URL = 'https://kalonkzgzbpsndkuznqp.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ';
+  const revDb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  let revUser = null;
+  let selectedRating = null;
+
+  const GRADE_LABELS = {
+    1: 'Sehr gut', 2: 'Gut', 3: 'Befriedigend',
+    4: 'Ausreichend', 5: 'Mangelhaft', 6: 'Ungenügend'
+  };
+  const GRADE_COLORS = {
+    1: '#22c55e', 2: '#84cc16', 3: '#eab308',
+    4: '#f97316', 5: '#ef4444', 6: '#b91c1c'
+  };
+
+  // Rating-Buttons erzeugen
+  const picker = document.getElementById('rev-rating-picker');
+  for (let i = 1; i <= 6; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'rev-rating-btn';
+    btn.textContent = i;
+    btn.type = 'button';
+    btn.onclick = () => {
+      selectedRating = i;
+      document.querySelectorAll('.rev-rating-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('rev-rating-label').textContent = `${i} – ${GRADE_LABELS[i]}`;
+    };
+    picker.appendChild(btn);
+  }
+
+  revDb.auth.onAuthStateChange((event, session) => {
+    revUser = session?.user ?? null;
+    document.getElementById('rev-login-required').style.display = revUser ? 'none' : 'block';
+    document.getElementById('rev-content').style.display = revUser ? 'block' : 'none';
+    if (revUser) loadReviews();
+  });
+
+  async function loadReviews() {
+    const list = document.getElementById('rev-list');
+    const { data, error } = await revDb
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (error) {
+      list.innerHTML = '<p style="color:var(--muted); font-size:13px">Fehler beim Laden.</p>';
+      return;
+    }
+    if (!data.length) {
+      list.innerHTML = '<p style="color:var(--muted); font-size:13px">Noch keine Bewertungen vorhanden.</p>';
+      return;
+    }
+
+    list.innerHTML = data.map(r => `
+      <div class="rev-item">
+        <div class="rev-item-header">
+          <span class="rev-item-name">${escHtml(r.display_name)}</span>
+          <span class="rev-item-badge" style="background:${GRADE_COLORS[r.rating]}">
+            ${r.rating} – ${GRADE_LABELS[r.rating]}
+          </span>
+        </div>
+        ${r.comment ? `<div class="rev-item-text">${escHtml(r.comment)}</div>` : ''}
+        <div class="rev-item-date" style="margin-top:8px">${formatDate(r.created_at)}</div>
+        ${r.user_id === revUser.id
+          ? `<button class="rev-delete-btn" onclick="window.deleteReview('${r.id}')">🗑 Löschen</button>`
+          : ''}
+      </div>`).join('');
+  }
+
+  window.submitReview = async function() {
+    if (!revUser) return;
+    const name = document.getElementById('rev-name').value.trim();
+    const comment = document.getElementById('rev-comment').value.trim();
+
+    if (!name) { alert('Bitte geben Sie einen Namen ein.'); return; }
+    if (!selectedRating) { alert('Bitte wählen Sie eine Bewertung (1–6).'); return; }
+
+    const { error } = await revDb.from('reviews').insert({
+      user_id: revUser.id,
+      display_name: name,
+      rating: selectedRating,
+      comment: comment || null
+    });
+
+    if (error) { alert('Fehler beim Speichern: ' + error.message); return; }
+
+    document.getElementById('rev-comment').value = '';
+    await loadReviews();
+  };
+
+  window.deleteReview = async function(id) {
+    if (!confirm('Bewertung wirklich löschen?')) return;
+    const { error } = await revDb.from('reviews').delete().eq('id', id);
+    if (error) { alert('Fehler beim Löschen.'); return; }
+    await loadReviews();
+  };
+
+  function escHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text ?? '';
+    return div.innerHTML;
+  }
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+           ' · ' + d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+  }
+})();
+</script>
   </section>
   <section style="padding:48px 0;background:var(--bg)">
     <div class="container">
