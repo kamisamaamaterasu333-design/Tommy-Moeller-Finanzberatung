@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Mietkauf-Vergleichsrechner: Kostenlos und live berechnen, ob sich Kaufen oder Mieten für Sie langfristig mehr lohnt — inklusive Kreditrate, Wertentwicklung und Vermögensvergleich." />
+  <title>Mietkauf-Vergleichsrechner – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .input-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+    @media(max-width:800px){ .input-grid{ grid-template-columns:1fr; } }
+
+    .slider-row { margin-bottom: 18px; }
+    .slider-row label { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--text-dim); margin-bottom:8px; }
+    .slider-row .val { color: var(--gold); font-weight:700; font-family: var(--font-mono); font-size:13px; white-space:nowrap; }
+    input[type=range]{ width:100%; accent-color: var(--gold); height:4px; }
+
+    .card-title { font-family:var(--font-serif); color:var(--bright); margin-bottom:20px; font-size:18px; display:flex; align-items:center; gap:8px; }
+
+    .result-cards { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:22px; }
+    @media(max-width:800px){ .result-cards{ grid-template-columns: repeat(2,1fr); } }
+    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center; }
+    .result-card .label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; font-family:var(--font-mono); }
+    .result-card .value{ font-family:var(--font-serif); font-size:clamp(15px,3.5vw,21px); color:var(--bright); white-space:nowrap; }
+    .result-card.gold .value{ color: #C9A84C; }
+    .result-card.blue .value{ color: #60A5FA; }
+
+    .winner-banner {
+      text-align:center; padding:14px 20px; border-radius:10px; margin-bottom:24px;
+      font-size:14px; font-weight:600; border:1px solid var(--border); background:var(--surface);
+    }
+    .winner-banner b { color: var(--bright); }
+
+    .hint-box{ background: rgba(201,168,76,0.07); border-left:3px solid #C9A84C; padding:14px 18px; border-radius:0 8px 8px 0; font-size:13px; color:var(--text-dim); line-height:1.6; margin-top:24px; }
+
+    .chart-legend{ display:flex; gap:18px; font-size:12px; color:var(--muted); margin-top:10px; flex-wrap:wrap; }
+    .legend-dot{ width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:6px; vertical-align:middle; }
+    .legend-line{ width:16px; height:3px; display:inline-block; margin-right:6px; vertical-align:middle; border-radius:2px; }
+
+    .cta-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 36px; text-align: center; }
+    .cta-box h3 { font-family: var(--font-serif); font-size: 20px; color: var(--bright); margin-bottom: 8px; }
+    .cta-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" id="nav-login-btn">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="services.html">Dienstleistungen</a> / <span>Mietkauf-Vergleichsrechner</span></div>
+      <h1 class="section-title">Mietkauf-Vergleichsrechner</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Kaufen oder Mieten? Vergleichen Sie live Ihr Vermögen in beiden Szenarien</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <div class="input-grid">
+
+        <!-- KAUF -->
+        <div class="card">
+          <h3 class="card-title">🏠 Immobilie</h3>
+
+          <div class="slider-row">
+            <label>Kaufpreis <span class="val" id="val-kaufpreis">350.000 €</span></label>
+            <input type="range" id="kaufpreis" min="100000" max="800000" step="5000" value="350000" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Eigenkapital <span class="val" id="val-eigenkapital">70.000 €</span></label>
+            <input type="range" id="eigenkapital" min="0" max="300000" step="2500" value="70000" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Zinssatz (p.a.) <span class="val" id="val-zins">3,8 %</span></label>
+            <input type="range" id="zins" min="1" max="6" step="0.1" value="3.8" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Anfängliche Tilgung (p.a.) <span class="val" id="val-tilgung">2,0 %</span></label>
+            <input type="range" id="tilgung" min="1" max="5" step="0.1" value="2.0" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Kaufnebenkosten <span class="val" id="val-nebenkosten">10,0 %</span></label>
+            <input type="range" id="nebenkosten" min="5" max="15" step="0.5" value="10" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Wertsteigerung Immobilie (p.a.) <span class="val" id="val-wertsteig">1,5 %</span></label>
+            <input type="range" id="wertsteig" min="0" max="5" step="0.1" value="1.5" oninput="calc()">
+          </div>
+        </div>
+
+        <!-- MIETE -->
+        <div class="card">
+          <h3 class="card-title">🔑 Mieten & Vergleich</h3>
+
+          <div class="slider-row">
+            <label>Vergleichsmiete (Kaltmiete/Monat) <span class="val" id="val-miete">1.100 €</span></label>
+            <input type="range" id="miete" min="400" max="3000" step="50" value="1100" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Mietsteigerung (p.a.) <span class="val" id="val-mietsteig">2,0 %</span></label>
+            <input type="range" id="mietsteig" min="0" max="5" step="0.1" value="2.0" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Anlagerendite für Ersparnis (p.a.) <span class="val" id="val-anlagerendite">5,0 %</span></label>
+            <input type="range" id="anlagerendite" min="0" max="10" step="0.5" value="5" oninput="calc()">
+          </div>
+          <div class="slider-row">
+            <label>Betrachtungszeitraum <span class="val" id="val-jahre">20 Jahre</span></label>
+            <input type="range" id="jahre" min="5" max="30" step="1" value="20" oninput="calc()">
+          </div>
+
+          <div class="hint-box">
+            💡 Beim „Mieten"-Szenario wird das Eigenkapital angelegt. Ist die monatliche Kreditrate
+            höher als die Miete, wird die Differenz zusätzlich investiert (umgekehrt entsprechend
+            entnommen) — so bleiben beide Szenarien finanziell vergleichbar.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RESULTS -->
+      <div class="card">
+        <h3 class="card-title">📊 Ergebnis nach <span id="jahre-label">20</span> Jahren</h3>
+
+        <div class="result-cards">
+          <div class="result-card">
+            <div class="label">Monatl. Kreditrate</div>
+            <div class="value" id="out-rate">0 €</div>
+          </div>
+          <div class="result-card">
+            <div class="label">Miete (heute)</div>
+            <div class="value" id="out-miete0">0 €</div>
+          </div>
+          <div class="result-card gold">
+            <div class="label">Vermögen bei Kauf</div>
+            <div class="value" id="out-kauf">0 €</div>
+          </div>
+          <div class="result-card blue">
+            <div class="label">Vermögen bei Miete</div>
+            <div class="value" id="out-miete">0 €</div>
+          </div>
+        </div>
+
+        <div class="winner-banner" id="winner-banner">—</div>
+
+        <div id="chart-wrap"></div>
+        <div class="chart-legend">
+          <span><span class="legend-line" style="background:#C9A84C"></span>Vermögen bei Kauf (Immobilienwert − Restschuld)</span>
+          <span><span class="legend-line" style="background:#60A5FA"></span>Vermögen bei Miete (angelegtes Kapital)</span>
+        </div>
+
+        <div class="hint-box">
+          ⚠️ Vereinfachtes Modell zur Orientierung. Nicht berücksichtigt: Instandhaltungsrücklage,
+          Steuern (z.B. AfA bei Vermietung), Wohngeld/Hausgeld, Sondertilgungen sowie individuelle
+          steuerliche Effekte. Für eine fundierte Entscheidung empfiehlt sich eine persönliche
+          Beratung.
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <h3>Kaufen oder Mieten — was passt zu Ihnen?</h3>
+        <p>Gemeinsam schauen wir auf Ihre individuelle Situation: Eigenkapital, Einkommen, Lebensplanung und regionale Marktlage in Brandenburg.</p>
+        <a href="contact.html" class="btn-primary">Beratung anfragen →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">TM<span>.</span></div>
+          <p class="footer-tagline">Controller & Finanzberater</p>
+        </div>
+        <div>
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Start</a></li>
+            <li><a href="about.html">Über mich</a></li>
+            <li><a href="services.html">Dienstleistungen</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rechtliches</h4>
+          <ul>
+            <li><a href="imprint.html">Impressum</a></li>
+            <li><a href="privacy.html">Datenschutz</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Tommy Möller.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function fmtEuro(n){
+      return Math.round(n).toLocaleString('de-DE') + ' €';
+    }
+    function fmtPct(n){
+      return n.toFixed(1).replace('.',',') + ' %';
+    }
+    function g(id){ return +document.getElementById(id).value; }
+
+    function calc(){
+      const kaufpreis      = g('kaufpreis');
+      const eigenkapital   = g('eigenkapital');
+      const zinsPct        = g('zins');
+      const tilgungPct     = g('tilgung');
+      const nebenkostenPct = g('nebenkosten');
+      const wertsteigPct   = g('wertsteig');
+      const miete0         = g('miete');
+      const mietsteigPct   = g('mietsteig');
+      const anlagePct      = g('anlagerendite');
+      const jahre          = g('jahre');
+
+      // Labels aktualisieren
+      document.getElementById('val-kaufpreis').textContent    = fmtEuro(kaufpreis);
+      document.getElementById('val-eigenkapital').textContent = fmtEuro(eigenkapital);
+      document.getElementById('val-zins').textContent         = fmtPct(zinsPct);
+      document.getElementById('val-tilgung').textContent      = fmtPct(tilgungPct);
+      document.getElementById('val-nebenkosten').textContent  = fmtPct(nebenkostenPct);
+      document.getElementById('val-wertsteig').textContent    = fmtPct(wertsteigPct);
+      document.getElementById('val-miete').textContent        = fmtEuro(miete0);
+      document.getElementById('val-mietsteig').textContent    = fmtPct(mietsteigPct);
+      document.getElementById('val-anlagerendite').textContent= fmtPct(anlagePct);
+      document.getElementById('val-jahre').textContent        = jahre + ' Jahre';
+      document.getElementById('jahre-label').textContent      = jahre;
+
+      // Berechnung
+      const gesamtkosten = kaufpreis * (1 + nebenkostenPct/100);
+      const kreditsumme  = Math.max(0, gesamtkosten - eigenkapital);
+      const monatsrate   = kreditsumme * (zinsPct/100 + tilgungPct/100) / 12;
+      const monthlyZins  = zinsPct/100/12;
+      const monthlyAnlage= anlagePct/100/12;
+
+      let restschuld   = kreditsumme;
+      let kapitalMiete = eigenkapital; // statt Eigenkapital im Haus liegt es in Wertpapieren
+      let aktuelleMiete= miete0;
+
+      const points = [];
+
+      for(let m=1; m<=jahre*12; m++){
+        // Kauf-Szenario: Annuität
+        if(restschuld > 0){
+          const zinsAnteil = restschuld * monthlyZins;
+          const tilgAnteil = Math.min(restschuld, Math.max(0, monatsrate - zinsAnteil));
+          restschuld = Math.max(0, restschuld - tilgAnteil);
+        }
+
+        // Miete-Szenario: Kapital verzinsen + monatliche Differenz anlegen/entnehmen
+        kapitalMiete *= (1 + monthlyAnlage);
+        const diff = monatsrate - aktuelleMiete;
+        kapitalMiete += diff;
+
+        if(m % 12 === 0){
+          aktuelleMiete *= (1 + mietsteigPct/100);
+          const jahr = m/12;
+          const immowert = kaufpreis * Math.pow(1 + wertsteigPct/100, jahr);
+          points.push({
+            jahr,
+            kauf: immowert - restschuld,
+            miete: kapitalMiete
+          });
+        }
+      }
+
+      const vermoegenKauf  = points[points.length-1].kauf;
+      const vermoegenMiete = points[points.length-1].miete;
+
+      document.getElementById('out-rate').textContent   = fmtEuro(monatsrate);
+      document.getElementById('out-miete0').textContent = fmtEuro(miete0);
+      document.getElementById('out-kauf').textContent   = fmtEuro(vermoegenKauf);
+      document.getElementById('out-miete').textContent  = fmtEuro(vermoegenMiete);
+
+      const diffVermoegen = vermoegenKauf - vermoegenMiete;
+      const banner = document.getElementById('winner-banner');
+      if (Math.abs(diffVermoegen) < 1000) {
+        banner.innerHTML = `Beide Szenarien liegen in dieser Berechnung <b>nahezu gleich</b>.`;
+      } else if (diffVermoegen > 0) {
+        banner.innerHTML = `In diesem Szenario steht <b>Kaufen</b> um <b>${fmtEuro(diffVermoegen)}</b> besser nach ${jahre} Jahren.`;
+      } else {
+        banner.innerHTML = `In diesem Szenario steht <b>Mieten + Investieren</b> um <b>${fmtEuro(-diffVermoegen)}</b> besser nach ${jahre} Jahren.`;
+      }
+
+      drawChart(points);
+    }
+
+    function drawChart(points){
+      const w = 600, h = 280, padL = 60, padB = 28, padT = 12;
+      const allVals = points.flatMap(p => [p.kauf, p.miete]);
+      const maxVal = Math.max(...allVals, 1);
+      const minVal = Math.min(...allVals, 0);
+      const range = (maxVal - minVal) || 1;
+      const innerW = w - padL - 10;
+      const innerH = h - padT - padB;
+
+      const x = (i) => padL + (i/(points.length-1 || 1)) * innerW;
+      const y = (val) => padT + innerH - ((val - minVal)/range) * innerH;
+
+      const lineKauf  = points.map((p,i) => `${x(i).toFixed(1)},${y(p.kauf).toFixed(1)}`).join(' ');
+      const lineMiete = points.map((p,i) => `${x(i).toFixed(1)},${y(p.miete).toFixed(1)}`).join(' ');
+
+      let grid = '';
+      for(let i=0; i<=3; i++){
+        const val = minVal + range*i/3;
+        const yy = y(val);
+        const label = Math.abs(val) >= 1000 ? Math.round(val/1000) + 'k' : Math.round(val);
+        grid += `<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${w}" y2="${yy.toFixed(1)}" style="stroke:#1e293b" stroke-width="1"/>`;
+        grid += `<text x="${padL-8}" y="${(yy+3).toFixed(1)}" font-size="10" style="fill:#64748b" text-anchor="end" font-family="DM Mono, monospace">${label}</text>`;
+      }
+
+      // x-axis labels
+      let xLabels = '';
+      const labelStep = Math.ceil(points.length/8);
+      points.forEach((p,i) => {
+        if (i % labelStep === 0 || i === points.length-1) {
+          xLabels += `<text x="${x(i).toFixed(1)}" y="${h-8}" font-size="10" style="fill:#64748b" text-anchor="middle" font-family="DM Mono, monospace">${p.jahr}</text>`;
+        }
+      });
+
+      // Zero line if range crosses zero
+      let zeroLine = '';
+      if (minVal < 0 && maxVal > 0) {
+        const yy = y(0);
+        zeroLine = `<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${w}" y2="${yy.toFixed(1)}" style="stroke:#475569" stroke-width="1" stroke-dasharray="3,3"/>`;
+      }
+
+      document.getElementById('chart-wrap').innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
+          ${grid}
+          ${zeroLine}
+          <polyline points="${lineMiete}" fill="none" style="stroke:#60A5FA" stroke-width="2.5"/>
+          <polyline points="${lineKauf}"  fill="none" style="stroke:#C9A84C" stroke-width="2.5"/>
+          ${xLabels}
+        </svg>`;
+    }
+
+    calc();
+  </script>
+</body>
+</html>
