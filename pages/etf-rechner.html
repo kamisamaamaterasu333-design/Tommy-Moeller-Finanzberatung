@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ETF-Sparplan-Rechner: Berechnen Sie kostenlos und live, wie sich Ihr Vermögen mit einem ETF-Sparplan über die Jahre entwickelt — inklusive Zinseszins-Effekt." />
+  <title>ETF-Sparplan-Rechner – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .tool-grid { display:grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items:start; }
+    @media(max-width:900px){ .tool-grid{ grid-template-columns:1fr; } }
+
+    .slider-row { margin-bottom: 22px; }
+    .slider-row label { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--text-dim); margin-bottom:10px; }
+    .slider-row .val { color: var(--gold); font-weight:700; font-family: var(--font-mono); font-size:14px; }
+    input[type=range]{ width:100%; accent-color: var(--gold); height:4px; }
+
+    .result-cards { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:22px; }
+    @media(max-width:560px){ .result-cards{ grid-template-columns:1fr; } }
+    .result-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center; }
+    .result-card .label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; font-family:var(--font-mono); }
+    .result-card .value{ font-family:var(--font-serif); font-size:clamp(16px,4vw,22px); color:var(--bright); white-space:nowrap; }
+    .result-card.highlight { border-color: rgba(201,168,76,0.35); }
+    .result-card.highlight .value{ color: var(--gold); }
+
+    .hint-box{ background: rgba(201,168,76,0.07); border-left:3px solid var(--gold); padding:14px 18px; border-radius:0 8px 8px 0; font-size:13px; color:var(--text-dim); line-height:1.6; margin-top:24px; }
+
+    .chart-legend{ display:flex; gap:18px; font-size:12px; color:var(--muted); margin-top:10px; flex-wrap:wrap; }
+    .legend-dot{ width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:6px; vertical-align:middle; }
+
+    .cta-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-top: 36px; text-align: center; }
+    .cta-box h3 { font-family: var(--font-serif); font-size: 20px; color: var(--bright); margin-bottom: 8px; }
+    .cta-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+
+    .card-title { font-family:var(--font-serif); color:var(--bright); margin-bottom:22px; font-size:18px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" id="nav-login-btn">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="services.html">Dienstleistungen</a> / <span>ETF-Sparplan-Rechner</span></div>
+      <h1 class="section-title">ETF-Sparplan-Rechner</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Sehen Sie live, wie der Zinseszins-Effekt Ihr Vermögen wachsen lässt</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="tool-grid">
+
+        <!-- INPUTS -->
+        <div class="card">
+          <h3 class="card-title">Ihre Angaben</h3>
+
+          <div class="slider-row">
+            <label>Startkapital <span class="val" id="val-start">1.000 €</span></label>
+            <input type="range" id="start" min="0" max="100000" step="500" value="1000" oninput="calc()">
+          </div>
+
+          <div class="slider-row">
+            <label>Monatliche Sparrate <span class="val" id="val-rate">200 €</span></label>
+            <input type="range" id="rate" min="0" max="2000" step="25" value="200" oninput="calc()">
+          </div>
+
+          <div class="slider-row">
+            <label>Laufzeit <span class="val" id="val-years">20 Jahre</span></label>
+            <input type="range" id="years" min="1" max="40" step="1" value="20" oninput="calc()">
+          </div>
+
+          <div class="slider-row">
+            <label>Erwartete Rendite (p.a.) <span class="val" id="val-return">6,0 %</span></label>
+            <input type="range" id="return" min="0" max="12" step="0.5" value="6" oninput="calc()">
+          </div>
+
+          <div class="hint-box">
+            💡 Historisch erzielten breit gestreute Welt-ETFs (z.B. MSCI World oder FTSE All-World)
+            langfristig ca. 6–8 % Rendite p.a. Vergangene Wertentwicklungen sind kein verlässlicher
+            Indikator für die Zukunft — dieser Rechner dient der allgemeinen Orientierung.
+          </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="card">
+          <h3 class="card-title">Ergebnis nach <span id="years-label">20</span> Jahren</h3>
+
+          <div class="result-cards">
+            <div class="result-card highlight">
+              <div class="label">Endkapital</div>
+              <div class="value" id="out-end">0 €</div>
+            </div>
+            <div class="result-card">
+              <div class="label">Eingezahlt</div>
+              <div class="value" id="out-paid">0 €</div>
+            </div>
+            <div class="result-card">
+              <div class="label">Zinserträge</div>
+              <div class="value" id="out-gain">0 €</div>
+            </div>
+          </div>
+
+          <div id="chart-wrap"></div>
+          <div class="chart-legend">
+            <span><span class="legend-dot" style="background:#475569"></span>Eingezahltes Kapital</span>
+            <span><span class="legend-dot" style="background:#C9A84C"></span>Zinserträge</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="cta-box">
+        <h3>Wie passt ein ETF-Sparplan in Ihre Finanzplanung?</h3>
+        <p>In der kostenlosen Finanzanalyse betrachten wir Ihre gesamte Situation — inklusive Sparpotenzial, Risikoprofil und Zielen.</p>
+        <a href="Finanz_Analyse.html" class="btn-primary">Zur Finanzanalyse →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">TM<span>.</span></div>
+          <p class="footer-tagline">Controller & Finanzberater</p>
+        </div>
+        <div>
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Start</a></li>
+            <li><a href="about.html">Über mich</a></li>
+            <li><a href="services.html">Dienstleistungen</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rechtliches</h4>
+          <ul>
+            <li><a href="imprint.html">Impressum</a></li>
+            <li><a href="privacy.html">Datenschutz</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Tommy Möller.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function fmtEuro(n){
+      return Math.round(n).toLocaleString('de-DE') + ' €';
+    }
+
+    function calc(){
+      const start = +document.getElementById('start').value;
+      const rate  = +document.getElementById('rate').value;
+      const years = +document.getElementById('years').value;
+      const ret   = +document.getElementById('return').value;
+
+      document.getElementById('val-start').textContent  = fmtEuro(start);
+      document.getElementById('val-rate').textContent   = fmtEuro(rate);
+      document.getElementById('val-years').textContent  = years + ' Jahre';
+      document.getElementById('val-return').textContent = ret.toFixed(1).replace('.',',') + ' %';
+      document.getElementById('years-label').textContent = years;
+
+      const monthlyRate = ret/100/12;
+      let kapital = start;
+      let eingezahlt = start;
+      const points = [];
+
+      for(let m=1; m<=years*12; m++){
+        kapital = kapital*(1+monthlyRate) + rate;
+        eingezahlt += rate;
+        if(m % 12 === 0) points.push({ jahr: m/12, kapital, eingezahlt });
+      }
+
+      const endkapital = kapital;
+      const gain = endkapital - eingezahlt;
+
+      document.getElementById('out-end').textContent  = fmtEuro(endkapital);
+      document.getElementById('out-paid').textContent = fmtEuro(eingezahlt);
+      document.getElementById('out-gain').textContent = fmtEuro(gain);
+
+      drawChart(points);
+    }
+
+    function drawChart(points){
+      const w = 600, h = 260, padL = 56, padB = 28, padT = 12;
+      const maxVal = Math.max(...points.map(p => p.kapital), 1);
+      const innerW = w - padL - 10;
+      const innerH = h - padT - padB;
+      const gap = innerW / points.length;
+      const barW = Math.max(2, gap * 0.62);
+      const labelStep = Math.ceil(points.length / 10);
+
+      let bars = '';
+      points.forEach((p,i) => {
+        const x = padL + i*gap + (gap-barW)/2;
+        const totalH = (p.kapital/maxVal) * innerH;
+        const paidH  = (Math.min(p.eingezahlt,p.kapital)/maxVal) * innerH;
+        const gainH  = totalH - paidH;
+        const yBase  = h - padB;
+        bars += `<rect x="${x.toFixed(1)}" y="${(yBase-paidH).toFixed(1)}" width="${barW.toFixed(1)}" height="${paidH.toFixed(1)}" style="fill:#475569" rx="1.5"/>`;
+        if (gainH > 0) {
+          bars += `<rect x="${x.toFixed(1)}" y="${(yBase-totalH).toFixed(1)}" width="${barW.toFixed(1)}" height="${gainH.toFixed(1)}" style="fill:#C9A84C" rx="1.5"/>`;
+        }
+        if (i % labelStep === 0 || i === points.length-1) {
+          bars += `<text x="${(x+barW/2).toFixed(1)}" y="${h-8}" font-size="10" style="fill:#64748b" text-anchor="middle" font-family="DM Mono, monospace">${p.jahr}</text>`;
+        }
+      });
+
+      let grid = '';
+      for(let i=0; i<=3; i++){
+        const val = maxVal*i/3;
+        const y = h - padB - (val/maxVal)*innerH;
+        const label = val >= 1000 ? Math.round(val/1000) + 'k' : Math.round(val);
+        grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${w}" y2="${y.toFixed(1)}" style="stroke:#1e293b" stroke-width="1"/>`;
+        grid += `<text x="${padL-8}" y="${(y+3).toFixed(1)}" font-size="10" style="fill:#64748b" text-anchor="end" font-family="DM Mono, monospace">${label}</text>`;
+      }
+
+      document.getElementById('chart-wrap').innerHTML =
+        `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">${grid}${bars}</svg>`;
+    }
+
+    calc();
+  </script>
+</body>
+</html>
