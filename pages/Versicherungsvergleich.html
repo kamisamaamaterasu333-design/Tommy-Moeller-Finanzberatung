@@ -1,0 +1,573 @@
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Versicherungsrechner: Welche Versicherungen brauche ich wirklich? Kostenloser, situationsbezogener Versicherungscheck mit Mindestleistungen — Tommy Möller, Erkner." />
+  <title>Versicherungscheck – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ── WIZARD SHELL ── */
+    .wizard-wrap { max-width: 780px; margin: -36px auto 0; padding: 0 16px 80px; position:relative; z-index:10; }
+    .wizard-card { background: var(--card, #111827); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: hidden; }
+    .progress-bar-wrap { height: 4px; background: rgba(255,255,255,.07); }
+    .progress-bar { height:100%; background: linear-gradient(90deg,#C9A84C,#F0DFA0); transition: width .4s; }
+    .wizard-inner { padding: 36px 40px; }
+    @media(max-width:600px){ .wizard-inner{ padding:24px 18px; } }
+
+    /* ── STEPS ── */
+    .step { display:none; }
+    .step.active { display:block; animation: fadeUp .3s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .step-label { font-family: var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#C9A84C; margin-bottom:8px; }
+    .step-q { font-family: 'Playfair Display', serif; font-size: clamp(19px,3vw,25px); color:var(--bright,#f1f5f9); margin-bottom:6px; line-height:1.2; }
+    .step-hint { font-size:13px; color:var(--muted,#64748b); margin-bottom:26px; line-height:1.55; }
+
+    /* ── OPTION TILES ── */
+    .options { display:grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap:10px; margin-bottom:28px; }
+    .opt { border:2px solid rgba(255,255,255,.1); border-radius:10px; padding:14px 12px; cursor:pointer; text-align:center; transition:all .18s; background:rgba(255,255,255,.03); user-select:none; }
+    .opt:hover { border-color:#C9A84C; background:rgba(201,168,76,.06); }
+    .opt.selected { border-color:#C9A84C; background:rgba(201,168,76,.12); }
+    .opt-icon { font-size:22px; margin-bottom:6px; }
+    .opt-label { font-size:12.5px; font-weight:600; color:var(--bright,#f1f5f9); }
+    .opt-sub { font-size:11px; color:var(--muted,#64748b); margin-top:2px; }
+
+    /* ── CHIPS ── */
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
+    .chip { border:2px solid rgba(255,255,255,.12); border-radius:20px; padding:7px 14px; font-size:12.5px; font-weight:500; cursor:pointer; transition:all .18s; color:var(--text-dim,#94a3b8); background:transparent; }
+    .chip:hover { border-color:#C9A84C; }
+    .chip.selected { border-color:#C9A84C; background:rgba(201,168,76,.1); color:#C9A84C; }
+
+    /* ── NAV BUTTONS ── */
+    .quiz-nav { display:flex; gap:10px; align-items:center; }
+    .btn-next { background:#C9A84C; color:#0f172a; border:none; border-radius:8px; padding:13px 28px; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s; font-family:'DM Sans',sans-serif; }
+    .btn-next:hover { background:#b8963e; }
+    .btn-next:disabled { background:rgba(255,255,255,.1); color:rgba(255,255,255,.3); cursor:default; }
+    .btn-back { background:transparent; border:1.5px solid rgba(255,255,255,.15); color:var(--muted,#64748b); border-radius:8px; padding:11px 18px; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
+    .btn-back:hover { border-color:rgba(255,255,255,.35); color:var(--text-dim,#94a3b8); }
+
+    /* ── RESULTS ── */
+    #results { display:none; }
+    .results-header { padding:36px 40px 0; }
+    @media(max-width:600px){ .results-header{ padding:24px 18px 0; } }
+    .results-header h2 { font-family:'Playfair Display',serif; font-size:26px; color:var(--bright,#f1f5f9); margin-bottom:4px; }
+    .results-header p { color:var(--muted,#64748b); font-size:14px; margin-bottom:24px; }
+    .profile-badges { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; }
+    .pbadge { font-size:11px; font-weight:600; padding:4px 12px; border-radius:20px; background:rgba(201,168,76,.12); border:1px solid rgba(201,168,76,.3); color:#C9A84C; font-family:var(--font-mono); }
+
+    .prio-section { padding: 0 40px 32px; }
+    @media(max-width:600px){ .prio-section{ padding:0 18px 24px; } }
+    .prio-label { font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin:28px 0 14px; display:flex; align-items:center; gap:10px; }
+    .prio-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+
+    .ins-card { border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:20px; margin-bottom:12px; background:rgba(255,255,255,.02); }
+    .ins-card.must   { border-left:3px solid #ef4444; }
+    .ins-card.high   { border-left:3px solid #f97316; }
+    .ins-card.medium { border-left:3px solid #3b82f6; }
+    .ins-card.low    { border-left:3px solid rgba(255,255,255,.2); }
+
+    .ins-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .ins-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+    .ins-title { font-size:15px; font-weight:700; color:var(--bright,#f1f5f9); margin-bottom:2px; }
+    .ins-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+    .badge-must   { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+    .badge-high   { background:rgba(249,115,22,.15); color:#f97316; border:1px solid rgba(249,115,22,.3); }
+    .badge-medium { background:rgba(59,130,246,.15); color:#60a5fa; border:1px solid rgba(59,130,246,.3); }
+    .badge-low    { background:rgba(255,255,255,.07); color:#94a3b8; border:1px solid rgba(255,255,255,.12); }
+
+    .ins-why { font-size:13px; color:var(--text-dim,#94a3b8); line-height:1.65; margin-bottom:12px; }
+    .ins-details { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media(max-width:560px){ .ins-details{ grid-template-columns:1fr; } }
+    .ins-detail-box { background:rgba(0,0,0,.2); border-radius:8px; padding:12px 14px; }
+    .ins-detail-label { font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:#64748b; margin-bottom:6px; }
+    .ins-detail-val { font-size:12.5px; color:#cbd5e1; line-height:1.55; }
+
+    .restart-row { display:flex; gap:10px; flex-wrap:wrap; padding:0 40px 32px; border-top:1px solid rgba(255,255,255,.07); padding-top:24px; margin-top:8px; }
+    @media(max-width:600px){ .restart-row{ padding:16px 18px 24px; } }
+    .btn-restart { background:transparent; border:1.5px solid rgba(255,255,255,.15); color:var(--muted,#64748b); border-radius:8px; padding:10px 18px; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
+    .btn-restart:hover { border-color:rgba(255,255,255,.35); }
+    .btn-contact { background:#C9A84C; color:#0f172a; border:none; border-radius:8px; padding:10px 22px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:background .2s; text-decoration:none; display:inline-block; }
+    .btn-contact:hover { background:#b8963e; }
+
+    .disclaimer { padding:0 40px 32px; }
+    @media(max-width:600px){ .disclaimer{ padding:0 18px 24px; } }
+    .disclaimer p { font-size:12px; color:#475569; line-height:1.6; background:rgba(201,168,76,.04); border:1px solid rgba(201,168,76,.12); border-radius:8px; padding:12px 16px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html" class="active">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav" id="nav-login-btn">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="services.html">Dienstleistungen</a> / <span>Versicherungscheck</span></div>
+      <h1 class="section-title">Persönlicher Versicherungscheck</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Welche Versicherungen brauchen Sie wirklich? 5 Fragen — individuelle Empfehlung</p>
+    </div>
+  </div>
+
+  <section class="section" style="padding-top:0">
+    <div class="wizard-wrap">
+      <div class="wizard-card">
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+        <div class="wizard-inner">
+
+          <!-- STEP 1: Lebensphase -->
+          <div class="step active" id="step1">
+            <div class="step-label">Frage 1 von 5</div>
+            <div class="step-q">In welcher Lebensphase befinden Sie sich?</div>
+            <div class="step-hint">Die Lebensphase beeinflusst welche Risiken relevant sind und wie hoch der Absicherungsbedarf ist.</div>
+            <div class="options" id="opts-phase">
+              <div class="opt" data-val="student" onclick="selectOpt(this,'opts-phase','phase')">
+                <div class="opt-icon">🎓</div><div class="opt-label">Azubi / Student</div><div class="opt-sub">bis ~25 Jahre</div>
+              </div>
+              <div class="opt" data-val="berufsstart" onclick="selectOpt(this,'opts-phase','phase')">
+                <div class="opt-icon">💼</div><div class="opt-label">Berufsstart</div><div class="opt-sub">25–35 Jahre</div>
+              </div>
+              <div class="opt" data-val="aufbau" onclick="selectOpt(this,'opts-phase','phase')">
+                <div class="opt-icon">📈</div><div class="opt-label">Aufbauphase</div><div class="opt-sub">35–50 Jahre</div>
+              </div>
+              <div class="opt" data-val="spaet" onclick="selectOpt(this,'opts-phase','phase')">
+                <div class="opt-icon">🌅</div><div class="opt-label">Ü50 / Vorruhestand</div><div class="opt-sub">50+ Jahre</div>
+              </div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn-next" id="next1" disabled onclick="nextStep(2)">Weiter →</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Beruf -->
+          <div class="step" id="step2">
+            <div class="step-label">Frage 2 von 5</div>
+            <div class="step-q">Was ist Ihre berufliche Situation?</div>
+            <div class="step-hint">Beruf und Beschäftigungsart bestimmen wesentlich, welche Absicherungen zwingend notwendig sind.</div>
+            <div class="options" id="opts-beruf">
+              <div class="opt" data-val="angestellt" onclick="selectOpt(this,'opts-beruf','beruf')">
+                <div class="opt-icon">🏢</div><div class="opt-label">Angestellt</div><div class="opt-sub">Festanstellung</div>
+              </div>
+              <div class="opt" data-val="beamter" onclick="selectOpt(this,'opts-beruf','beruf')">
+                <div class="opt-icon">🏛️</div><div class="opt-label">Beamter / Beamtin</div><div class="opt-sub">öffentlicher Dienst</div>
+              </div>
+              <div class="opt" data-val="selbst" onclick="selectOpt(this,'opts-beruf','beruf')">
+                <div class="opt-icon">🚀</div><div class="opt-label">Selbstständig</div><div class="opt-sub">Freiberufler / Unternehmer</div>
+              </div>
+              <div class="opt" data-val="student_beruf" onclick="selectOpt(this,'opts-beruf','beruf')">
+                <div class="opt-icon">📚</div><div class="opt-label">Azubi / Student</div><div class="opt-sub">in Ausbildung</div>
+              </div>
+              <div class="opt" data-val="nicht_beruf" onclick="selectOpt(this,'opts-beruf','beruf')">
+                <div class="opt-icon">🏠</div><div class="opt-label">Nicht erwerbstätig</div><div class="opt-sub">Rente / Elternzeit etc.</div>
+              </div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn-back" onclick="prevStep(1)">← Zurück</button>
+              <button class="btn-next" id="next2" disabled onclick="nextStep(3)">Weiter →</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Familie -->
+          <div class="step" id="step3">
+            <div class="step-label">Frage 3 von 5</div>
+            <div class="step-q">Wie sieht Ihre familiäre Situation aus?</div>
+            <div class="step-hint">Hinterbliebene und abhängige Personen verändern den Absicherungsbedarf erheblich.</div>
+            <div class="options" id="opts-familie">
+              <div class="opt" data-val="single" onclick="selectOpt(this,'opts-familie','familie')">
+                <div class="opt-icon">👤</div><div class="opt-label">Single</div><div class="opt-sub">alleinlebend</div>
+              </div>
+              <div class="opt" data-val="paar" onclick="selectOpt(this,'opts-familie','familie')">
+                <div class="opt-icon">👫</div><div class="opt-label">Paar</div><div class="opt-sub">ohne Kinder</div>
+              </div>
+              <div class="opt" data-val="kinder" onclick="selectOpt(this,'opts-familie','familie')">
+                <div class="opt-icon">👨‍👩‍👧‍👦</div><div class="opt-label">Familie mit Kindern</div><div class="opt-sub">mit unterhaltsberechtigten Kindern</div>
+              </div>
+              <div class="opt" data-val="alleinerziehend" onclick="selectOpt(this,'opts-familie','familie')">
+                <div class="opt-icon">👩‍👧</div><div class="opt-label">Alleinerziehend</div><div class="opt-sub">mit Kind(ern)</div>
+              </div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn-back" onclick="prevStep(2)">← Zurück</button>
+              <button class="btn-next" id="next3" disabled onclick="nextStep(4)">Weiter →</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Wohnen & Auto -->
+          <div class="step" id="step4">
+            <div class="step-label">Frage 4 von 5</div>
+            <div class="step-q">Wohnen und Mobilität</div>
+            <div class="step-hint">Bitte wählen Sie alles Zutreffende.</div>
+            <div class="chips" id="chips-situation">
+              <div class="chip" data-val="mieter" onclick="toggleChip(this,'situation')">🏠 Zur Miete wohnend</div>
+              <div class="chip" data-val="eigentuemer" onclick="toggleChip(this,'situation')">🏡 Immobilieneigentümer</div>
+              <div class="chip" data-val="auto" onclick="toggleChip(this,'situation')">🚗 PKW vorhanden</div>
+              <div class="chip" data-val="hund" onclick="toggleChip(this,'situation')">🐕 Hund als Haustier</div>
+              <div class="chip" data-val="reise" onclick="toggleChip(this,'situation')">✈️ Häufig auf Reisen</div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn-back" onclick="prevStep(3)">← Zurück</button>
+              <button class="btn-next" onclick="nextStep(5)">Weiter →</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: Einkommen -->
+          <div class="step" id="step5">
+            <div class="step-label">Frage 5 von 5</div>
+            <div class="step-q">Wie hoch ist Ihr monatliches Nettoeinkommen?</div>
+            <div class="step-hint">Für die Berechnung der empfohlenen BU-Rente und anderer einkommensabhängiger Absicherungen.</div>
+            <div class="options" id="opts-einkommen">
+              <div class="opt" data-val="unter1500" onclick="selectOpt(this,'opts-einkommen','einkommen')">
+                <div class="opt-icon">💶</div><div class="opt-label">unter 1.500 €</div>
+              </div>
+              <div class="opt" data-val="1500bis2500" onclick="selectOpt(this,'opts-einkommen','einkommen')">
+                <div class="opt-icon">💶</div><div class="opt-label">1.500–2.500 €</div>
+              </div>
+              <div class="opt" data-val="2500bis4000" onclick="selectOpt(this,'opts-einkommen','einkommen')">
+                <div class="opt-icon">💶</div><div class="opt-label">2.500–4.000 €</div>
+              </div>
+              <div class="opt" data-val="ueber4000" onclick="selectOpt(this,'opts-einkommen','einkommen')">
+                <div class="opt-icon">💶</div><div class="opt-label">über 4.000 €</div>
+              </div>
+            </div>
+            <div class="quiz-nav">
+              <button class="btn-back" onclick="prevStep(4)">← Zurück</button>
+              <button class="btn-next" id="next5" disabled onclick="showResults()">Empfehlungen anzeigen →</button>
+            </div>
+          </div>
+
+        </div><!-- /wizard-inner -->
+
+        <!-- RESULTS -->
+        <div id="results">
+          <div class="results-header">
+            <h2>Ihre persönlichen Versicherungsempfehlungen</h2>
+            <p>Basierend auf Ihrer Situation — priorisiert nach Wichtigkeit.</p>
+            <div class="profile-badges" id="profileBadges"></div>
+          </div>
+          <div id="results-content"></div>
+          <div class="restart-row">
+            <button class="btn-restart" onclick="restartQuiz()">↺ Neu starten</button>
+            <a href="contact.html" class="btn-contact">📬 Persönliche Beratung anfragen</a>
+          </div>
+          <div class="disclaimer">
+            <p>⚠️ <strong>Hinweis:</strong> Dieser Rechner dient der allgemeinen Orientierung und stellt keine individuelle Versicherungsberatung dar. Konditionen, Leistungen und Kosten variieren je nach Anbieter, Gesundheitszustand und persönlicher Situation. Für eine verbindliche Empfehlung wenden Sie sich bitte an einen zugelassenen Versicherungsvermittler.</p>
+          </div>
+        </div>
+
+      </div><!-- /wizard-card -->
+    </div><!-- /wizard-wrap -->
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-logo">TM<span>.</span></div><p class="footer-tagline">Controller & Finanzberater</p></div>
+        <div><h4>Navigation</h4><ul><li><a href="../index.html">Start</a></li><li><a href="about.html">Über mich</a></li><li><a href="services.html">Dienstleistungen</a></li><li><a href="contact.html">Kontakt</a></li></ul></div>
+        <div><h4>Rechtliches</h4><ul><li><a href="imprint.html">Impressum</a></li><li><a href="privacy.html">Datenschutz</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ── STATE ──────────────────────────────────────────────────────────
+    const state = { phase:'', beruf:'', familie:'', situation:[], einkommen:'' };
+    let currentStep = 1;
+    const TOTAL = 5;
+
+    // ── NAVIGATION ─────────────────────────────────────────────────────
+    function nextStep(n){
+      document.getElementById('step'+currentStep).classList.remove('active');
+      document.getElementById('step'+n).classList.add('active');
+      currentStep = n;
+      document.getElementById('progressBar').style.width = ((n-1)/TOTAL*100)+'%';
+      window.scrollTo(0,0);
+    }
+    function prevStep(n){
+      document.getElementById('step'+currentStep).classList.remove('active');
+      document.getElementById('step'+n).classList.add('active');
+      currentStep = n;
+      document.getElementById('progressBar').style.width = ((n-1)/TOTAL*100)+'%';
+    }
+
+    // ── SELECTIONS ─────────────────────────────────────────────────────
+    function selectOpt(el, groupId, key){
+      document.querySelectorAll('#'+groupId+' .opt').forEach(o=>o.classList.remove('selected'));
+      el.classList.add('selected');
+      state[key] = el.dataset.val;
+      const nextMap = {phase:'next1',beruf:'next2',familie:'next3',einkommen:'next5'};
+      if(nextMap[key]) document.getElementById(nextMap[key]).disabled = false;
+    }
+    function toggleChip(el, key){
+      el.classList.toggle('selected');
+      state[key] = [...document.querySelectorAll('#chips-'+key+' .chip.selected')].map(c=>c.dataset.val);
+    }
+
+    // ── INSURANCE DATABASE ─────────────────────────────────────────────
+    const INSURANCES = {
+      haftpflicht: {
+        icon:'🛡️', name:'Private Haftpflichtversicherung',
+        prio:'must',
+        why: () => 'Die wichtigste Versicherung überhaupt — und für jeden Pflicht. Sie schützt vor finanziellen Folgen wenn Sie versehentlich Dritte schädigen. Ohne Haftpflicht haften Sie mit Ihrem gesamten Vermögen, lebenslang.',
+        mindest: () => {
+          const familie = state.familie === 'kinder' || state.familie === 'alleinerziehend';
+          return familie
+            ? 'Mindestens 10 Mio. € Deckungssumme für Personen-, Sach- und Vermögensschäden. Kinder unbedingt mitversichern.'
+            : 'Mindestens 5 Mio. € für Personen- und Sachschäden, 1 Mio. € Vermögensschäden.';
+        },
+        kosten: () => state.familie==='kinder'||state.familie==='alleinerziehend' ? 'ca. 8–15 € / Monat' : 'ca. 5–10 € / Monat',
+      },
+      bu: {
+        icon:'🏥', name:'Berufsunfähigkeitsversicherung (BU)',
+        prio:'must',
+        why: () => {
+          if(state.beruf==='selbst') return 'Als Selbstständige(r) haben Sie keinen Anspruch auf gesetzliche Erwerbsminderungsrente. Eine BU ist für Sie absolut unverzichtbar — ohne sie droht im Ernstfall der finanzielle Ruin.';
+          if(state.beruf==='student_beruf') return 'Im Studium oder in der Ausbildung abschließen lohnt sich besonders: günstigere Beiträge wegen jungem Alter, und Sie sichern sich die Absicherung bevor mögliche Vorerkrankungen den Abschluss erschweren.';
+          return 'Jeder 4. Arbeitnehmer scheidet vor der Rente aus dem Berufsleben aus. Die gesetzliche Erwerbsminderungsrente reicht meist nicht zum Leben. Die BU ist nach der Haftpflicht die wichtigste Versicherung für Berufstätige.';
+        },
+        mindest: () => {
+          const einkommenMap = {'unter1500':'900–1.200','1500bis2500':'1.200–1.800','2500bis4000':'1.800–2.800','ueber4000':'2.800–3.500'};
+          const betrag = einkommenMap[state.einkommen] || '1.200–2.000';
+          return `BU-Rente: mindestens ${betrag} € / Monat (60–75 % des Nettoeinkommens). Laufzeit: bis zum gesetzlichen Renteneintritt (67 Jahre). Abstrakte Verweisung ausschließen.`;
+        },
+        kosten: () => {
+          const einkommenMap = {'unter1500':'ca. 40–80','1500bis2500':'ca. 60–120','2500bis4000':'ca. 80–180','ueber4000':'ca. 120–250+'};
+          return (einkommenMap[state.einkommen] || 'ca. 60–150') + ' € / Monat (alters- und berufsabhängig)';
+        },
+        exclude: () => state.beruf==='beamter' || state.beruf==='nicht_beruf' || state.phase==='spaet',
+      },
+      dienstunfaehigkeit: {
+        icon:'🏛️', name:'Dienstunfähigkeitsversicherung',
+        prio:'must',
+        why: () => 'Beamte sind im Falle einer Dienstunfähigkeit zwar durch die Versorgungsordnung besser gestellt als Angestellte — doch gerade in den ersten Dienstjahren (Probezeit, frühe Berufsjahre) sind die Ansprüche noch gering. Eine Dienstunfähigkeitsversicherung schließt diese Lücke.',
+        mindest: () => 'Monatliche DU-Rente: mindestens Differenz zwischen Nettobesoldung und voraussichtlichen Versorgungsbezügen. Laufzeit bis zum Pensionsalter. Auf echte DU-Klausel achten (nicht nur BU).',
+        kosten: () => 'ca. 30–100 € / Monat (Dienstalter- und berufsabhängig)',
+        include: () => state.beruf === 'beamter',
+      },
+      risikoleben: {
+        icon:'❤️', name:'Risikolebensversicherung',
+        prio:'must',
+        why: () => {
+          if(state.familie==='alleinerziehend') return 'Als Alleinerziehende(r) sind Ihre Kinder vollständig von Ihrem Einkommen abhängig. Eine Risikolebensversicherung sichert deren Versorgung ab, falls Ihnen etwas passiert — absolut unverzichtbar.';
+          return 'Wenn Ihr Partner oder Ihre Kinder finanziell von Ihnen abhängig sind, ist eine Risikolebensversicherung unverzichtbar. Im Todesfall erhält die Familie einen festgelegten Betrag als Einmalzahlung.';
+        },
+        mindest: () => 'Mindestens das 3–5-fache des Jahresbruttoeinkommens. Bei laufenden Immobilienkrediten: Restschuld des Darlehens absichern. Laufzeit: bis jüngstes Kind finanziell unabhängig ist.',
+        kosten: () => 'ca. 10–30 € / Monat (je nach Alter, Gesundheit und Versicherungssumme)',
+        include: () => ['kinder','alleinerziehend','paar'].includes(state.familie),
+      },
+      hausrat: {
+        icon:'🏠', name:'Hausratversicherung',
+        prio:'high',
+        why: () => 'Schützt Ihren gesamten Hausrat (Möbel, Elektronik, Kleidung, Wertsachen) gegen Feuer, Einbruch, Leitungswasser und Sturm. Der Ersatzwert eines typischen Haushalts liegt schnell bei 30.000–80.000 € — ohne Versicherung eine massive finanzielle Belastung.',
+        mindest: () => 'Versicherungssumme: mindestens 650 € pro m² Wohnfläche (empfohlen: 700–800 €/m²). Neuwertversicherung (nicht Zeitwert). Fahrräder, Wertsachen und Glas ggf. per Zusatzbaustein.',
+        kosten: () => 'ca. 5–15 € / Monat (je nach Wohnfläche und Standort)',
+      },
+      gebaude: {
+        icon:'🏡', name:'Wohngebäudeversicherung',
+        prio:'must',
+        why: () => 'Als Eigentümer tragen Sie das volle Risiko für Ihr Gebäude. Feuer, Leitungswasserschäden oder Sturmschäden können schnell sechs- bis siebenstellige Kosten verursachen. Eine Wohngebäudeversicherung ist für Eigentümer absolut unverzichtbar.',
+        mindest: () => 'Wohngebäudewert zum Neuwert versichern (gleitende Neuwertformel). Pflichtbausteine: Feuer, Leitungswasser, Sturm/Hagel. Elementarschäden (Überschwemmung) dringend mitversichern.',
+        kosten: () => 'ca. 20–80 € / Monat (je nach Gebäudewert, Baujahr und Lage)',
+        include: () => state.situation.includes('eigentuemer'),
+      },
+      kfz: {
+        icon:'🚗', name:'KFZ-Versicherung (Kfz-Haftpflicht)',
+        prio:'must',
+        why: () => 'Kfz-Haftpflicht ist in Deutschland gesetzlich vorgeschrieben — ohne sie darf das Fahrzeug nicht bewegt werden. Sie zahlt Schäden, die Sie anderen im Straßenverkehr zufügen. Empfehlung: ab Fahrzeugneupreis über 15.000 € zusätzlich Vollkasko.',
+        mindest: () => 'Gesetzliche Mindestdeckung: 7,5 Mio. € Personenschäden, 1,22 Mio. € Sachschäden, 50.000 € Vermögensschäden. Empfohlen: Deckungssummen über 50–100 Mio. €.',
+        kosten: () => 'ab ca. 30 € / Monat (stark abhängig von SF-Klasse, Fahrzeug und Region)',
+        include: () => state.situation.includes('auto'),
+      },
+      hund: {
+        icon:'🐕', name:'Hundehaftpflichtversicherung',
+        prio:'must',
+        why: () => 'In Brandenburg ist die Hundehaftpflicht gesetzlich vorgeschrieben. Sie greift wenn Ihr Hund Menschen verletzt oder Sachschäden verursacht — selbst wenn Sie als Halter nichts dafür können.',
+        mindest: () => 'Mindestens 5 Mio. € Deckungssumme für Personen- und Sachschäden. Mitversicherung von Schäden durch Gefälligkeit empfehlen.',
+        kosten: () => 'ca. 4–12 € / Monat (je nach Rasse und Region)',
+        include: () => state.situation.includes('hund'),
+      },
+      krankentagegeld: {
+        icon:'🏥', name:'Krankentagegeldversicherung',
+        prio:'must',
+        why: () => 'Als Selbstständige(r) erhalten Sie nach 42 Krankheitstagen nur das gesetzliche Krankengeld (max. 70 % des Bruttoeinkommens, begrenzt). Viele Selbstständige haben gar keinen Anspruch. Ein langer Krankheitsausfall kann existenzbedrohend sein.',
+        mindest: () => 'Tagessatz: mindestens Ihren durchschnittlichen Tagesgewinn absichern, ab dem 1. oder 4. Krankheitstag. In der GKV: ab dem 43. Tag; bei PKV: individuell wählbar.',
+        kosten: () => 'ca. 30–100 € / Monat (je nach Einkommen, Alter und Karenzzeit)',
+        include: () => state.beruf === 'selbst',
+      },
+      betriebshaftpflicht: {
+        icon:'💼', name:'Betriebshaftpflichtversicherung',
+        prio:'must',
+        why: () => 'Als Selbstständige(r) haften Sie persönlich und unbegrenzt für Schäden die durch Ihre Tätigkeit entstehen. Die private Haftpflicht greift hier nicht. Eine Betriebshaftpflicht schützt vor beruflichen Schadenersatzansprüchen.',
+        mindest: () => 'Deckungssumme: mindestens 3 Mio. € für Personen- und Sachschäden. Für Berater/IT: Vermögensschadenhaftpflicht mit mindestens 500.000 € Deckung zusätzlich. Branchenspezifisch anpassen.',
+        kosten: () => 'ca. 20–150 € / Monat (stark branchenabhängig)',
+        include: () => state.beruf === 'selbst',
+      },
+      pflege: {
+        icon:'👴', name:'Pflegezusatzversicherung',
+        prio:'high',
+        why: () => {
+          if(state.phase==='aufbau') return 'Mit Mitte 30 bis 50 ist der Abschluss einer Pflegezusatzversicherung besonders günstig — und sinnvoll. Die gesetzliche Pflegeversicherung deckt nur einen Bruchteil der tatsächlichen Pflegekosten ab.';
+          return 'Die gesetzliche Pflegeversicherung deckt im Pflegefall nur ca. 40–50 % der tatsächlichen Kosten. Die Differenz (oft 2.000–4.000 € monatlich) müssen Sie selbst oder Ihre Familie tragen. Früher Abschluss = günstigere Beiträge.';
+        },
+        mindest: () => 'Monatliche Zusatzleistung: mindestens 1.000 €, besser 2.000–3.000 €. Leistung sollte an Pflegegrade geknüpft sein und regelmäßig dynamisiert werden (Inflation).',
+        kosten: () => 'ca. 20–60 € / Monat (je nach Einstiegsalter und Leistungshöhe)',
+        exclude: () => state.phase === 'student',
+      },
+      unfall: {
+        icon:'🦺', name:'Private Unfallversicherung',
+        prio:'medium',
+        why: () => {
+          if(state.beruf==='selbst') return 'Selbstständige haben keinen gesetzlichen Unfallversicherungsschutz für private Unfälle. Eine private Unfallversicherung leistet bei dauerhafter Invalidität durch einen Unfall — ergänzend zur BU.';
+          return 'Die gesetzliche Unfallversicherung gilt nur bei Berufsunfällen. Private Unfälle (80 % aller Unfälle) sind nicht gedeckt. Eine Unfallversicherung zahlt bei dauerhafter Invalidität nach einem Unfall eine Einmalzahlung.';
+        },
+        mindest: () => 'Invaliditätsgrundsumme: mindestens 200.000 €, besser 300.000–500.000 €. Progressionsstaffel 225–500 % empfohlen. Kein Ersatz für BU — ergänzend verwenden.',
+        kosten: () => 'ca. 8–25 € / Monat',
+      },
+      rechtsschutz: {
+        icon:'⚖️', name:'Rechtsschutzversicherung',
+        prio:'medium',
+        why: () => {
+          if(state.beruf==='selbst') return 'Als Selbstständige(r) sind Sie häufig in rechtlichen Auseinandersetzungen mit Kunden, Lieferanten oder Behörden. Anwalts- und Gerichtskosten können schnell fünfstellig werden.';
+          if(state.situation.includes('eigentuemer')) return 'Als Eigentümer sind Miet- und Eigentumsrechtsstreitigkeiten häufig. Dazu Vertragsrecht, Verkehrsrecht und Arbeitsrecht — eine Rechtsschutzversicherung schützt vor hohen Anwalts- und Gerichtskosten.';
+          return 'Streitigkeiten im Arbeitsrecht, Verkehrsrecht oder Mietrecht können schnell teuer werden. Die Rechtsschutzversicherung deckt Anwalts- und Gerichtskosten.';
+        },
+        mindest: () => 'Deckungssumme: mindestens 300.000 € pro Rechtsfall. Module: Privat, Berufe, Verkehr. Wartezeit beachten (3 Monate). Selbstbeteiligung ca. 150–300 € reduziert Beitrag.',
+        kosten: () => 'ca. 15–40 € / Monat',
+      },
+      reise: {
+        icon:'✈️', name:'Reisekrankenversicherung (Jahrespolice)',
+        prio:'high',
+        why: () => 'Bei Auslandsreisen übernimmt die gesetzliche Krankenkasse die Behandlungskosten häufig nur teilweise — Rücktransporte gar nicht. Eine Jahres-Reisekrankenversicherung gilt unbegrenzt oft und kostet weniger als eine Einzelreiseversicherung.',
+        mindest: () => 'Unbegrenzte Kostenübernahme für medizinische Behandlung im Ausland. Rücktransport ins Heimatland. Reisedauer pro Reise: mindestens 42–56 Tage für längere Trips prüfen.',
+        kosten: () => 'ca. 10–25 € / Jahr (Jahrespolice für Einzelperson oder Familie)',
+        include: () => state.situation.includes('reise'),
+      },
+      kinderunfall: {
+        icon:'👶', name:'Kinderunfallversicherung',
+        prio:'high',
+        why: () => 'Schulkinder sind in der gesetzlichen Schüler-Unfallversicherung auf dem Schulweg und in der Schule abgesichert — nicht aber zu Hause, beim Sport oder in der Freizeit. Dort passieren 75 % der Kinderunfälle.',
+        mindest: () => 'Invaliditätsgrundsumme: mindestens 100.000 €, besser 200.000 €. Progressionsstaffel 225–350 %. Invaliditätsbemessung nach spezieller Kinderprogression wählen.',
+        kosten: () => 'ca. 5–15 € / Monat pro Kind',
+        include: () => ['kinder','alleinerziehend'].includes(state.familie),
+      },
+    };
+
+    // ── RECOMMENDATION ENGINE ──────────────────────────────────────────
+    function getRecommendations(){
+      const recs = { must:[], high:[], medium:[] };
+      Object.entries(INSURANCES).forEach(([key, ins]) => {
+        if(ins.exclude && ins.exclude()) return;
+        if(ins.include && !ins.include()) return;
+        recs[ins.prio]?.push({key, ...ins});
+      });
+      return recs;
+    }
+
+    // ── RENDER ─────────────────────────────────────────────────────────
+    function renderCard(ins){
+      const badgeClass  = {must:'badge-must', high:'badge-high', medium:'badge-medium', low:'badge-low'}[ins.prio];
+      const badgeText   = {must:'Muss-haben', high:'Empfohlen', medium:'Sinnvoll', low:'Optional'}[ins.prio];
+      const cardClass   = ins.prio;
+      return `
+        <div class="ins-card ${cardClass}">
+          <div class="ins-header">
+            <span class="ins-icon">${ins.icon}</span>
+            <div style="flex:1">
+              <div class="ins-title">${ins.name}</div>
+              <span class="ins-badge ${badgeClass}">${badgeText}</span>
+            </div>
+          </div>
+          <div class="ins-why">${ins.why()}</div>
+          <div class="ins-details">
+            <div class="ins-detail-box">
+              <div class="ins-detail-label">Mindestleistungen</div>
+              <div class="ins-detail-val">${ins.mindest()}</div>
+            </div>
+            <div class="ins-detail-box">
+              <div class="ins-detail-label">Kosten (Orientierung)</div>
+              <div class="ins-detail-val">${ins.kosten()}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function showResults(){
+      document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.querySelector('.wizard-inner').style.display='none';
+      document.getElementById('progressBar').style.width='100%';
+
+      // Profile badges
+      const phaseLabels = {student:'Azubi/Student', berufsstart:'Berufsstart', aufbau:'Aufbauphase', spaet:'Ü50'};
+      const berufLabels = {angestellt:'Angestellt', beamter:'Beamter', selbst:'Selbstständig', student_beruf:'Azubi/Student', nicht_beruf:'Nicht erwerbstätig'};
+      const familieLabels = {single:'Single', paar:'Paar', kinder:'Familie mit Kindern', alleinerziehend:'Alleinerziehend'};
+      const sitLabels = {mieter:'Mieter', eigentuemer:'Eigentümer', auto:'PKW', hund:'Hund', reise:'Viel Reisend'};
+      const einLabels = {'unter1500':'< 1.500 €/mtl.','1500bis2500':'1.500–2.500 €/mtl.','2500bis4000':'2.500–4.000 €/mtl.','ueber4000':'> 4.000 €/mtl.'};
+
+      const badges = [
+        phaseLabels[state.phase],
+        berufLabels[state.beruf],
+        familieLabels[state.familie],
+        ...state.situation.map(s=>sitLabels[s]),
+        einLabels[state.einkommen]
+      ].filter(Boolean).map(b=>`<span class="pbadge">${b}</span>`).join('');
+      document.getElementById('profileBadges').innerHTML = badges;
+
+      const recs = getRecommendations();
+      let html = '';
+
+      if(recs.must.length){
+        html += `<div class="prio-section"><div class="prio-label" style="color:#ef4444">🔴 Unbedingt notwendig (${recs.must.length})</div>`;
+        html += recs.must.map(renderCard).join('');
+        html += '</div>';
+      }
+      if(recs.high.length){
+        html += `<div class="prio-section"><div class="prio-label" style="color:#f97316">🟠 Sehr empfohlen (${recs.high.length})</div>`;
+        html += recs.high.map(renderCard).join('');
+        html += '</div>';
+      }
+      if(recs.medium.length){
+        html += `<div class="prio-section"><div class="prio-label" style="color:#60a5fa">🔵 Sinnvoll in Ihrer Situation (${recs.medium.length})</div>`;
+        html += recs.medium.map(renderCard).join('');
+        html += '</div>';
+      }
+
+      document.getElementById('results-content').innerHTML = html;
+      document.getElementById('results').style.display='block';
+    }
+
+    function restartQuiz(){
+      state.phase=''; state.beruf=''; state.familie=''; state.situation=[]; state.einkommen='';
+      document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      ['next1','next2','next3','next5'].forEach(id=>{
+        const el=document.getElementById(id); if(el) el.disabled=true;
+      });
+      document.getElementById('results').style.display='none';
+      document.querySelector('.wizard-inner').style.display='block';
+      currentStep=1;
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('progressBar').style.width='0%';
+      window.scrollTo(0,0);
+    }
+
+    window.nextStep=nextStep; window.prevStep=prevStep;
+    window.selectOpt=selectOpt; window.toggleChip=toggleChip;
+    window.showResults=showResults; window.restartQuiz=restartQuiz;
+  </script>
+</body>
+</html>
