@@ -2369,7 +2369,6 @@ function scheduleAutoSave() {
 
 // ═══════════════════════════════════════════════════════════════════
 // FINANZANALYSE — EXCEL EXPORT (vollständig, alle Felder + Formeln)
-// Ersetze die bisherige exportExcel()-Funktion komplett durch diesen Block.
 // SheetJS (xlsx) muss eingebunden sein:
 // <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 // ═══════════════════════════════════════════════════════════════════
@@ -2701,6 +2700,23 @@ function exportExcel() {
   const datum = new Date().toISOString().slice(0,10);
   const fileName = `Finanzanalyse_${name}_${datum}.xlsx`;
   XLSX.writeFile(wb, fileName);
+  
+  // Feedback an Benutzer
+  showExportNotification('✅ Excel erfolgreich exportiert: ' + fileName);
+}
+
+/**
+ * Zeigt eine Exportbestätigung an
+ */
+function showExportNotification(message) {
+  const badge = document.getElementById('autosaveBadge');
+  if (badge) {
+    badge.textContent = message;
+    badge.classList.add('visible');
+    setTimeout(() => {
+      badge.classList.remove('visible');
+    }, 3000);
+  }
 }
       
 // ===== INIT =====
