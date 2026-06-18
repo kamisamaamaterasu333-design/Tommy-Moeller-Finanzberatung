@@ -2377,10 +2377,8 @@ function scheduleAutoSave() {
   autoSaveTimer = setTimeout(saveToLocalStorage, 800);
 }
 
-loat(d['sw_ueberschuss']) || 0],
-    ['', ''],
-    ['Summe Sparwünsche', parseFloat(d['sw_summe']) || 0],
-  ]);
+// ===== EXCEL EXPORT =====
+<script src="../js/export-handler.js"></script>
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -2545,7 +2543,6 @@ async function handleConsentChange() {
 async function saveAndPrint() {
   await saveAndEmail(true);
 }
-
-<script src="../js/export-handler.js"></script>
+</script>
 </body>
 </html>
