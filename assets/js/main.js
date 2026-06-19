@@ -1,83 +1,116 @@
 /**
  * main.js – Gemeinsame Logik für alle Seiten
- * Enthält: Auth-Helpers, Navigation, Sanitizer, Toast
+ * Enthält: Auth-Helpers (Supabase), Navigation, Sanitizer, Toast
  *
- * SICHERHEITSHINWEISE:
- * - Dieses System nutzt localStorage für Demo-Zwecke.
- * - In Produktion: Server-seitiges Session-Management verwenden!
- * - Passwörter NIEMALS im Klartext speichern.
+ * AUTH:
+ * - Login/Logout/Sessions laufen vollständig über Supabase Auth.
+ * - Supabase persistiert die Session selbst im localStorage und
+ *   refresht das Token automatisch im Hintergrund. Dadurch bleibt
+ *   man über Seitenwechsel und Browser-Neustarts hinweg eingeloggt,
+ *   bis man sich aktiv ausloggt.
+ * - Admin-Rolle wird aus user_metadata.role gelesen (Supabase Auth
+ *   "User Metadata"). Ist sie nicht gesetzt, gilt der Nutzer als
+ *   normaler User (kein Fehler).
  */
 
 'use strict';
 
-/* ═══ 1. AUTH-SYSTEM (Demo – in Produktion: Backend erforderlich) ══════ */
+/* ═══ 1. SUPABASE CLIENT (einmalig, global) ═══════════════════════════ */
+
+const SUPABASE_URL = 'https://kalonkzgzbpsndkuznqp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ';
+
+// supabase-js muss VOR main.js eingebunden sein:
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,    // Session in localStorage merken
+    autoRefreshToken: true,  // Token im Hintergrund erneuern
+    detectSessionInUrl: true
+  }
+});
+
+/* ═══ 2. AUTH-SYSTEM (Supabase-basiert) ════════════════════════════════ */
 
 const Auth = (() => {
 
-  // Demo-Nutzer (in Produktion: aus Backend laden, Passwörter gehasht in DB)
-  // SHA-256 Hash von "admin123" – Platzhalter, echtes Hashing im Backend!
-  const DEMO_USERS = [
-    { id: 1, username: 'admin',   passwordHash: 'adjustME4GOOD.', role: 'admin' },
-    { id: 2, username: 'user1',   passwordHash: 'The14Others!',  role: 'user'  },
-  ];
+  let cachedUser = null; // letzter bekannter Supabase-User (synchron abrufbar)
 
-  // Aktuell eingeloggten User aus localStorage lesen
-  function getCurrentUser() {
-    try {
-      const stored = localStorage.getItem('current_user');
-      return stored ? JSON.parse(stored) : null;
-    } catch { return null; }
+  // Supabase informiert uns bei jeder Änderung (Login, Logout, Token-Refresh)
+  sb.auth.onAuthStateChange((_event, session) => {
+    cachedUser = session?.user || null;
+    updateAuthNav();
+  });
+
+  // Aktuell eingeloggten User holen (asynchron, verlässlich)
+  async function getCurrentUser() {
+    const { data: { session } } = await sb.auth.getSession();
+    cachedUser = session?.user || null;
+    return cachedUser;
   }
 
-  // Login-Funktion
-  function login(username, password) {
-    const user = DEMO_USERS.find(
-      u => u.username === username && u.passwordHash === password
-    );
-    if (user) {
-      // Session-Daten speichern (ohne Passwort!)
-      const session = { id: user.id, username: user.username, role: user.role, loginTime: Date.now() };
-      localStorage.setItem('current_user', JSON.stringify(session));
-      return { success: true, user: session };
-    }
-    return { success: false, error: 'Ungültige Zugangsdaten.' };
+  // Synchroner Zugriff auf den zuletzt bekannten User (z.B. für UI-Updates
+  // ohne await). Direkt nach dem Laden der Seite kann das noch null sein,
+  // bis getCurrentUser()/onAuthStateChange einmal gelaufen ist.
+  function getCachedUser() {
+    return cachedUser;
   }
 
-  // Logout
-  function logout() {
-    localStorage.removeItem('current_user');
+  // Login
+  async function login(email, password) {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+    cachedUser = data.user;
+    return { success: true, user: data.user };
+  }
+
+  // Logout – nur dies meldet wirklich ab, niemals ein Seitenwechsel
+  async function logout() {
+    await sb.auth.signOut();
+    cachedUser = null;
     window.location.href = getRoot() + 'index.html';
   }
 
-  // Rollen-Prüfung
+  // Rollen-Prüfung (liest user_metadata.role, Standard: kein Admin)
   function isAdmin() {
-    const u = getCurrentUser();
-    return u && u.role === 'admin';
+    return cachedUser?.user_metadata?.role === 'admin';
   }
 
   function isLoggedIn() {
-    return getCurrentUser() !== null;
+    return cachedUser !== null;
   }
 
-  // Route-Guard: Seite nur für eingeloggte User
-  function requireLogin() {
-    if (!isLoggedIn()) {
+  // Route-Guard: Seite nur für eingeloggte User.
+  // WICHTIG: async, da Supabase die Session erst aus dem Storage laden muss.
+  // Erst NACH diesem Check entscheiden, ob umgeleitet wird – so wird
+  // niemand fälschlich rausgeworfen, nur weil die Session noch lädt.
+  async function requireLogin() {
+    const user = await getCurrentUser();
+    if (!user) {
       window.location.href = getRoot() + 'pages/login.html?redirect=' + encodeURIComponent(window.location.pathname);
     }
+    return user;
   }
 
   // Route-Guard: Seite nur für Admins
-  function requireAdmin() {
+  async function requireAdmin() {
+    const user = await getCurrentUser();
+    if (!user) {
+      window.location.href = getRoot() + 'pages/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+      return null;
+    }
     if (!isAdmin()) {
       showToast('Zugriff verweigert.', 'error');
       setTimeout(() => window.location.href = getRoot() + 'index.html', 1500);
+      return null;
     }
+    return user;
   }
 
-  return { getCurrentUser, login, logout, isAdmin, isLoggedIn, requireLogin, requireAdmin };
+  return { getCurrentUser, getCachedUser, login, logout, isAdmin, isLoggedIn, requireLogin, requireAdmin };
 })();
 
-/* ═══ 2. SICHERHEITS-HELPER ══════════════════════════════════════════════ */
+/* ═══ 3. SICHERHEITS-HELPER ══════════════════════════════════════════════ */
 
 /**
  * XSS-Schutz: HTML-Sonderzeichen escapen
@@ -103,7 +136,7 @@ const Validator = {
   safeName(value) { return /^[\w\s\-äöüÄÖÜß]{1,80}$/.test(value); },
 };
 
-/* ═══ 3. NAVIGATION ══════════════════════════════════════════════════════ */
+/* ═══ 4. NAVIGATION ══════════════════════════════════════════════════════ */
 
 function initNavbar() {
   // Scrolled-Klasse für Schatten-Effekt
@@ -125,26 +158,29 @@ function initNavbar() {
     });
   }
 
-  // Auth-Status in Navbar anzeigen
+  // Auth-Status in Navbar anzeigen (sobald Session geladen ist)
   updateAuthNav();
 }
 
-function updateAuthNav() {
+async function updateAuthNav() {
   const item = document.getElementById('auth-nav-item');
   if (!item) return;
-  const user = Auth.getCurrentUser();
+  const user = await Auth.getCurrentUser();
   if (user) {
+    const displayName = user.email || user.user_metadata?.username || 'Nutzer';
     item.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px">
         ${Auth.isAdmin() ? '<a href="' + getRoot() + 'pages/admin.html" class="btn-nav">Admin</a>' : ''}
         <button onclick="Auth.logout()" style="background:none;border:1px solid var(--border);color:var(--text-dim);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px">
-          Logout (${escHtml(user.username)})
+          Logout (${escHtml(displayName)})
         </button>
       </div>`;
+  } else {
+    item.innerHTML = '';
   }
 }
 
-/* ═══ 4. TOAST-BENACHRICHTIGUNG ══════════════════════════════════════════ */
+/* ═══ 5. TOAST-BENACHRICHTIGUNG ══════════════════════════════════════════ */
 
 let toastTimer;
 function showToast(message, type = '') {
@@ -162,7 +198,7 @@ function showToast(message, type = '') {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-/* ═══ 5. DATUM-FORMATTER ═════════════════════════════════════════════════ */
+/* ═══ 6. DATUM-FORMATTER ═════════════════════════════════════════════════ */
 
 function formatDateTime(timestamp) {
   const d = new Date(timestamp);
@@ -174,18 +210,19 @@ function formatDate(timestamp) {
   return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-/* ═══ 6. ROOT-PFAD-HELPER ════════════════════════════════════════════════ */
+/* ═══ 7. ROOT-PFAD-HELPER ════════════════════════════════════════════════ */
 // Gibt relativen Pfad zur Root zurück (nötig da Seiten in /pages/ liegen)
 function getRoot() {
   return window.location.pathname.includes('/pages/') ? '../' : '';
 }
 
-/* ═══ 7. INIT ════════════════════════════════════════════════════════════ */
+/* ═══ 8. INIT ════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
 });
 
-// Auth global verfügbar machen (für onclick-Attribute im HTML)
+// Global verfügbar machen (für onclick-Attribute im HTML und andere Skripte)
 window.Auth = Auth;
+window.sb = sb;
 window.showToast = showToast;
 window.escHtml = escHtml;
