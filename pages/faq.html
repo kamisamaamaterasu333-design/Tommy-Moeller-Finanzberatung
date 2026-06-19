@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Häufige Fragen (FAQ) – Tommy Möller</title>
+  <meta name="description" content="Antworten auf häufige Fragen zu Kosten, Ablauf, Provisionen, Datenschutz und Unabhängigkeit der Finanzberatung von Tommy Möller." />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== FAQ ACCORDION ===== */
+    .faq-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .faq-category {
+      margin-bottom: 36px;
+    }
+
+    .faq-category-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold, #c9a84c);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border, #2a2a2a);
+    }
+
+    .faq-item {
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+
+    .faq-item.open {
+      border-color: var(--gold, #c9a84c);
+    }
+
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      cursor: pointer;
+      font-family: var(--font-sans, 'DM Sans', sans-serif);
+      font-weight: 500;
+      font-size: 15.5px;
+      color: var(--bright, #fff);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .faq-question:hover { color: var(--gold, #c9a84c); }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold, #c9a84c);
+      font-size: 18px;
+      font-weight: 300;
+      transition: transform 0.25s ease;
+    }
+
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 22px;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 600px;
+      padding: 0 22px 20px;
+    }
+
+    .faq-answer p {
+      color: var(--text-dim, #b3b3b3);
+      font-size: 14.5px;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .faq-cta {
+      text-align: center;
+      margin-top: 48px;
+      padding: 32px;
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 14px;
+    }
+
+    .faq-cta p {
+      color: var(--text-dim, #b3b3b3);
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 600px) {
+      .faq-question { padding: 15px 16px; font-size: 14.5px; }
+      .faq-item.open .faq-answer { padding: 0 16px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / Häufige Fragen</div>
+      <h1 class="section-title">Häufige Fragen</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Antworten auf die Fragen, die mir am häufigsten gestellt werden – offen und ohne Umschweife.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="faq-wrap" id="faqWrap">
+
+        <!-- ═══ KOSTEN ═══ -->
+        <div class="faq-category">
+          <div class="faq-category-title">Kosten</div>
+
+          <div class="faq-item">
+            <div class="faq-question">Was kostet mich die Beratung?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Das Erstgespräch sowie die Auswertung Ihrer Finanzanalyse sind für Sie kostenlos und unverbindlich.
+              Sollte sich aus dem Gespräch ein konkretes Produkt ergeben, erfolgt meine Vergütung – wie in der
+              Finanzberatung üblich – über die Anbieter (Provision), nicht direkt über eine Rechnung an Sie.
+              Auf Wunsch erkläre ich Ihnen transparent, wie sich meine Vergütung im Einzelfall zusammensetzt.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Muss ich am Ende etwas kaufen oder abschließen?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Nein. Die Analyse und das Gespräch sind unabhängig davon, ob Sie anschließend etwas abschließen.
+              Sie entscheiden in jedem Schritt selbst, ob und wie Sie weitermachen möchten.
+            </p></div>
+          </div>
+        </div>
+
+        <!-- ═══ ABLAUF ═══ -->
+        <div class="faq-category">
+          <div class="faq-category-title">Ablauf</div>
+
+          <div class="faq-item">
+            <div class="faq-question">Wie läuft die Zusammenarbeit konkret ab?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              In fünf Schritten: Sie füllen die Finanzanalyse aus (oder wir besprechen sie gemeinsam), ich werte
+              Ihre Angaben aus und melde mich per E-Mail, wir vereinbaren ein Gespräch, erarbeiten gemeinsam
+              Optimierungsansätze und stimmen anschließend passende Angebote ab. Eine ausführliche Erklärung
+              mit allen Details finden Sie auf der Seite
+              <a href="konzept.html" style="color:var(--gold)">Mein Konzept</a>.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Muss ich die Finanzanalyse komplett ausfüllen?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Nein. Jede Angabe hilft mir bei der Einschätzung Ihrer Situation, aber Sie müssen nicht alle Felder
+              ausfüllen. Alternativ können wir die Analyse auch gemeinsam in einem kurzen Gespräch durchgehen.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Wie lange dauert es, bis ich eine Rückmeldung bekomme?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Nach Eingang Ihrer Finanzanalyse sichte ich die Daten in Ruhe und melde mich per E-Mail mit ersten
+              Einschätzungen sowie Terminvorschlägen für ein Gespräch.
+            </p></div>
+          </div>
+        </div>
+
+        <!-- ═══ PROVISIONEN & UNABHÄNGIGKEIT ═══ -->
+        <div class="faq-category">
+          <div class="faq-category-title">Provisionen &amp; Unabhängigkeit</div>
+
+          <div class="faq-item">
+            <div class="faq-question">Empfehlen Sie mir bestimmte Produkte oder Anbieter?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Im gemeinsamen Gespräch erarbeiten wir klare, auf Ihre Situation zugeschnittene Optimierungsansätze –
+              ich nenne dabei bewusst keine spezifischen Produkte einzelner Anbieter. Stattdessen holen Sie sich
+              passende Angebote selbst ein, die wir anschließend gemeinsam bewerten.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Wie verdienen Sie als Berater Geld, wenn Sie keine Produkte empfehlen?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Meine Stärke liegt in der strukturierten Analyse und Einordnung Ihrer finanziellen Situation –
+              vergleichbar mit meiner Tätigkeit als Controller. Sollte sich aus unserer Zusammenarbeit ein
+              konkreter Vertragsabschluss ergeben, erfolgt meine Vergütung über die jeweiligen Anbieter, wie in
+              der Finanzberatung branchenüblich.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Sind Sie ein unabhängiger Berater?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Meine Tätigkeit ist an die geltenden gewerberechtlichen Vorgaben gebunden. Gerne erkläre ich Ihnen
+              im persönlichen Gespräch transparent, in welchem Rahmen ich beraten und vermitteln darf.
+            </p></div>
+          </div>
+        </div>
+
+        <!-- ═══ DATENSCHUTZ ═══ -->
+        <div class="faq-category">
+          <div class="faq-category-title">Datenschutz</div>
+
+          <div class="faq-item">
+            <div class="faq-question">Was passiert mit meinen Daten aus der Finanzanalyse?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Ihre Eingaben werden zunächst nur lokal in Ihrem Browser zwischengespeichert, damit Sie das Formular
+              jederzeit fortsetzen können. Erst wenn Sie aktiv exportieren oder das Formular absenden, werden
+              Daten an mich übermittelt und ausschließlich zur Erstellung Ihrer persönlichen Finanzanalyse
+              verwendet.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Werden meine Daten an Dritte weitergegeben?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Ihre Daten werden ausschließlich zur Ermittlung Ihres persönlichen Absicherungs- und Vorsorgebedarfs
+              verarbeitet. Eine Weitergabe an Dritte erfolgt nur im Rahmen der üblichen Bestandsführung bzw. mit
+              Ihrer ausdrücklichen Einwilligung. Details finden Sie in der jeweiligen Datenschutzerklärung.
+            </p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Kann ich meine Daten löschen lassen?<span class="faq-icon">+</span></div>
+            <div class="faq-answer"><p>
+              Ja. Lokal gespeicherte Eingaben können Sie jederzeit selbst über den Button „Zurücksetzen“ löschen.
+              Für die Löschung bereits übermittelter Daten kontaktieren Sie mich einfach direkt.
+            </p></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="faq-cta">
+        <p>Ihre Frage war nicht dabei? Schreiben Sie mir einfach direkt.</p>
+        <a href="contact.html" class="btn btn-primary" style="font-size:15px;padding:12px 28px">Frage stellen →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <!-- FAQPage Schema.org Markup für Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Was kostet mich die Beratung?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Das Erstgespräch sowie die Auswertung der Finanzanalyse sind kostenlos und unverbindlich. Bei einem konkreten Produktabschluss erfolgt die Vergütung über die Anbieter (Provision), nicht über eine Rechnung an den Kunden." }
+      },
+      {
+        "@type": "Question",
+        "name": "Muss ich am Ende etwas kaufen oder abschließen?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Nein, die Analyse und das Gespräch sind unverbindlich. Der Kunde entscheidet selbst, ob und wie er weitermachen möchte." }
+      },
+      {
+        "@type": "Question",
+        "name": "Wie läuft die Zusammenarbeit konkret ab?",
+        "acceptedAnswer": { "@type": "Answer", "text": "In fünf Schritten: Finanzanalyse ausfüllen, Auswertung per E-Mail, Terminvereinbarung, gemeinsames Beratungsgespräch und abschließende Abstimmung von Angeboten." }
+      },
+      {
+        "@type": "Question",
+        "name": "Muss ich die Finanzanalyse komplett ausfüllen?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Nein, jede Angabe hilft, aber nicht alle Felder müssen ausgefüllt werden. Alternativ ist ein gemeinsames Ausfüllen im Gespräch möglich." }
+      },
+      {
+        "@type": "Question",
+        "name": "Empfehlen Sie bestimmte Produkte oder Anbieter?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Im Beratungsgespräch werden Optimierungsansätze erarbeitet, ohne spezifische Produkte einzelner Anbieter zu empfehlen. Angebote werden vom Kunden selbst eingeholt und anschließend gemeinsam bewertet." }
+      },
+      {
+        "@type": "Question",
+        "name": "Was passiert mit meinen Daten aus der Finanzanalyse?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Eingaben werden zunächst nur lokal im Browser zwischengespeichert. Erst bei aktivem Export oder Absenden werden Daten übermittelt und ausschließlich zur Erstellung der persönlichen Finanzanalyse verwendet." }
+      }
+    ]
+  }
+  </script>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.addEventListener('click', () => {
+        const item = q.closest('.faq-item');
+        item.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>
