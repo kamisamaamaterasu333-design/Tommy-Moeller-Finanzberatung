@@ -79,15 +79,36 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/main.js"></script>
   <script>
-    const { createClient } = supabase;
-    const db = createClient(
-      'https://kalonkzgzbpsndkuznqp.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthbG9ua3pnemJwc25ka3V6bnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NjkxMjQsImV4cCI6MjA5MTA0NTEyNH0.FChiR30MGNLUv3L2hSi-d-hNTg8pVLoMNN5XgWrX1ZQ'
-    );
- 
-    const urlParams  = new URLSearchParams(window.location.search);
-    const redirectTo = urlParams.get('redirect') || 'blog.html';
- 
+    // Nutzt denselben Supabase-Client wie main.js (window.sb), damit es
+    // nur EINE Session-Quelle gibt. Kein zweiter createClient() hier –
+    // das hätte sonst zu inkonsistenten/konkurrierenden Sessions geführt.
+    const db = window.sb;
+
+    // ═══ REDIRECT-ZIEL ═══════════════════════════════════════════════
+    // Priorität:
+    // 1) Explizites ?redirect=... in der URL (z.B. von Auth.requireLogin()
+    //    gesetzt, wenn man von einer geschützten Seite hierher geschickt wurde)
+    // 2) document.referrer – die Seite, von der man tatsächlich kam
+    //    (z.B. Klick auf "Login" direkt aus der Navigation)
+    // 3) Fallback: Startseite (NICHT mehr fest "blog.html")
+    const urlParams = new URLSearchParams(window.location.search);
+    let redirectTo = urlParams.get('redirect');
+
+    if (!redirectTo) {
+      // Nur den referrer nutzen, wenn er von der eigenen Seite kommt
+      // (verhindert Redirects auf fremde Domains)
+      try {
+        const ref = document.referrer ? new URL(document.referrer) : null;
+        if (ref && ref.origin === window.location.origin && ref.pathname !== window.location.pathname) {
+          redirectTo = ref.pathname + ref.search;
+        }
+      } catch { /* referrer nicht lesbar/vorhanden – ignorieren */ }
+    }
+
+    if (!redirectTo) {
+      redirectTo = (window.location.pathname.includes('/pages/') ? '../' : '') + 'index.html';
+    }
+
     // Falls bereits eingeloggt → sofort weiterleiten
     db.auth.getSession().then(({ data: { session } }) => {
       if (session) window.location.href = redirectTo;
@@ -189,6 +210,8 @@
           btn.textContent = 'Anmelden';
         } else {
           showToast('Willkommen zurück!', 'success');
+          // Bleibt auf der Seite, von der man kam (redirectTo) –
+          // NICHT mehr fest auf blog.html
           setTimeout(() => window.location.href = redirectTo, 800);
         }
       }
