@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mein Konzept – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== KONZEPT-STEPPER ===== */
+    .konzept-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .konzept-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .konzept-tab {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--border, #2a2a2a);
+      background: transparent;
+      color: var(--text-dim, #999);
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .konzept-tab:hover {
+      border-color: var(--gold, #c9a84c);
+      color: var(--gold, #c9a84c);
+    }
+
+    .konzept-tab.active {
+      background: var(--gold, #c9a84c);
+      border-color: var(--gold, #c9a84c);
+      color: #111;
+    }
+
+    .konzept-tab.done {
+      border-color: var(--gold, #c9a84c);
+      color: var(--gold, #c9a84c);
+    }
+
+    .konzept-track {
+      position: relative;
+    }
+
+    .konzept-step {
+      display: none;
+      animation: fadeStep 0.35s ease;
+    }
+
+    .konzept-step.active { display: block; }
+
+    @keyframes fadeStep {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .konzept-card {
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 14px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .konzept-step-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold, #c9a84c);
+      margin-bottom: 10px;
+    }
+
+    .konzept-icon {
+      font-size: 38px;
+      margin-bottom: 18px;
+    }
+
+    .konzept-title {
+      font-family: var(--font-serif, 'Playfair Display', serif);
+      font-size: 26px;
+      margin-bottom: 16px;
+      color: var(--bright, #fff);
+    }
+
+    .konzept-desc {
+      color: var(--text-dim, #b3b3b3);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .konzept-note {
+      display: inline-block;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--text-dim, #999);
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 20px;
+      padding: 6px 16px;
+    }
+
+    .konzept-loop-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--gold, #c9a84c);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .konzept-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      gap: 16px;
+    }
+
+    .konzept-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      border: 1px solid var(--border, #2a2a2a);
+      background: transparent;
+      color: var(--text, #eee);
+      font-family: var(--font-sans, 'DM Sans', sans-serif);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .konzept-nav-btn:hover:not(:disabled) {
+      border-color: var(--gold, #c9a84c);
+      color: var(--gold, #c9a84c);
+    }
+
+    .konzept-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .konzept-nav-btn.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    .konzept-nav-btn.primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    .konzept-progress-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim, #999);
+    }
+
+    @media (max-width: 600px) {
+      .konzept-card { padding: 28px 20px; }
+      .konzept-title { font-size: 21px; }
+      .konzept-desc { font-size: 14.5px; }
+      .konzept-nav { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / <a href="services.html">Dienstleistungen</a> / Mein Konzept</div>
+      <h1 class="section-title">Mein Konzept</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">So läuft unsere Zusammenarbeit ab – Schritt für Schritt, transparent und in Ihrem Tempo.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="konzept-wrap">
+
+        <!-- TABS -->
+        <div class="konzept-tabs" id="konzeptTabs"></div>
+
+        <!-- STEPS -->
+        <div class="konzept-track">
+
+          <div class="konzept-step active" data-step="1">
+            <div class="konzept-card">
+              <div class="konzept-step-label">Schritt 1 von 5</div>
+              <div class="konzept-icon">📝</div>
+              <h2 class="konzept-title">Finanzanalyse</h2>
+              <p class="konzept-desc">
+                Sie füllen die Finanzanalyse selbst aus und schicken sie mir zu –
+                oder wir besprechen sie gemeinsam in einem kurzen Gespräch, das ich
+                anschließend für Sie festhalte und Ihnen zusende.
+              </p>
+              <div class="konzept-note">💡 Sie müssen nicht alles ausfüllen – jede Angabe hilft</div>
+            </div>
+          </div>
+
+          <div class="konzept-step" data-step="2">
+            <div class="konzept-card">
+              <div class="konzept-step-label">Schritt 2 von 5</div>
+              <div class="konzept-icon">🔎</div>
+              <h2 class="konzept-title">Ich sehe mir Ihre Daten an</h2>
+              <p class="konzept-desc">
+                Ich werte Ihre Angaben in Ruhe aus und schicke Ihnen passend zu Ihrer
+                Situation eine E-Mail mit ersten Einschätzungen und möglichen
+                Verbesserungsansätzen.
+              </p>
+            </div>
+          </div>
+
+          <div class="konzept-step" data-step="3">
+            <div class="konzept-card">
+              <div class="konzept-step-label">Schritt 3 von 5</div>
+              <div class="konzept-icon">📅</div>
+              <h2 class="konzept-title">Terminvorschläge</h2>
+              <p class="konzept-desc">
+                Ich nenne Ihnen passende Termine für ein mögliches Gespräch und gebe
+                Ihnen auf Ihre Rückmeldung eine kurze Antwort – unkompliziert per E-Mail.
+              </p>
+            </div>
+          </div>
+
+          <div class="konzept-step" data-step="4">
+            <div class="konzept-card">
+              <div class="konzept-step-label">Schritt 4 von 5</div>
+              <div class="konzept-icon">💬</div>
+              <h2 class="konzept-title">Gemeinsames Gespräch</h2>
+              <p class="konzept-desc">
+                Im Gespräch erarbeiten wir gemeinsam klare Optimierungsansätze für
+                Ihre Situation. Wichtig: Ich empfehle Ihnen keine spezifischen Produkte
+                einzelner Anbieter – es geht um Ihre Strategie, nicht um Verkauf.
+              </p>
+            </div>
+          </div>
+
+          <div class="konzept-step" data-step="5">
+            <div class="konzept-card">
+              <div class="konzept-step-label">Schritt 5 von 5</div>
+              <div class="konzept-icon">🔄</div>
+              <h2 class="konzept-title">Angebote &amp; Feinabstimmung</h2>
+              <p class="konzept-desc">
+                Sie holen sich passende Angebote ein, ich sehe sie mir mit Ihnen an,
+                und wir besprechen gemeinsam, ob sie zu Ihrer Strategie passen.
+              </p>
+              <div class="konzept-loop-badge">↻ Schritt 4 &amp; 5 wiederholen sich, bis alles passt</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="konzept-nav">
+          <button class="konzept-nav-btn" id="konzeptPrev" onclick="konzeptGo(-1)">← Zurück</button>
+          <span class="konzept-progress-text" id="konzeptProgress">Schritt 1 von 5</span>
+          <button class="konzept-nav-btn primary" id="konzeptNext" onclick="konzeptGo(1)">Weiter →</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div style="text-align:center; margin: 8px 0 56px;">
+    <a href="services.html" class="btn btn-primary" style="font-size:15px;padding:13px 30px">Zur Finanzanalyse →</a>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const KONZEPT_TOTAL = 5;
+    let konzeptCurrent = 1;
+
+    function konzeptBuildTabs() {
+      const wrap = document.getElementById('konzeptTabs');
+      wrap.innerHTML = '';
+      for (let i = 1; i <= KONZEPT_TOTAL; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'konzept-tab';
+        btn.textContent = i;
+        btn.setAttribute('aria-label', 'Schritt ' + i);
+        btn.onclick = () => konzeptShow(i);
+        wrap.appendChild(btn);
+      }
+    }
+
+    function konzeptShow(step) {
+      konzeptCurrent = Math.min(Math.max(step, 1), KONZEPT_TOTAL);
+
+      document.querySelectorAll('.konzept-step').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.step) === konzeptCurrent);
+      });
+
+      document.querySelectorAll('.konzept-tab').forEach((tab, idx) => {
+        const n = idx + 1;
+        tab.classList.toggle('active', n === konzeptCurrent);
+        tab.classList.toggle('done', n < konzeptCurrent);
+      });
+
+      document.getElementById('konzeptProgress').textContent =
+        'Schritt ' + konzeptCurrent + ' von ' + KONZEPT_TOTAL;
+
+      document.getElementById('konzeptPrev').disabled = konzeptCurrent === 1;
+      const nextBtn = document.getElementById('konzeptNext');
+      if (konzeptCurrent === KONZEPT_TOTAL) {
+        nextBtn.textContent = 'Von vorne →';
+      } else {
+        nextBtn.textContent = 'Weiter →';
+      }
+    }
+
+    function konzeptGo(delta) {
+      if (konzeptCurrent === KONZEPT_TOTAL && delta === 1) {
+        konzeptShow(1); // am Ende: zurück zum Anfang
+        return;
+      }
+      konzeptShow(konzeptCurrent + delta);
+    }
+
+    konzeptBuildTabs();
+    konzeptShow(1);
+  </script>
+</body>
+</html>
