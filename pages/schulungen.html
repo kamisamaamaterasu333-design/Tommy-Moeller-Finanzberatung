@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schulungen – Tommy Möller</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    .sch-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── SIDEBAR: Schulungen + Lektionen ── */
+    .sch-sidebar {
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 12px;
+      padding: 18px;
+      position: sticky;
+      top: 90px;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+    }
+
+    .sch-group { margin-bottom: 18px; }
+    .sch-group:last-child { margin-bottom: 0; }
+
+    .sch-group-title {
+      font-family: var(--font-serif, 'Playfair Display', serif);
+      font-size: 16px;
+      color: var(--bright, #fff);
+      margin-bottom: 4px;
+    }
+
+    .sch-group-desc {
+      font-size: 12px;
+      color: var(--text-dim, #999);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .sch-progress-bar-track {
+      height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .sch-progress-bar-fill {
+      height: 100%;
+      background: var(--gold, #c9a84c);
+      transition: width 0.3s ease;
+    }
+
+    .sch-lektion {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13.5px;
+      color: var(--text-dim, #ccc);
+      transition: background 0.15s ease;
+    }
+
+    .sch-lektion:hover { background: rgba(255,255,255,0.05); }
+
+    .sch-lektion.active {
+      background: rgba(201,168,76,0.12);
+      color: var(--gold, #c9a84c);
+    }
+
+    .sch-checkbox {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 1.5px solid var(--border, #444);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sch-checkbox.done {
+      background: var(--gold, #c9a84c);
+      border-color: var(--gold, #c9a84c);
+      color: #111;
+    }
+
+    /* ── HAUPTBEREICH: Player ── */
+    .sch-main {
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sch-main-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sch-main-title {
+      font-family: var(--font-serif, 'Playfair Display', serif);
+      font-size: 18px;
+      color: var(--bright, #fff);
+    }
+
+    .sch-mark-btn {
+      padding: 9px 18px;
+      border-radius: 7px;
+      border: 1px solid var(--gold, #c9a84c);
+      background: transparent;
+      color: var(--gold, #c9a84c);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .sch-mark-btn.done {
+      background: var(--gold, #c9a84c);
+      color: #111;
+    }
+
+    .sch-frame-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .sch-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 600px;
+      border: none;
+      display: block;
+      background: #fff;
+    }
+
+    .sch-empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      padding: 60px 24px;
+      color: var(--text-dim, #999);
+      text-align: center;
+    }
+
+    .sch-empty-icon { font-size: 42px; }
+
+    /* ── LOGIN-HINWEIS ── */
+    .sch-login-notice {
+      max-width: 480px;
+      margin: 60px auto;
+      text-align: center;
+      background: var(--surface, #161616);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 14px;
+      padding: 40px;
+    }
+
+    @media (max-width: 860px) {
+      .sch-layout { grid-template-columns: 1fr; }
+      .sch-sidebar { position: static; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">TM<span>.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../index.html">Start</a></li>
+        <li><a href="about.html">Über mich</a></li>
+        <li><a href="services.html">Dienstleistungen</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li id="auth-nav-item"><a href="login.html" class="btn-nav">Login</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="../index.html">Start</a> / Schulungen</div>
+      <h1 class="section-title">Schulungen</h1>
+      <div class="gold-line"></div>
+      <p class="section-subtitle">Selbstlern-Module zu Excel, Power BI und Controlling – in Ihrem eigenen Tempo.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Nicht eingeloggt -->
+      <div id="schNotLoggedIn" class="sch-login-notice" style="display:none">
+        <div style="font-size:38px;margin-bottom:14px">🔒</div>
+        <h2 style="font-family:var(--font-serif);font-size:20px;margin-bottom:10px">Bitte melden Sie sich an</h2>
+        <p style="color:var(--text-dim);font-size:14px;margin-bottom:22px">
+          Die Schulungen und Ihr persönlicher Lernfortschritt sind nur für angemeldete Nutzer sichtbar.
+        </p>
+        <a id="schLoginLink" href="login.html" class="btn btn-primary">Jetzt anmelden →</a>
+      </div>
+
+      <!-- Eingeloggt: Schulungsbereich -->
+      <div id="schApp" style="display:none">
+        <div class="sch-layout">
+
+          <aside class="sch-sidebar" id="schSidebar">
+            <div style="text-align:center;color:var(--text-dim);font-size:13px;padding:20px 0">Lade Schulungen…</div>
+          </aside>
+
+          <main class="sch-main" id="schMain">
+            <div class="sch-empty">
+              <div class="sch-empty-icon">📚</div>
+              <div>Wählen Sie links eine Lektion aus, um zu starten.</div>
+            </div>
+          </main>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><p>&copy; <span id="year"></span> Tommy Möller.</p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const STORAGE_BUCKET = 'schulungen';
+    let currentUser = null;
+    let currentLektionId = null;
+    let fortschrittMap = {}; // lektion_id -> abgeschlossen (bool)
+
+    async function initSchulungen() {
+      currentUser = await Auth.getCurrentUser();
+
+      if (!currentUser) {
+        document.getElementById('schNotLoggedIn').style.display = 'block';
+        document.getElementById('schLoginLink').href =
+          'login.html?redirect=' + encodeURIComponent(window.location.pathname);
+        return;
+      }
+
+      document.getElementById('schApp').style.display = 'block';
+      await loadSchulungen();
+    }
+
+    async function loadSchulungen() {
+      const sidebar = document.getElementById('schSidebar');
+
+      // Schulungen + Lektionen laden
+      const { data: schulungen, error: schError } = await sb
+        .from('schulungen')
+        .select('id, titel, beschreibung, reihenfolge, lektionen(id, titel, storage_pfad, reihenfolge)')
+        .eq('aktiv', true)
+        .order('reihenfolge', { ascending: true });
+
+      if (schError) {
+        sidebar.innerHTML = '<div style="color:#fca5a5;font-size:13px;padding:10px">Fehler beim Laden der Schulungen.</div>';
+        console.error(schError);
+        return;
+      }
+
+      // Eigenen Fortschritt laden
+      const { data: fortschritt, error: fError } = await sb
+        .from('lern_fortschritt')
+        .select('lektion_id, abgeschlossen')
+        .eq('user_id', currentUser.id);
+
+      if (!fError && fortschritt) {
+        fortschrittMap = {};
+        fortschritt.forEach(f => { fortschrittMap[f.lektion_id] = f.abgeschlossen; });
+      }
+
+      if (!schulungen || schulungen.length === 0) {
+        sidebar.innerHTML = '<div style="color:var(--text-dim);font-size:13px;padding:10px">Aktuell sind keine Schulungen verfügbar.</div>';
+        return;
+      }
+
+      sidebar.innerHTML = '';
+
+      schulungen.forEach(schulung => {
+        const lektionen = (schulung.lektionen || []).sort((a, b) => a.reihenfolge - b.reihenfolge);
+        const total = lektionen.length;
+        const done = lektionen.filter(l => fortschrittMap[l.id]).length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        const group = document.createElement('div');
+        group.className = 'sch-group';
+
+        const lektionenHtml = lektionen.map(l => `
+          <div class="sch-lektion" data-lektion-id="${l.id}" data-storage-pfad="${escHtml(l.storage_pfad)}" data-titel="${escHtml(l.titel)}">
+            <span class="sch-checkbox ${fortschrittMap[l.id] ? 'done' : ''}" data-lektion-id="${l.id}">${fortschrittMap[l.id] ? '✓' : ''}</span>
+            <span>${escHtml(l.titel)}</span>
+          </div>
+        `).join('');
+
+        group.innerHTML = `
+          <div class="sch-group-title">${escHtml(schulung.titel)}</div>
+          ${schulung.beschreibung ? `<div class="sch-group-desc">${escHtml(schulung.beschreibung)}</div>` : ''}
+          <div class="sch-progress-bar-track"><div class="sch-progress-bar-fill" style="width:${pct}%"></div></div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:'DM Mono',monospace">${done} / ${total} abgeschlossen</div>
+          ${lektionenHtml}
+        `;
+
+        sidebar.appendChild(group);
+      });
+
+      // Klick auf Lektion → öffnen
+      sidebar.querySelectorAll('.sch-lektion').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.classList.contains('sch-checkbox')) return; // Checkbox hat eigenen Handler
+          openLektion(el.dataset.lektionId, el.dataset.storagePfad, el.dataset.titel);
+        });
+      });
+
+      // Klick auf Checkbox → Fortschritt umschalten (ohne Lektion zu öffnen)
+      sidebar.querySelectorAll('.sch-checkbox').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFortschritt(el.dataset.lektionId, el);
+        });
+      });
+    }
+
+    async function openLektion(lektionId, storagePfad, titel) {
+      currentLektionId = lektionId;
+
+      document.querySelectorAll('.sch-lektion').forEach(el => {
+        el.classList.toggle('active', el.dataset.lektionId === lektionId);
+      });
+
+      const main = document.getElementById('schMain');
+
+      // Signed URL für die HTML-Datei holen (Bucket ist privat)
+      const { data: signed, error } = await sb
+        .storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(storagePfad, 3600); // 1 Stunde gültig
+
+      if (error || !signed) {
+        main.innerHTML = `<div class="sch-empty"><div class="sch-empty-icon">⚠️</div><div>Lektion konnte nicht geladen werden.</div></div>`;
+        console.error(error);
+        return;
+      }
+
+      const isDone = !!fortschrittMap[lektionId];
+
+      main.innerHTML = `
+        <div class="sch-main-header">
+          <div class="sch-main-title">${escHtml(titel)}</div>
+          <button class="sch-mark-btn ${isDone ? 'done' : ''}" id="schMarkBtn">
+            ${isDone ? '✓ Abgeschlossen' : 'Als abgeschlossen markieren'}
+          </button>
+        </div>
+        <div class="sch-frame-wrap">
+          <iframe src="${signed.signedUrl}" title="${escHtml(titel)}"></iframe>
+        </div>
+      `;
+
+      document.getElementById('schMarkBtn').addEventListener('click', () => {
+        toggleFortschritt(lektionId, document.querySelector(`.sch-checkbox[data-lektion-id="${lektionId}"]`));
+      });
+    }
+
+    async function toggleFortschritt(lektionId, checkboxEl) {
+      const neuerStatus = !fortschrittMap[lektionId];
+
+      const { error } = await sb
+        .from('lern_fortschritt')
+        .upsert({
+          user_id: currentUser.id,
+          lektion_id: lektionId,
+          abgeschlossen: neuerStatus,
+          abgeschlossen_am: neuerStatus ? new Date().toISOString() : null,
+          aktualisiert_am: new Date().toISOString()
+        }, { onConflict: 'user_id,lektion_id' });
+
+      if (error) {
+        showToast('Fortschritt konnte nicht gespeichert werden.', 'error');
+        console.error(error);
+        return;
+      }
+
+      fortschrittMap[lektionId] = neuerStatus;
+
+      // UI aktualisieren: Checkbox in Sidebar
+      if (checkboxEl) {
+        checkboxEl.classList.toggle('done', neuerStatus);
+        checkboxEl.textContent = neuerStatus ? '✓' : '';
+      }
+
+      // Mark-Button im Player aktualisieren, falls diese Lektion gerade offen ist
+      if (currentLektionId === lektionId) {
+        const btn = document.getElementById('schMarkBtn');
+        if (btn) {
+          btn.classList.toggle('done', neuerStatus);
+          btn.textContent = neuerStatus ? '✓ Abgeschlossen' : 'Als abgeschlossen markieren';
+        }
+      }
+
+      // Fortschrittsbalken neu berechnen
+      await refreshProgressBars();
+
+      showToast(neuerStatus ? 'Als abgeschlossen markiert.' : 'Markierung entfernt.', 'success');
+    }
+
+    async function refreshProgressBars() {
+      // Einfachste verlässliche Lösung: Sidebar neu aufbauen, aber Player-Inhalt
+      // (offene Lektion) bleibt erhalten, da wir currentLektionId kennen.
+      await loadSchulungen();
+      if (currentLektionId) {
+        const active = document.querySelector(`.sch-lektion[data-lektion-id="${currentLektionId}"]`);
+        if (active) active.classList.add('active');
+      }
+    }
+
+    initSchulungen();
+  </script>
+</body>
+</html>
