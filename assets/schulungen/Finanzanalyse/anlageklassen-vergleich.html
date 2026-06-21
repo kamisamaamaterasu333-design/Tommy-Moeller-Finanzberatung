@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETFs vs. Fonds vs. Aktien vs. Anleihen vs. Rohstoffe vs. Crypto</title>
+<style>
+  :root {
+    --accent: #059669;
+    --accent-dim: #047857;
+    --bg-dark: #0D0D0D;
+    --bg-panel: #161616;
+    --bg-card: #1E1E1E;
+    --border: #2E2E2E;
+    --border-accent: #3A3A3A;
+    --text-primary: #F0F0F0;
+    --text-secondary: #A0A0A0;
+    --text-muted: #666;
+    --green: #16a34a;
+    --red: #dc2626;
+    --orange: #d97706;
+    --blue: #2563eb;
+    --purple: #7c3aed;
+    --tag-bg: #2A2A2A;
+    --sidebar-w: 270px;
+    --header-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark); color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.65;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #111; border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 18px; padding: 0 24px; z-index: 100;
+  }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--accent); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px;
+  }
+  .logo-title { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+  .logo-title span { color: var(--accent); }
+  .header-pill {
+    margin-left: auto; background: rgba(5,150,105,.15); border: 1px solid rgba(5,150,105,.35);
+    color: #4ade80; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; letter-spacing: .5px;
+  }
+  .layout { display: flex; padding-top: var(--header-h); }
+  nav.sidebar {
+    width: var(--sidebar-w); position: fixed; top: var(--header-h); left: 0; bottom: 0;
+    background: var(--bg-panel); border-right: 1px solid var(--border); overflow-y: auto; padding: 20px 0; z-index: 90;
+  }
+  .nav-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted);
+    text-transform: uppercase; padding: 16px 20px 6px;
+  }
+  .nav-link {
+    display: flex; align-items: center; gap: 10px; padding: 9px 20px;
+    color: var(--text-secondary); text-decoration: none; font-size: 13.5px;
+    cursor: pointer; border-left: 3px solid transparent; transition: all .15s;
+  }
+  .nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,.04); }
+  .nav-link.active { color: #4ade80; border-left-color: var(--accent); background: rgba(5,150,105,.1); font-weight: 600; }
+  .nav-link .icon { font-size: 15px; flex-shrink: 0; }
+  main { margin-left: var(--sidebar-w); flex: 1; padding: 40px 48px 80px; max-width: 1020px; }
+  section.page { display: none; }
+  section.page.active { display: block; }
+  .hero {
+    background: linear-gradient(135deg, #022c1e 0%, #0D0D0D 60%);
+    border: 1px solid var(--accent); border-radius: 12px; padding: 48px 40px; margin-bottom: 40px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(5,150,105,.2) 0%, transparent 70%); pointer-events: none;
+  }
+  .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #4ade80; text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -.5px; line-height: 1.25; margin-bottom: 16px; }
+  .hero h1 em { font-style: normal; color: #4ade80; }
+  .hero p { color: var(--text-secondary); font-size: 16px; max-width: 600px; }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; padding-top: 8px; }
+  h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 4px; }
+  .section-intro { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+  p { color: var(--text-secondary); margin-bottom: 12px; }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 22px; transition: border-color .2s; }
+  .card:hover { border-color: var(--border-accent); }
+  .card-icon { font-size: 24px; margin-bottom: 12px; }
+  .card h3 { font-size: 15px; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; margin-bottom: 0; }
+  .card.accent-green { border-left: 3px solid var(--accent); }
+  .card.accent-blue { border-left: 3px solid var(--blue); }
+  .card.accent-red { border-left: 3px solid var(--red); }
+  .card.accent-orange { border-left: 3px solid var(--orange); }
+  .card.accent-purple { border-left: 3px solid var(--purple); }
+
+  .asset-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 24px; margin-bottom: 18px;
+  }
+  .asset-card h3 { font-size: 18px; margin-bottom: 4px; }
+  .asset-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px; }
+  .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+  .asset-col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+  .asset-col-title.good { color: #4ade80; }
+  .asset-col-title.bad { color: #f87171; }
+  .mini-list { list-style: none; }
+  .mini-list li { font-size: 13px; color: var(--text-secondary); padding: 4px 0; display: flex; gap: 8px; align-items: flex-start; }
+  .mini-list.good li::before { content: '✓'; color: #4ade80; flex-shrink: 0; font-weight: 700; }
+  .mini-list.bad li::before { content: '✗'; color: #f87171; flex-shrink: 0; font-weight: 700; }
+
+  .risk-meter { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .risk-meter-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); width: 90px; flex-shrink: 0; }
+  .risk-meter-track { flex: 1; height: 8px; background: #222; border-radius: 4px; overflow: hidden; display: flex; }
+  .risk-meter-seg { flex: 1; border-right: 1px solid #0D0D0D; }
+  .risk-meter-seg:last-child { border-right: none; }
+  .risk-meter-seg.filled { background: var(--risk-color, var(--accent)); }
+  .risk-meter-seg.empty { background: #222; }
+
+  .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; font-size: 13px; }
+  .compare-table th {
+    background: #111; color: var(--text-secondary); font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .6px; padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border);
+  }
+  .compare-table th:first-child { color: #4ade80; }
+  .compare-table td { padding: 11px 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+  .compare-table td:first-child { color: var(--text-primary); font-weight: 600; }
+  .yes { color: #16a34a; font-weight: 700; }
+  .no { color: #dc2626; }
+  .part { color: #d97706; }
+
+  .alert { border-radius: 8px; padding: 14px 18px; margin: 16px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-green { background: rgba(5,150,105,.1); border: 1px solid rgba(5,150,105,.3); }
+  .alert-blue { background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.25); }
+  .alert-red { background: rgba(220,38,38,.08); border: 1px solid rgba(220,38,38,.25); }
+  .alert-orange { background: rgba(217,119,6,.08); border: 1px solid rgba(217,119,6,.25); }
+  .alert-purple { background: rgba(124,58,237,.08); border: 1px solid rgba(124,58,237,.25); }
+
+  .divider { display: flex; align-items: center; gap: 14px; margin: 36px 0 28px; }
+  .divider-label { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4ade80; white-space: nowrap; }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+
+  .level-pills { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .pill { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid; }
+  .pill-green { background: rgba(5,150,105,.1); border-color: var(--accent); color: #4ade80; }
+  .pill-blue { background: rgba(37,99,235,.1); border-color: var(--blue); color: #93c5fd; }
+  .pill-orange { background: rgba(217,119,6,.1); border-color: var(--orange); color: #fbbf24; }
+  .pill-purple { background: rgba(124,58,237,.1); border-color: var(--purple); color: #c4b5fd; }
+  .pill-red { background: rgba(220,38,38,.1); border-color: var(--red); color: #f87171; }
+
+  .checklist { list-style: none; margin-bottom: 24px; }
+  .checklist li { padding: 7px 0; font-size: 13.5px; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .checklist li::before { content: '▸'; color: #4ade80; flex-shrink: 0; margin-top: 1px; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+  .hero-tag { background: var(--tag-bg); border: 1px solid var(--border-accent); color: var(--text-secondary); font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+
+  .pyramid { display: flex; flex-direction: column; gap: 4px; margin: 24px 0; }
+  .pyramid-row {
+    padding: 14px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pyramid-row .pct { font-family: 'Cascadia Code','Consolas',monospace; font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  @media (max-width: 900px) {
+    nav.sidebar { width: 220px; } main { margin-left: 220px; padding: 24px 24px 60px; }
+    .card-grid, .card-grid-3, .asset-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">📈</div>
+  <div class="logo-title">Anlageklassen <span>im Vergleich</span></div>
+  <div class="header-pill">ETFs · Fonds · Aktien · Anleihen · Rohstoffe · Crypto</div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="nav-section-label">Einstieg</div>
+  <a class="nav-link active" onclick="show('intro')"><span class="icon">📈</span> Übersicht</a>
+  <a class="nav-link" onclick="show('grundbegriffe')"><span class="icon">📖</span> Grundbegriffe</a>
+
+  <div class="nav-section-label">Anlageklassen</div>
+  <a class="nav-link" onclick="show('etf')"><span class="icon">🧺</span> ETFs</a>
+  <a class="nav-link" onclick="show('fonds')"><span class="icon">👔</span> Aktiv gemanagte Fonds</a>
+  <a class="nav-link" onclick="show('aktien')"><span class="icon">🏢</span> Einzelaktien</a>
+  <a class="nav-link" onclick="show('anleihen')"><span class="icon">📜</span> Anleihen</a>
+  <a class="nav-link" onclick="show('rohstoffe')"><span class="icon">🥇</span> Rohstoffe</a>
+  <a class="nav-link" onclick="show('crypto')"><span class="icon">₿</span> Kryptowährungen</a>
+
+  <div class="nav-section-label">Einordnung</div>
+  <a class="nav-link" onclick="show('vergleich')"><span class="icon">⚖️</span> Direktvergleich</a>
+  <a class="nav-link" onclick="show('risiko-rendite')"><span class="icon">🎯</span> Risiko & Rendite</a>
+  <a class="nav-link" onclick="show('portfolio')"><span class="icon">🏗️</span> Portfolio-Gedanke</a>
+</nav>
+
+<main>
+
+<section class="page active" id="intro">
+  <div class="hero">
+    <div class="hero-eyebrow">Grundlagenkurs</div>
+    <h1>Anlageklassen verstehen –<br><em>fundiert vergleichen</em></h1>
+    <p>ETFs, Fonds, Aktien, Anleihen, Rohstoffe und Kryptowährungen funktionieren grundlegend unterschiedlich – mit unterschiedlichem Risiko, Aufwand und Renditepotenzial. Dieser Kurs ordnet alle sechs Klassen sachlich ein, ohne eine bestimmte Anlage zu empfehlen.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">ETFs</span>
+      <span class="hero-tag">Fonds</span>
+      <span class="hero-tag">Aktien</span>
+      <span class="hero-tag">Anleihen</span>
+      <span class="hero-tag">Rohstoffe</span>
+      <span class="hero-tag">Crypto</span>
+    </div>
+  </div>
+
+  <div class="level-pills">
+    <span class="pill pill-green">🧺 Passiv</span>
+    <span class="pill pill-blue">👔 Aktiv</span>
+    <span class="pill pill-orange">🏢 Einzeltitel</span>
+    <span class="pill pill-purple">₿ Hochspekulativ</span>
+  </div>
+
+  <div class="card-grid-3">
+    <div class="card accent-green">
+      <div class="card-icon">🧺</div>
+      <h3>ETFs</h3>
+      <p>Breit gestreut, kostengünstig, bildet einen Index passiv nach. Für viele die Basis eines langfristigen Portfolios.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">👔</div>
+      <h3>Aktiv gemanagte Fonds</h3>
+      <p>Fondsmanager versucht, den Markt zu schlagen – mit höheren Kosten und unsicherem Mehrertrag.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">🏢</div>
+      <h3>Einzelaktien</h3>
+      <p>Direkte Beteiligung an einem Unternehmen – höhere Chance, aber auch höheres Einzelrisiko (Klumpenrisiko).</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">📜</div>
+      <h3>Anleihen</h3>
+      <p>Verleihst Geld gegen feste Zinszahlungen – gelten als defensiver Baustein im Portfolio.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">🥇</div>
+      <h3>Rohstoffe</h3>
+      <p>Z.B. Gold, Öl, Industriemetalle – oft als Krisenabsicherung oder Inflationsschutz genutzt.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">₿</div>
+      <h3>Kryptowährungen</h3>
+      <p>Digitale, dezentrale Vermögenswerte mit sehr hoher Schwankungsbreite und vergleichsweise junger Marktgeschichte.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Dieser Kurs gibt eine sachliche Einordnung der Anlageklassen. Welche Gewichtung für dich persönlich sinnvoll ist, hängt von Anlagehorizont, Risikobereitschaft und finanzieller Gesamtsituation ab – das gehört in ein individuelles Beratungsgespräch.</div>
+  </div>
+</section>
+
+<section class="page" id="grundbegriffe">
+  <h2>📖 Grundbegriffe, die du kennen solltest</h2>
+  <p class="section-intro">Bevor es in den Vergleich geht, hier die wichtigsten Begriffe kurz erklärt.</p>
+
+  <div class="card-grid">
+    <div class="card accent-green">
+      <div class="card-icon">📊</div>
+      <h3>Diversifikation</h3>
+      <p>Streuung des Kapitals auf viele verschiedene Anlagen, um das Risiko einzelner Ausfälle abzufedern. Grundprinzip seriöser Geldanlage.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">💸</div>
+      <h3>Volatilität</h3>
+      <p>Maß für die Schwankungsbreite eines Wertes. Höhere Volatilität bedeutet größere Kursausschläge nach oben wie unten.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">💧</div>
+      <h3>Liquidität</h3>
+      <p>Wie schnell und zu welchen Kosten eine Anlage in Geld umgewandelt werden kann, ohne den Preis stark zu beeinflussen.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">📉</div>
+      <h3>Klumpenrisiko</h3>
+      <p>Risiko durch zu starke Konzentration auf wenige Werte, Branchen oder Länder – Gegenteil von Diversifikation.</p>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card accent-green">
+      <div class="card-icon">💰</div>
+      <h3>TER (Total Expense Ratio)</h3>
+      <p>Laufende jährliche Kostenquote eines Fonds/ETFs in Prozent des investierten Kapitals – beeinflusst die Rendite über Jahre erheblich.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">⏳</div>
+      <h3>Anlagehorizont</h3>
+      <p>Der Zeitraum, über den investiert werden soll, bevor das Geld benötigt wird – entscheidend für die passende Risikoklasse.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="etf">
+  <h2>🧺 ETFs (Exchange Traded Funds)</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Börsengehandelter Indexfonds, bildet passiv einen Index (z.B. MSCI World, DAX) nach</div>
+    <p>Ein ETF kauft die im Index enthaltenen Werte automatisch nach – ohne aktive Auswahl durch einen Fondsmanager. Dadurch entstehen deutlich niedrigere laufende Kosten als bei aktiv gemanagten Fonds.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#16a34a"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#16a34a"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+      </div>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Breite Streuung über viele Unternehmen/Länder</li>
+          <li>Niedrige laufende Kosten (oft 0,1–0,5% TER)</li>
+          <li>Hohe Transparenz, einfach verständlich</li>
+          <li>Täglich handelbar über die Börse</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Keine Chance, den Index zu schlagen (nur ihm zu folgen)</li>
+          <li>Verlustrisiko bei breiten Markteinbrüchen voll mitgetragen</li>
+          <li>Auswahl an Indizes/Strategien kann unübersichtlich werden</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>Typischer Einsatzzweck:</strong> Langfristiger, breit gestreuter Vermögensaufbau mit überschaubarem Aufwand – häufig als Basisbaustein in privaten Portfolios genutzt.</div>
+  </div>
+</section>
+
+<section class="page" id="fonds">
+  <h2>👔 Aktiv gemanagte Fonds</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Ein Fondsmanager wählt aktiv Wertpapiere aus, mit dem Ziel, den Vergleichsindex zu übertreffen</div>
+    <p>Im Gegensatz zum ETF trifft hier ein Management-Team aktive Entscheidungen über Kauf und Verkauf einzelner Positionen – verbunden mit deutlich höheren laufenden Kosten.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#2563eb"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#2563eb"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#2563eb"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+      </div>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Potenzial, in bestimmten Marktphasen den Index zu übertreffen</li>
+          <li>Aktives Risikomanagement durch Profis möglich</li>
+          <li>Spezialisierung auf Nischen/Themen möglich</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Deutlich höhere Kosten (oft 1,5–2,5% TER plus Ausgabeaufschlag)</li>
+          <li>Die Mehrheit aktiver Fonds schlägt ihren Vergleichsindex langfristig nicht</li>
+          <li>Erfolg stark abhängig vom einzelnen Fondsmanager</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div>Studien zeigen über lange Zeiträume regelmäßig, dass ein erheblicher Teil aktiv gemanagter Fonds nach Kosten schlechter abschneidet als ihr passiver Vergleichsindex. Das bedeutet nicht, dass kein aktiver Fonds outperformen kann – aber die Kosten sind ein struktureller Nachteil, der erst einmal aufgeholt werden muss.</div>
+  </div>
+</section>
+
+<section class="page" id="aktien">
+  <h2>🏢 Einzelaktien</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Direkter Kauf von Anteilen an einem einzelnen Unternehmen</div>
+    <p>Du wirst Miteigentümer eines konkreten Unternehmens und partizipierst direkt an dessen Geschäftsentwicklung – im Guten wie im Schlechten.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg empty"></div>
+      </div>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Volles Renditepotenzial bei guter Unternehmensentwicklung</li>
+          <li>Gezielte Beteiligung an Unternehmen/Branchen möglich</li>
+          <li>Stimmrechte und teils Dividendenausschüttungen</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Klumpenrisiko: Totalverlust bei Einzeltiteln möglich</li>
+          <li>Erfordert Zeit für Recherche und laufende Beobachtung</li>
+          <li>Emotionale Entscheidungen oft renditeschädlich</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Wichtig:</strong> Wer in Einzelaktien investiert, sollte sich des Klumpenrisikos bewusst sein – ein breit gestreutes ETF-Portfolio reduziert dieses Risiko deutlich, da der Ausfall eines einzelnen Unternehmens nur einen kleinen Anteil betrifft.</div>
+  </div>
+</section>
+
+<section class="page" id="anleihen">
+  <h2>📜 Anleihen</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Wertpapier, mit dem du einem Staat oder Unternehmen Geld gegen feste Zinszahlungen leihst</div>
+    <p>Anleihen gelten klassischerweise als defensiverer Baustein im Portfolio – mit planbaren Zinszahlungen, aber auch Risiken wie Zinsänderungs- und Ausfallrisiko.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#2563eb"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+      </div>
+      <span style="font-size:11px;color:var(--text-muted)">(stark abhängig von Bonität/Laufzeit)</span>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Planbare, regelmäßige Zinszahlungen</li>
+          <li>Tendenziell geringere Schwankungen als Aktien</li>
+          <li>Kann Portfolio stabilisieren (negative Korrelation zu Aktien in vielen Marktphasen)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Renditepotenzial historisch geringer als bei Aktien</li>
+          <li>Zinsänderungsrisiko: Kurse fallen bei steigenden Marktzinsen</li>
+          <li>Ausfallrisiko abhängig von Bonität des Schuldners</li>
+          <li>Inflationsrisiko bei niedriger Verzinsung</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Die Bonität des Schuldners ist entscheidend: Staatsanleihen bonitätsstarker Länder gelten als vergleichsweise sicher, Unternehmensanleihen oder Anleihen schwächerer Schuldner ("High Yield") bieten höhere Zinsen bei höherem Ausfallrisiko.</div>
+  </div>
+</section>
+
+<section class="page" id="rohstoffe">
+  <h2>🥇 Rohstoffe</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Z.B. Edelmetalle (Gold, Silber), Energie (Öl, Gas), Industriemetalle, Agrarrohstoffe</div>
+    <p>Investitionen in Rohstoffe erfolgen meist nicht durch physischen Besitz, sondern über ETCs (Exchange Traded Commodities), Futures oder Aktien von Rohstoffunternehmen.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#d97706"></div>
+        <div class="risk-meter-seg empty"></div>
+        <div class="risk-meter-seg empty"></div>
+      </div>
+      <span style="font-size:11px;color:var(--text-muted)">(stark je nach Rohstoff unterschiedlich)</span>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Historisch teils als Inflationsschutz genutzt (insb. Gold)</li>
+          <li>Geringe Korrelation zu Aktien/Anleihen in bestimmten Marktphasen</li>
+          <li>Diversifikationseffekt im Gesamtportfolio möglich</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Keine laufenden Erträge wie Zinsen oder Dividenden</li>
+          <li>Hohe Preisschwankungen, stark von Angebot/Nachfrage abhängig</li>
+          <li>Bei Futures: Rollverluste und komplexe Produktstruktur möglich</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Gold wird historisch oft als "Krisenwährung" und Beimischung zur Portfoliostabilisierung genutzt – andere Rohstoffe wie Industriemetalle oder Energie sind stärker konjunkturabhängig und volatiler.</div>
+  </div>
+</section>
+
+<section class="page" id="crypto">
+  <h2>₿ Kryptowährungen</h2>
+  <div class="asset-card">
+    <h3>Was ist das?</h3>
+    <div class="asset-sub">Digitale, dezentrale Vermögenswerte (z.B. Bitcoin, Ethereum) ohne zentrale ausgebende Institution</div>
+    <p>Kryptowährungen sind eine vergleichsweise junge Anlageklasse mit sehr hoher Schwankungsbreite, unterschiedlicher regulatorischer Behandlung je nach Land und ohne historische Langzeitdaten wie bei klassischen Anlageklassen.</p>
+
+    <div class="risk-meter">
+      <span class="risk-meter-label">Risiko</span>
+      <div class="risk-meter-track">
+        <div class="risk-meter-seg filled" style="--risk-color:#dc2626"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#dc2626"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#dc2626"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#dc2626"></div>
+        <div class="risk-meter-seg filled" style="--risk-color:#dc2626"></div>
+      </div>
+      <span style="font-size:11px;color:var(--text-muted)">(sehr hoch)</span>
+    </div>
+
+    <div class="asset-grid">
+      <div>
+        <div class="asset-col-title good">Stärken</div>
+        <ul class="mini-list good">
+          <li>Hohes Renditepotenzial in bestimmten Marktphasen historisch gesehen</li>
+          <li>Dezentrale Struktur, unabhängig von einzelnen Institutionen</li>
+          <li>Rund um die Uhr handelbar</li>
+        </ul>
+      </div>
+      <div>
+        <div class="asset-col-title bad">Schwächen</div>
+        <ul class="mini-list bad">
+          <li>Extreme Kursschwankungen, teils -50% oder mehr in kurzer Zeit möglich</li>
+          <li>Regulatorische Unsicherheit, je nach Land sehr unterschiedlich</li>
+          <li>Sicherheitsrisiken (Hacks, Verlust von Zugangsdaten = Totalverlust)</li>
+          <li>Keine Unternehmenssubstanz oder Cashflow wie bei Aktien als Wertgrundlage</li>
+          <li>Vergleichsweise kurze Marktgeschichte, wenig Krisendaten über Jahrzehnte</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-red">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Wichtiger Hinweis:</strong> Kryptowährungen gelten als hochspekulative Anlageklasse. Wer investiert, sollte sich der Möglichkeit eines Totalverlusts bewusst sein und nur Kapital einsetzen, dessen vollständiger Verlust verkraftbar wäre. Eine fundierte Einschätzung der technischen und regulatorischen Risiken ist unerlässlich.</div>
+  </div>
+</section>
+
+<section class="page" id="vergleich">
+  <h2>⚖️ Direktvergleich aller Anlageklassen</h2>
+  <p class="section-intro">Alle sechs Klassen auf einen Blick gegenübergestellt.</p>
+
+  <table class="compare-table">
+    <tr>
+      <th>Klasse</th>
+      <th>Risiko</th>
+      <th>Aufwand</th>
+      <th>Kosten</th>
+      <th>Laufende Erträge</th>
+      <th>Liquidität</th>
+    </tr>
+    <tr><td>ETFs</td><td class="part">niedrig–mittel</td><td class="yes">gering</td><td class="yes">sehr niedrig</td><td class="part">teils Dividenden</td><td class="yes">hoch</td></tr>
+    <tr><td>Aktive Fonds</td><td class="part">mittel</td><td class="yes">gering</td><td class="no">hoch</td><td class="part">teils Dividenden</td><td class="yes">hoch</td></tr>
+    <tr><td>Einzelaktien</td><td class="no">mittel–hoch</td><td class="no">hoch</td><td class="yes">niedrig (Handelskosten)</td><td class="part">teils Dividenden</td><td class="yes">hoch</td></tr>
+    <tr><td>Anleihen</td><td class="yes">niedrig–mittel</td><td class="part">mittel</td><td class="yes">niedrig</td><td class="yes">Zinsen</td><td class="part">mittel–hoch</td></tr>
+    <tr><td>Rohstoffe</td><td class="no">mittel–hoch</td><td class="part">mittel</td><td class="part">mittel</td><td class="no">keine</td><td class="part">mittel</td></tr>
+    <tr><td>Kryptowährungen</td><td class="no">sehr hoch</td><td class="part">mittel</td><td class="part">unterschiedlich</td><td class="no">keine (i.d.R.)</td><td class="yes">hoch</td></tr>
+  </table>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>"Risiko" und "Rendite" hängen historisch eng zusammen – höheres Risiko bedeutet nicht automatisch höhere Rendite, aber höhere Renditechancen sind in der Regel mit höherem Risiko verbunden ("Risikoprämie").</div>
+  </div>
+</section>
+
+<section class="page" id="risiko-rendite">
+  <h2>🎯 Risiko & Rendite richtig einordnen</h2>
+  <p class="section-intro">Eine grobe, vereinfachte Einordnung der Anlageklassen nach Risiko – nicht als exakte Skala, sondern zur Orientierung.</p>
+
+  <div class="divider"><span class="divider-label">Grobe Risiko-Rangfolge (vereinfacht)</span><div class="divider-line"></div></div>
+
+  <div class="pyramid">
+    <div class="pyramid-row" style="background:rgba(220,38,38,.15);color:#f87171;border:1px solid rgba(220,38,38,.3)">
+      <span>Kryptowährungen</span><span class="pct">Sehr hohes Risiko</span>
+    </div>
+    <div class="pyramid-row" style="background:rgba(217,119,6,.15);color:#fbbf24;border:1px solid rgba(217,119,6,.3)">
+      <span>Einzelaktien, Rohstoffe</span><span class="pct">Hohes Risiko</span>
+    </div>
+    <div class="pyramid-row" style="background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.3)">
+      <span>Aktiv gemanagte Fonds, breite ETFs</span><span class="pct">Mittleres Risiko</span>
+    </div>
+    <div class="pyramid-row" style="background:rgba(5,150,105,.15);color:#4ade80;border:1px solid rgba(5,150,105,.3)">
+      <span>Anleihen guter Bonität</span><span class="pct">Niedrigeres Risiko</span>
+    </div>
+  </div>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div>Diese Einordnung ist stark vereinfacht: Ein breit gestreuter ETF auf den Weltaktienmarkt kann risikoärmer sein als eine einzelne, hochspekulative Aktie – die Anlageklasse allein sagt nicht alles über das tatsächliche Risiko aus. Wichtig sind auch Diversifikation, Einzeltitelauswahl und Anlagehorizont.</div>
+  </div>
+</section>
+
+<section class="page" id="portfolio">
+  <h2>🏗️ Der Portfolio-Gedanke</h2>
+  <p class="section-intro">Statt sich für "die eine richtige" Anlageklasse zu entscheiden, kombinieren viele Anleger mehrere Klassen gezielt miteinander.</p>
+
+  <div class="card-grid">
+    <div class="card accent-green">
+      <div class="card-icon">📊</div>
+      <h3>Diversifikation über Klassen hinweg</h3>
+      <p>Eine Kombination aus Aktien (ETFs), Anleihen und ggf. Rohstoffen kann das Gesamtrisiko eines Portfolios reduzieren, da sich die Klassen nicht immer gleich entwickeln.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">⏳</div>
+      <h3>Anlagehorizont entscheidet</h3>
+      <p>Je länger der Anlagehorizont, desto eher können kurzfristige Schwankungen ausgesessen werden – das beeinflusst, wie viel Risiko sinnvoll eingegangen werden kann.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">🎚️</div>
+      <h3>Risikotragfähigkeit vs. Risikobereitschaft</h3>
+      <p>Was du dir finanziell leisten kannst zu verlieren (Tragfähigkeit) und was du emotional aushältst (Bereitschaft) sind zwei unterschiedliche Dinge – beide sollten berücksichtigt werden.</p>
+    </div>
+    <div class="card accent-purple">
+      <div class="card-icon">🔄</div>
+      <h3>Regelmäßiges Rebalancing</h3>
+      <p>Über Zeit verschiebt sich die Gewichtung eines Portfolios durch unterschiedliche Wertentwicklung – ein periodisches Anpassen auf die Zielgewichtung ist ein verbreitetes Vorgehen.</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Fragen für die eigene Einordnung</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Wie lange kann das Geld voraussichtlich investiert bleiben, bevor es gebraucht wird?</li>
+    <li>Wie würde ich emotional auf einen Kursrückgang von 30% reagieren?</li>
+    <li>Ist bereits eine Liquiditätsreserve für kurzfristige Bedürfnisse vorhanden?</li>
+    <li>Wie viel Zeit/Interesse besteht, sich laufend mit der Geldanlage zu beschäftigen?</li>
+    <li>Welche Rolle sollen hochspekulative Anlagen (z.B. Crypto) im Gesamtbild spielen, wenn überhaupt?</li>
+  </ul>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>Wichtiger Hinweis:</strong> Dieser Kurs gibt eine sachliche Einordnung verschiedener Anlageklassen, spricht aber keine konkrete Anlageempfehlung für ein bestimmtes Produkt oder einen bestimmten Anbieter aus. Die passende Portfoliostruktur hängt von der individuellen Situation ab und gehört in ein persönliches Beratungsgespräch.</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('section.page').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
