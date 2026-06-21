@@ -1,0 +1,312 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.4rem; }
+  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  h3 { font-size: 16px; font-weight: 500; margin: 1.5rem 0 0.5rem; }
+  p { margin-bottom: 0.9rem; color: var(--color-text-primary); }
+  .subtitle { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 2rem; }
+  .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 1.2rem 0; }
+  .status-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.9rem 1rem; }
+  .status-card .label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .status-card .value { font-size: 14px; font-weight: 500; }
+  .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: var(--border-radius-md); font-weight: 500; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-teal { background: #E1F5EE; color: #0F6E56; }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+  .badge-red { background: #FCEBEB; color: #A32D2D; }
+  .callout { border-left: 3px solid; padding: 0.8rem 1rem; border-radius: 0; margin: 1rem 0; }
+  .callout-info { border-color: #378ADD; background: #E6F1FB; }
+  .callout-info p { color: #0C447C; margin: 0; font-size: 14px; }
+  .callout-warn { border-color: #EF9F27; background: #FAEEDA; }
+  .callout-warn p { color: #633806; margin: 0; font-size: 14px; }
+  .callout-success { border-color: #1D9E75; background: #E1F5EE; }
+  .callout-success p { color: #085041; margin: 0; font-size: 14px; }
+  .step-list { list-style: none; counter-reset: steps; margin: 1rem 0; }
+  .step-list li { counter-increment: steps; display: flex; gap: 12px; margin-bottom: 1rem; align-items: flex-start; }
+  .step-num { min-width: 26px; height: 26px; background: #E6F1FB; color: #185FA5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+  .step-text strong { display: block; font-weight: 500; font-size: 15px; }
+  .step-text span { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
+  .mat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1rem 0; }
+  .mat-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; background: var(--color-background-primary); }
+  .mat-card h4 { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .mat-card ul { padding-left: 1.1rem; font-size: 13px; color: var(--color-text-secondary); line-height: 1.8; }
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .tool-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.9rem 1rem; background: var(--color-background-primary); }
+  .tool-card .tool-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .tool-card .tool-type { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .tool-card .tool-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 0.5rem 0; }
+  .timeline { position: relative; padding-left: 1.5rem; border-left: 2px solid var(--color-border-tertiary); margin: 1rem 0; }
+  .tl-item { margin-bottom: 1.2rem; position: relative; }
+  .tl-dot { position: absolute; left: -1.65rem; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #378ADD; }
+  .tl-year { font-size: 12px; font-weight: 500; color: #185FA5; }
+  .tl-text { font-size: 14px; color: var(--color-text-secondary); }
+  .matrix-wrap { overflow-x: auto; margin: 1rem 0; }
+  table.mat { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.mat th { background: var(--color-background-secondary); padding: 8px 12px; text-align: left; font-weight: 500; border: 0.5px solid var(--color-border-tertiary); }
+  table.mat td { padding: 8px 12px; border: 0.5px solid var(--color-border-tertiary); vertical-align: top; color: var(--color-text-secondary); }
+  .highlight-row td { background: #E6F1FB; color: #0C447C; }
+  @media (max-width: 580px) { .mat-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="page">
+
+  <p class="subtitle">Fachbeitrag | Stand: März 2026</p>
+  <h1>CSRD & EU-Taxonomie aus Controlling-Perspektive</h1>
+  <p class="subtitle">Rechtlicher Stand, Implementierungsansätze, doppelte Wesentlichkeit und Softwarelösungen</p>
+
+  <!-- TEIL 1: AKTUELLER STAND -->
+  <h2>1. Aktueller Stand der CSRD in Deutschland</h2>
+
+  <p>Die Corporate Sustainability Reporting Directive (CSRD), in Kraft getreten am 5. Januar 2023, verpflichtet Unternehmen zur einheitlichen und transparenten Berichterstattung über ökologische und soziale Wirkungen ihrer Geschäftstätigkeit. In Deutschland befindet sich die Richtlinie zum Stand März 2026 weiterhin in einem gesetzlichen Schwebezustand: Die nationale Umsetzungsfrist (6. Juli 2024) wurde verfehlt, die ursprüngliche Frist der EU ist bereits deutlich überschritten, und das CSRD-Umsetzungsgesetz (CSRD-UmsG) ist noch nicht final verabschiedet.</p>
+
+  <div class="status-grid">
+    <div class="status-card">
+      <div class="label">Umsetzungsstatus DE</div>
+      <div class="value"><span class="badge badge-amber">Ausstehend</span></div>
+    </div>
+    <div class="status-card">
+      <div class="label">Regierungsentwurf</div>
+      <div class="value">3. September 2025</div>
+    </div>
+    <div class="status-card">
+      <div class="label">Aktuell geltend</div>
+      <div class="value">CSR-RUG 2017 (NFRD)</div>
+    </div>
+    <div class="status-card">
+      <div class="label">Schwellenwerte (neu)</div>
+      <div class="value">&gt; 1.000 MA & €450 Mio. Umsatz</div>
+    </div>
+  </div>
+
+  <h3>Zeitliche Entwicklung</h3>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Jan 2023</div><div class="tl-text">CSRD tritt auf EU-Ebene in Kraft</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Jul 2024</div><div class="tl-text">Nationale Umsetzungsfrist verpasst — Vertragsverletzungsverfahren eingeleitet</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Sep 2025</div><div class="tl-text">Regierungsentwurf des CSRD-UmsG vorgelegt (1:1-Umsetzung, inkl. Stop-the-clock)</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Dez 2025</div><div class="tl-text">EU-Omnibus-Trilog-Kompromiss: Schwellenwerte auf >1.000 MA + >€450 Mio. Umsatz angehoben; ca. 90 % weniger betroffene Unternehmen</div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:#1D9E75;"></div><div class="tl-year">2026</div><div class="tl-text">Finale Verabschiedung des CSRD-UmsG in Deutschland erwartet; überarbeitete ESRS Q2/2026</div></div>
+    <div class="tl-item"><div class="tl-dot" style="background:#1D9E75;"></div><div class="tl-year">Ab GJ 2027</div><div class="tl-text">Erste Berichtspflicht für Unternehmen mit >1.000 MA & >€450 Mio. Umsatz</div></div>
+  </div>
+
+  <div class="callout callout-warn">
+    <p><strong>Übergangsrecht:</strong> Solange das CSRD-UmsG nicht in Kraft ist, gilt für Unternehmen der ersten Welle (&gt;500 MA, kapitalmarktorientiert) weiterhin der Rechtsrahmen des CSR-RUG (§§ 289b–289e HGB). Eine freiwillige Berichterstattung nach ESRS ist zulässig und strategisch sinnvoll.</p>
+  </div>
+
+  <!-- TEIL 2: CONTROLLING-PERSPEKTIVE -->
+  <h2>2. Implementierung aus Controlling-Perspektive</h2>
+
+  <p>Die CSRD verändert die Rolle des Controllings fundamental: Nachhaltigkeit wird von einer narrativen Begleiterzählung zu einer prüfungsrelevanten, quantitativen Steuerungsgröße. Für das Controlling bedeutet dies die Integration von ESG-KPIs in bestehende Planungs-, Reporting- und Steuerungslogiken — mit denselben Ansprüchen an Datenqualität, Konsistenz und Revisionsfestigkeit wie bei Finanzgrössen.</p>
+
+  <h3>Grundprinzipien einer prüfungsrobusten Datenbasis</h3>
+
+  <ul class="step-list">
+    <li><div class="step-num">1</div><div class="step-text"><strong>Single Source of Truth etablieren</strong><span>Alle wesentlichen ESG-Datenpunkte müssen aus einer einzigen, dokumentierten Datenquelle stammen. Parallele Erfassungspfade (z. B. HR-System für Sozialmetriken, ERP für Energie, Excel für Governance) erzeugen Inkonsistenzen, die bei einer Prüfung sofort sichtbar werden. Ein zentrales ESG-Datenlager mit klaren Eigentümerstrukturen ist obligatorisch.</span></div></li>
+    <li><div class="step-num">2</div><div class="step-text"><strong>Granularität und Nachvollziehbarkeit</strong><span>Aggregierte Kennzahlen müssen bis auf Quellebene rückverfolgbar sein. Jede gemeldete Zahl — etwa Scope-1-Emissionen oder Wasserverbrauch — benötigt eine vollständige Herleitung: Datenquelle → Erhebungsmethode → Umrechnungsfaktor → Aggregationsregel → Berichtswert. Lücken in dieser Kette sind Prüfungsrisiken.</span></div></li>
+    <li><div class="step-num">3</div><div class="step-text"><strong>Konsistenz mit Finanzberichterstattung sicherstellen</strong><span>ESG-Daten, die eine finanzielle Dimension haben (z. B. CO₂-Kosten, Abfallentsorgungsaufwand, Energiekosten), müssen mit der Finanzberichterstattung abgestimmt sein. Abweichungen zwischen Nachhaltigkeitsbericht und Jahresabschluss sind ein Warnsignal für Prüfer. Das Controlling ist der natürliche Brückenbauer zwischen beiden Welten.</span></div></li>
+    <li><div class="step-num">4</div><div class="step-text"><strong>Internes Kontrollsystem auf ESG ausweiten</strong><span>Das interne Kontrollsystem (IKS) muss explizit ESG-relevante Prozesse umfassen: Genehmigungsworkflows für Emissionsdaten, Plausibilitätskontrollen, Vier-Augen-Prinzip bei wesentlichen Kennzahlen, Änderungshistorien. Dies entspricht dem Standard, den Prüfer aus der Finanzprüfung kennen.</span></div></li>
+    <li><div class="step-num">5</div><div class="step-text"><strong>Schätzungen und Annahmen transparent dokumentieren</strong><span>Viele ESG-Größen beruhen auf Hochrechnungen oder Schätzungen (z. B. Scope-3-Emissionen aus Lieferketten). Schätzungsparameter, zugrunde liegende Emissionsfaktoren (GHG Protocol, IPCC) sowie Bandbreiten möglicher Werte sind zu dokumentieren. Prüfer bewerten die Plausibilität von Annahmen, nicht nur das Ergebnis.</span></div></li>
+  </ul>
+
+  <h3>EU-Taxonomie: Integration ins Controlling</h3>
+
+  <p>Die EU-Taxonomie-Verordnung erfordert die Klassifikation wirtschaftlicher Aktivitäten nach Nachhaltigkeit und stellt spezifische Anforderungen an die Qualifikation als "taxonomiekonform" (aligned). Das Controlling muss drei Kernkennzahlen liefern: den Anteil taxonomiefähiger und taxonomiekonformer Umsätze (Turnover KPI), Investitionsausgaben (CapEx KPI) und Betriebsausgaben (OpEx KPI).</p>
+
+  <div class="mat-grid">
+    <div class="mat-card">
+      <h4>Umsatz-KPI (Turnover)</h4>
+      <ul>
+        <li>Anteil taxonomiefähiger Umsätze an Gesamtumsatz</li>
+        <li>Davon: Anteil taxonomiekonformer Umsätze</li>
+        <li>Mapping auf NACE-Codes erforderlich</li>
+        <li>Quelldaten: ERP / Segment-Reporting</li>
+      </ul>
+    </div>
+    <div class="mat-card">
+      <h4>CapEx-KPI (Investitionen)</h4>
+      <ul>
+        <li>Investitionen in Anlagen/Aktivitäten, die taxonomiefähig sind</li>
+        <li>Transition Plans müssen dokumentiert sein</li>
+        <li>Quelldaten: Anlagenverzeichnis, Investment-Controlling</li>
+        <li>Besondere Relevanz für Green CapEx-Ziele</li>
+      </ul>
+    </div>
+    <div class="mat-card">
+      <h4>OpEx-KPI (Betriebsausgaben)</h4>
+      <ul>
+        <li>R&D, kurzfristige Wartung taxonomiefähiger Anlagen</li>
+        <li>Enger Anwendungsbereich — nicht alle OpEx erfasst</li>
+        <li>Quelldaten: Kostenstellen-Controlling</li>
+      </ul>
+    </div>
+    <div class="mat-card">
+      <h4>Do No Significant Harm (DNSH)</h4>
+      <ul>
+        <li>Jede qualifizierte Aktivität muss 5 weitere Umweltziele "nicht signifikant beeinträchtigen"</li>
+        <li>Nachweis durch Technical Screening Criteria (TSC)</li>
+        <li>Controlling koordiniert Daten mit EHS/Technik</li>
+        <li>Dokumentation muss prüfbar archiviert werden</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <p><strong>Controlling-Empfehlung:</strong> Die EU-Taxonomie-KPIs sollten in die reguläre Quartalsberichterstattung integriert werden. Eine jährliche Erst-Berechnung kurz vor dem Stichtag ist fehleranfällig und zeitintensiv. Ein rollierendes Monitoring schafft Transparenz und ermöglicht frühzeitige Korrekturen.</p>
+  </div>
+
+  <!-- TEIL 3: DOPPELTE WESENTLICHKEIT -->
+  <h2>3. Doppelte Wesentlichkeit — Detaillierter Umsetzungsleitfaden</h2>
+
+  <p>Das Konzept der doppelten Wesentlichkeit (Double Materiality) ist das methodische Herzstück der CSRD. Es unterscheidet sich fundamental vom traditionellen finanzwirtschaftlichen Wesentlichkeitsbegriff und erfordert eine strukturierte, dokumentierte Analyse aus zwei Perspektiven.</p>
+
+  <div class="mat-grid">
+    <div class="mat-card" style="border-color: #85B7EB;">
+      <h4 style="color: #185FA5;">Inside-out: Impact Materiality</h4>
+      <ul>
+        <li>Welche Auswirkungen hat das Unternehmen auf Umwelt und Menschen?</li>
+        <li>Tatsächliche und potenzielle Impacts (positiv & negativ)</li>
+        <li>Eigene Aktivitäten + vor- und nachgelagerte Wertschöpfungskette</li>
+        <li>Bewertet nach: Schwere, Ausmaß, Behebbarkeit, Wahrscheinlichkeit</li>
+      </ul>
+    </div>
+    <div class="mat-card" style="border-color: #5DCAA5;">
+      <h4 style="color: #0F6E56;">Outside-in: Financial Materiality</h4>
+      <ul>
+        <li>Welche Nachhaltigkeitsthemen beeinflussen die finanzielle Lage?</li>
+        <li>Risiken und Chancen aus ESG-Entwicklungen</li>
+        <li>Kurzfristig, mittelfristig und langfristig</li>
+        <li>Bewertet nach: finanzieller Wirkung & Eintrittswahrscheinlichkeit</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Schritt-für-Schritt: Durchführung der Wesentlichkeitsanalyse</h3>
+
+  <ul class="step-list">
+    <li><div class="step-num">1</div><div class="step-text"><strong>Scope und Wertschöpfungskette abgrenzen</strong><span>Zunächst ist der Analyserahmen festzulegen. Die CSRD verlangt eine Betrachtung der gesamten Wertschöpfungskette (upstream: Lieferanten, Rohstoffe; own operations; downstream: Kunden, Entsorgung). Das Controlling sollte gemeinsam mit dem Einkauf und Vertrieb eine Karte wesentlicher Aktivitäten entlang der Wertschöpfungskette erstellen. Für Beckers-ähnliche Unternehmen (B2B, Produktionsunternehmen) liegt der Schwerpunkt typischerweise auf Rohstoffbeschaffung, Produktion (Scope 1+2) sowie Downstream-Nutzung und -Entsorgung (Scope 3).</span></div></li>
+    <li><div class="step-num">2</div><div class="step-text"><strong>Longlist der Nachhaltigkeitsthemen erstellen</strong><span>Ausgangspunkt ist die Longlist möglicher wesentlicher Themen. Die ESRS definieren in ESRS 1 eine vollständige Themenliste entlang der drei Dimensionen E (Umwelt: Klimawandel, Biodiversität, Wasser, Kreislaufwirtschaft, Luftverschmutzung), S (Soziales: Belegschaft, Lieferkette, Betroffene Gemeinschaften, Verbraucher) und G (Governance: Unternehmensverhalten). Diese Liste bildet den Standard-Ausgangspunkt und sollte branchenspezifisch ergänzt werden.</span></div></li>
+    <li><div class="step-num">3</div><div class="step-text"><strong>Stakeholder-Identifikation und -Einbindung</strong><span>Die Wesentlichkeitsanalyse muss nachweislich auf Stakeholder-Input basieren. Relevante Gruppen sind: Mitarbeitende, Kunden, Lieferanten, Investoren/Kreditgeber, lokale Gemeinschaften, NGOs, Regulatoren. Die Einbindung kann über Interviews, Befragungen, Workshops oder die Auswertung öffentlicher Erwartungshaltungen erfolgen. Wichtig: Jede Einbindungsmaßnahme muss dokumentiert werden (Datum, Teilnehmer, Methode, Ergebnis). Prüfer werden diese Dokumentation einfordern.</span></div></li>
+    <li><div class="step-num">4</div><div class="step-text"><strong>Impact-Bewertung (Inside-out) strukturiert durchführen</strong><span>Für jeden Themenbereich werden tatsächliche und potenzielle Impacts identifiziert und bewertet. Die Bewertungsdimensionen sind: (a) Schwere des Impacts (Ausmaß, Reichweite, Behebbarkeit bei negativen Impacts; Ausmaß und Reichweite bei positiven Impacts) und (b) Wahrscheinlichkeit des Eintretens (nur bei potenziellen Impacts). Das Controlling hat hier eine Schlüsselrolle: Es sollte quantitative Größenordnungen beisteuern — z. B. Tonnen CO₂-Äquivalente pro Themenpfad, Anzahl betroffene Personen, monetarisierte Schäden. Rein qualitative Einschätzungen sind prüfungsanfällig.</span></div></li>
+    <li><div class="step-num">5</div><div class="step-text"><strong>Finanzielle Materialität (Outside-in) bewerten</strong><span>Für jedes Nachhaltigkeitsthema wird analysiert, ob und wie es das Unternehmen finanziell beeinflusst. Dies umfasst physische Risiken (z. B. Extremwetterereignisse, Wasserknappheit), Transitionsrisiken (z. B. CO₂-Preise, regulatorische Verschärfungen, Marktveränderungen) sowie Chancen (z. B. Effizienzgewinne, neue Marktsegmente). Bewertungsmaßstab ist die finanzielle Wirkung (Bandbreite der Auswirkung auf GuV, Bilanz, Cashflow) kombiniert mit der Eintrittswahrscheinlichkeit. Das Controlling sollte diese Analyse eng mit dem strategischen Risikomanagement verzahnen.</span></div></li>
+    <li><div class="step-num">6</div><div class="step-text"><strong>Wesentlichkeitsschwellen festlegen und begründen</strong><span>Ein kritischer und häufig unterschätzter Schritt: Das Unternehmen muss explizite, begründete Schwellenwerte festlegen, ab wann ein Thema als wesentlich gilt. Diese Schwellen können quantitativ (z. B. finanzielle Wirkung &gt;€X Mio.) oder qualitativ (z. B. Reputationsrisiko mit signifikanter Reichweite) definiert sein. Die Wahl der Schwellen ist eine unternehmensspezifische Entscheidung — muss aber konsistent, nachvollziehbar und prüfbar sein. Willkürliche Schwellen oder post-hoc angepasste Kriterien sind ein klassisches Prüfungsrisiko.</span></div></li>
+    <li><div class="step-num">7</div><div class="step-text"><strong>Wesentlichkeitsmatrix erstellen und Ergebnis validieren</strong><span>Die Ergebnisse beider Dimensionen werden in einer Wesentlichkeitsmatrix visualisiert und daraus die finale Liste wesentlicher Themen abgeleitet. Ein Thema gilt als wesentlich, wenn es entweder aus Impact-Sicht oder aus Financial-Materiality-Sicht wesentlich ist (oder aus beiden). Das Ergebnis sollte durch die Geschäftsführung/den Vorstand formal genehmigt und dokumentiert werden. Bei börsennotierten Unternehmen empfiehlt sich eine Einbindung des Prüfungsausschusses.</span></div></li>
+    <li><div class="step-num">8</div><div class="step-text"><strong>Berichtspflichten ableiten und monitoren</strong><span>Auf Basis der wesentlichen Themen werden die erforderlichen ESRS-Angabepflichten bestimmt. Wesentliche Themen verpflichten zur vollständigen Berichterstattung nach dem jeweiligen ESRS-Standard (z. B. ESRS E1 bei wesentlichem Klimathema). Für jedes wesentliche Thema sind anschließend KPIs zu definieren, Dateneigentümer zu benennen und Erhebungsprozesse zu implementieren. Das Controlling übernimmt dabei typischerweise die Funktion des "ESG Data Controller".</span></div></li>
+  </ul>
+
+  <div class="callout callout-success">
+    <p><strong>Best Practice für Prüfungsrobustheit:</strong> Die gesamte Wesentlichkeitsanalyse sollte in einem nachvollziehbaren Arbeitsdokument ("Wesentlichkeits-Workbook") festgehalten werden, das Rohdaten, Bewertungslogik, Stakeholder-Inputs, Entscheidungen und Genehmigungen enthält. Dieses Dokument ist das zentrale Prüfungsobjekt bei einer CSRD-Prüfung.</p>
+  </div>
+
+  <h3>Häufige Schwachstellen in der Prüfungspraxis</h3>
+
+  <div class="matrix-wrap">
+    <table class="mat">
+      <thead>
+        <tr><th>Schwachstelle</th><th>Risiko</th><th>Empfehlung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Fehlende Stakeholder-Dokumentation</td><td>Methodenvalidität nicht nachweisbar</td><td>Interviewprotokolle, Umfrageergebnisse archivieren</td></tr>
+        <tr><td>Schwellenwerte nicht vorab festgelegt</td><td>Verdacht auf Ergebnissteuerung</td><td>Bewertungskriterien vor der Analyse formell beschließen</td></tr>
+        <tr><td>Wertschöpfungskette unvollständig</td><td>Scope-3-Lücken, materielle Impacts übersehen</td><td>Systematische Aktivitätskartierung vor Analyse</td></tr>
+        <tr class="highlight-row"><td>Rein qualitative Bewertungen</td><td>Prüfer können Plausibilität nicht beurteilen</td><td>Wo möglich quantitative Größenordnungen ergänzen</td></tr>
+        <tr><td>Keine formale Genehmigung</td><td>Governance-Anforderungen nicht erfüllt</td><td>Vorstandsbeschluss oder Prüfungsausschuss-Vorlage</td></tr>
+        <tr><td>Einmalige Analyse ohne Update</td><td>Nicht mehr aktuell bei Prüfung</td><td>Jährliche Überprüfung + Change-Log führen</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TEIL 4: SOFTWARE & TOOLS -->
+  <h2>4. Software- und Tool-Landschaft für die Umsetzung</h2>
+
+  <p>Die Auswahl der richtigen Softwarelösung ist eine strategische Entscheidung, die eng mit der Reifegrad des Datenhaushalts, der Unternehmensgröße und der vorhandenen IT-Landschaft verzahnt ist. Der Markt lässt sich in drei Kategorien einteilen.</p>
+
+  <h3>Kategorie 1: Integrierte ESG-Reporting-Plattformen</h3>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-name">SAP Sustainability Control Tower</div>
+      <div class="tool-type"><span class="badge badge-blue">Enterprise</span></div>
+      <div class="tool-desc">Native SAP-Integration, Datenaggregation aus ERP-Systemen, ESRS-konforme Berichte, EU-Taxonomie-Modul. Empfehlenswert für SAP-getriebene Unternehmen.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Workiva</div>
+      <div class="tool-type"><span class="badge badge-blue">Enterprise</span></div>
+      <div class="tool-desc">Starke Integration von ESG und Finanzberichterstattung, kollaborativer Workflow, Audit Trail, XBRL-Tagging für ESRS. Marktführer bei großen Prüfungsgesellschaften.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Watershed / Persefoni</div>
+      <div class="tool-type"><span class="badge badge-teal">Mid-Market</span></div>
+      <div class="tool-desc">Spezialisiert auf Scope 1/2/3-Emissionserfassung nach GHG Protocol, Qualität der Berechnungslogik hoch, starke Prüfer-Schnittstelle.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Sweep</div>
+      <div class="tool-type"><span class="badge badge-teal">Mid-Market</span></div>
+      <div class="tool-desc">Emissionsplattform mit Lieferketten-Integration, gut für Scope-3-Erfassung; zunehmend CSRD-Features.</div>
+    </div>
+  </div>
+
+  <h3>Kategorie 2: Wesentlichkeitsanalyse & Stakeholder-Engagement</h3>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-name">DFGE Double Materiality Tool</div>
+      <div class="tool-type"><span class="badge badge-teal">Spezialisiert</span></div>
+      <div class="tool-desc">Deutschsprachige Lösung speziell für ESRS-konforme Wesentlichkeitsanalyse; Stakeholder-Befragungsmodul, Dokumentationsexport.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Briink</div>
+      <div class="tool-type"><span class="badge badge-teal">KI-gestützt</span></div>
+      <div class="tool-desc">KI-basiertes Mapping von Unternehmensaktivitäten auf ESRS-Themen; beschleunigt Longlist-Erstellung und Wesentlichkeitsbewertung.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Apiday</div>
+      <div class="tool-type"><span class="badge badge-teal">Mid-Market</span></div>
+      <div class="tool-desc">CSRD-zentrierte Plattform mit integrierter Doppelter Wesentlichkeit, Datenpunkt-Mapping auf ESRS und kollaborativen Workflows.</div>
+    </div>
+  </div>
+
+  <h3>Kategorie 3: EU-Taxonomie-spezifische Lösungen</h3>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-name">Greenomy</div>
+      <div class="tool-type"><span class="badge badge-blue">Enterprise</span></div>
+      <div class="tool-desc">Speziallösung für EU-Taxonomie-Reporting; automatisches Mapping auf NACE-Codes, DNSH-Checklisten, KPI-Berechnung (Turnover, CapEx, OpEx).</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">ALTOO / Clarity AI</div>
+      <div class="tool-type"><span class="badge badge-blue">Enterprise</span></div>
+      <div class="tool-desc">Breit aufgestellte ESG-Datenlösungen mit Taxonomie-Modul; besonders relevant für Investoren und Finanzdienstleister.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">MS Excel + ESRS-Templates</div>
+      <div class="tool-type"><span class="badge badge-amber">Einstieg</span></div>
+      <div class="tool-desc">Für Unternehmen in der Vorbereitung praktikabel. EFRAG stellt offizielle ESRS-Datenpunkt-Listen bereit; als dauerhafte Lösung für prüfungsreife Berichte ungeeignet.</div>
+    </div>
+  </div>
+
+  <h3>Auswahlkriterien aus Controlling-Sicht</h3>
+  <div class="matrix-wrap">
+    <table class="mat">
+      <thead>
+        <tr><th>Kriterium</th><th>Begründung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Audit Trail / Revisionsfähigkeit</td><td>Prüfer müssen jeden Datenpunkt bis zur Quelle nachvollziehen können</td></tr>
+        <tr><td>ERP-/HR-System-Integration</td><td>Manuelle Dateneingabe erhöht Fehlerrisiko; automatische Feeds bevorzugen</td></tr>
+        <tr><td>ESRS-Datenpunkt-Abdeckung</td><td>Software muss alle relevanten ESRS-Disclosures abbilden können</td></tr>
+        <tr class="highlight-row"><td>Prüfer-Schnittstelle</td><td>Direkte Exportfunktionen für Prüfungsgesellschaften sparen erheblich Zeit</td></tr>
+        <tr><td>Versionierung und Change-Management</td><td>Korrekturen müssen nachvollziehbar dokumentiert sein</td></tr>
+        <tr><td>XBRL-/ESEF-Tagging</td><td>Verpflichtend für die maschinelle Lesbarkeit im Unternehmensregister</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-info">
+    <p><strong>Strategischer Hinweis:</strong> Die Softwareentscheidung sollte erst nach Abschluss der Wesentlichkeitsanalyse getroffen werden — denn erst dann ist bekannt, welche ESRS-Themen tatsächlich zu berichten sind und welchen Umfang das Datenmanagement haben wird. Eine vorschnelle Tool-Auswahl führt häufig zu Über- oder Unterdimensionierung.</p>
+  </div>
+
+  <hr class="divider" style="margin-top: 2.5rem;">
+  <p style="font-size: 13px; color: var(--color-text-secondary); margin-top: 1rem;">Quellen: CSRD (Richtlinie EU 2022/2464), ESRS Set 1 (Del. VO EU 2023/2772), EU-Taxonomie-VO (EU 2020/852), Regierungsentwurf CSRD-UmsG (Sep. 2025), Omnibus-Trilog-Kompromiss (Dez. 2025), IDW F&A-Papier (Dez. 2025), DRSC Briefing Paper (Sep. 2025)</p>
+
+</div>
