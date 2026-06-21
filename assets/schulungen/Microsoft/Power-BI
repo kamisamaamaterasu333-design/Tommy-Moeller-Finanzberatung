@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power BI – Fortgeschrittene Fähigkeiten</title>
+<style>
+  :root {
+    --pbi-yellow: #F2C811;
+    --pbi-yellow-dim: #C9A60E;
+    --bg-dark: #0D0D0D;
+    --bg-panel: #161616;
+    --bg-card: #1E1E1E;
+    --bg-card2: #252525;
+    --border: #2E2E2E;
+    --border-accent: #3A3A3A;
+    --text-primary: #F0F0F0;
+    --text-secondary: #A0A0A0;
+    --text-muted: #666;
+    --accent-blue: #0078D4;
+    --accent-green: #107C10;
+    --accent-red: #D13438;
+    --accent-purple: #5C2D91;
+    --code-bg: #0A0A0A;
+    --code-border: #333;
+    --tag-bg: #2A2A2A;
+    --sidebar-w: 260px;
+    --header-h: 56px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── TOP HEADER ─────────────────────────────────────────────── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #111;
+    border-bottom: 2px solid var(--pbi-yellow);
+    display: flex; align-items: center; gap: 18px;
+    padding: 0 24px;
+    z-index: 100;
+  }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--pbi-yellow);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 20px; height: 20px; }
+
+  .logo-title {
+    font-size: 17px; font-weight: 700; letter-spacing: -.3px;
+    color: var(--text-primary);
+  }
+  .logo-title span { color: var(--pbi-yellow); }
+
+  .header-pill {
+    margin-left: auto;
+    background: rgba(242,200,17,.12);
+    border: 1px solid rgba(242,200,17,.3);
+    color: var(--pbi-yellow);
+    font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    letter-spacing: .5px;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────────────────── */
+  .layout { display: flex; padding-top: var(--header-h); }
+
+  nav.sidebar {
+    width: var(--sidebar-w);
+    position: fixed; top: var(--header-h); left: 0; bottom: 0;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 20px 0;
+    z-index: 90;
+  }
+
+  .nav-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 16px 20px 6px;
+  }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px;
+    color: var(--text-secondary);
+    text-decoration: none; font-size: 13.5px;
+    cursor: pointer; border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,.04); }
+  .nav-link.active {
+    color: var(--pbi-yellow);
+    border-left-color: var(--pbi-yellow);
+    background: rgba(242,200,17,.07);
+    font-weight: 600;
+  }
+  .nav-link .icon { font-size: 15px; flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto; background: var(--pbi-yellow); color: #000;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 10px;
+  }
+
+  /* ── MAIN CONTENT ────────────────────────────────────────────── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1; padding: 40px 48px 80px;
+    max-width: 1000px;
+  }
+
+  section.page { display: none; }
+  section.page.active { display: block; }
+
+  /* ── HERO ────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #1a1400 0%, #0D0D0D 60%);
+    border: 1px solid var(--pbi-yellow);
+    border-radius: 12px; padding: 48px 40px;
+    margin-bottom: 40px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(242,200,17,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: var(--pbi-yellow); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: 34px; font-weight: 800; letter-spacing: -.5px; line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero h1 em { font-style: normal; color: var(--pbi-yellow); }
+  .hero p { color: var(--text-secondary); font-size: 16px; max-width: 560px; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+  .hero-tag {
+    background: var(--tag-bg); border: 1px solid var(--border-accent);
+    color: var(--text-secondary); font-size: 12px;
+    padding: 4px 12px; border-radius: 20px;
+  }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────────────────── */
+  h2 {
+    font-size: 22px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 6px; padding-top: 8px;
+  }
+  h3 {
+    font-size: 16px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 8px; margin-top: 4px;
+  }
+  .section-intro {
+    color: var(--text-secondary); font-size: 14.5px; margin-bottom: 28px;
+    border-bottom: 1px solid var(--border); padding-bottom: 20px;
+  }
+  p { color: var(--text-secondary); margin-bottom: 12px; }
+
+  /* ── CARDS ───────────────────────────────────────────────────── */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 22px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--border-accent); }
+  .card-icon { font-size: 24px; margin-bottom: 12px; }
+  .card h3 { font-size: 15px; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 0; }
+
+  .card.accent-yellow { border-left: 3px solid var(--pbi-yellow); }
+  .card.accent-blue   { border-left: 3px solid var(--accent-blue); }
+  .card.accent-green  { border-left: 3px solid var(--accent-green); }
+  .card.accent-red    { border-left: 3px solid var(--accent-red); }
+
+  /* ── CODE BLOCKS ─────────────────────────────────────────────── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px; overflow: hidden;
+    margin: 16px 0 24px;
+  }
+  .code-header {
+    background: #111; padding: 8px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--code-border);
+  }
+  .code-lang {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    color: var(--pbi-yellow); text-transform: uppercase;
+  }
+  .copy-btn {
+    background: none; border: 1px solid var(--border-accent);
+    color: var(--text-muted); font-size: 11px; padding: 3px 10px;
+    border-radius: 4px; cursor: pointer; transition: all .15s;
+  }
+  .copy-btn:hover { color: var(--text-primary); border-color: var(--pbi-yellow); }
+
+  pre {
+    padding: 20px 20px;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px; line-height: 1.7;
+    color: #D4D4D4;
+  }
+
+  .kw  { color: #569CD6; }
+  .fn  { color: #DCDCAA; }
+  .str { color: #CE9178; }
+  .num { color: #B5CEA8; }
+  .cm  { color: #6A9955; }
+  .var { color: #9CDCFE; }
+  .op  { color: #D4D4D4; }
+
+  /* ── STEP GUIDE ──────────────────────────────────────────────── */
+  .step-list { margin: 0 0 32px; padding: 0; list-style: none; }
+  .step-item {
+    display: flex; gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    width: 34px; height: 34px; flex-shrink: 0;
+    background: var(--pbi-yellow); color: #000;
+    font-size: 14px; font-weight: 800;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-content h3 { font-size: 15px; margin-bottom: 6px; color: var(--text-primary); }
+  .step-content p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .step-tip {
+    background: rgba(242,200,17,.08); border-left: 3px solid var(--pbi-yellow);
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+    font-size: 13px; color: var(--pbi-yellow);
+    margin-top: 8px;
+  }
+
+  /* ── COMPARISON TABLE ────────────────────────────────────────── */
+  .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  .compare-table th {
+    background: #111; color: var(--text-secondary);
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+    padding: 10px 16px; text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  .compare-table th:first-child { color: var(--pbi-yellow); }
+  .compare-table td {
+    padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+  .compare-table td:first-child { color: var(--text-primary); font-weight: 600; }
+
+  .yes  { color: #107C10; font-weight: 700; }
+  .no   { color: #D13438; }
+  .part { color: #F2C811; }
+
+  /* ── ALERT BOXES ─────────────────────────────────────────────── */
+  .alert {
+    border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+    display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px;
+  }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-yellow { background: rgba(242,200,17,.08); border: 1px solid rgba(242,200,17,.25); }
+  .alert-blue   { background: rgba(0,120,212,.08);  border: 1px solid rgba(0,120,212,.25); }
+  .alert-green  { background: rgba(16,124,16,.08);  border: 1px solid rgba(16,124,16,.25); }
+
+  /* ── SECTION DIVIDER ─────────────────────────────────────────── */
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    margin: 36px 0 28px;
+  }
+  .divider-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--pbi-yellow); white-space: nowrap;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* ── DAX FORMULA HIGHLIGHT ───────────────────────────────────── */
+  .dax-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .dax-table th {
+    background: #0F0F0F; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-muted); padding: 8px 14px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .dax-table td {
+    padding: 12px 14px; font-size: 13px;
+    border-bottom: 1px solid var(--border); vertical-align: top;
+  }
+  .dax-table tr:hover td { background: rgba(242,200,17,.04); }
+  .dax-name { color: var(--pbi-yellow); font-weight: 700; font-family: 'Consolas', monospace; }
+  .dax-desc { color: var(--text-secondary); }
+  .dax-ex   { color: #9CDCFE; font-family: 'Consolas', monospace; font-size: 12px; }
+
+  /* ── MINI DASHBOARD DEMO ─────────────────────────────────────── */
+  .demo-dashboard {
+    background: #111; border: 1px solid var(--pbi-yellow);
+    border-radius: 12px; padding: 24px; margin: 28px 0;
+  }
+  .demo-title {
+    font-size: 13px; font-weight: 700; color: var(--pbi-yellow);
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .kpi-row { display: flex; gap: 12px; margin-bottom: 16px; }
+  .kpi-card {
+    flex: 1; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; text-align: center;
+  }
+  .kpi-val { font-size: 26px; font-weight: 800; color: var(--pbi-yellow); }
+  .kpi-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .kpi-delta { font-size: 12px; color: #107C10; font-weight: 600; }
+  .bar-chart-demo { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-label { font-size: 12px; color: var(--text-secondary); width: 80px; text-align: right; }
+  .bar-track { flex: 1; height: 18px; background: #222; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .bar-val { font-size: 12px; color: var(--text-muted); width: 50px; }
+
+  /* ── PROGRESS PILLS ──────────────────────────────────────────── */
+  .level-pills { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .pill {
+    padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    border: 1px solid; cursor: pointer; transition: all .15s;
+  }
+  .pill-yellow { background: rgba(242,200,17,.1); border-color: var(--pbi-yellow); color: var(--pbi-yellow); }
+  .pill-blue   { background: rgba(0,120,212,.1); border-color: var(--accent-blue); color: #60ADEF; }
+  .pill-green  { background: rgba(16,124,16,.1); border-color: var(--accent-green); color: #4EC94E; }
+
+  /* ── CHECKLIST ───────────────────────────────────────────────── */
+  .checklist { list-style: none; margin-bottom: 24px; }
+  .checklist li {
+    padding: 7px 0; font-size: 13.5px; color: var(--text-secondary);
+    display: flex; align-items: flex-start; gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .checklist li::before {
+    content: '▸'; color: var(--pbi-yellow); flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── SCROLLBAR ───────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+  @media (max-width: 900px) {
+    nav.sidebar { width: 220px; }
+    main { margin-left: 220px; padding: 24px 24px 60px; }
+    .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+    .kpi-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="8" width="4" height="10" fill="#000" rx="1"/>
+      <rect x="8" y="4" width="4" height="14" fill="#000" rx="1"/>
+      <rect x="14" y="1" width="4" height="17" fill="#000" rx="1"/>
+    </svg>
+  </div>
+  <div class="logo-title">Power <span>BI</span> Fortgeschrittene Fähigkeiten</div>
+  <div class="header-pill">Desktop + Cloud</div>
+</header>
+
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="nav-section-label">Einstieg</div>
+  <a class="nav-link active" onclick="show('intro')">
+    <span class="icon">🏠</span> Übersicht
+  </a>
+  <a class="nav-link" onclick="show('vergleich')">
+    <span class="icon">⚖️</span> Desktop vs. Cloud
+  </a>
+
+  <div class="nav-section-label">DAX – Fortgeschritten</div>
+  <a class="nav-link" onclick="show('dax-time')">
+    <span class="icon">📅</span> Zeitintelligenz
+  </a>
+  <a class="nav-link" onclick="show('dax-filter')">
+    <span class="icon">🔍</span> CALCULATE & Filter
+  </a>
+  <a class="nav-link" onclick="show('dax-advanced')">
+    <span class="icon">⚡</span> Iteratoren & Variablen
+  </a>
+
+  <div class="nav-section-label">Modellierung</div>
+  <a class="nav-link" onclick="show('datenmodell')">
+    <span class="icon">🗄️</span> Star Schema & Bezieh.
+  </a>
+  <a class="nav-link" onclick="show('power-query')">
+    <span class="icon">🔄</span> Power Query M-Code
+  </a>
+
+  <div class="nav-section-label">Visualisierung</div>
+  <a class="nav-link" onclick="show('visuals')">
+    <span class="icon">📊</span> Fortgeschr. Visuals
+  </a>
+  <a class="nav-link" onclick="show('rls')">
+    <span class="icon">🔒</span> Row-Level Security
+  </a>
+
+  <div class="nav-section-label">Praxis</div>
+  <a class="nav-link" onclick="show('nachbau')">
+    <span class="icon">🛠️</span> Dashboard Nachbauen
+    <span class="nav-badge">NEU</span>
+  </a>
+  <a class="nav-link" onclick="show('cloud-features')">
+    <span class="icon">☁️</span> Cloud-Features
+  </a>
+</nav>
+
+<main>
+
+<!-- ══════════ INTRO ══════════ -->
+<section class="page active" id="intro">
+  <div class="hero">
+    <div class="hero-eyebrow">Fortgeschrittene Fähigkeiten</div>
+    <h1>Vom Report-Ersteller<br>zum <em>BI-Entwickler</em></h1>
+    <p>DAX-Zeitintelligenz, komplexe Datenmodelle, Row-Level Security, Power Query M-Code und Cloud-Deployment – dieser Kurs baut auf Grundkenntnissen auf.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">DAX fortgeschritten</span>
+      <span class="hero-tag">Star Schema</span>
+      <span class="hero-tag">RLS</span>
+      <span class="hero-tag">Power Query</span>
+      <span class="hero-tag">Power BI Service</span>
+      <span class="hero-tag">Deployment Pipelines</span>
+    </div>
+  </div>
+
+  <div class="level-pills">
+    <span class="pill pill-yellow">⚡ Fortgeschritten</span>
+    <span class="pill pill-blue">🖥️ Desktop</span>
+    <span class="pill pill-green">☁️ Cloud (Service)</span>
+  </div>
+
+  <div class="card-grid">
+    <div class="card accent-yellow">
+      <div class="card-icon">📐</div>
+      <h3>DAX Mastery</h3>
+      <p>Zeitintelligenz (SAMEPERIODLASTYEAR, DATESINPERIOD), CALCULATE mit komplexen Filtermodifikatoren, Iteratoren (SUMX, AVERAGEX), VAR/RETURN-Pattern.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">🗄️</div>
+      <h3>Datenmodellierung</h3>
+      <p>Star-Schema aufbauen, Beziehungen richtig konfigurieren, Datum-Dimensionstabelle (Datumstabelle) erstellen, Many-to-Many-Beziehungen lösen.</p>
+    </div>
+    <div class="card accent-green">
+      <div class="card-icon">🔒</div>
+      <h3>Row-Level Security</h3>
+      <p>Statische und dynamische RLS-Rollen definieren, USERNAME() und USERPRINCIPALNAME() für benutzerspezifische Datensichten nutzen.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">☁️</div>
+      <h3>Power BI Service</h3>
+      <p>Workspaces, Deployment Pipelines (Dev/Test/Prod), Dataflows, Scheduled Refresh, Gateways, Paginated Reports.</p>
+    </div>
+  </div>
+
+  <div class="divider">
+    <span class="divider-label">Voraussetzungen</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <ul class="checklist">
+    <li>Power BI Desktop ist installiert (kostenlos von microsoft.com/powerbi)</li>
+    <li>Grundlagen: Daten importieren, einfache Visuals erstellen, erste DAX-Measures</li>
+    <li>Microsoft 365 oder Power BI Pro/Premium-Lizenz für Cloud-Kapitel</li>
+    <li>Grundkenntnisse Datenbanken / Tabellenstruktur von Vorteil</li>
+  </ul>
+
+  <div class="alert alert-yellow">
+    <span class="alert-icon">💡</span>
+    <div>Alle Nachbau-Beispiele nutzen die <strong>Adventure Works DW Beispieldatenbank</strong> – kostenlos im Lernkurs enthalten (Link im Kapitel „Dashboard Nachbauen").</div>
+  </div>
+</section>
+
+<!-- ══════════ VERGLEICH ══════════ -->
+<section class="page" id="vergleich">
+  <h2>Desktop vs. Cloud – Wo passiert was?</h2>
+  <p class="section-intro">Power BI hat zwei Hauptkomponenten die sich ergänzen. Desktop ist das Entwicklungswerkzeug, der Service ist die Distributions- und Kollaborationsplattform.</p>
+
+  <div class="card-grid">
+    <div class="card accent-yellow">
+      <div class="card-icon">🖥️</div>
+      <h3>Power BI Desktop</h3>
+      <p><strong>Kostenlos</strong> – lokale Windows-Anwendung. Hier entstehen Reports: Daten laden, transformieren (Power Query), Datenmodell aufbauen, DAX-Measures schreiben, Visuals gestalten.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">☁️</div>
+      <h3>Power BI Service (Cloud)</h3>
+      <p><strong>Pro/Premium-Lizenz</strong> – app.powerbi.com. Reports veröffentlichen, teilen, automatisch aktualisieren (Scheduled Refresh), Dashboards pinnen, Dataflows zentral verwalten.</p>
+    </div>
+  </div>
+
+  <table class="compare-table">
+    <tr>
+      <th>Funktion</th>
+      <th>Desktop</th>
+      <th>Service (Cloud)</th>
+      <th>Notiz</th>
+    </tr>
+    <tr><td>Daten importieren</td><td class="yes">✓ Vollständig</td><td class="part">~ eingeschränkt</td><td>Service hat weniger Konnektoren</td></tr>
+    <tr><td>Power Query Transformationen</td><td class="yes">✓ Vollständig</td><td class="part">~ Dataflows</td><td>Dataflows = Cloud-Power-Query</td></tr>
+    <tr><td>DAX-Measures schreiben</td><td class="yes">✓ Vollständig</td><td class="no">✗</td><td>Nur im Desktop</td></tr>
+    <tr><td>Datenmodell aufbauen</td><td class="yes">✓</td><td class="no">✗</td><td>Nur im Desktop</td></tr>
+    <tr><td>Visuals gestalten</td><td class="yes">✓</td><td class="part">~ einfach</td><td>Desktop für Design, Service für Pins</td></tr>
+    <tr><td>Row-Level Security testen</td><td class="yes">✓</td><td class="yes">✓</td><td>Desktop: View as Roles; Service: per User</td></tr>
+    <tr><td>Scheduled Refresh</td><td class="no">✗</td><td class="yes">✓</td><td>Braucht Gateway für lokale Quellen</td></tr>
+    <tr><td>Deployment Pipelines</td><td class="no">✗</td><td class="yes">✓</td><td>Dev → Test → Prod (Premium)</td></tr>
+    <tr><td>Teilen & Collaboration</td><td class="no">✗</td><td class="yes">✓</td><td>Workspaces, Apps</td></tr>
+    <tr><td>Paginated Reports</td><td class="part">~ Builder</td><td class="yes">✓</td><td>Report Builder (separates Tool)</td></tr>
+    <tr><td>Dataflows</td><td class="no">✗</td><td class="yes">✓</td><td>Zentralisierte ETL-Schicht in Cloud</td></tr>
+    <tr><td>AI-Features (Q&A, Smart Narr.)</td><td class="part">~ Q&A</td><td class="yes">✓</td><td>Smart Narrative nur Service</td></tr>
+  </table>
+
+  <div class="divider"><span class="divider-label">Typischer Workflow</span><div class="divider-line"></div></div>
+  <ul class="step-list">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Desktop: Daten laden & transformieren</h3>
+        <p>Power Query Editor öffnen (Transform Data), Quellen verbinden, M-Code schreiben, Datentypen setzen.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Desktop: Modell aufbauen & DAX schreiben</h3>
+        <p>Modellansicht → Beziehungen ziehen, Datumstabelle erstellen, Measures mit DAX definieren.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Desktop: Bericht gestalten</h3>
+        <p>Berichtsansicht → Visuals platzieren, Slicer, Cross-Filter, Drill-Through, Tooltips konfigurieren.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Service: Veröffentlichen</h3>
+        <p>Desktop: Veröffentlichen (Publish) → Workspace wählen → app.powerbi.com öffnen.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Service: Aktualisierung & Sharing</h3>
+        <p>Dataset → Scheduled Refresh konfigurieren (Gateway für lokale Quellen), App erstellen, Workspace teilen.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- ══════════ DAX ZEITINTELLIGENZ ══════════ -->
+<section class="page" id="dax-time">
+  <h2>DAX – Zeitintelligenz</h2>
+  <p class="section-intro">Zeitintelligenz-Funktionen sind das Herzstück jeder Business-Intelligence-Lösung. Sie erlauben Vergleiche zwischen Perioden ohne manuelle Filterlogik.</p>
+
+  <div class="alert alert-yellow">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Voraussetzung:</strong> Eine vollständige <strong>Datumstabelle</strong> muss im Modell als Datumstabelle markiert sein (Tabellentools → Als Datumstabelle markieren). Ohne das funktionieren Zeitintelligenz-Funktionen nicht korrekt.</div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Datumstabelle erstellen (DAX)</span><div class="divider-line"></div></div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Calculated Table</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Vollständige Datumstabelle als berechnete Tabelle</span>
+<span class="var">Datumstabelle</span> <span class="op">=</span>
+<span class="kw">VAR</span> <span class="var">StartDatum</span> <span class="op">=</span> <span class="fn">DATE</span>(<span class="num">2020</span>, <span class="num">1</span>, <span class="num">1</span>)
+<span class="kw">VAR</span> <span class="var">EndDatum</span>   <span class="op">=</span> <span class="fn">DATE</span>(<span class="num">2026</span>, <span class="num">12</span>, <span class="num">31</span>)
+<span class="kw">RETURN</span>
+<span class="fn">ADDCOLUMNS</span>(
+    <span class="fn">CALENDAR</span>(<span class="var">StartDatum</span>, <span class="var">EndDatum</span>),
+    <span class="str">"Jahr"</span>,          <span class="fn">YEAR</span>([Date]),
+    <span class="str">"Quartal"</span>,       <span class="str">"Q"</span> <span class="op">&</span> <span class="fn">QUARTER</span>([Date]),
+    <span class="str">"Monat Nr"</span>,      <span class="fn">MONTH</span>([Date]),
+    <span class="str">"Monat Name"</span>,    <span class="fn">FORMAT</span>([Date], <span class="str">"MMMM"</span>),
+    <span class="str">"Monat Kurz"</span>,    <span class="fn">FORMAT</span>([Date], <span class="str">"MMM"</span>),
+    <span class="str">"KW"</span>,            <span class="fn">WEEKNUM</span>([Date], <span class="num">2</span>),
+    <span class="str">"Wochentag"</span>,     <span class="fn">FORMAT</span>([Date], <span class="str">"DDDD"</span>),
+    <span class="str">"Jahr-Monat"</span>,    <span class="fn">FORMAT</span>([Date], <span class="str">"YYYY-MM"</span>),
+    <span class="str">"Ist Wochenende"</span>, <span class="fn">IF</span>(<span class="fn">WEEKDAY</span>([Date],<span class="num">2</span>) <span class="op">>=</span> <span class="num">6</span>, <span class="str">"Ja"</span>, <span class="str">"Nein"</span>)
+)</pre>
+  </div>
+
+  <div class="divider"><span class="divider-label">Zeitintelligenz-Measures</span><div class="divider-line"></div></div>
+
+  <table class="dax-table">
+    <tr>
+      <th>Measure-Name</th>
+      <th>DAX-Formel</th>
+      <th>Beschreibung</th>
+    </tr>
+    <tr>
+      <td class="dax-name">Umsatz VJ</td>
+      <td class="dax-ex">CALCULATE([Umsatz], SAMEPERIODLASTYEAR(Datum[Date]))</td>
+      <td class="dax-desc">Gleicher Zeitraum Vorjahr. Automatischer Jahresversatz.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">YTD Umsatz</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATESYTD(Datum[Date]))</td>
+      <td class="dax-desc">Kumulierter Umsatz vom 1. Januar bis zum aktuellen Datum.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">YTD VJ</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATESYTD(SAMEPERIODLASTYEAR(Datum[Date])))</td>
+      <td class="dax-desc">Kumuliert Vorjahr – ideal für YTD-Vergleich.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">Letzte 12 Monate</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATESINPERIOD(Datum[Date], LASTDATE(Datum[Date]), -12, MONTH))</td>
+      <td class="dax-desc">Rolling 12 Months – bewegt sich mit dem letzten Datum.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">Wachstum % VJ</td>
+      <td class="dax-ex">DIVIDE([Umsatz] - [Umsatz VJ], [Umsatz VJ], BLANK())</td>
+      <td class="dax-desc">Prozentuales Wachstum vs. Vorjahr. DIVIDE verhindert Division durch 0.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">Vormonat</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATEADD(Datum[Date], -1, MONTH))</td>
+      <td class="dax-desc">Flexibler Zeitversatz: -1 MONTH, -1 QUARTER, -1 YEAR etc.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">MTD</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATESMTD(Datum[Date]))</td>
+      <td class="dax-desc">Month-to-Date: kumuliert seit Monatsbeginn.</td>
+    </tr>
+    <tr>
+      <td class="dax-name">QTD</td>
+      <td class="dax-ex">CALCULATE([Umsatz], DATESQTD(Datum[Date]))</td>
+      <td class="dax-desc">Quarter-to-Date: kumuliert seit Quartalsbeginn.</td>
+    </tr>
+  </table>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>Best Practice:</strong> Schreibe alle Zeitintelligenz-Measures auf Basis eines <strong>Basis-Measures</strong> (z.B. [Umsatz]). Ändere die Basisberechnung einmal, alle Zeitvergleiche folgen automatisch.</div>
+  </div>
+</section>
+
+<!-- ══════════ DAX CALCULATE ══════════ -->
+<section class="page" id="dax-filter">
+  <h2>DAX – CALCULATE & Filtermodifikatoren</h2>
+  <p class="section-intro">CALCULATE ist die mächtigste DAX-Funktion. Sie verändert den Filterkontext – das ist die Grundlage fast jeder komplexen Berechnung in Power BI.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – CALCULATE Grundprinzip</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- CALCULATE(Ausdruck, Filter1, Filter2, ...)</span>
+<span class="cm">-- Filter ERSETZEN den bestehenden Filterkontext</span>
+
+<span class="cm">-- Beispiel 1: Umsatz nur für Kategorie "Elektronik"</span>
+<span class="var">Umsatz Elektronik</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, Produkt[Kategorie] <span class="op">=</span> <span class="str">"Elektronik"</span>)
+
+<span class="cm">-- Beispiel 2: ALL() – alle Filter einer Spalte entfernen</span>
+<span class="var">Marktanteil %</span> <span class="op">=</span>
+<span class="fn">DIVIDE</span>(
+    <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>,
+    <span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">ALL</span>(Produkt[Kategorie])),
+    <span class="num">0</span>
+)
+
+<span class="cm">-- Beispiel 3: ALLEXCEPT() – alle Filter bis auf eine Spalte entfernen</span>
+<span class="var">Umsatz je Region (gesamt)</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">ALLEXCEPT</span>(Vertrieb, Vertrieb[Region]))
+
+<span class="cm">-- Beispiel 4: KEEPFILTERS() – Filter hinzufügen statt ersetzen</span>
+<span class="var">Umsatz Top-Kunden</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">KEEPFILTERS</span>(Kunde[Segment] <span class="op">=</span> <span class="str">"Premium"</span>))
+
+<span class="cm">-- Beispiel 5: REMOVEFILTERS() – gezielt Filters entfernen (neuere Syntax)</span>
+<span class="var">Gesamtumsatz (immer)</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">REMOVEFILTERS</span>(Produkt))</pre>
+  </div>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <div class="card-icon">🗑️</div>
+      <h3>ALL()</h3>
+      <p>Entfernt alle Filter von einer Tabelle oder Spalte. Basis für Anteils- und Ranking-Berechnungen.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h3>KEEPFILTERS()</h3>
+      <p>Filter werden ADDIERT statt ersetzt. Nützlich wenn der Reportfilter erhalten bleiben soll.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <h3>USERELATIONSHIP()</h3>
+      <p>Aktiviert eine inaktive Beziehung temporär für die Berechnung (z.B. Lieferdatum vs. Bestelldatum).</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – USERELATIONSHIP & CROSSFILTER</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Zwei Datumsspalten mit einer Datumstabelle verknüpfen</span>
+<span class="cm">-- Aktive Beziehung: Bestelldatum | Inaktive: Lieferdatum</span>
+
+<span class="var">Umsatz nach Lieferdatum</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>,
+    <span class="fn">USERELATIONSHIP</span>(Datum[Date], Bestellung[Lieferdatum])
+)
+
+<span class="cm">-- CROSSFILTER: Filterrichtung für eine Berechnung ändern</span>
+<span class="var">Kunden mit Bestellungen</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="fn">DISTINCTCOUNT</span>(Bestellung[KundenID]),
+    <span class="fn">CROSSFILTER</span>(Kunde[ID], Bestellung[KundenID], <span class="kw">Both</span>)
+)</pre>
+  </div>
+</section>
+
+<!-- ══════════ DAX ITERATOREN ══════════ -->
+<section class="page" id="dax-advanced">
+  <h2>DAX – Iteratoren & VAR/RETURN</h2>
+  <p class="section-intro">X-Funktionen (SUMX, AVERAGEX, RANKX ...) iterieren zeilenweise und öffnen riesige Möglichkeiten. VAR/RETURN macht komplexe Formeln lesbar und performant.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Iteratoren (X-Functions)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- SUMX: berechnet Ausdruck PRO ZEILE, dann summiert</span>
+<span class="var">Umsatz</span> <span class="op">=</span> <span class="fn">SUMX</span>(Bestellung, Bestellung[Menge] <span class="op">*</span> Bestellung[Preis])
+
+<span class="cm">-- AVERAGEX: Durchschnitt über berechnete Werte</span>
+<span class="var">Ø Bestellwert</span> <span class="op">=</span> <span class="fn">AVERAGEX</span>(Bestellung, Bestellung[Menge] <span class="op">*</span> Bestellung[Preis])
+
+<span class="cm">-- RANKX: Ranking innerhalb einer Gruppe</span>
+<span class="var">Produktrang</span> <span class="op">=</span>
+<span class="fn">RANKX</span>(
+    <span class="fn">ALL</span>(Produkt[Produktname]),   <span class="cm">-- Alle Produkte (Filter entfernen)</span>
+    <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>,                        <span class="cm">-- Nach diesem Wert ranken</span>
+    ,                                <span class="cm">-- Kein spezifischer Wert → aktueller Kontext</span>
+    <span class="kw">DESC</span>,                            <span class="cm">-- Absteigend (höchster Umsatz = Rang 1)</span>
+    <span class="kw">Dense</span>                            <span class="cm">-- Gleiche Werte = gleicher Rang, kein Skip</span>
+)
+
+<span class="cm">-- MAXX / MINX: Maximum/Minimum über berechneten Ausdruck</span>
+<span class="var">Größte Einzelbestellung</span> <span class="op">=</span>
+<span class="fn">MAXX</span>(Bestellung, Bestellung[Menge] <span class="op">*</span> Bestellung[Preis])</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – VAR/RETURN Pattern (Best Practice)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- VAR: Variablen deklarieren → einmal berechnen, mehrfach nutzen</span>
+<span class="cm">-- Vorteil: lesbarer Code + bessere Performance (kein doppeltes Auswerten)</span>
+
+<span class="var">Wachstum mit Ampel</span> <span class="op">=</span>
+<span class="kw">VAR</span> <span class="var">AktuellerUmsatz</span>  <span class="op">=</span> <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>
+<span class="kw">VAR</span> <span class="var">VorjahrUmsatz</span>    <span class="op">=</span> <span class="op">[</span><span class="var">Umsatz VJ</span><span class="op">]</span>
+<span class="kw">VAR</span> <span class="var">Wachstumsrate</span>    <span class="op">=</span> <span class="fn">DIVIDE</span>(<span class="var">AktuellerUmsatz</span> <span class="op">-</span> <span class="var">VorjahrUmsatz</span>, <span class="var">VorjahrUmsatz</span>)
+<span class="kw">RETURN</span>
+<span class="fn">SWITCH</span>(
+    <span class="kw">TRUE</span>(),
+    <span class="fn">ISBLANK</span>(<span class="var">VorjahrUmsatz</span>),          <span class="str">"Kein VJ"</span>,
+    <span class="var">Wachstumsrate</span> <span class="op">>=</span> <span class="num">0.1</span>,              <span class="str">"🟢 +"</span> <span class="op">&</span> <span class="fn">FORMAT</span>(<span class="var">Wachstumsrate</span>, <span class="str">"0.0%"</span>),
+    <span class="var">Wachstumsrate</span> <span class="op">>=</span> <span class="num">0</span>,                <span class="str">"🟡 +"</span> <span class="op">&</span> <span class="fn">FORMAT</span>(<span class="var">Wachstumsrate</span>, <span class="str">"0.0%"</span>),
+    <span class="str">"🔴 "</span> <span class="op">&</span> <span class="fn">FORMAT</span>(<span class="var">Wachstumsrate</span>, <span class="str">"0.0%"</span>)
+)
+
+<span class="cm">-- Komplexes Beispiel: Dynamischer Top-N Filter</span>
+<span class="var">Top-N Umsatz</span> <span class="op">=</span>
+<span class="kw">VAR</span> <span class="var">N</span>            <span class="op">=</span> <span class="fn">SELECTEDVALUE</span>(TopN[Wert], <span class="num">10</span>)
+<span class="kw">VAR</span> <span class="var">TopProdukte</span>   <span class="op">=</span> <span class="fn">TOPN</span>(<span class="var">N</span>, <span class="fn">ALL</span>(Produkt[Name]), <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="kw">DESC</span>)
+<span class="kw">VAR</span> <span class="var">IstImTop</span>      <span class="op">=</span> <span class="fn">ISINSCOPE</span>(Produkt[Name]) <span class="op">&&</span> Produkt[Name] <span class="op">IN</span> <span class="var">TopProdukte</span>
+<span class="kw">RETURN</span>
+<span class="fn">IF</span>(<span class="var">IstImTop</span>, <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>)</pre>
+  </div>
+</section>
+
+<!-- ══════════ DATENMODELL ══════════ -->
+<section class="page" id="datenmodell">
+  <h2>Datenmodellierung – Star Schema</h2>
+  <p class="section-intro">Ein gutes Datenmodell ist wichtiger als perfekte DAX-Formeln. Das Star Schema ist der Standard für Power BI.</p>
+
+  <div class="card-grid">
+    <div class="card accent-yellow">
+      <div class="card-icon">⭐</div>
+      <h3>Faktentabelle</h3>
+      <p>Enthält Transaktionen/Messungen (Verkäufe, Buchungen, Klicks). Hat viele Zeilen, wenig Spalten. Enthält <strong>Fremdschlüssel</strong> zu Dimensionen und <strong>Messwerte</strong> (Menge, Preis, Betrag).</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">📋</div>
+      <h3>Dimensionstabellen</h3>
+      <p>Beschreiben die Fakten (Wer? Was? Wo? Wann?). Wenige Zeilen, viele Spalten. Beispiele: Datum, Produkt, Kunde, Region, Mitarbeiter.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div><strong>Goldene Regel:</strong> Filter fließen von Dimensionstabellen <strong>→</strong> in Faktentabellen. Niemals Faktentabellen direkt miteinander verbinden (viele-zu-viele vermeiden).</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Many-to-Many via Bridge-Tabelle lösen</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Problem: Produkte können mehrere Kategorien haben (m:n)</span>
+<span class="cm">-- Lösung: Bridge-Tabelle (Produkt_Kategorie)</span>
+
+<span class="cm">-- Modell: Kategorie (1) → (n) Bridge (n) → (1) Produkt</span>
+<span class="cm">-- Alle Beziehungen: 1:n, beide Richtungen single</span>
+
+<span class="cm">-- DAX: Measure mit CROSSFILTER für bidirektionale Filterung</span>
+<span class="var">Umsatz nach Kategorie</span> <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    <span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>,
+    <span class="fn">CROSSFILTER</span>(Produkt_Kategorie[ProduktID], Verkauf[ProduktID], <span class="kw">Both</span>)
+)</pre>
+  </div>
+
+  <div class="divider"><span class="divider-label">Modellierungs-Checkliste</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Keine berechneten Spalten in Faktentabellen (nutze stattdessen Power Query)</li>
+    <li>Datumstabelle immer als berechnete Tabelle (keine aus Faktentabelle abgeleitete)</li>
+    <li>Primärschlüssel in Dimensionen sind immer Integer (schneller als Text)</li>
+    <li>Niemals Spalten importieren die nicht gebraucht werden (Modellgröße!)</li>
+    <li>Duplikate in Dimensionstabellen entfernen (Power Query: Remove Duplicates)</li>
+    <li>Beziehungsrichtung: Standard = Single (von Dim → Fakt)</li>
+    <li>Bidirektionale Beziehungen nur wenn zwingend nötig (Performance-Impact)</li>
+  </ul>
+</section>
+
+<!-- ══════════ POWER QUERY M-CODE ══════════ -->
+<section class="page" id="power-query">
+  <h2>Power Query – Fortgeschrittener M-Code</h2>
+  <p class="section-intro">Die grafische Power Query GUI erzeugt M-Code im Hintergrund. Direktes Schreiben von M-Code ermöglicht Transformationen die in der GUI nicht möglich sind.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">M-Code – Dynamische Parameterabfrage</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">// Parameter als Query definieren (Name: StartJahr, Typ: Number)</span>
+<span class="cm">// Dann in anderen Queries referenzieren:</span>
+
+<span class="kw">let</span>
+    Quelle <span class="op">=</span> <span class="fn">Excel.CurrentWorkbook</span>(){[Name<span class="op">=</span><span class="str">"Verkaufsdaten"</span>]}[Content],
+
+    <span class="cm">// Parametergesteuerte Filterung</span>
+    Gefiltert <span class="op">=</span> <span class="fn">Table.SelectRows</span>(Quelle,
+        <span class="kw">each</span> <span class="fn">Date.Year</span>([Datum]) <span class="op">>=</span> StartJahr),
+
+    <span class="cm">// Dynamisch Spalten pivotieren</span>
+    Pivotiert <span class="op">=</span> <span class="fn">Table.Pivot</span>(
+        Gefiltert,
+        <span class="fn">List.Distinct</span>(Gefiltert[Kategorie]),
+        <span class="str">"Kategorie"</span>,
+        <span class="str">"Umsatz"</span>,
+        <span class="fn">List.Sum</span>
+    ),
+
+    <span class="cm">// Typ dynamisch setzen (alle numerischen Spalten)</span>
+    NumSpalten <span class="op">=</span> <span class="fn">List.Select</span>(
+        <span class="fn">Table.ColumnNames</span>(Pivotiert),
+        <span class="kw">each</span> <span class="fn">List.Contains</span>(
+            <span class="fn">List.Distinct</span>(Gefiltert[Kategorie]), _)
+    ),
+    TypTransform <span class="op">=</span> <span class="fn">Table.TransformColumnTypes</span>(
+        Pivotiert,
+        <span class="fn">List.Transform</span>(NumSpalten, <span class="kw">each</span> {_, <span class="kw">type</span> number})
+    )
+<span class="kw">in</span>
+    TypTransform</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">M-Code – Ordner-Konsolidierung (alle CSVs laden)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="kw">let</span>
+    Ordner <span class="op">=</span> <span class="fn">Folder.Files</span>(<span class="str">"C:\Monatsdaten\"</span>),
+
+    <span class="cm">// Nur CSV-Dateien</span>
+    NurCSV <span class="op">=</span> <span class="fn">Table.SelectRows</span>(Ordner,
+        <span class="kw">each</span> <span class="fn">Text.EndsWith</span>([Name], <span class="str">".csv"</span>)),
+
+    <span class="cm">// Funktion: Eine CSV-Datei laden und transformieren</span>
+    LadeEineCSV <span class="op">=</span> (dateiinhalt) <span class="op">=></span>
+        <span class="kw">let</span>
+            geladen  <span class="op">=</span> <span class="fn">Csv.Document</span>(dateiinhalt, [Delimiter<span class="op">=</span><span class="str">";"</span>, Encoding<span class="op">=</span><span class="num">65001</span>]),
+            benamst  <span class="op">=</span> <span class="fn">Table.PromoteHeaders</span>(geladen),
+            getypt   <span class="op">=</span> <span class="fn">Table.TransformColumnTypes</span>(benamst,{
+                           {<span class="str">"Datum"</span>, <span class="kw">type</span> date},
+                           {<span class="str">"Betrag"</span>, <span class="kw">type</span> number}})
+        <span class="kw">in</span> getypt,
+
+    <span class="cm">// Auf alle Dateien anwenden und kombinieren</span>
+    Transformiert <span class="op">=</span> <span class="fn">Table.AddColumn</span>(NurCSV, <span class="str">"Daten"</span>,
+        <span class="kw">each</span> LadeEineCSV([Content])),
+    Kombiniert    <span class="op">=</span> <span class="fn">Table.Combine</span>(Transformiert[Daten])
+<span class="kw">in</span>
+    Kombiniert</pre>
+  </div>
+</section>
+
+<!-- ══════════ VISUALS ══════════ -->
+<section class="page" id="visuals">
+  <h2>Fortgeschrittene Visualisierungen</h2>
+  <p class="section-intro">Über die Standard-Visuals hinaus: Drill-Through, Tooltip-Seiten, Bookmarks, Conditional Formatting und Custom Visuals aus dem AppSource.</p>
+
+  <div class="card-grid-3">
+    <div class="card accent-yellow">
+      <div class="card-icon">🔍</div>
+      <h3>Drill-Through</h3>
+      <p>Rechtsklick auf Datenpunkt → Detailseite. Konfiguration: Detailseite erstellen, Drill-Through-Feld hinzufügen.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">💬</div>
+      <h3>Tooltip-Seiten</h3>
+      <p>Report-Seite als Tooltip: Canvas-Größe auf Tooltip stellen, Seite als Tooltip markieren → in Visual zuweisen.</p>
+    </div>
+    <div class="card accent-green">
+      <div class="card-icon">🔖</div>
+      <h3>Bookmarks</h3>
+      <p>Zustände des Reports speichern und per Button aktivieren. Basis für „What-If"-Ansichten und Seitennavigation.</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Bedingte Formatierung per DAX</span><div class="divider-line"></div></div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Conditional Formatting (Farbe per Measure)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Measure für Hintergrundfarbe (als Hex-String)</span>
+<span class="var">KPI Farbe</span> <span class="op">=</span>
+<span class="kw">VAR</span> <span class="var">Wachstum</span> <span class="op">=</span> <span class="op">[</span><span class="var">Wachstum % VJ</span><span class="op">]</span>
+<span class="kw">RETURN</span>
+<span class="fn">SWITCH</span>(
+    <span class="kw">TRUE</span>(),
+    <span class="var">Wachstum</span> <span class="op">>=</span> <span class="num">0.15</span>,  <span class="str">"#107C10"</span>,  <span class="cm">-- Dunkelgrün</span>
+    <span class="var">Wachstum</span> <span class="op">>=</span> <span class="num">0.05</span>,  <span class="str">"#4EC94E"</span>,  <span class="cm">-- Hellgrün</span>
+    <span class="var">Wachstum</span> <span class="op">>=</span> <span class="num">0</span>,     <span class="str">"#F2C811"</span>,  <span class="cm">-- Gelb</span>
+    <span class="var">Wachstum</span> <span class="op">>=</span> <span class="num">-0.1</span>, <span class="str">"#FF8C00"</span>,  <span class="cm">-- Orange</span>
+    <span class="str">"#D13438"</span>                       <span class="cm">-- Rot</span>
+)
+<span class="cm">-- Im Visual: Wert-Eigenschaft → Bedingte Formatierung → Feldwert → diese Measure wählen</span></pre>
+  </div>
+
+  <ul class="checklist">
+    <li><strong>Selection Pane + Bookmarks</strong> für Ein-/Ausblenden von Objekten nutzen</li>
+    <li><strong>Field Parameters</strong> (Vorschau-Feature): Benutzer können Y-Achse selbst wählen</li>
+    <li><strong>Custom Visuals</strong>: Deneb (Vega-Lite), Charticulator, HTML-Content für maximale Flexibilität</li>
+    <li>Tooltip-Seiten immer auf 320×240px Canvasgröße stellen</li>
+    <li>Performance Analyzer nutzen (View → Performance Analyzer) um langsame Visuals zu finden</li>
+  </ul>
+</section>
+
+<!-- ══════════ RLS ══════════ -->
+<section class="page" id="rls">
+  <h2>Row-Level Security (RLS)</h2>
+  <p class="section-intro">RLS beschränkt den Datenzugriff auf Zeilenebene. Benutzer sehen im selben Report nur die Daten die für ihre Rolle freigegeben sind.</p>
+
+  <div class="card-grid">
+    <div class="card accent-yellow">
+      <div class="card-icon">🔒</div>
+      <h3>Statische RLS</h3>
+      <p>Feste DAX-Filterregel je Rolle. Benutzer werden der Rolle im Service zugewiesen. Einfach, aber unflexibel bei vielen Regionen/Abteilungen.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">👤</div>
+      <h3>Dynamische RLS</h3>
+      <p>DAX-Regel nutzt USERNAME() oder USERPRINCIPALNAME() und vergleicht mit einer Benutzer-Tabelle im Modell. Eine Rolle für alle – skaliert beliebig.</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Statische RLS (Modeling → Manage Roles)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Rolle: "Region_Nord"</span>
+<span class="cm">-- DAX-Filterregel auf Tabelle "Region":</span>
+[Region] <span class="op">=</span> <span class="str">"Nord"</span>
+
+<span class="cm">-- Rolle: "Eigene_Daten" (statisch nach Abteilung)</span>
+[Abteilung] <span class="op">=</span> <span class="str">"Vertrieb"</span></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">DAX – Dynamische RLS (skaliert auf beliebig viele User)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+    </div>
+    <pre><span class="cm">-- Benutzer-Tabelle im Modell: [Email] | [Region] | [Darf_Alles]</span>
+<span class="cm">-- Verknüpfung: Benutzer[Region] → Region[Region] (inaktiv oder via TREATAS)</span>
+
+<span class="cm">-- Rolle: "Dynamisch" – DAX-Filter auf Tabelle "Region":</span>
+[Region] <span class="op">=</span>
+<span class="fn">LOOKUPVALUE</span>(
+    Benutzer[Region],          <span class="cm">-- Rückgabewert</span>
+    Benutzer[Email],           <span class="cm">-- Suchspalte</span>
+    <span class="fn">USERPRINCIPALNAME</span>()        <span class="cm">-- Aktueller eingeloggter User (Azure AD Email)</span>
+)
+<span class="cm">-- || ... ODER Admin-Ausnahme:</span>
+<span class="op">||</span> <span class="fn">LOOKUPVALUE</span>(Benutzer[Darf_Alles], Benutzer[Email], <span class="fn">USERPRINCIPALNAME</span>()) <span class="op">=</span> <span class="kw">TRUE</span>()
+
+<span class="cm">-- Testen: Modeling → View as → wähle Rolle → tritt als User auf</span>
+<span class="cm">-- Im Service: Dataset → Security → Rolle → User hinzufügen</span></pre>
+  </div>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>RLS im Service testen:</strong> Workspace → Dataset → Sicherheit → Rollen testen (als Benutzer anmelden). Im Desktop: Modeling → View as Roles.</div>
+  </div>
+</section>
+
+<!-- ══════════ NACHBAU ══════════ -->
+<section class="page" id="nachbau">
+  <h2>🛠️ Dashboard Nachbauen – Schritt für Schritt</h2>
+  <p class="section-intro">Baue dieses Sales Executive Dashboard nach – ein realistisches Unternehmens-Dashboard mit KPI-Karten, Zeitvergleich, Kategorieumsatz und Drill-Through.</p>
+
+  <div class="demo-dashboard">
+    <div class="demo-title">📊 Ziel: Sales Executive Dashboard (Vorschau)</div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val">€2,4M</div>
+        <div class="kpi-label">Umsatz YTD</div>
+        <div class="kpi-delta">▲ +12,3% vs. VJ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">1.847</div>
+        <div class="kpi-label">Bestellungen</div>
+        <div class="kpi-delta">▲ +8,1% vs. VJ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">€1.299</div>
+        <div class="kpi-label">Ø Bestellwert</div>
+        <div class="kpi-delta">▲ +3,9% vs. VJ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">38,7%</div>
+        <div class="kpi-label">Bruttomargin</div>
+        <div class="kpi-delta" style="color:#D13438">▼ -1,2pp vs. VJ</div>
+      </div>
+    </div>
+    <div class="bar-chart-demo">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Umsatz nach Kategorie (YTD)</div>
+      <div class="bar-row"><div class="bar-label">Elektronik</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#F2C811"></div></div><div class="bar-val">€924K</div></div>
+      <div class="bar-row"><div class="bar-label">Möbel</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#0078D4"></div></div><div class="bar-val">€635K</div></div>
+      <div class="bar-row"><div class="bar-label">Bekleidung</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:#107C10"></div></div><div class="bar-val">€462K</div></div>
+      <div class="bar-row"><div class="bar-label">Sport</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:#5C2D91"></div></div><div class="bar-val">€289K</div></div>
+      <div class="bar-row"><div class="bar-label">Sonstige</div><div class="bar-track"><div class="bar-fill" style="width:10%;background:#444"></div></div><div class="bar-val">€90K</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Datenquelle herunterladen</span><div class="divider-line"></div></div>
+  <div class="alert alert-blue">
+    <span class="alert-icon">📥</span>
+    <div>
+      <strong>Adventure Works DW</strong> (kostenlose Microsoft Beispieldatenbank):<br>
+      Download: <code style="color:var(--pbi-yellow)">aka.ms/AdventureWorksDW</code><br>
+      Alternativ: In Power BI Desktop → Daten abrufen → Beispieldaten → „Adventure Works" direkt laden.
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Bauanleitung</span><div class="divider-line"></div></div>
+
+  <ul class="step-list">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Daten laden & Power Query vorbereiten</h3>
+        <p>Daten abrufen → SQL Server (oder Excel/CSV) → Folgende Tabellen laden: <code style="color:var(--pbi-yellow)">FactInternetSales</code>, <code style="color:var(--pbi-yellow)">DimDate</code>, <code style="color:var(--pbi-yellow)">DimProduct</code>, <code style="color:var(--pbi-yellow)">DimProductCategory</code>, <code style="color:var(--pbi-yellow)">DimCustomer</code>.</p>
+        <p>In Power Query: Spalten entfernen die nicht gebraucht werden, Datentypen prüfen, leere Zeilen entfernen.</p>
+        <div class="step-tip">💡 Nicht benötigte Spalten im Query entfernen – reduziert Modellgröße um 30-60%!</div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Datumstabelle als Berechnete Tabelle anlegen</h3>
+        <p>Modellansicht → Neue Tabelle → DAX aus Kapitel „Zeitintelligenz" einfügen. Dann: Tabellentools → Als Datumstabelle markieren → Spalte [Date] wählen.</p>
+        <div class="step-tip">💡 DimDate aus Adventure Works NICHT als Datumstabelle markieren – eigene erstellen!</div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Beziehungen im Star Schema aufbauen</h3>
+        <p>Modellansicht → Beziehungen durch Drag & Drop ziehen:</p>
+        <ul style="margin:8px 0 0 16px;color:var(--text-secondary);font-size:13.5px;line-height:1.8;">
+          <li>Datumstabelle[Date] → FactInternetSales[OrderDateKey]</li>
+          <li>DimProduct[ProductKey] → FactInternetSales[ProductKey]</li>
+          <li>DimCustomer[CustomerKey] → FactInternetSales[CustomerKey]</li>
+          <li>DimProductCategory[ProductCategoryKey] → DimProduct[ProductCategoryKey]</li>
+        </ul>
+        <div class="step-tip">💡 Alle Beziehungen prüfen: 1:n, Single-Richtung von Dim → Fakt.</div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Basis-Measures definieren (neuer Measureordner)</h3>
+        <p>Rechtsklick auf FactInternetSales → Neues Measure. Neue Measure-Tabelle über Modellierung → Neue Tabelle → Name <code style="color:var(--pbi-yellow)">= "_Measures"</code> (bleibt leer, nur als Container).</p>
+        <div class="code-block" style="margin:10px 0 0;">
+          <div class="code-header"><span class="code-lang">DAX – Basis-Measures</span></div>
+          <pre style="font-size:12px;padding:12px 16px;"><span class="var">Umsatz</span> <span class="op">=</span> <span class="fn">SUMX</span>(FactInternetSales, FactInternetSales[OrderQuantity] <span class="op">*</span> FactInternetSales[UnitPrice])
+<span class="var">Anzahl Bestellungen</span> <span class="op">=</span> <span class="fn">DISTINCTCOUNT</span>(FactInternetSales[SalesOrderNumber])
+<span class="var">Ø Bestellwert</span>  <span class="op">=</span> <span class="fn">DIVIDE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="op">[</span><span class="var">Anzahl Bestellungen</span><span class="op">]</span>)
+<span class="var">Umsatz VJ</span>      <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">SAMEPERIODLASTYEAR</span>(Datumstabelle[Date]))
+<span class="var">YTD Umsatz</span>     <span class="op">=</span> <span class="fn">CALCULATE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span>, <span class="fn">DATESYTD</span>(Datumstabelle[Date]))
+<span class="var">Wachstum %</span>     <span class="op">=</span> <span class="fn">DIVIDE</span>(<span class="op">[</span><span class="var">Umsatz</span><span class="op">]</span> <span class="op">-</span> <span class="op">[</span><span class="var">Umsatz VJ</span><span class="op">]</span>, <span class="op">[</span><span class="var">Umsatz VJ</span><span class="op">]</span>)</pre>
+        </div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Report-Seite 1 aufbauen: Executive Summary</h3>
+        <p>Canvas-Größe: 1280×720. Hintergrundfarbe: #1E1E1E. 4 Kartenvisuals oben (KPI-Karten mit Umsatz, Bestellungen, Ø-Wert, Marge). 1 Liniendiagramm Mitte-links (Umsatz vs. VJ, X-Achse: Monat). 1 Balkendiagramm Mitte-rechts (Umsatz nach Kategorie, absteigend). Slicer unten: Jahr-Selektion.</p>
+        <div class="step-tip">💡 Format → Hintergrundfarbe für jeden Visual-Container → für einheitliches dunkles Theme.</div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h3>Seite 2: Produkt-Detailseite (Drill-Through)</h3>
+        <p>Neue Seite → Drill-Through-Feld: DimProductCategory[EnglishProductCategoryName]. Dann: Tabellen-Visual mit Produkt, Umsatz, Marge, Ranking. Bedingte Formatierung auf Marge-Spalte mit KPI Farbe-Measure.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <h3>Im Power BI Service veröffentlichen</h3>
+        <p>Desktop → Veröffentlichen → Workspace wählen. Im Browser app.powerbi.com: Dataset → Einstellungen → Geplante Aktualisierung konfigurieren. Report → Dashboard pinnen → Als App für Team freigeben.</p>
+        <div class="step-tip">💡 Vor dem Veröffentlichen: File → Options → Query reduction → Deactivate cross-highlighting für bessere Performance.</div>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- ══════════ CLOUD FEATURES ══════════ -->
+<section class="page" id="cloud-features">
+  <h2>☁️ Power BI Service – Fortgeschrittene Cloud-Features</h2>
+  <p class="section-intro">Der Power BI Service bietet weit mehr als nur das Veröffentlichen von Reports. Diese Features sind nur in der Cloud verfügbar.</p>
+
+  <div class="card-grid">
+    <div class="card accent-yellow">
+      <div class="card-icon">🔄</div>
+      <h3>Deployment Pipelines</h3>
+      <p>Dev → Test → Prod Workflow für professionelle BI-Entwicklung. Änderungen werden in Dev entwickelt, in Test getestet und in Prod deployed – ohne manuelle Veröffentlichung.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">🌊</div>
+      <h3>Dataflows</h3>
+      <p>Zentralisierte ETL-Schicht in der Cloud. Power Query in der Cloud ausführen, Ergebnis als wiederverwendbare Datentabelle bereitstellen – mehrere Datasets nutzen denselben Dataflow.</p>
+    </div>
+    <div class="card accent-green">
+      <div class="card-icon">📄</div>
+      <h3>Paginated Reports</h3>
+      <p>Pixel-perfekte, seitenbasierte Reports (wie SSRS). Für Druckberichte, Rechnungen, mehrseitige Exporte. Erstellt mit Power BI Report Builder.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">🤖</div>
+      <h3>AI Features</h3>
+      <p>Q&A (natürliche Sprache), Smart Narrative (automatische Textbeschreibungen), Key Influencers Visual, Anomaly Detection – alle Cloud-only.</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Deployment Pipeline – Einrichten</span><div class="divider-line"></div></div>
+  <ul class="step-list">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Pipeline erstellen</h3>
+        <p>Power BI Service → Deployment Pipelines (linke Sidebar) → Pipeline erstellen → Name vergeben.</p>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Workspaces zuweisen</h3>
+        <p>Drei Stufen: Development, Test, Production → je einen dedizierten Workspace zuweisen (Premium-Kapazität erforderlich).</p>
+        <div class="step-tip">💡 Workspace-Namen Konvention: [Projektname] - Dev, [Projektname] - Test, [Projektname] - Prod</div>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Deployment Rules konfigurieren</h3>
+        <p>Datenquellen pro Stage unterschiedlich konfigurieren (Dev-Datenbank vs. Prod-Datenbank) ohne den Report zu ändern. Pipeline → Rules → Datasource Rule → pro Stage andere Connection String.</p>
+      </div>
+    </li>
+  </ul>
+
+  <div class="alert alert-yellow">
+    <span class="alert-icon">⚡</span>
+    <div><strong>Gateway für lokale Datenquellen:</strong> Wenn Daten aus einer lokalen SQL-Datenbank, einem Netzlaufwerk oder einer lokalen Excel-Datei kommen, muss ein <strong>On-Premises Data Gateway</strong> installiert werden. Download: aka.ms/datagateway → Im Service: Einstellungen → Gateways verwalten → Dataset → Gateway verbinden.</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('section.page').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText || pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Kopiert ✓';
+    btn.style.color = '#107C10';
+    btn.style.borderColor = '#107C10';
+    setTimeout(() => {
+      btn.textContent = 'Kopieren';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+
+// Animate bars on page load
+setTimeout(() => {
+  document.querySelectorAll('.bar-fill').forEach(b => {
+    const w = b.style.width;
+    b.style.width = '0';
+    setTimeout(() => b.style.width = w, 100);
+  });
+}, 200);
+</script>
+</body>
+</html>
