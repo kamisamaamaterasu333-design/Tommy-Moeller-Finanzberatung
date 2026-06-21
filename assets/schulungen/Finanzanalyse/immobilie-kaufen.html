@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Immobilie kaufen – Eigennutzung & Vermietung</title>
+<style>
+  :root {
+    --accent: #2563eb;
+    --accent-dim: #1d4ed8;
+    --bg-dark: #0D0D0D;
+    --bg-panel: #161616;
+    --bg-card: #1E1E1E;
+    --border: #2E2E2E;
+    --border-accent: #3A3A3A;
+    --text-primary: #F0F0F0;
+    --text-secondary: #A0A0A0;
+    --text-muted: #666;
+    --green: #16a34a;
+    --red: #dc2626;
+    --orange: #d97706;
+    --tag-bg: #2A2A2A;
+    --sidebar-w: 270px;
+    --header-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark); color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.65;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #111; border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 18px; padding: 0 24px; z-index: 100;
+  }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--accent); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px;
+  }
+  .logo-title { font-size: 17px; font-weight: 700; letter-spacing: -.3px; }
+  .logo-title span { color: var(--accent); }
+  .header-pill {
+    margin-left: auto; background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.3);
+    color: #60a5fa; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; letter-spacing: .5px;
+  }
+  .layout { display: flex; padding-top: var(--header-h); }
+  nav.sidebar {
+    width: var(--sidebar-w); position: fixed; top: var(--header-h); left: 0; bottom: 0;
+    background: var(--bg-panel); border-right: 1px solid var(--border); overflow-y: auto; padding: 20px 0; z-index: 90;
+  }
+  .nav-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted);
+    text-transform: uppercase; padding: 16px 20px 6px;
+  }
+  .nav-link {
+    display: flex; align-items: center; gap: 10px; padding: 9px 20px;
+    color: var(--text-secondary); text-decoration: none; font-size: 13.5px;
+    cursor: pointer; border-left: 3px solid transparent; transition: all .15s;
+  }
+  .nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,.04); }
+  .nav-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(37,99,235,.08); font-weight: 600; }
+  .nav-link .icon { font-size: 15px; flex-shrink: 0; }
+  main { margin-left: var(--sidebar-w); flex: 1; padding: 40px 48px 80px; max-width: 1000px; }
+  section.page { display: none; }
+  section.page.active { display: block; }
+  .hero {
+    background: linear-gradient(135deg, #0a1530 0%, #0D0D0D 60%);
+    border: 1px solid var(--accent); border-radius: 12px; padding: 48px 40px; margin-bottom: 40px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(37,99,235,.18) 0%, transparent 70%); pointer-events: none;
+  }
+  .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  .hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -.5px; line-height: 1.25; margin-bottom: 16px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { color: var(--text-secondary); font-size: 16px; max-width: 580px; }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; padding-top: 8px; }
+  h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; margin-top: 4px; }
+  .section-intro { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+  p { color: var(--text-secondary); margin-bottom: 12px; }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 22px; transition: border-color .2s; }
+  .card:hover { border-color: var(--border-accent); }
+  .card-icon { font-size: 24px; margin-bottom: 12px; }
+  .card h3 { font-size: 15px; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; margin-bottom: 0; }
+  .card.accent-blue { border-left: 3px solid var(--accent); }
+  .card.accent-green { border-left: 3px solid var(--green); }
+  .card.accent-red { border-left: 3px solid var(--red); }
+  .card.accent-orange { border-left: 3px solid var(--orange); }
+  .step-list { margin: 0 0 32px; padding: 0; list-style: none; }
+  .step-item { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    width: 34px; height: 34px; flex-shrink: 0; background: var(--accent); color: #fff;
+    font-size: 14px; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .step-content h3 { font-size: 15px; margin-bottom: 6px; color: var(--text-primary); }
+  .step-content p { font-size: 13.5px; margin-bottom: 8px; }
+  .step-tip {
+    background: rgba(37,99,235,.08); border-left: 3px solid var(--accent); padding: 10px 14px;
+    border-radius: 0 6px 6px 0; font-size: 13px; color: #93c5fd; margin-top: 8px;
+  }
+  .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  .compare-table th {
+    background: #111; color: var(--text-secondary); font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .8px; padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border);
+  }
+  .compare-table th:first-child { color: var(--accent); }
+  .compare-table td { padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+  .compare-table td:first-child { color: var(--text-primary); font-weight: 600; }
+  .yes { color: #16a34a; font-weight: 700; }
+  .no { color: #dc2626; }
+  .part { color: #d97706; }
+  .alert { border-radius: 8px; padding: 14px 18px; margin: 16px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-blue { background: rgba(37,99,235,.08); border: 1px solid rgba(37,99,235,.25); }
+  .alert-green { background: rgba(22,163,74,.08); border: 1px solid rgba(22,163,74,.25); }
+  .alert-red { background: rgba(220,38,38,.08); border: 1px solid rgba(220,38,38,.25); }
+  .alert-orange { background: rgba(217,119,6,.08); border: 1px solid rgba(217,119,6,.25); }
+  .divider { display: flex; align-items: center; gap: 14px; margin: 36px 0 28px; }
+  .divider-label { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .calc-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .calc-table th { background: #0F0F0F; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  .calc-table td { padding: 11px 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .calc-table tr:hover td { background: rgba(37,99,235,.04); }
+  .calc-table tr.total td { font-weight: 700; color: var(--text-primary); border-top: 2px solid var(--border-accent); }
+  .calc-name { color: var(--accent); font-weight: 600; }
+  .calc-num { font-family: 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; text-align: right; }
+  .level-pills { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .pill { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid; }
+  .pill-blue { background: rgba(37,99,235,.1); border-color: var(--accent); color: #93c5fd; }
+  .pill-green { background: rgba(22,163,74,.1); border-color: var(--green); color: #4ade80; }
+  .pill-orange { background: rgba(217,119,6,.1); border-color: var(--orange); color: #fbbf24; }
+  .checklist { list-style: none; margin-bottom: 24px; }
+  .checklist li { padding: 7px 0; font-size: 13.5px; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .checklist li::before { content: '▸'; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+  .hero-tag { background: var(--tag-bg); border: 1px solid var(--border-accent); color: var(--text-secondary); font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  @media (max-width: 900px) {
+    nav.sidebar { width: 220px; } main { margin-left: 220px; padding: 24px 24px 60px; }
+    .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">🏠</div>
+  <div class="logo-title">Immobilie <span>kaufen</span></div>
+  <div class="header-pill">Eigennutzung & Vermietung</div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="nav-section-label">Einstieg</div>
+  <a class="nav-link active" onclick="show('intro')"><span class="icon">🏠</span> Übersicht</a>
+  <a class="nav-link" onclick="show('eigen-vs-miete')"><span class="icon">⚖️</span> Kaufen vs. Mieten</a>
+
+  <div class="nav-section-label">Finanzierung</div>
+  <a class="nav-link" onclick="show('finanzierung')"><span class="icon">🏦</span> Finanzierungsgrundlagen</a>
+  <a class="nav-link" onclick="show('nebenkosten')"><span class="icon">📋</span> Kaufnebenkosten</a>
+  <a class="nav-link" onclick="show('tilgung')"><span class="icon">📉</span> Tilgung & Zinsbindung</a>
+
+  <div class="nav-section-label">Eigennutzung</div>
+  <a class="nav-link" onclick="show('eigennutzung')"><span class="icon">🔑</span> Selbst bewohnen</a>
+  <a class="nav-link" onclick="show('foerderung')"><span class="icon">🏛️</span> Förderungen & KfW</a>
+
+  <div class="nav-section-label">Vermietung</div>
+  <a class="nav-link" onclick="show('vermietung')"><span class="icon">📊</span> Als Kapitalanlage</a>
+  <a class="nav-link" onclick="show('rendite')"><span class="icon">💹</span> Renditeberechnung</a>
+  <a class="nav-link" onclick="show('steuer')"><span class="icon">🧾</span> Steuerliche Aspekte</a>
+
+  <div class="nav-section-label">Praxis</div>
+  <a class="nav-link" onclick="show('checkliste')"><span class="icon">✅</span> Kauf-Checkliste</a>
+  <a class="nav-link" onclick="show('fehler')"><span class="icon">⚠️</span> Typische Fehler</a>
+</nav>
+
+<main>
+
+<section class="page active" id="intro">
+  <div class="hero">
+    <div class="hero-eyebrow">Grundlagenkurs</div>
+    <h1>Immobilie kaufen –<br><em>fundiert entscheiden</em></h1>
+    <p>Ob zum Selbstbewohnen oder als Kapitalanlage: Eine Immobilie ist meist die größte finanzielle Entscheidung im Leben. Dieser Kurs zeigt dir die wichtigsten Grundlagen für beide Wege – ohne Verkaufsdruck, mit Fokus auf Zahlen und Fakten.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Finanzierung</span>
+      <span class="hero-tag">Nebenkosten</span>
+      <span class="hero-tag">Eigennutzung</span>
+      <span class="hero-tag">Vermietung</span>
+      <span class="hero-tag">Rendite</span>
+      <span class="hero-tag">Steuern</span>
+    </div>
+  </div>
+
+  <div class="level-pills">
+    <span class="pill pill-blue">📘 Grundlagen</span>
+    <span class="pill pill-green">🔑 Eigennutzung</span>
+    <span class="pill pill-orange">📊 Vermietung</span>
+  </div>
+
+  <div class="card-grid">
+    <div class="card accent-blue">
+      <div class="card-icon">🏦</div>
+      <h3>Finanzierung verstehen</h3>
+      <p>Eigenkapitalquote, Tilgungssatz, Zinsbindung und Belastungsgrenze – die Stellschrauben, die über Jahrzehnte über deine monatliche Rate entscheiden.</p>
+    </div>
+    <div class="card accent-green">
+      <div class="card-icon">🔑</div>
+      <h3>Eigennutzung</h3>
+      <p>Mietfrei wohnen im Alter, Wertsteigerung, aber auch Instandhaltungspflicht und Standortbindung – die Vor- und Nachteile im Überblick.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">📊</div>
+      <h3>Vermietung als Kapitalanlage</h3>
+      <p>Mietrendite, Cashflow-Rechnung, steuerliche Abschreibung (AfA) und das Risiko von Leerstand – worauf es bei vermieteten Objekten ankommt.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">⚠️</div>
+      <h3>Typische Stolperfallen</h3>
+      <p>Unterschätzte Nebenkosten, zu niedrige Tilgung, fehlende Rücklagen für Instandhaltung – die häufigsten Fehler beim Immobilienkauf.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Dieser Kurs ersetzt keine individuelle Finanzierungs- oder Steuerberatung. Er vermittelt dir die Grundlagen, damit du im Beratungsgespräch die richtigen Fragen stellen und Angebote besser einordnen kannst.</div>
+  </div>
+</section>
+
+<section class="page" id="eigen-vs-miete">
+  <h2>Kaufen vs. Mieten – Wann lohnt sich was?</h2>
+  <p class="section-intro">Die pauschale Antwort "Kaufen ist immer besser als Mieten" stimmt nicht. Es kommt auf Zinsniveau, geplante Wohndauer, Eigenkapital und persönliche Flexibilität an.</p>
+
+  <table class="compare-table">
+    <tr><th>Kriterium</th><th>Kaufen</th><th>Mieten</th><th>Notiz</th></tr>
+    <tr><td>Monatliche Belastung</td><td class="part">~ anfangs oft höher</td><td class="yes">✓ planbar</td><td>Kaufrate inkl. Tilgung meist höher als vergleichbare Miete</td></tr>
+    <tr><td>Vermögensaufbau</td><td class="yes">✓ durch Tilgung</td><td class="no">✗</td><td>Jede Tilgungsrate erhöht dein Eigenkapital im Objekt</td></tr>
+    <tr><td>Flexibilität / Umzug</td><td class="no">✗ gebunden</td><td class="yes">✓ flexibel</td><td>Verkauf dauert, kann Verlust bedeuten bei kurzer Haltedauer</td></tr>
+    <tr><td>Instandhaltung</td><td class="no">✗ eigene Pflicht</td><td class="yes">✓ Vermieter zahlt</td><td>Faustregel: 1-1,5% des Immobilienwerts p.a. zurücklegen</td></tr>
+    <tr><td>Inflationsschutz</td><td class="yes">✓ Sachwert</td><td class="part">~ Mietsteigerung</td><td>Rate bleibt bei Festzins gleich, Mieten steigen meist mit</td></tr>
+    <tr><td>Wertentwicklung</td><td class="part">~ marktabhängig</td><td class="no">✗ kein Vermögensaufbau</td><td>Standort entscheidet – kein Automatismus auf Wertsteigerung</td></tr>
+    <tr><td>Anfangskapital nötig</td><td class="no">✗ hoch (Nebenkosten!)</td><td class="yes">✓ gering (Kaution)</td><td>10-15% Eigenkapital für Nebenkosten gelten als Mindestempfehlung</td></tr>
+  </table>
+
+  <div class="divider"><span class="divider-label">Faustregel zur Orientierung</span><div class="divider-line"></div></div>
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>Kaufen lohnt sich tendenziell</strong>, wenn du die Immobilie voraussichtlich länger als 8-10 Jahre nutzt, mindestens 15-20% Eigenkapital für die Nebenkosten plus Sicherheitspuffer hast, und die monatliche Rate inklusive Rücklage für Instandhaltung nicht mehr als 35-40% deines Nettoeinkommens beträgt.</div>
+  </div>
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Mieten kann sinnvoller sein</strong>, wenn beruflich häufige Standortwechsel wahrscheinlich sind, wenig Eigenkapital vorhanden ist, oder das frei werdende Kapital alternativ renditestärker investiert werden kann (siehe Kursmodul "ETFs vs. Fonds vs. Aktien").</div>
+  </div>
+</section>
+
+<section class="page" id="finanzierung">
+  <h2>Finanzierungsgrundlagen</h2>
+  <p class="section-intro">Eine Baufinanzierung besteht aus mehr als nur "Zinssatz". Diese Stellschrauben solltest du kennen, bevor du ein Angebot vergleichst.</p>
+
+  <div class="card-grid-3">
+    <div class="card accent-blue">
+      <div class="card-icon">💰</div>
+      <h3>Eigenkapitalquote</h3>
+      <p>Anteil des Kaufpreises, den du ohne Kredit aufbringst. Je höher, desto besser die Zinskonditionen. Mindestens die Kaufnebenkosten (10-15%) sollten aus Eigenkapital kommen.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">📉</div>
+      <h3>Tilgungssatz</h3>
+      <p>Anteil der Kreditsumme, der jährlich zurückgezahlt wird. Standard sind 2-3%, höhere Tilgung verkürzt die Laufzeit deutlich, erhöht aber die monatliche Rate.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">🔒</div>
+      <h3>Zinsbindung</h3>
+      <p>Zeitraum, in dem der Zinssatz fest bleibt (oft 10, 15 oder 20 Jahre). Längere Bindung = mehr Planungssicherheit, meist etwas höherer Zinssatz.</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Beispielrechnung: Monatliche Rate</span><div class="divider-line"></div></div>
+
+  <table class="calc-table">
+    <tr><th>Position</th><th style="text-align:right">Betrag</th></tr>
+    <tr><td>Kaufpreis</td><td class="calc-num">350.000 €</td></tr>
+    <tr><td>Eigenkapital (20%)</td><td class="calc-num">70.000 €</td></tr>
+    <tr><td>Darlehenssumme</td><td class="calc-num">280.000 €</td></tr>
+    <tr><td>Zinssatz (Beispiel)</td><td class="calc-num">3,8% p.a.</td></tr>
+    <tr><td>Anfängliche Tilgung</td><td class="calc-num">2,0% p.a.</td></tr>
+    <tr class="total"><td>Monatliche Rate (Zins + Tilgung)</td><td class="calc-num">1.353 €</td></tr>
+  </table>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div><strong>Faustformel:</strong> Monatliche Rate ≈ Darlehenssumme × (Zinssatz + Tilgungssatz) ÷ 12. Mit dieser Formel kannst du grob überschlagen, bevor du in ein konkretes Finanzierungsgespräch gehst.</div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Volltilger vs. Anschlussfinanzierung</span><div class="divider-line"></div></div>
+  <p>Bei kurzer Zinsbindung (z.B. 10 Jahre) ist nach Ablauf meist eine Restschuld offen, die über eine <strong>Anschlussfinanzierung</strong> zum dann aktuellen Zinssatz weiterfinanziert wird – das ist ein Zinsänderungsrisiko. Ein <strong>Volltilgerdarlehen</strong> ist hingegen so kalkuliert, dass die Schuld am Ende der Zinsbindung vollständig getilgt ist – mehr Planungssicherheit, aber höhere monatliche Rate.</p>
+</section>
+
+<section class="page" id="nebenkosten">
+  <h2>Kaufnebenkosten – oft unterschätzt</h2>
+  <p class="section-intro">Die Kaufnebenkosten kommen zusätzlich zum Kaufpreis und müssen in der Regel aus Eigenkapital bezahlt werden – sie werden von den meisten Banken nicht mitfinanziert.</p>
+
+  <table class="calc-table">
+    <tr><th>Position</th><th style="text-align:right">Typische Höhe</th></tr>
+    <tr><td>Grunderwerbsteuer</td><td class="calc-num">3,5–6,5% (bundeslandabhängig)</td></tr>
+    <tr><td>Notarkosten</td><td class="calc-num">ca. 1,5%</td></tr>
+    <tr><td>Grundbucheintrag</td><td class="calc-num">ca. 0,5%</td></tr>
+    <tr><td>Maklerprovision (falls anfällt)</td><td class="calc-num">ca. 3,57–7,14% (je nach Bundesland geteilt)</td></tr>
+    <tr class="total"><td>Gesamte Nebenkosten</td><td class="calc-num">ca. 9–15% des Kaufpreises</td></tr>
+  </table>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div>Bei einem Kaufpreis von 350.000 € bedeutet das schnell <strong>30.000–50.000 € zusätzliches Eigenkapital</strong> nur für die Nebenkosten – unabhängig vom eigentlichen Kaufpreis. Diese Summe sollte vor jeder Finanzierungsplanung feststehen.</div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Grunderwerbsteuer nach Bundesland (Richtwerte)</span><div class="divider-line"></div></div>
+  <p>Die Sätze unterscheiden sich je Bundesland und ändern sich gelegentlich – vor einem Kauf lohnt sich immer eine aktuelle Prüfung beim zuständigen Finanzamt oder Notar, da hier teils erhebliche Unterschiede (3,5% bis 6,5%) bestehen.</p>
+</section>
+
+<section class="page" id="tilgung">
+  <h2>Tilgung & Zinsbindung im Detail</h2>
+  <p class="section-intro">Diese beiden Stellschrauben entscheiden, wie schnell du schuldenfrei bist und wie hoch dein Zinsänderungsrisiko ist.</p>
+
+  <div class="divider"><span class="divider-label">Auswirkung des Tilgungssatzes auf die Laufzeit</span><div class="divider-line"></div></div>
+  <table class="compare-table">
+    <tr><th>Anfängliche Tilgung</th><th>Ca. Laufzeit bis Volltilgung</th><th>Monatliche Mehrbelastung</th></tr>
+    <tr><td>1,0% p.a.</td><td>ca. 45+ Jahre</td><td>Referenz (niedrigste Rate)</td></tr>
+    <tr><td>2,0% p.a.</td><td>ca. 30-33 Jahre</td><td>+ ca. 0,083% der Darlehenssumme/Monat</td></tr>
+    <tr><td>3,0% p.a.</td><td>ca. 24-27 Jahre</td><td>+ ca. 0,167% der Darlehenssumme/Monat</td></tr>
+    <tr><td>4,0% p.a.</td><td>ca. 20-22 Jahre</td><td>+ ca. 0,25% der Darlehenssumme/Monat</td></tr>
+  </table>
+  <p style="font-size:12.5px;color:var(--text-muted)">Werte sind grobe Richtwerte ohne Berücksichtigung von Sondertilgungen, Zinsänderungen nach Zinsbindung und Tilgungsverrechnung – dienen nur der Einordnung der Größenordnung.</p>
+
+  <div class="divider"><span class="divider-label">Worauf bei der Zinsbindung achten</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Kurze Zinsbindung (5-10 Jahre): niedrigerer Zins, aber Risiko bei der Anschlussfinanzierung</li>
+    <li>Lange Zinsbindung (15-20+ Jahre): höhere Planungssicherheit, meist etwas höherer Zins</li>
+    <li>Sondertilgungsrecht vereinbaren (oft 5-10% der Darlehenssumme p.a. kostenfrei möglich)</li>
+    <li>Bei niedrigem Zinsniveau: tendenziell längere Zinsbindung sinnvoll, um sich den Zins zu sichern</li>
+    <li>Forward-Darlehen prüfen, wenn die aktuelle Zinsbindung in 1-3 Jahren ausläuft</li>
+  </ul>
+</section>
+
+<section class="page" id="eigennutzung">
+  <h2>🔑 Eigennutzung – selbst einziehen</h2>
+  <p class="section-intro">Die eigene Immobilie zum Wohnen ist für viele der "Klassiker" – mietfrei im Alter, aber mit eigener Verantwortung verbunden.</p>
+
+  <div class="card-grid">
+    <div class="card accent-green">
+      <div class="card-icon">✅</div>
+      <h3>Vorteile</h3>
+      <p>Mietfreies Wohnen nach Tilgung, keine Mietsteigerungen, freie Gestaltung der Immobilie, emotionale Sicherheit und Altersvorsorge-Komponente.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">⚠️</div>
+      <h3>Nachteile</h3>
+      <p>Geringere Flexibilität bei Jobwechsel oder Lebensveränderungen, volle Instandhaltungspflicht, Klumpenrisiko (Großteil des Vermögens in einem Objekt gebunden).</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Wichtige Fragen vor dem Kauf zur Eigennutzung</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Wie sicher ist die berufliche/familiäre Situation in den nächsten 10+ Jahren?</li>
+    <li>Passt die Größe/Lage auch noch in 10-15 Jahren (Familienplanung, Homeoffice, Alter)?</li>
+    <li>Ist genug Liquiditätspuffer für unerwartete Reparaturen vorhanden (Faustregel: 3 Nettomonatsgehälter)?</li>
+    <li>Wie ist die energetische Qualität (relevant für künftige Sanierungspflichten und Energiekosten)?</li>
+    <li>Wurde ein unabhängiges Gutachten bzw. eine Bausubstanzprüfung in Betracht gezogen?</li>
+  </ul>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Anders als bei einer vermieteten Immobilie kannst du Zinsen, Tilgung oder Abschreibung bei Eigennutzung <strong>steuerlich nicht geltend machen</strong> – außer in bestimmten Sonderfällen wie Denkmalschutz oder bestimmten Förderprogrammen.</div>
+  </div>
+</section>
+
+<section class="page" id="foerderung">
+  <h2>🏛️ Förderungen & KfW</h2>
+  <p class="section-intro">Beim Immobilienkauf oder -bau gibt es teils erhebliche staatliche Förderungen – diese ändern sich jedoch regelmäßig und sollten vor jedem Kauf aktuell geprüft werden.</p>
+
+  <div class="card-grid-3">
+    <div class="card accent-blue">
+      <div class="card-icon">🏦</div>
+      <h3>KfW-Förderkredite</h3>
+      <p>Zinsgünstige Darlehen der staatlichen KfW-Bank, häufig an energetische Standards oder Wohneigentumsförderung für Familien gekoppelt.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">👨‍👩‍👧</div>
+      <h3>Wohneigentumsförderung für Familien</h3>
+      <p>Bestimmte Programme richten sich gezielt an Familien mit Kindern und Einkommensgrenzen – Konditionen variieren je nach aktuellem Programmstand.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">♻️</div>
+      <h3>Energetische Förderung</h3>
+      <p>Zuschüsse/Kredite für besonders energieeffiziente Neubauten oder Sanierungen (z.B. Wärmepumpe, Dämmung) – oft kombinierbar mit KfW-Krediten.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>Wichtig:</strong> Förderprogramme, Zinssätze und Voraussetzungen ändern sich häufig und teils kurzfristig. Die genauen aktuellen Konditionen sollten immer direkt bei der KfW oder im persönlichen Beratungsgespräch geprüft werden – Angaben in diesem Kurs dienen nur der groben Orientierung.</div>
+  </div>
+</section>
+
+<section class="page" id="vermietung">
+  <h2>📊 Als Kapitalanlage vermieten</h2>
+  <p class="section-intro">Eine vermietete Immobilie funktioniert nach anderen Regeln als die selbstgenutzte: Hier zählen Mietrendite, Cashflow und steuerliche Effekte.</p>
+
+  <div class="card-grid">
+    <div class="card accent-green">
+      <div class="card-icon">✅</div>
+      <h3>Vorteile</h3>
+      <p>Mieteinnahmen können Finanzierung teilweise/vollständig tragen, steuerliche Abschreibung möglich, Inflationsschutz durch Sachwert, Vermögensaufbau ohne eigene Wohnsitzbindung.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">⚠️</div>
+      <h3>Risiken</h3>
+      <p>Mietausfall/Leerstand, Verwaltungsaufwand, Mieterwechsel, Instandhaltungskosten, regulatorische Risiken (z.B. Mietpreisbremse, energetische Pflichten).</p>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-label">Worauf bei der Objektwahl achten</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Lage mit stabiler/wachsender Nachfrage (Bevölkerungsentwicklung, Arbeitsmarkt, Infrastruktur)</li>
+    <li>Realistische Mietrendite vor Ort recherchieren, nicht nur Verkäuferangaben übernehmen</li>
+    <li>Zustand und Sanierungsbedarf einschätzen (energetischer Zustand wird zunehmend relevant)</li>
+    <li>WEG-Protokolle bei Eigentumswohnungen prüfen (geplante Sanierungen, Rücklagenhöhe)</li>
+    <li>Marktübliche Vergleichsmiete recherchieren, um realistische Einnahmen zu kalkulieren</li>
+  </ul>
+</section>
+
+<section class="page" id="rendite">
+  <h2>💹 Renditeberechnung</h2>
+  <p class="section-intro">Die Bruttomietrendite ist nur ein erster Anhaltspunkt – für eine realistische Einschätzung braucht es die Nettomietrendite und idealerweise eine Cashflow-Betrachtung.</p>
+
+  <table class="calc-table">
+    <tr><th>Kennzahl</th><th>Formel</th><th>Aussagekraft</th></tr>
+    <tr><td class="calc-name">Bruttomietrendite</td><td class="calc-num" style="text-align:left">Jahreskaltmiete ÷ Kaufpreis × 100</td><td>Grober erster Vergleichswert, ignoriert Kosten</td></tr>
+    <tr><td class="calc-name">Nettomietrendite</td><td class="calc-num" style="text-align:left">(Jahreskaltmiete − Bewirtschaftungskosten) ÷ (Kaufpreis + Nebenkosten) × 100</td><td>Realistischer – berücksichtigt laufende Kosten</td></tr>
+    <tr><td class="calc-name">Cashflow nach Finanzierung</td><td class="calc-num" style="text-align:left">Kaltmiete − Bewirtschaftungskosten − Zins/Tilgungsrate</td><td>Zeigt, ob die Immobilie sich "selbst trägt"</td></tr>
+  </table>
+
+  <div class="divider"><span class="divider-label">Beispielrechnung</span><div class="divider-line"></div></div>
+  <table class="calc-table">
+    <tr><th>Position</th><th style="text-align:right">Betrag</th></tr>
+    <tr><td>Kaufpreis</td><td class="calc-num">250.000 €</td></tr>
+    <tr><td>Kaltmiete (Jahr)</td><td class="calc-num">10.800 €</td></tr>
+    <tr><td>Bruttomietrendite</td><td class="calc-num">4,3%</td></tr>
+    <tr><td>Bewirtschaftungskosten p.a. (ca. 25% der Miete)</td><td class="calc-num">– 2.700 €</td></tr>
+    <tr><td>Nebenkosten beim Kauf (ca. 10%)</td><td class="calc-num">25.000 €</td></tr>
+    <tr class="total"><td>Nettomietrendite</td><td class="calc-num">≈ 2,9%</td></tr>
+  </table>
+
+  <div class="alert alert-blue">
+    <span class="alert-icon">💡</span>
+    <div>Zu den Bewirtschaftungskosten zählen typischerweise: Instandhaltungsrücklage, Verwaltungskosten, Mietausfallwagnis und nicht umlagefähige Nebenkosten. Als Richtwert wird oft mit 20-30% der Jahreskaltmiete kalkuliert.</div>
+  </div>
+</section>
+
+<section class="page" id="steuer">
+  <h2>🧾 Steuerliche Aspekte bei Vermietung</h2>
+  <p class="section-intro">Vermietete Immobilien bieten steuerliche Gestaltungsmöglichkeiten, die bei Eigennutzung nicht zur Verfügung stehen. Eine grobe Einordnung – Details gehören in die Hände eines Steuerberaters.</p>
+
+  <div class="card-grid">
+    <div class="card accent-blue">
+      <div class="card-icon">📉</div>
+      <h3>AfA (Abschreibung)</h3>
+      <p>Der Gebäudewert (nicht der Grundstücksanteil) kann über die Nutzungsdauer steuerlich abgeschrieben werden – typischerweise mit einem linearen Satz pro Jahr, abhängig vom Baujahr/-art.</p>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-icon">💳</div>
+      <h3>Schuldzinsen absetzbar</h3>
+      <p>Anders als bei Eigennutzung können die Zinsen (nicht die Tilgung) der Finanzierung bei vermieteten Objekten als Werbungskosten steuerlich abgesetzt werden.</p>
+    </div>
+    <div class="card accent-orange">
+      <div class="card-icon">⏳</div>
+      <h3>Spekulationsfrist</h3>
+      <p>Wird die Immobilie innerhalb von 10 Jahren nach Kauf wieder verkauft, kann der Veräußerungsgewinn steuerpflichtig sein (Ausnahmen bei Eigennutzung in bestimmten Konstellationen).</p>
+    </div>
+  </div>
+
+  <div class="alert alert-orange">
+    <span class="alert-icon">⚠️</span>
+    <div>Steuerregeln zu AfA-Sätzen, Spekulationsfrist und Werbungskosten ändern sich gelegentlich und hängen stark vom Einzelfall ab (Baujahr, Nutzungsart, persönliche Steuersituation). Diese Übersicht ersetzt keine individuelle steuerliche Beratung.</div>
+  </div>
+</section>
+
+<section class="page" id="checkliste">
+  <h2>✅ Kauf-Checkliste</h2>
+  <p class="section-intro">Eine strukturierte Übersicht, was vor und während des Kaufprozesses zu prüfen ist – für Eigennutzung und Vermietung gleichermaßen relevant.</p>
+
+  <div class="divider"><span class="divider-label">Vor der Besichtigung</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Eigenkapital und maximale monatliche Belastung realistisch festgelegt</li>
+    <li>Finanzierungsbestätigung/Vorab-Check bei der Bank eingeholt</li>
+    <li>Lage und Mikrostandort recherchiert (Infrastruktur, Entwicklung, ggf. Mietspiegel)</li>
+  </ul>
+
+  <div class="divider"><span class="divider-label">Bei der Besichtigung</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Bausubstanz, Feuchtigkeit, Dach, Heizung, Elektrik in Augenschein nehmen</li>
+    <li>Energieausweis anfordern und Energieeffizienzklasse prüfen</li>
+    <li>Bei Eigentumswohnungen: Teilungserklärung und WEG-Protokolle der letzten Jahre einsehen</li>
+    <li>Nebenkostenabrechnung der letzten Jahre anfordern</li>
+  </ul>
+
+  <div class="divider"><span class="divider-label">Vor dem Notartermin</span><div class="divider-line"></div></div>
+  <ul class="checklist">
+    <li>Finanzierungszusage final vorliegend</li>
+    <li>Kaufvertragsentwurf rechtzeitig (mind. 14 Tage) zur Prüfung erhalten</li>
+    <li>Grundbuchauszug eingesehen (Belastungen, Wegerechte, etc.)</li>
+    <li>Bei Vermietung: realistische Renditeberechnung final durchgeführt</li>
+  </ul>
+</section>
+
+<section class="page" id="fehler">
+  <h2>⚠️ Typische Fehler beim Immobilienkauf</h2>
+  <p class="section-intro">Diese Fehler tauchen in der Praxis besonders häufig auf – und lassen sich mit etwas Vorbereitung gut vermeiden.</p>
+
+  <div class="card-grid">
+    <div class="card accent-red">
+      <div class="card-icon">💸</div>
+      <h3>Nebenkosten unterschätzt</h3>
+      <p>Wer nur den Kaufpreis finanziert plant und die 9-15% Nebenkosten vergisst, gerät schnell in Liquiditätsengpässe.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">📉</div>
+      <h3>Zu niedrige Tilgung gewählt</h3>
+      <p>Eine zu niedrige Anfangstilgung führt zu sehr langen Laufzeiten und hohen Gesamtzinskosten über die Jahre.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">🏚️</div>
+      <h3>Keine Instandhaltungsrücklage</h3>
+      <p>Wer keine Rücklage bildet (Faustregel 1-1,5% des Immobilienwerts p.a.), wird bei größeren Reparaturen überrascht.</p>
+    </div>
+    <div class="card accent-red">
+      <div class="card-icon">🎯</div>
+      <h3>Emotionale statt sachliche Entscheidung</h3>
+      <p>Verliebtheit in ein Objekt führt oft zu überhöhten Geboten oder dem Übersehen von Mängeln – ein nüchterner Blick zahlt sich aus.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">✅</span>
+    <div><strong>Goldene Regel:</strong> Nimm dir Zeit für die Finanzierungsplanung, hol dir mehrere Angebote ein, und lass dich nicht durch Zeitdruck des Verkäufers zu schnellen Entscheidungen drängen.</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('section.page').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
