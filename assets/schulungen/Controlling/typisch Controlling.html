@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controlling – Lernkurs</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN-SYSTEM
+   Palette: Papier #F9F9F7 · Tinte #1A1A2E · Grau #5C5C7B
+            Preußischblau #1B4F8A · Bernstein #C8962E · Grün #2E7D52
+   Typ: Georgia (Display) · system-ui (Body) · Menlo (Zahlen)
+═══════════════════════════════════════════════════════════════════ */
+:root {
+  --paper:    #F9F9F7;
+  --ink:      #1A1A2E;
+  --mid:      #5C5C7B;
+  --border:   #D8D8E0;
+  --border-2: #B8B8C8;
+  --blue:     #1B4F8A;
+  --blue-dim: #EAF0F8;
+  --amber:    #C8962E;
+  --amber-dim:#FDF5E6;
+  --green:    #2E7D52;
+  --green-dim:#E8F5EE;
+  --red:      #B02020;
+  --red-dim:  #FAEAEA;
+  --card:     #FFFFFF;
+  --sidebar-w: 258px;
+  --hdr-h:    52px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+/* ── HEADER ────────────────────────────────────────────────────── */
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--hdr-h);
+  background: var(--ink);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 20px; z-index: 200;
+  border-bottom: 2px solid var(--blue);
+}
+
+.hdr-logo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px; font-weight: normal;
+  color: #ffffff; letter-spacing: .5px;
+}
+.hdr-logo em { font-style: normal; color: var(--amber); }
+
+.hdr-breadcrumb {
+  font-size: 11.5px; color: #9090A8;
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+}
+.hdr-breadcrumb span { color: var(--amber); font-weight: 700; }
+
+/* ── SIDEBAR ───────────────────────────────────────────────────── */
+.layout { display: flex; padding-top: var(--hdr-h); min-height: 100vh; }
+
+nav.sidebar {
+  width: var(--sidebar-w);
+  position: fixed; top: var(--hdr-h); bottom: 0; left: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; z-index: 100;
+}
+
+.nav-top {
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.nav-top-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--mid);
+}
+
+.nav-section { border-bottom: 1px solid var(--border); }
+.nav-section-btn {
+  width: 100%; display: flex; align-items: center;
+  padding: 11px 20px; gap: 10px;
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--mid);
+  text-align: left; transition: color .15s;
+}
+.nav-section-btn:hover { color: var(--ink); }
+.nav-section-btn .arrow {
+  margin-left: auto; font-size: 10px; transition: transform .2s;
+}
+.nav-section-btn.open .arrow { transform: rotate(90deg); }
+.nav-section-icon { font-size: 14px; }
+
+.nav-items { display: none; padding-bottom: 6px; }
+.nav-items.open { display: block; }
+
+.nav-link {
+  display: block; padding: 7px 20px 7px 44px;
+  font-size: 13.5px; color: var(--mid);
+  text-decoration: none; cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all .12s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-link:hover { color: var(--ink); background: var(--paper); }
+.nav-link.active {
+  color: var(--blue); border-left-color: var(--blue);
+  background: var(--blue-dim); font-weight: 600;
+}
+
+/* ── MAIN ──────────────────────────────────────────────────────── */
+main {
+  margin-left: var(--sidebar-w);
+  flex: 1; padding: 48px 56px 100px;
+  max-width: 880px;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HERO (Startseite) ─────────────────────────────────────────── */
+.hero {
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--blue);
+  background: var(--card);
+  border-radius: 0 0 4px 4px;
+  padding: 48px 44px 40px;
+  margin-bottom: 36px;
+}
+.hero-eyebrow {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--amber);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px; font-weight: normal; line-height: 1.2;
+  color: var(--ink); margin-bottom: 16px; letter-spacing: -.3px;
+}
+.hero h1 strong { font-weight: bold; color: var(--blue); }
+.hero p { color: var(--mid); font-size: 15.5px; max-width: 520px; }
+.hero-stats {
+  display: flex; gap: 0;
+  margin-top: 32px;
+  border: 1px solid var(--border);
+}
+.hero-stat {
+  flex: 1; padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat-val {
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 26px; font-weight: bold; color: var(--blue);
+  display: block;
+}
+.hero-stat-label { font-size: 11px; color: var(--mid); margin-top: 3px; }
+
+/* ── TOPIC HEADER ──────────────────────────────────────────────── */
+.topic-header {
+  padding: 28px 0 20px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 32px;
+  display: flex; align-items: flex-end; gap: 16px;
+}
+.topic-icon { font-size: 28px; }
+.topic-header-text {}
+.topic-kicker {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 6px;
+}
+.topic-header h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 26px; font-weight: normal; color: var(--ink);
+  letter-spacing: -.2px; line-height: 1.2;
+}
+
+/* ── SECTION WITHIN PAGE ───────────────────────────────────────── */
+.section { margin-bottom: 40px; }
+.section-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px; font-weight: normal;
+  color: var(--ink); margin-bottom: 8px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.section-title strong { color: var(--blue); }
+.section-body { color: var(--mid); font-size: 14.5px; }
+.section-body p { margin-bottom: 10px; }
+
+/* ── DEFINITION BOXES ──────────────────────────────────────────── */
+.def-box {
+  background: var(--blue-dim);
+  border-left: 3px solid var(--blue);
+  padding: 14px 18px; margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+}
+.def-box-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--blue); margin-bottom: 6px;
+}
+.def-box p { color: var(--ink); font-size: 14px; margin: 0; }
+
+.amber-box {
+  background: var(--amber-dim);
+  border-left: 3px solid var(--amber);
+  padding: 14px 18px; margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+}
+.amber-box-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 6px;
+}
+.amber-box p { color: var(--ink); font-size: 14px; margin: 0; }
+
+/* ── DATA TABLE ────────────────────────────────────────────────── */
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13.5px; margin: 16px 0 28px;
+}
+.data-table th {
+  background: var(--ink); color: #fff;
+  font-size: 11px; font-weight: 600; letter-spacing: .8px;
+  text-transform: uppercase; padding: 9px 14px; text-align: left;
+}
+.data-table th.right { text-align: right; }
+.data-table td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--mid); vertical-align: top;
+}
+.data-table td.right {
+  text-align: right;
+  font-family: 'Menlo', 'Courier New', monospace;
+  color: var(--ink); font-size: 13px;
+}
+.data-table tr:hover td { background: var(--paper); }
+.data-table td.label { color: var(--ink); font-weight: 500; }
+.data-table .total td {
+  border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+  font-weight: 700; background: var(--paper);
+}
+.data-table .total td.right { color: var(--blue); }
+.data-table .pos { color: var(--green); font-weight: 700; }
+.data-table .neg { color: var(--red); font-weight: 700; }
+.data-table .sub td { background: var(--blue-dim); }
+
+/* ── FORMULA DISPLAY ───────────────────────────────────────────── */
+.formula-display {
+  background: var(--ink); border-radius: 6px;
+  padding: 18px 22px; margin: 16px 0 24px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px; color: #E8E8F0;
+  text-align: center; letter-spacing: .5px;
+}
+.formula-display .fn { color: var(--amber); }
+.formula-display .op { color: #7090C0; }
+.formula-display .lbl { font-size: 12px; font-style: italic; color: #8090B0; }
+
+/* ── INTERACTIVE CALCULATOR ────────────────────────────────────── */
+.calc-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-top: 3px solid var(--amber);
+  border-radius: 0 0 6px 6px; padding: 24px;
+  margin: 20px 0 32px;
+}
+.calc-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--amber);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+}
+.calc-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px 20px; margin-bottom: 18px;
+}
+.calc-field label {
+  display: block; font-size: 11.5px; font-weight: 600;
+  color: var(--mid); margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.calc-field input {
+  width: 100%; padding: 8px 12px;
+  border: 1px solid var(--border-2); border-radius: 4px;
+  background: var(--paper); color: var(--ink);
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 14px; outline: none;
+  transition: border-color .15s;
+}
+.calc-field input:focus { border-color: var(--blue); }
+.calc-result-row {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.calc-result {
+  flex: 1; min-width: 120px;
+  background: var(--blue-dim); border: 1px solid var(--border);
+  border-radius: 4px; padding: 12px 16px; text-align: center;
+}
+.calc-result.good { background: var(--green-dim); border-color: #A8D8BC; }
+.calc-result.warn { background: var(--amber-dim); border-color: #E8C880; }
+.calc-result.bad  { background: var(--red-dim);   border-color: #E8B0B0; }
+.calc-result-val {
+  font-family: 'Menlo', 'Courier New', monospace;
+  font-size: 22px; font-weight: bold; color: var(--blue);
+  display: block;
+}
+.calc-result.good .calc-result-val { color: var(--green); }
+.calc-result.warn .calc-result-val { color: var(--amber); }
+.calc-result.bad  .calc-result-val { color: var(--red); }
+.calc-result-label { font-size: 11px; color: var(--mid); margin-top: 3px; }
+.calc-note { font-size: 12px; color: var(--mid); margin-top: 12px; font-style: italic; }
+
+/* ── PROCESS STEPS ─────────────────────────────────────────────── */
+.steps { margin: 16px 0 28px; }
+.step-row {
+  display: flex; gap: 16px;
+  padding: 16px 0; border-bottom: 1px solid var(--border);
+}
+.step-row:last-child { border-bottom: none; }
+.step-num {
+  width: 30px; height: 30px; flex-shrink: 0;
+  background: var(--blue); color: #fff;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 13px; font-weight: 700;
+  margin-top: 2px;
+}
+.step-body h4 { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.step-body p  { font-size: 13.5px; color: var(--mid); margin: 0; }
+
+/* ── CARD GRID ─────────────────────────────────────────────────── */
+.card-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 28px; }
+.card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0 28px; }
+
+.info-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 18px;
+}
+.info-card-icon { font-size: 20px; margin-bottom: 10px; }
+.info-card h4 { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.info-card p  { font-size: 12.5px; color: var(--mid); margin: 0; }
+.info-card.bl { border-top: 3px solid var(--blue); }
+.info-card.am { border-top: 3px solid var(--amber); }
+.info-card.gr { border-top: 3px solid var(--green); }
+
+/* ── COMPARISON TABLE ──────────────────────────────────────────── */
+.compare { width: 100%; border-collapse: collapse; margin: 16px 0 28px; font-size: 13.5px; }
+.compare th {
+  font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+  padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--border);
+}
+.compare th:first-child { color: var(--mid); }
+.compare th.blue { color: var(--blue); background: var(--blue-dim); }
+.compare th.amber{ color: var(--amber); background: var(--amber-dim); }
+.compare td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--mid); }
+.compare td:first-child { color: var(--ink); font-weight: 500; }
+.compare tr:hover td { background: var(--paper); }
+
+/* ── ABWEICHUNGS-AMPEL ─────────────────────────────────────────── */
+.abw-legend {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.abw-badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: .5px;
+}
+.abw-badge.g { background: var(--green-dim); color: var(--green); border: 1px solid #A8D8BC; }
+.abw-badge.y { background: var(--amber-dim); color: var(--amber); border: 1px solid #E8C880; }
+.abw-badge.r { background: var(--red-dim);   color: var(--red);   border: 1px solid #E8B0B0; }
+
+/* ── REGEL-BOX ─────────────────────────────────────────────────── */
+.rule-box {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 28px;
+}
+.rule-item {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px;
+}
+.rule-item .rule-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.rule-item .rule-label.blue  { color: var(--blue); }
+.rule-item .rule-label.green { color: var(--green); }
+.rule-item .rule-label.red   { color: var(--red); }
+.rule-item .rule-label.amber { color: var(--amber); }
+.rule-item p { font-size: 13px; color: var(--mid); margin: 0; }
+
+/* ── MERKBOX ───────────────────────────────────────────────────── */
+.merk {
+  background: var(--ink); color: #E8E8F0;
+  border-radius: 4px; padding: 18px 22px; margin: 16px 0 24px;
+}
+.merk-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 8px;
+}
+.merk ul { list-style: none; }
+.merk li {
+  padding: 4px 0; font-size: 13.5px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.merk li::before { content: '→'; color: var(--amber); flex-shrink: 0; }
+
+/* ── DIVIDER ───────────────────────────────────────────────────── */
+.rule { height: 1px; background: var(--border); margin: 28px 0; }
+
+/* ── SCROLLBAR ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+code {
+  background: var(--blue-dim); color: var(--blue);
+  padding: 1px 6px; border-radius: 3px;
+  font-family: 'Menlo', monospace; font-size: 12.5px;
+}
+
+@media (max-width: 880px) {
+  nav.sidebar { width: 220px; }
+  main { margin-left: 220px; padding: 32px 24px 80px; }
+  .card-grid, .card-grid-3, .calc-grid, .rule-box { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; }
+  .hero-stat { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-logo">Controlling <em>Kompakt</em></div>
+  <div class="hdr-breadcrumb">Klassische Methoden &amp; Instrumente <span>|</span> Lernkurs</div>
+</header>
+
+<div class="layout">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SIDEBAR NAVIGATION
+══════════════════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="nav-top">
+    <div class="nav-top-label">Themenübersicht</div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-section-btn open" onclick="toggleSection(this)">
+      <span class="nav-section-icon">📌</span> Grundlagen
+      <span class="arrow">▶</span>
+    </button>
+    <div class="nav-items open">
+      <a class="nav-link active" onclick="show('start')">Startseite</a>
+      <a class="nav-link" onclick="show('controlling-begriff')">Begriff & Aufgaben</a>
+      <a class="nav-link" onclick="show('strategisch-operativ')">Strategisch vs. Operativ</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-section-btn" onclick="toggleSection(this)">
+      <span class="nav-section-icon">🔢</span> Kostenrechnung
+      <span class="arrow">▶</span>
+    </button>
+    <div class="nav-items">
+      <a class="nav-link" onclick="show('kostenartenrechnung')">Kostenartenrechnung</a>
+      <a class="nav-link" onclick="show('kostenstellenrechnung')">Kostenstellenrechnung</a>
+      <a class="nav-link" onclick="show('kostentraegerrechnung')">Kostenträgerrechnung</a>
+      <a class="nav-link" onclick="show('deckungsbeitrag')">Deckungsbeitragsrechnung</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-section-btn" onclick="toggleSection(this)">
+      <span class="nav-section-icon">📋</span> Planung & Budget
+      <span class="arrow">▶</span>
+    </button>
+    <div class="nav-items">
+      <a class="nav-link" onclick="show('budgetierung')">Budgetierung</a>
+      <a class="nav-link" onclick="show('plankostenrechnung')">Plankostenrechnung</a>
+      <a class="nav-link" onclick="show('abweichungsanalyse')">Abweichungsanalyse</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-section-btn" onclick="toggleSection(this)">
+      <span class="nav-section-icon">📊</span> Kennzahlen
+      <span class="arrow">▶</span>
+    </button>
+    <div class="nav-items">
+      <a class="nav-link" onclick="show('kpi-rentabilitaet')">Rentabilitätskennzahlen</a>
+      <a class="nav-link" onclick="show('kpi-liquiditaet')">Liquiditätskennzahlen</a>
+      <a class="nav-link" onclick="show('kpi-du-pont')">Du-Pont-Schema</a>
+      <a class="nav-link" onclick="show('bsc')">Balanced Scorecard</a>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-section-btn" onclick="toggleSection(this)">
+      <span class="nav-section-icon">🧭</span> Steuerung
+      <span class="arrow">▶</span>
+    </button>
+    <div class="nav-items">
+      <a class="nav-link" onclick="show('reporting')">Reporting & Berichtswesen</a>
+      <a class="nav-link" onclick="show('investitionsrechnung')">Investitionsrechnung</a>
+      <a class="nav-link" onclick="show('break-even')">Break-Even-Analyse</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════ STARTSEITE ══════════ -->
+<div class="page active" id="start">
+  <div class="hero">
+    <div class="hero-eyebrow">Klassisches Controlling · Lernkurs</div>
+    <h1>Unternehmenssteuerung<br>systematisch <strong>verstehen</strong></h1>
+    <p>Von Kostenrechnung über Budgetierung bis zu Kennzahlensystemen – die klassischen Instrumente des Controllings, strukturiert erklärt und direkt anwendbar.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-val">8</span>
+        <div class="hero-stat-label">Themenblöcke</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">30+</span>
+        <div class="hero-stat-label">Kernthemen</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">12</span>
+        <div class="hero-stat-label">Interaktive Rechner</div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">∞</span>
+        <div class="hero-stat-label">Kein Abo nötig</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid-3">
+    <div class="info-card bl">
+      <div class="info-card-icon">🔢</div>
+      <h4>Kostenrechnung</h4>
+      <p>Kostenartenrechnung, Kostenstellenrechnung, Kostenträgerrechnung und Deckungsbeitragsrechnung.</p>
+    </div>
+    <div class="info-card am">
+      <div class="info-card-icon">📋</div>
+      <h4>Planung & Budget</h4>
+      <p>Budgetierungsverfahren, Plankostenrechnung, flexible Planung und Abweichungsanalyse.</p>
+    </div>
+    <div class="info-card gr">
+      <div class="info-card-icon">📊</div>
+      <h4>Kennzahlensysteme</h4>
+      <p>Rentabilität, Liquidität, Du-Pont-Schema, Balanced Scorecard und KPI-Hierarchien.</p>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Hinweis zur Nutzung</div>
+    <p>Jeder Abschnitt enthält <strong>interaktive Rechner</strong> – eigene Zahlen eingeben und Kennzahlen sofort berechnen. Die Rechner dienen dem Verständnis, nicht als produktive Planungstools.</p>
+  </div>
+</div>
+
+<!-- ══════════ CONTROLLING Begriff ══════════ -->
+<div class="page" id="controlling-begriff">
+  <div class="topic-header">
+    <div class="topic-icon">📌</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Grundlagen</div>
+      <h2>Begriff und Aufgaben des Controllings</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Definition</div>
+    <p><strong>Controlling</strong> ist ein funktionsübergreifendes Steuerungs- und Koordinationssystem, das das Management bei der Planung, Kontrolle und Informationsversorgung unterstützt, um Unternehmensziele zu erreichen. Der Controller ist der „Co-Pilot" des Managements.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Kernfunktionen des Controllings</div>
+    <div class="card-grid">
+      <div class="info-card bl">
+        <div class="info-card-icon">🎯</div>
+        <h4>Planung</h4>
+        <p>Ziele setzen, Maßnahmen planen, Ressourcen zuteilen. Kurzfristig (operativ) und langfristig (strategisch).</p>
+      </div>
+      <div class="info-card bl">
+        <div class="info-card-icon">🔍</div>
+        <h4>Kontrolle</h4>
+        <p>Soll-Ist-Vergleich: Plan vs. Realität. Abweichungen messen, Ursachen analysieren, Gegenmaßnahmen ableiten.</p>
+      </div>
+      <div class="info-card bl">
+        <div class="info-card-icon">📡</div>
+        <h4>Informationsversorgung</h4>
+        <p>Entscheidungsrelevante Daten bereitstellen – zum richtigen Zeitpunkt, in der richtigen Form, für die richtige Person.</p>
+      </div>
+      <div class="info-card bl">
+        <div class="info-card-icon">🤝</div>
+        <h4>Koordination</h4>
+        <p>Abstimmung zwischen Unternehmensbereichen. Sicherstellen, dass Teilpläne zum Gesamtplan passen.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Controllingkonzeptionen im Überblick</div>
+    <table class="compare">
+      <tr>
+        <th>Konzeption</th>
+        <th class="blue">Kernaussage</th>
+        <th class="blue">Hauptvertreter</th>
+      </tr>
+      <tr>
+        <td class="label">Gewinnziel-Konzept</td>
+        <td>Controlling = Sicherung von Gewinn und Rentabilität</td>
+        <td>Deyhle</td>
+      </tr>
+      <tr>
+        <td class="label">Informations-Konzept</td>
+        <td>Controlling = optimale Informationsversorgung des Managements</td>
+        <td>Müller</td>
+      </tr>
+      <tr>
+        <td class="label">Koordinations-Konzept</td>
+        <td>Controlling = Koordination des Führungssystems</td>
+        <td>Küpper, Horvàth</td>
+      </tr>
+      <tr>
+        <td class="label">Rationalitätssicherungs-Konzept</td>
+        <td>Controlling = Sicherstellung rationaler Führung</td>
+        <td>Weber, Schäffer</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="merk">
+    <div class="merk-label">Merksätze</div>
+    <ul>
+      <li>Controller steuern nicht selbst – sie stellen Instrumente und Informationen bereit.</li>
+      <li>Controlling ist kein Synonym für Kontrolle – es umfasst Steuerung, Planung und Koordination.</li>
+      <li>Der Regelkreis: Ziel setzen → Planen → Durchführen → Ist erfassen → Soll-Ist-Vergleich → Abweichungsanalyse → Steuerungsmaßnahme → zurück zu Planen.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ STRATEGISCH VS OPERATIV ══════════ -->
+<div class="page" id="strategisch-operativ">
+  <div class="topic-header">
+    <div class="topic-icon">📌</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Grundlagen</div>
+      <h2>Strategisches vs. Operatives Controlling</h2>
+    </div>
+  </div>
+
+  <table class="compare">
+    <tr>
+      <th>Merkmal</th>
+      <th class="blue">Strategisches Controlling</th>
+      <th class="amber">Operatives Controlling</th>
+    </tr>
+    <tr>
+      <td class="label">Zeithorizont</td>
+      <td>Langfristig (3–10 Jahre)</td>
+      <td>Kurzfristig (1 Jahr, Quartal, Monat)</td>
+    </tr>
+    <tr>
+      <td class="label">Zielgröße</td>
+      <td>Erfolgspotenziale, Wettbewerbsvorteile</td>
+      <td>Gewinn, Rentabilität, Liquidität</td>
+    </tr>
+    <tr>
+      <td class="label">Datenbasis</td>
+      <td>Markt-, Branchen-, Umweltdaten (extern)</td>
+      <td>Buchhaltung, Kostenrechnung (intern)</td>
+    </tr>
+    <tr>
+      <td class="label">Instrumente</td>
+      <td>SWOT, Portfolio-Analyse, BSC, Szenarioanalyse</td>
+      <td>Budget, Soll-Ist-Vergleich, Abweichungsanalyse</td>
+    </tr>
+    <tr>
+      <td class="label">Frage</td>
+      <td>„Tun wir die richtigen Dinge?"</td>
+      <td>„Tun wir die Dinge richtig?"</td>
+    </tr>
+    <tr>
+      <td class="label">Erfolgsmaßstab</td>
+      <td>Marktposition, Innovationskraft</td>
+      <td>Einhaltung von Budget und Plan</td>
+    </tr>
+  </table>
+
+  <div class="amber-box">
+    <div class="amber-box-label">Wichtig</div>
+    <p>Strategisches und operatives Controlling müssen aufeinander abgestimmt sein. Strategische Ziele werden in operative Jahrespläne und Budgets heruntergebrochen (Top-down). Operative Erkenntnisse fließen in die Strategierevision ein (Bottom-up).</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Strategische Analyseinstrumente</div>
+    <div class="card-grid">
+      <div class="info-card am">
+        <h4>SWOT-Analyse</h4>
+        <p>Stärken/Schwächen (intern) + Chancen/Risiken (extern) gegenüberstellen. Basis für Strategieentscheidungen.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Portfolio-Analyse (BCG)</h4>
+        <p>Geschäftsfelder nach Marktwachstum und relativem Marktanteil einordnen: Stars, Cash Cows, Question Marks, Dogs.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Szenarioanalyse</h4>
+        <p>Best Case / Base Case / Worst Case entwickeln. Robuste Strategien für verschiedene Zukunftsbilder erarbeiten.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Wertschöpfungskettenanalyse</h4>
+        <p>Primär- und Sekundäraktivitäten analysieren. Wo entstehen Kosten und Wettbewerbsvorteile?</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ KOSTENARTENRECHNUNG ══════════ -->
+<div class="page" id="kostenartenrechnung">
+  <div class="topic-header">
+    <div class="topic-icon">🔢</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kostenrechnung – Stufe 1</div>
+      <h2>Kostenartenrechnung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Was & Wozu</div>
+    <p>Die Kostenartenrechnung beantwortet die Frage: <strong>„Welche Kosten sind angefallen?"</strong> Sie erfasst und systematisiert alle Kosten einer Periode – als erste Stufe der Kostenrechnung, bevor diese Kostenstellen und Kostenträgern zugeordnet werden.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Zentrale Kostenkategorien</div>
+    <table class="data-table">
+      <tr><th>Gliederungsmerkmal</th><th>Kostenart A</th><th>Kostenart B</th></tr>
+      <tr>
+        <td class="label">Verhalten bei Beschäftigung</td>
+        <td><strong>Fixe Kosten</strong> – unabhängig von der Ausbringungsmenge (z.B. Miete, Gehälter)</td>
+        <td><strong>Variable Kosten</strong> – verändern sich mit der Menge (z.B. Material, Energie)</td>
+      </tr>
+      <tr>
+        <td class="label">Zurechenbarkeit</td>
+        <td><strong>Einzelkosten</strong> – direkt einem Produkt zurechenbar (z.B. Rohmaterial)</td>
+        <td><strong>Gemeinkosten</strong> – nicht direkt zurechenbar, müssen verteilt werden (z.B. Verwaltung)</td>
+      </tr>
+      <tr>
+        <td class="label">Art der Güter</td>
+        <td><strong>Materialkosten</strong> – Roh-, Hilfs-, Betriebsstoffe</td>
+        <td><strong>Personalkosten</strong> – Löhne, Gehälter, Sozialabgaben</td>
+      </tr>
+      <tr>
+        <td class="label">Herkunft</td>
+        <td><strong>Grundkosten</strong> – entsprechen Aufwand der Buchhaltung</td>
+        <td><strong>Zusatzkosten</strong> – nur in der KLR (z.B. kalk. Abschreibungen)</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Kalkulatorische Kosten – Besonderheit der Kostenrechnung</div>
+    <p class="section-body">Kalkulatorische Kosten erfassen den tatsächlichen wirtschaftlichen Werteverzehr, der von der Handelsbilanz abweicht. Sie sind nur in der internen Kostenrechnung relevant.</p>
+    <div class="rule-box">
+      <div class="rule-item">
+        <div class="rule-label amber">Kalk. Abschreibungen</div>
+        <p>Substanzerhaltung auf Basis von Wiederbeschaffungswerten statt historischer Anschaffungskosten (Bilanz).</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label blue">Kalk. Zinsen</div>
+        <p>Verzinsung des eingesetzten betrieblichen Kapitals (Eigen- + Fremdkapital × kalkulatorischer Zinssatz).</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label green">Kalk. Unternehmerlohn</div>
+        <p>Für mitarbeitende Eigentümer: fiktiver Lohn der Arbeitsleistung, den ein angestellter Manager kosten würde.</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label red">Kalk. Wagnisse</div>
+        <p>Durchschnittliche Risikokosten (Forderungsausfälle, Gewährleistung) statt tatsächlicher Einzelverluste.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ KOSTENSTELLENRECHNUNG ══════════ -->
+<div class="page" id="kostenstellenrechnung">
+  <div class="topic-header">
+    <div class="topic-icon">🔢</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kostenrechnung – Stufe 2</div>
+      <h2>Kostenstellenrechnung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Was & Wozu</div>
+    <p>Die Kostenstellenrechnung beantwortet: <strong>„Wo sind die Kosten angefallen?"</strong> Sie verteilt Gemeinkosten auf Verantwortungsbereiche (Kostenstellen) und ermöglicht so Wirtschaftlichkeitskontrolle je Bereich.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Betriebsabrechnungsbogen (BAB)</div>
+    <p class="section-body">Der BAB ist das zentrale Instrument der Kostenstellenrechnung. Er verteilt die Gemeinkosten aus der Kostenartenrechnung auf die Kostenstellen und leitet sie von Vor- zu Endkostenstellen weiter.</p>
+
+    <table class="data-table">
+      <tr>
+        <th>Kostenart</th>
+        <th class="right">Gesamt</th>
+        <th class="right">Vorkst. Energie</th>
+        <th class="right">Fertigung</th>
+        <th class="right">Vertrieb</th>
+        <th class="right">Verwaltung</th>
+      </tr>
+      <tr>
+        <td class="label">Gehälter</td>
+        <td class="right">120.000 €</td>
+        <td class="right">10.000 €</td>
+        <td class="right">50.000 €</td>
+        <td class="right">35.000 €</td>
+        <td class="right">25.000 €</td>
+      </tr>
+      <tr>
+        <td class="label">Abschreibungen</td>
+        <td class="right">80.000 €</td>
+        <td class="right">20.000 €</td>
+        <td class="right">45.000 €</td>
+        <td class="right">10.000 €</td>
+        <td class="right">5.000 €</td>
+      </tr>
+      <tr>
+        <td class="label">Hilfsstoffe</td>
+        <td class="right">40.000 €</td>
+        <td class="right">5.000 €</td>
+        <td class="right">30.000 €</td>
+        <td class="right">3.000 €</td>
+        <td class="right">2.000 €</td>
+      </tr>
+      <tr class="sub">
+        <td class="label">+ Umlage Energie</td>
+        <td class="right">—</td>
+        <td class="right">–35.000 €</td>
+        <td class="right">+21.000 €</td>
+        <td class="right">+7.000 €</td>
+        <td class="right">+7.000 €</td>
+      </tr>
+      <tr class="total">
+        <td class="label">Gesamte GK je Stelle</td>
+        <td class="right">240.000 €</td>
+        <td class="right">0 €</td>
+        <td class="right">146.000 €</td>
+        <td class="right">55.000 €</td>
+        <td class="right">39.000 €</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Gemeinkostenzuschlagsätze berechnen</div>
+    <p class="section-body">Die Gemeinkosten jeder Endkostenstelle werden auf Basis einer Bezugsgröße (Einzelkosten) als prozentualer Zuschlag verrechnet:</p>
+    <div class="formula-display">
+      <span class="fn">GK-Zuschlagsatz</span> <span class="op">=</span>
+      Gemeinkosten der Kostenstelle <span class="op">÷</span> Einzelkosten der Kostenstelle <span class="op">×</span> 100
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-title">⚙️ Zuschlagsatz-Rechner</div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Gemeinkosten Fertigung (€)</label>
+          <input type="number" id="zs-gk" value="146000" oninput="calcZuschlag()">
+        </div>
+        <div class="calc-field">
+          <label>Fertigungseinzelkosten (€)</label>
+          <input type="number" id="zs-ek" value="200000" oninput="calcZuschlag()">
+        </div>
+      </div>
+      <div class="calc-result-row">
+        <div class="calc-result" id="zs-result">
+          <span class="calc-result-val" id="zs-val">73,0%</span>
+          <div class="calc-result-label">Fertigungs-GK-Zuschlag</div>
+        </div>
+      </div>
+      <div class="calc-note">→ Pro 100 € Fertigungseinzelkosten fallen 73 € Fertigungsgemeinkosten an.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ KOSTENTRÄGERRECHNUNG ══════════ -->
+<div class="page" id="kostentraegerrechnung">
+  <div class="topic-header">
+    <div class="topic-icon">🔢</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kostenrechnung – Stufe 3</div>
+      <h2>Kostenträgerrechnung & Kalkulation</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Was & Wozu</div>
+    <p>Die Kostenträgerrechnung beantwortet: <strong>„Wofür sind die Kosten angefallen?"</strong> Sie ermittelt die Selbstkosten je Produkt oder Auftrag (Stückkalkulation) und den periodenbezogenen Erfolg (Betriebsergebnisrechnung).</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Zuschlagskalkulation – Aufbau</div>
+    <table class="data-table">
+      <tr><th>Position</th><th class="right">Betrag je Stück</th></tr>
+      <tr><td class="label">Fertigungsmaterial</td><td class="right">80,00 €</td></tr>
+      <tr><td class="label">+ Material-Gemeinkosten (12%)</td><td class="right">9,60 €</td></tr>
+      <tr class="sub"><td class="label">= Materialkosten</td><td class="right">89,60 €</td></tr>
+      <tr><td class="label">Fertigungslöhne</td><td class="right">50,00 €</td></tr>
+      <tr><td class="label">+ Fertigungs-GK (73%)</td><td class="right">36,50 €</td></tr>
+      <tr><td class="label">+ Sondereinzelkosten Fertigung</td><td class="right">5,00 €</td></tr>
+      <tr class="sub"><td class="label">= Herstellkosten</td><td class="right">181,10 €</td></tr>
+      <tr><td class="label">+ Verwaltungs-GK (8% auf HK)</td><td class="right">14,49 €</td></tr>
+      <tr><td class="label">+ Vertriebs-GK (5% auf HK)</td><td class="right">9,06 €</td></tr>
+      <tr><td class="label">+ Sondereinzelkosten Vertrieb</td><td class="right">3,00 €</td></tr>
+      <tr class="total"><td class="label">= Selbstkosten</td><td class="right">207,65 €</td></tr>
+      <tr><td class="label">+ Gewinnzuschlag (15%)</td><td class="right">31,15 €</td></tr>
+      <tr class="total"><td class="label">= Angebotspreis (Nettopreis)</td><td class="right">238,80 €</td></tr>
+    </table>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Kalkulations-Rechner</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Fertigungsmaterial (€)</label>
+        <input type="number" id="k-mat" value="80" oninput="calcKalkulation()">
+      </div>
+      <div class="calc-field">
+        <label>Material-GK-Zuschlag (%)</label>
+        <input type="number" id="k-mgk" value="12" oninput="calcKalkulation()">
+      </div>
+      <div class="calc-field">
+        <label>Fertigungslöhne (€)</label>
+        <input type="number" id="k-lohn" value="50" oninput="calcKalkulation()">
+      </div>
+      <div class="calc-field">
+        <label>Fertigungs-GK-Zuschlag (%)</label>
+        <input type="number" id="k-fgk" value="73" oninput="calcKalkulation()">
+      </div>
+      <div class="calc-field">
+        <label>Verwaltungs-GK (%)</label>
+        <input type="number" id="k-vwgk" value="8" oninput="calcKalkulation()">
+      </div>
+      <div class="calc-field">
+        <label>Gewinnzuschlag (%)</label>
+        <input type="number" id="k-gwinn" value="15" oninput="calcKalkulation()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result">
+        <span class="calc-result-val" id="k-hk">181,10</span>
+        <div class="calc-result-label">Herstellkosten (€)</div>
+      </div>
+      <div class="calc-result">
+        <span class="calc-result-val" id="k-sk">204,65</span>
+        <div class="calc-result-label">Selbstkosten (€)</div>
+      </div>
+      <div class="calc-result good">
+        <span class="calc-result-val" id="k-ap">235,35</span>
+        <div class="calc-result-label">Angebotspreis (€)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DECKUNGSBEITRAG ══════════ -->
+<div class="page" id="deckungsbeitrag">
+  <div class="topic-header">
+    <div class="topic-icon">🔢</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Teilkostenrechnung</div>
+      <h2>Deckungsbeitragsrechnung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Kernidee</div>
+    <p>Bei der Deckungsbeitragsrechnung werden <strong>nur variable Kosten</strong> auf Produkte verrechnet. Fixkosten werden als Block vom Gesamtdeckungsbeitrag abgezogen. Dies ermöglicht bessere Entscheidungen bei Preissetzung, Produktmix und Engpässen.</p>
+  </div>
+
+  <div class="formula-display">
+    <span class="fn">Deckungsbeitrag</span> <span class="op">=</span>
+    Erlöse <span class="op">–</span> Variable Kosten
+    <br><br>
+    <span class="fn">Betriebsergebnis</span> <span class="op">=</span>
+    Σ Deckungsbeiträge <span class="op">–</span> Fixkosten gesamt
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Deckungsbeitrags-Rechner (mehrstufig)</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Erlöse (€)</label>
+        <input type="number" id="db-erl" value="500000" oninput="calcDB()">
+      </div>
+      <div class="calc-field">
+        <label>Variable Kosten (€)</label>
+        <input type="number" id="db-vk" value="310000" oninput="calcDB()">
+      </div>
+      <div class="calc-field">
+        <label>Fixkosten Produkt (€)</label>
+        <input type="number" id="db-fkp" value="60000" oninput="calcDB()">
+      </div>
+      <div class="calc-field">
+        <label>Fixkosten Unternehmen (€)</label>
+        <input type="number" id="db-fku" value="85000" oninput="calcDB()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result">
+        <span class="calc-result-val" id="db-db1">190.000</span>
+        <div class="calc-result-label">DB I (€)</div>
+      </div>
+      <div class="calc-result warn" id="db-db2-card">
+        <span class="calc-result-val" id="db-db2">130.000</span>
+        <div class="calc-result-label">DB II – Produktfixk. (€)</div>
+      </div>
+      <div class="calc-result" id="db-be-card">
+        <span class="calc-result-val" id="db-be">45.000</span>
+        <div class="calc-result-label">Betriebsergebnis (€)</div>
+      </div>
+      <div class="calc-result">
+        <span class="calc-result-val" id="db-dbr">38,0%</span>
+        <div class="calc-result-label">DB-Quote</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Anwendungen der Deckungsbeitragsrechnung</div>
+    <div class="card-grid-3">
+      <div class="info-card bl">
+        <h4>Make-or-Buy</h4>
+        <p>Selbst herstellen oder zukaufen? Entscheidend sind die variablen Kosten der Eigenfertigung vs. Zukaufpreis.</p>
+      </div>
+      <div class="info-card bl">
+        <h4>Engpassoptimierung</h4>
+        <p>Bei Kapazitätsengpass: Produkt mit dem höchsten DB je Engpasseinheit bevorzugen (relativer DB).</p>
+      </div>
+      <div class="info-card bl">
+        <h4>Preisuntergrenze</h4>
+        <p>Kurzfristig: Preis ≥ variable Stückkosten. Langfristig: Preis ≥ Selbstkosten je Stück.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BUDGETIERUNG ══════════ -->
+<div class="page" id="budgetierung">
+  <div class="topic-header">
+    <div class="topic-icon">📋</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Planung & Budget</div>
+      <h2>Budgetierung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Definition</div>
+    <p>Ein <strong>Budget</strong> ist ein wertmäßiger Plan für eine zukünftige Periode, der einem Verantwortungsbereich verbindlich vorgegeben wird. Budgetierung = der Prozess zur Erstellung, Abstimmung und Verabschiedung von Budgets.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Budgetierungsverfahren im Vergleich</div>
+    <table class="compare">
+      <tr>
+        <th>Verfahren</th>
+        <th class="blue">Vorgehen</th>
+        <th class="blue">Vorteil</th>
+        <th class="blue">Nachteil</th>
+      </tr>
+      <tr>
+        <td class="label">Top-Down</td>
+        <td>Vorgabe von der Unternehmensleitung nach unten</td>
+        <td>Schnell, strategiekonform</td>
+        <td>Geringe Akzeptanz, fehlende Detailkenntnis</td>
+      </tr>
+      <tr>
+        <td class="label">Bottom-Up</td>
+        <td>Bereichsleiter erstellen eigene Budgets, werden konsolidiert</td>
+        <td>Hohe Akzeptanz, realistische Basis</td>
+        <td>Zeitaufwändig, Budgetpuffer (Slack) möglich</td>
+      </tr>
+      <tr>
+        <td class="label">Gegenstromverfahren</td>
+        <td>Kombination: Rahmen top-down, Detail bottom-up, Abstimmung</td>
+        <td>Ausgewogen, best practice</td>
+        <td>Höchster Aufwand, langer Prozess</td>
+      </tr>
+      <tr>
+        <td class="label">Zero-Based Budgeting</td>
+        <td>Jedes Budget startet bei 0, alle Ausgaben müssen neu begründet werden</td>
+        <td>Verhindert Fortschreibung, deckt Ineffizienzen auf</td>
+        <td>Sehr aufwändig, nicht jährlich praktikabel</td>
+      </tr>
+      <tr>
+        <td class="label">Fortschreibungsbudgetierung</td>
+        <td>Vorjahresbudget ± Anpassung (häufig in der Praxis)</td>
+        <td>Einfach, schnell</td>
+        <td>Verfestigt Altstrukturen, kein kritisches Hinterfragen</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Budgetarten</div>
+    <div class="card-grid">
+      <div class="info-card am">
+        <h4>Umsatzbudget</h4>
+        <p>Geplante Erlöse je Produkt, Region, Vertriebskanal. Ausgangspunkt der gesamten Budgetplanung.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Kostenbudget</h4>
+        <p>Geplante Kosten je Kostenstelle / Kostenart. Unterscheidung: fixes Kostenbudget vs. flexibles Budget.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Investitionsbudget</h4>
+        <p>Geplante Investitionsausgaben je Projekt. Priorisierung, Freigabebeträge, Wirtschaftlichkeitsnachweise.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Liquiditätsbudget</h4>
+        <p>Geplante Ein- und Auszahlungen. Sicherstellt, dass Zahlungsverpflichtungen stets erfüllt werden können.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="merk">
+    <div class="merk-label">Typische Budgetierungsfehler</div>
+    <ul>
+      <li>Budgetpuffer (Slack) – Bereichsleiter planen bewusst Reserven ein, um Zielerreichung zu erleichtern.</li>
+      <li>Dezemberfieber – Budget am Jahresende schnell ausgeben, damit es im Folgejahr nicht gekürzt wird.</li>
+      <li>Budgetfortschreibung ohne Hinterfragen – führt zu chronischer Überbudgetierung ineffizienter Bereiche.</li>
+      <li>Zu langer Planungsprozess – bis das Budget verabschiedet ist, sind Rahmenbedingungen bereits geändert.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ PLANKOSTENRECHNUNG ══════════ -->
+<div class="page" id="plankostenrechnung">
+  <div class="topic-header">
+    <div class="topic-icon">📋</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Planung & Budget</div>
+      <h2>Plankostenrechnung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Kernprinzip</div>
+    <p>Die Plankostenrechnung ermittelt im Voraus, wie hoch die Kosten bei einer geplanten Beschäftigung sein sollten (Plankosten), und vergleicht diese am Periodenende mit den tatsächlichen Kosten (Istkosten). Abweichungen werden systematisch analysiert.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Drei Varianten im Vergleich</div>
+    <table class="compare">
+      <tr>
+        <th>Variante</th>
+        <th class="blue">Beschreibung</th>
+        <th class="blue">Abweichungen erkennbar</th>
+      </tr>
+      <tr>
+        <td class="label">Starre Plankostenrechnung</td>
+        <td>Plankosten werden für eine feste Planbeschäftigung ermittelt. Kein Anpassen bei anderer Ist-Beschäftigung.</td>
+        <td>Gesamtabweichung – nicht aufgespalten</td>
+      </tr>
+      <tr>
+        <td class="label">Flexible Plankostenrechnung auf Vollkostenbasis</td>
+        <td>Plankosten werden auf Ist-Beschäftigung umgerechnet (Sollkosten). Vergleich mit Istkosten möglich.</td>
+        <td>Verbrauchs- + Beschäftigungsabweichung</td>
+      </tr>
+      <tr>
+        <td class="label">Grenzplankostenrechnung</td>
+        <td>Nur variable Plankosten werden auf Beschäftigung umgerechnet. Fixkosten als Block. Modernster Ansatz.</td>
+        <td>Verbrauchsabweichung (ohne Beschäftigung vermischt)</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Begriffe: Plan- / Soll- / Ist-Kosten</div>
+    <div class="rule-box">
+      <div class="rule-item">
+        <div class="rule-label blue">Plankosten</div>
+        <p>Geplante Kosten bei der Planbeschäftigung. Vor Beginn der Periode festgelegt.</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label amber">Sollkosten</div>
+        <p>Was die Kosten bei der tatsächlichen Ist-Beschäftigung hätten sein sollen. Maßstab für Wirtschaftlichkeit.</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label green">Istkosten</div>
+        <p>Tatsächlich angefallene Kosten der Periode – aus der Buchhaltung.</p>
+      </div>
+      <div class="rule-item">
+        <div class="rule-label red">Abweichung</div>
+        <p><strong>Verbrauchsabweichung</strong> = Soll – Ist (Effizienz). <strong>Beschäftigungsabweichung</strong> = Ist-Beschäftigung ≠ Plan.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-display">
+    <span class="fn">Sollkosten</span> <span class="op">=</span>
+    Fixe Plankosten <span class="op">+</span> (Variable Plankostensatz × Ist-Beschäftigung)
+    <br><br>
+    <span class="fn">Verbrauchsabweichung</span> <span class="op">=</span>
+    Sollkosten <span class="op">–</span> Istkosten
+  </div>
+</div>
+
+<!-- ══════════ ABWEICHUNGSANALYSE ══════════ -->
+<div class="page" id="abweichungsanalyse">
+  <div class="topic-header">
+    <div class="topic-icon">📋</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Planung & Kontrolle</div>
+      <h2>Abweichungsanalyse</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Zweck</div>
+    <p>Die Abweichungsanalyse erklärt, <strong>warum</strong> Plan und Ist voneinander abweichen. Erst wenn Abweichungen in ihre Ursachen aufgespalten werden, können gezielte Steuerungsmaßnahmen ergriffen werden.</p>
+  </div>
+
+  <div class="abw-legend">
+    <span class="abw-badge g">● Günstige Abweichung</span>
+    <span class="abw-badge y">● Erklärungsbedarf</span>
+    <span class="abw-badge r">● Ungünstige Abweichung / Handlungsbedarf</span>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Systematik der Abweichungsursachen</div>
+    <div class="card-grid">
+      <div class="info-card bl">
+        <h4>Mengenabweichung</h4>
+        <p>Mehr oder weniger Menge wurde verbraucht als geplant. Ursache: Ausschuss, Qualitätsprobleme, Prozessänderungen. Liegt in der Verantwortung der Fertigung.</p>
+      </div>
+      <div class="info-card am">
+        <h4>Preisabweichung</h4>
+        <p>Einkaufspreise wichen vom Plan ab. Ursache: Marktpreisentwicklung, schlechtes Einkauf-Ergebnis, Lieferantenwechsel. Verantwortung: Einkauf.</p>
+      </div>
+      <div class="info-card gr">
+        <h4>Beschäftigungsabweichung</h4>
+        <p>Andere Ausbringungsmenge als geplant. Fixe Kosten verteilen sich auf mehr oder weniger Einheiten → Unter- oder Überdeckung.</p>
+      </div>
+      <div class="info-card bl">
+        <h4>Mixabweichung</h4>
+        <p>Anderer Produkt- oder Kundenmix als geplant. Relevant wenn verschiedene Produkte unterschiedliche Margen haben.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Abweichungsrechner – Umsatz</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Plan-Umsatz (€)</label>
+        <input type="number" id="abw-plan" value="1000000" oninput="calcAbweichung()">
+      </div>
+      <div class="calc-field">
+        <label>Ist-Umsatz (€)</label>
+        <input type="number" id="abw-ist" value="920000" oninput="calcAbweichung()">
+      </div>
+      <div class="calc-field">
+        <label>Plan-Menge (Stück)</label>
+        <input type="number" id="abw-pm" value="10000" oninput="calcAbweichung()">
+      </div>
+      <div class="calc-field">
+        <label>Ist-Menge (Stück)</label>
+        <input type="number" id="abw-im" value="9500" oninput="calcAbweichung()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result" id="abw-ges-card">
+        <span class="calc-result-val" id="abw-ges">–80.000</span>
+        <div class="calc-result-label">Gesamtabweichung (€)</div>
+      </div>
+      <div class="calc-result" id="abw-men-card">
+        <span class="calc-result-val" id="abw-men">–50.000</span>
+        <div class="calc-result-label">Mengenabweichung (€)</div>
+      </div>
+      <div class="calc-result" id="abw-prs-card">
+        <span class="calc-result-val" id="abw-prs">–30.000</span>
+        <div class="calc-result-label">Preisabweichung (€)</div>
+      </div>
+      <div class="calc-result">
+        <span class="calc-result-val" id="abw-proz">–8,0%</span>
+        <div class="calc-result-label">Abweichung in %</div>
+      </div>
+    </div>
+    <div class="calc-note" id="abw-note">→ Abweichung: Mengeneffekt (–50.000 €) + Preiseffekt (–30.000 €). Handlungsbedarf auf beiden Ebenen.</div>
+  </div>
+</div>
+
+<!-- ══════════ KPI RENTABILITÄT ══════════ -->
+<div class="page" id="kpi-rentabilitaet">
+  <div class="topic-header">
+    <div class="topic-icon">📊</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kennzahlen</div>
+      <h2>Rentabilitätskennzahlen</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Kernfrage</div>
+    <p>Rentabilitätskennzahlen messen, wie effizient Kapital eingesetzt wird und welcher Gewinn je eingesetztem Kapital oder je Umsatzeuro erzielt wird.</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Rentabilitäts-Rechner</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Jahresüberschuss (€)</label>
+        <input type="number" id="r-ju" value="450000" oninput="calcRentab()">
+      </div>
+      <div class="calc-field">
+        <label>Gesamtkapital (€)</label>
+        <input type="number" id="r-gk" value="3000000" oninput="calcRentab()">
+      </div>
+      <div class="calc-field">
+        <label>Eigenkapital (€)</label>
+        <input type="number" id="r-ek" value="1200000" oninput="calcRentab()">
+      </div>
+      <div class="calc-field">
+        <label>Umsatz (€)</label>
+        <input type="number" id="r-ums" value="5000000" oninput="calcRentab()">
+      </div>
+      <div class="calc-field">
+        <label>Fremdkapitalzinsen (€)</label>
+        <input type="number" id="r-fkz" value="54000" oninput="calcRentab()">
+      </div>
+      <div class="calc-field">
+        <label>Steuersatz (%)</label>
+        <input type="number" id="r-steu" value="30" oninput="calcRentab()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result" id="r-ek-card">
+        <span class="calc-result-val" id="r-ek-val">37,5%</span>
+        <div class="calc-result-label">Eigenkapitalrendite</div>
+      </div>
+      <div class="calc-result" id="r-gk-card">
+        <span class="calc-result-val" id="r-gk-val">16,8%</span>
+        <div class="calc-result-label">Gesamtkapitalrendite</div>
+      </div>
+      <div class="calc-result" id="r-umt-card">
+        <span class="calc-result-val" id="r-umt-val">9,0%</span>
+        <div class="calc-result-label">Umsatzrendite</div>
+      </div>
+      <div class="calc-result" id="r-lev-card">
+        <span class="calc-result-val" id="r-lev-val">↑ Hebelwirkung</span>
+        <div class="calc-result-label">Leverage-Effekt</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <tr>
+      <th>Kennzahl</th>
+      <th>Formel</th>
+      <th>Aussage</th>
+      <th class="right">Richtwert</th>
+    </tr>
+    <tr>
+      <td class="label">Eigenkapitalrendite (ROE)</td>
+      <td>Jahresüberschuss ÷ Eigenkapital</td>
+      <td>Verzinsung des eingesetzten Eigenkapitals</td>
+      <td class="right">> 10–15 %</td>
+    </tr>
+    <tr>
+      <td class="label">Gesamtkapitalrendite (ROA)</td>
+      <td>(JÜ + FK-Zinsen) ÷ Gesamtkapital</td>
+      <td>Rendite auf das gesamte investierte Kapital</td>
+      <td class="right">> 6–8 %</td>
+    </tr>
+    <tr>
+      <td class="label">Umsatzrendite (ROS)</td>
+      <td>Jahresüberschuss ÷ Umsatz</td>
+      <td>Gewinn je Umsatzeuro</td>
+      <td class="right">Branchenabhängig</td>
+    </tr>
+    <tr>
+      <td class="label">EBITDA-Marge</td>
+      <td>EBITDA ÷ Umsatz</td>
+      <td>Operative Ertragskraft vor Finanzierung und Abschreibungen</td>
+      <td class="right">Branchenabhängig</td>
+    </tr>
+    <tr>
+      <td class="label">ROCE</td>
+      <td>EBIT ÷ (GK – kurzfr. VB)</td>
+      <td>Rendite auf das langfristig gebundene Kapital</td>
+      <td class="right">> Kapitalkosten</td>
+    </tr>
+  </table>
+
+  <div class="amber-box">
+    <div class="amber-box-label">Leverage-Effekt</div>
+    <p>Wenn die Gesamtkapitalrendite über dem Fremdkapitalzinssatz liegt, steigert zusätzliche Verschuldung die Eigenkapitalrendite. Liegt GKR unter FK-Zinssatz, wirkt der Hebel negativ (Verschuldung schadet der EKR).</p>
+  </div>
+</div>
+
+<!-- ══════════ KPI LIQUIDITÄT ══════════ -->
+<div class="page" id="kpi-liquiditaet">
+  <div class="topic-header">
+    <div class="topic-icon">📊</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kennzahlen</div>
+      <h2>Liquiditätskennzahlen</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Warum Liquidität?</div>
+    <p>Liquidität = Zahlungsfähigkeit. Ein Unternehmen kann hohe Gewinne ausweisen und trotzdem insolvent werden, wenn es seine fälligen Zahlungen nicht bedienen kann. <strong>„Profitability is fiction, cash is fact."</strong></p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Liquiditätsgrad-Rechner</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Zahlungsmittel (€)</label>
+        <input type="number" id="liq-zm" value="120000" oninput="calcLiquid()">
+      </div>
+      <div class="calc-field">
+        <label>Kurzfr. Forderungen (€)</label>
+        <input type="number" id="liq-ford" value="280000" oninput="calcLiquid()">
+      </div>
+      <div class="calc-field">
+        <label>Vorräte (€)</label>
+        <input type="number" id="liq-vorr" value="350000" oninput="calcLiquid()">
+      </div>
+      <div class="calc-field">
+        <label>Kurzfr. Verbindlichkeiten (€)</label>
+        <input type="number" id="liq-vb" value="400000" oninput="calcLiquid()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result" id="liq1-card">
+        <span class="calc-result-val" id="liq1-val">30,0%</span>
+        <div class="calc-result-label">Liquidität 1. Grades</div>
+      </div>
+      <div class="calc-result" id="liq2-card">
+        <span class="calc-result-val" id="liq2-val">100,0%</span>
+        <div class="calc-result-label">Liquidität 2. Grades</div>
+      </div>
+      <div class="calc-result" id="liq3-card">
+        <span class="calc-result-val" id="liq3-val">187,5%</span>
+        <div class="calc-result-label">Liquidität 3. Grades</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <tr><th>Kennzahl</th><th>Formel</th><th class="right">Richtwert</th><th>Interpretation</th></tr>
+    <tr>
+      <td class="label">Liquidität 1. Grades</td>
+      <td>Zahlungsmittel ÷ kurzfr. Verbindlichkeiten</td>
+      <td class="right">20–30 %</td>
+      <td>Sofort verfügbare Deckung der kurzfristigen VB</td>
+    </tr>
+    <tr>
+      <td class="label">Liquidität 2. Grades</td>
+      <td>(ZM + kurzfr. Forderungen) ÷ kurzfr. VB</td>
+      <td class="right">ca. 100 %</td>
+      <td>„Quick Ratio" – ohne Vorräte</td>
+    </tr>
+    <tr>
+      <td class="label">Liquidität 3. Grades</td>
+      <td>Umlaufvermögen ÷ kurzfr. VB</td>
+      <td class="right">150–200 %</td>
+      <td>„Current Ratio" – das gesamte UV deckt die kurzfr. VB</td>
+    </tr>
+    <tr>
+      <td class="label">Working Capital</td>
+      <td>Umlaufvermögen – kurzfr. Verbindlichkeiten</td>
+      <td class="right">> 0</td>
+      <td>Nettoarbeitsmittel – absoluter Puffer</td>
+    </tr>
+    <tr>
+      <td class="label">Cash Conversion Cycle</td>
+      <td>Lagerdauer + Forderungslaufzeit – Zahlungsziel</td>
+      <td class="right">so kurz wie möglich</td>
+      <td>Wie lange ist Kapital im Umlauf gebunden?</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════ DU-PONT ══════════ -->
+<div class="page" id="kpi-du-pont">
+  <div class="topic-header">
+    <div class="topic-icon">📊</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Kennzahlensystem</div>
+      <h2>Du-Pont-Kennzahlensystem</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Idee</div>
+    <p>Das Du-Pont-Schema zerlegt den <strong>Return on Investment (ROI)</strong> in seine Bestandteile und macht transparent, durch welche Hebel (Marge oder Umschlag) die Kapitalrendite verbessert werden kann.</p>
+  </div>
+
+  <div class="formula-display">
+    <span class="fn">ROI</span> <span class="op">=</span>
+    Umsatzrendite <span class="op">×</span> Kapitalumschlag
+    <br><br>
+    <span class="lbl">= (Gewinn ÷ Umsatz) × (Umsatz ÷ Gesamtkapital)</span>
+    <br>
+    <span class="lbl">= Gewinn ÷ Gesamtkapital</span>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Du-Pont-Rechner</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Gewinn (EBIT) (€)</label>
+        <input type="number" id="dp-gewinn" value="600000" oninput="calcDuPont()">
+      </div>
+      <div class="calc-field">
+        <label>Umsatz (€)</label>
+        <input type="number" id="dp-umsatz" value="5000000" oninput="calcDuPont()">
+      </div>
+      <div class="calc-field">
+        <label>Gesamtkapital (€)</label>
+        <input type="number" id="dp-kapital" value="3000000" oninput="calcDuPont()">
+      </div>
+      <div class="calc-field">
+        <label>&nbsp;</label>
+        <input type="text" disabled style="background:#F0F0F4;color:#999" value="→ Ergebnisse rechts">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result">
+        <span class="calc-result-val" id="dp-umr">12,0%</span>
+        <div class="calc-result-label">Umsatzrendite</div>
+      </div>
+      <div class="calc-result">
+        <span class="calc-result-val" id="dp-kap">1,67×</span>
+        <div class="calc-result-label">Kapitalumschlag</div>
+      </div>
+      <div class="calc-result good">
+        <span class="calc-result-val" id="dp-roi">20,0%</span>
+        <div class="calc-result-label">ROI</div>
+      </div>
+    </div>
+    <div class="calc-note" id="dp-note">→ ROI-Verbesserung möglich durch: höhere Marge (Preise/Kosten) ODER höheren Kapitalumschlag (mehr Umsatz je eingesetztem €).</div>
+  </div>
+
+  <div class="merk">
+    <div class="merk-label">Die zwei Hebel zur ROI-Verbesserung</div>
+    <ul>
+      <li><strong>Umsatzrendite erhöhen:</strong> Preiserhöhung, Kostenreduktion, Produktmix zugunsten margenstärkerer Produkte.</li>
+      <li><strong>Kapitalumschlag erhöhen:</strong> Umsatzsteigerung, Kapitalbindung senken (Lager abbauen, Forderungslaufzeiten verkürzen, nicht betriebsnotwendige Aktiva verkaufen).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════ BSC ══════════ -->
+<div class="page" id="bsc">
+  <div class="topic-header">
+    <div class="topic-icon">📊</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Strategisches Steuerungsinstrument</div>
+      <h2>Balanced Scorecard (BSC)</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Idee (Kaplan & Norton, 1992)</div>
+    <p>Die Balanced Scorecard ergänzt finanzielle Steuerungsgrößen um nicht-finanzielle Perspektiven und verknüpft strategische Ziele mit operativen Maßnahmen und messbaren Kennzahlen.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="info-card bl">
+      <div class="info-card-icon">💰</div>
+      <h4>Finanzperspektive</h4>
+      <p>Wie sehen wir aus Sicht der Kapitalgeber aus? KPIs: Umsatz, EBIT, ROE, Cashflow, Wertbeitrag (EVA).</p>
+    </div>
+    <div class="info-card am">
+      <div class="info-card-icon">🤝</div>
+      <h4>Kundenperspektive</h4>
+      <p>Wie sehen uns unsere Kunden? KPIs: Kundenzufriedenheit, Marktanteil, Kundenbindungsrate, NPS.</p>
+    </div>
+    <div class="info-card bl">
+      <div class="info-card-icon">⚙️</div>
+      <h4>Prozessperspektive</h4>
+      <p>In welchen Prozessen müssen wir exzellent sein? KPIs: Durchlaufzeiten, Fehlerquoten, Prozesskosten.</p>
+    </div>
+    <div class="info-card gr">
+      <div class="info-card-icon">🌱</div>
+      <h4>Lern- & Entwicklungsperspektive</h4>
+      <p>Wie können wir uns verbessern? KPIs: Mitarbeiterzufriedenheit, Weiterbildungsquote, Innovationsrate.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Elemente je Perspektive</div>
+    <table class="data-table">
+      <tr><th>Element</th><th>Beschreibung</th><th>Beispiel Kundenperspektive</th></tr>
+      <tr>
+        <td class="label">Strategisches Ziel</td>
+        <td>Was wollen wir erreichen?</td>
+        <td>Kundenzufriedenheit steigern</td>
+      </tr>
+      <tr>
+        <td class="label">Kennzahl (KPI)</td>
+        <td>Wie messen wir es?</td>
+        <td>Net Promoter Score (NPS)</td>
+      </tr>
+      <tr>
+        <td class="label">Zielwert</td>
+        <td>Wie viel bis wann?</td>
+        <td>NPS ≥ 60 bis Ende 2025</td>
+      </tr>
+      <tr>
+        <td class="label">Maßnahme</td>
+        <td>Was tun wir dafür?</td>
+        <td>Kundenbefragung quartalsweise einführen, Service-Level-Agreement anpassen</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="amber-box">
+    <div class="amber-box-label">Ursache-Wirkungs-Kette (Strategy Map)</div>
+    <p>Mitarbeiter entwickeln (Lernen) → bessere Prozesse → zufriedenere Kunden → bessere Finanzergebnisse. Diese Kausalität ist der Kern der BSC und unterscheidet sie von reinen Kennzahlsystemen.</p>
+  </div>
+</div>
+
+<!-- ══════════ REPORTING ══════════ -->
+<div class="page" id="reporting">
+  <div class="topic-header">
+    <div class="topic-icon">🧭</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Steuerung</div>
+      <h2>Reporting & Berichtswesen</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Zweck</div>
+    <p>Berichtswesen ist die systematische Versorgung des Managements mit entscheidungsrelevanten Informationen. Ein gutes Reporting ist nicht ein Mehr an Zahlen, sondern die <strong>richtigen Zahlen zur richtigen Zeit für die richtige Ebene</strong>.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Grundsätze guten Reportings</div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Empfängerorientierung</h4>
+          <p>CEO braucht andere Informationen als Abteilungsleiter. Jede Managementebene bekommt genau das, was sie zur Entscheidung braucht – nicht mehr.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Vergleichswerte</h4>
+          <p>Jede Zahl braucht einen Maßstab: Plan, Vorjahr, Benchmark. Eine isolierte Zahl sagt fast nichts aus.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Kommentierung</h4>
+          <p>Wesentliche Abweichungen müssen erklärt werden. Der Controller kommentiert, nennt Ursachen und empfiehlt Maßnahmen – er liefert nicht nur Zahlen.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Ausnahmeberichterstattung</h4>
+          <p>Management-by-Exception: Nur wesentliche Abweichungen (z.B. > 5% oder > 50.000 €) werden berichtet und kommentiert. Alles Planmäßige bleibt im Hintergrund.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Zeitgerechtigkeit</h4>
+          <p>Ein Monatsbericht nach 3 Wochen ist weitgehend wertlos. Controlling-Prozesse müssen auf schnellen Abschluss optimiert werden (Fast Close).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Berichtsarten im Überblick</div>
+    <table class="data-table">
+      <tr><th>Berichtsart</th><th>Rhythmus</th><th>Adressat</th><th>Typische Inhalte</th></tr>
+      <tr>
+        <td class="label">Management-Report</td>
+        <td>Monatlich</td>
+        <td>Geschäftsführung</td>
+        <td>GuV, Soll-Ist, Forecast, Kommentar</td>
+      </tr>
+      <tr>
+        <td class="label">Bereichsreport</td>
+        <td>Monatlich</td>
+        <td>Bereichsleiter</td>
+        <td>Kosten, Leistungen, Personalzahlen</td>
+      </tr>
+      <tr>
+        <td class="label">Vertriebsreport</td>
+        <td>Wöchentlich</td>
+        <td>Vertriebsleitung</td>
+        <td>Auftragseingang, Pipeline, Umsatz je Produkt/Region</td>
+      </tr>
+      <tr>
+        <td class="label">Liquiditätsreport</td>
+        <td>Täglich/wöchentlich</td>
+        <td>CFO, Treasury</td>
+        <td>Kassenbestand, offene Posten, Zahlungsplan</td>
+      </tr>
+      <tr>
+        <td class="label">Forecast/Hochrechnung</td>
+        <td>Monatlich/quartalsweise</td>
+        <td>Geschäftsführung, Aufsichtsrat</td>
+        <td>Erwartetes Jahresergebnis auf Basis aktueller Entwicklung</td>
+      </tr>
+      <tr>
+        <td class="label">Ad-hoc-Bericht</td>
+        <td>Anlassbezogen</td>
+        <td>Management, Aufsichtsrat</td>
+        <td>Analyse spezifischer Ereignisse, Entscheidungsvorlagen</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ INVESTITIONSRECHNUNG ══════════ -->
+<div class="page" id="investitionsrechnung">
+  <div class="topic-header">
+    <div class="topic-icon">🧭</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Steuerung</div>
+      <h2>Investitionsrechnung</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Zweck</div>
+    <p>Investitionsrechenverfahren helfen, die Vorteilhaftigkeit von Investitionen zu beurteilen und Alternativen zu vergleichen – bevor Kapital langfristig gebunden wird.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Statische vs. Dynamische Verfahren</div>
+    <table class="compare">
+      <tr>
+        <th>Verfahren</th>
+        <th class="blue">Zeitwert des Geldes?</th>
+        <th class="blue">Einfachheit</th>
+        <th class="blue">Anwendung</th>
+      </tr>
+      <tr>
+        <td class="label">Kostenvergleich</td>
+        <td>Nein</td>
+        <td>Sehr einfach</td>
+        <td>Vergleich zweier Investitionsalternativen</td>
+      </tr>
+      <tr>
+        <td class="label">Gewinnvergleich</td>
+        <td>Nein</td>
+        <td>Einfach</td>
+        <td>Wie Kostenvergleich + Erlöse</td>
+      </tr>
+      <tr>
+        <td class="label">Rentabilitätsvergleich</td>
+        <td>Nein</td>
+        <td>Einfach</td>
+        <td>Rendite je eingesetztem Kapital</td>
+      </tr>
+      <tr>
+        <td class="label">Amortisationsrechnung</td>
+        <td>Nein (statisch) / Ja (dyn.)</td>
+        <td>Einfach</td>
+        <td>Wie schnell ist die Investition zurückgeflossen?</td>
+      </tr>
+      <tr>
+        <td class="label">Kapitalwertmethode (NPV)</td>
+        <td><strong>Ja</strong></td>
+        <td>Mittel</td>
+        <td>Barwert aller zukünftigen Ein-/Auszahlungen – Standard</td>
+      </tr>
+      <tr>
+        <td class="label">Interne Zinsfußmethode (IRR)</td>
+        <td><strong>Ja</strong></td>
+        <td>Komplex</td>
+        <td>Rendite der Investition – Vergleich mit Kapitalkosten</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="formula-display">
+    <span class="fn">Kapitalwert (NPV)</span> <span class="op">=</span>
+    <span class="op">–</span> Investition<sub>0</sub>
+    <span class="op">+</span> Σ (Cashflow<sub>t</sub> <span class="op">÷</span> (1<span class="op">+</span>i)<sup>t</sup>)
+    <br><br>
+    <span class="lbl">NPV > 0 → Investition ist vorteilhaft | NPV = 0 → Rentabilität = Kalkulationszinssatz</span>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Einfacher NPV-Rechner (gleichbleibende Rückflüsse)</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Anschaffungsauszahlung (€)</label>
+        <input type="number" id="npv-inv" value="500000" oninput="calcNPV()">
+      </div>
+      <div class="calc-field">
+        <label>Jährlicher Cashflow (€)</label>
+        <input type="number" id="npv-cf" value="120000" oninput="calcNPV()">
+      </div>
+      <div class="calc-field">
+        <label>Nutzungsdauer (Jahre)</label>
+        <input type="number" id="npv-n" value="6" oninput="calcNPV()">
+      </div>
+      <div class="calc-field">
+        <label>Kalkulationszinssatz (%)</label>
+        <input type="number" id="npv-i" value="8" oninput="calcNPV()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result" id="npv-bw-card">
+        <span class="calc-result-val" id="npv-bw">554.640</span>
+        <div class="calc-result-label">Barwert Rückflüsse (€)</div>
+      </div>
+      <div class="calc-result" id="npv-card">
+        <span class="calc-result-val" id="npv-val">+54.640</span>
+        <div class="calc-result-label">Kapitalwert NPV (€)</div>
+      </div>
+      <div class="calc-result" id="npv-amort-card">
+        <span class="calc-result-val" id="npv-amort">4,2 J</span>
+        <div class="calc-result-label">Amortisationsdauer</div>
+      </div>
+    </div>
+    <div class="calc-note" id="npv-note">→ Investition ist vorteilhaft (NPV > 0). Das eingesetzte Kapital wird über die Laufzeit vollständig zurückgeflossen und erzeugt einen Mehrwert.</div>
+  </div>
+</div>
+
+<!-- ══════════ BREAK-EVEN ══════════ -->
+<div class="page" id="break-even">
+  <div class="topic-header">
+    <div class="topic-icon">🧭</div>
+    <div class="topic-header-text">
+      <div class="topic-kicker">Steuerung</div>
+      <h2>Break-Even-Analyse</h2>
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-box-label">Was ist der Break-Even?</div>
+    <p>Der <strong>Break-Even-Punkt</strong> (Gewinnschwelle) ist die Ausbringungsmenge oder der Umsatz, bei dem ein Unternehmen weder Gewinn noch Verlust macht. Erlöse decken exakt die Gesamtkosten (variable + fixe). Jede darüber hinaus produzierte Einheit erzeugt Gewinn.</p>
+  </div>
+
+  <div class="formula-display">
+    <span class="fn">Break-Even-Menge</span> <span class="op">=</span>
+    Fixkosten <span class="op">÷</span> Deckungsbeitrag je Stück
+    <br><br>
+    <span class="fn">Break-Even-Umsatz</span> <span class="op">=</span>
+    Fixkosten <span class="op">÷</span> DB-Quote
+    <br><br>
+    <span class="lbl">DB je Stück = Preis – variable Stückkosten</span>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-title">⚙️ Break-Even-Rechner</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Verkaufspreis je Stück (€)</label>
+        <input type="number" id="be-preis" value="120" oninput="calcBreakEven()">
+      </div>
+      <div class="calc-field">
+        <label>Variable Kosten je Stück (€)</label>
+        <input type="number" id="be-vk" value="72" oninput="calcBreakEven()">
+      </div>
+      <div class="calc-field">
+        <label>Fixkosten gesamt (€)</label>
+        <input type="number" id="be-fk" value="240000" oninput="calcBreakEven()">
+      </div>
+      <div class="calc-field">
+        <label>Geplante Menge (Stück)</label>
+        <input type="number" id="be-menge" value="6000" oninput="calcBreakEven()">
+      </div>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-result">
+        <span class="calc-result-val" id="be-db">48,00</span>
+        <div class="calc-result-label">DB je Stück (€)</div>
+      </div>
+      <div class="calc-result" id="be-bep-card">
+        <span class="calc-result-val" id="be-bep">5.000</span>
+        <div class="calc-result-label">Break-Even-Menge (Stk.)</div>
+      </div>
+      <div class="calc-result" id="be-beu-card">
+        <span class="calc-result-val" id="be-beu">600.000</span>
+        <div class="calc-result-label">Break-Even-Umsatz (€)</div>
+      </div>
+      <div class="calc-result" id="be-sr-card">
+        <span class="calc-result-val" id="be-sr">16,7%</span>
+        <div class="calc-result-label">Sicherheitsabstand</div>
+      </div>
+    </div>
+    <div class="calc-note" id="be-note">→ Bei 5.000 Stück ist die Gewinnschwelle erreicht. Mit 6.000 geplanten Stück liegt ein Sicherheitsabstand von 1.000 Stück (16,7%) vor.</div>
+  </div>
+
+  <div class="merk">
+    <div class="merk-label">Sicherheitsabstand (Safety Margin)</div>
+    <ul>
+      <li>Sicherheitsabstand = (geplante Menge – Break-Even-Menge) ÷ geplante Menge × 100</li>
+      <li>Zeigt, um wie viel der Umsatz einbrechen darf, bevor das Unternehmen Verluste macht.</li>
+      <li>Je höher der Sicherheitsabstand, desto robuster das Geschäftsmodell gegenüber Umsatzrückgängen.</li>
+    </ul>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════════ */
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const page = document.getElementById(id);
+  if (page) { page.classList.add('active'); }
+  document.querySelectorAll('.nav-link').forEach(l => {
+    if (l.getAttribute('onclick') && l.getAttribute('onclick').includes("'" + id + "'")) {
+      l.classList.add('active');
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  runCalculators();
+}
+
+function toggleSection(btn) {
+  btn.classList.toggle('open');
+  const items = btn.nextElementSibling;
+  items.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORMATIERUNG
+═══════════════════════════════════════════════════════════════ */
+function fmt(n, dec = 0) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('de-DE', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function fmtPct(n, dec = 1) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('de-DE', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + ' %';
+}
+function fmtEur(n) { return fmt(n, 2); }
+function setCard(id, cls) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'calc-result' + (cls ? ' ' + cls : '');
+}
+
+/* Zuschlagsatz-Rechner */
+function calcZuschlag() {
+  const gk = +document.getElementById('zs-gk').value || 0;
+  const ek = +document.getElementById('zs-ek').value || 1;
+  const zs = gk / ek * 100;
+  document.getElementById('zs-val').textContent = fmtPct(zs);
+  const card = document.getElementById('zs-result').parentElement?.querySelector('.calc-result') || document.getElementById('zs-result');
+}
+
+/* Kalkulations-Rechner */
+function calcKalkulation() {
+  const mat  = +document.getElementById('k-mat').value  || 0;
+  const mgk  = +document.getElementById('k-mgk').value  || 0;
+  const lohn = +document.getElementById('k-lohn').value || 0;
+  const fgk  = +document.getElementById('k-fgk').value  || 0;
+  const vwgk = +document.getElementById('k-vwgk').value || 0;
+  const gw   = +document.getElementById('k-gwinn').value|| 0;
+
+  const matk = mat * (1 + mgk / 100);
+  const hk   = matk + lohn * (1 + fgk / 100);
+  const sk   = hk * (1 + (vwgk + 5) / 100);  // +5% Vertriebs-GK
+  const ap   = sk * (1 + gw / 100);
+
+  document.getElementById('k-hk').textContent = fmtEur(hk);
+  document.getElementById('k-sk').textContent = fmtEur(sk);
+  document.getElementById('k-ap').textContent = fmtEur(ap);
+}
+
+/* Deckungsbeitrags-Rechner */
+function calcDB() {
+  const erl = +document.getElementById('db-erl').value || 0;
+  const vk  = +document.getElementById('db-vk').value  || 0;
+  const fkp = +document.getElementById('db-fkp').value || 0;
+  const fku = +document.getElementById('db-fku').value || 0;
+
+  const db1 = erl - vk;
+  const db2 = db1 - fkp;
+  const be  = db2 - fku;
+  const dbq = erl > 0 ? db1 / erl * 100 : 0;
+
+  document.getElementById('db-db1').textContent = fmt(db1);
+  document.getElementById('db-db2').textContent = fmt(db2);
+  document.getElementById('db-be').textContent  = fmt(be);
+  document.getElementById('db-dbr').textContent = fmtPct(dbq);
+
+  setCard('db-db2-card', db2 >= 0 ? 'good' : 'bad');
+  setCard('db-be-card',  be  >= 0 ? 'good' : 'bad');
+}
+
+/* Abweichungs-Rechner */
+function calcAbweichung() {
+  const plan  = +document.getElementById('abw-plan').value || 0;
+  const ist   = +document.getElementById('abw-ist').value  || 0;
+  const pm    = +document.getElementById('abw-pm').value   || 1;
+  const im    = +document.getElementById('abw-im').value   || 0;
+
+  const planPreis = pm > 0 ? plan / pm : 0;
+  const istPreis  = im > 0 ? ist  / im : 0;
+
+  const menAbw = (im - pm) * planPreis;
+  const prsAbw = (istPreis - planPreis) * im;
+  const gesAbw = ist - plan;
+  const proz   = plan > 0 ? gesAbw / plan * 100 : 0;
+
+  const sign = v => v > 0 ? '+' : '';
+  document.getElementById('abw-ges').textContent = sign(gesAbw) + fmt(gesAbw);
+  document.getElementById('abw-men').textContent = sign(menAbw) + fmt(menAbw);
+  document.getElementById('abw-prs').textContent = sign(prsAbw) + fmt(prsAbw);
+  document.getElementById('abw-proz').textContent = sign(proz) + fmtPct(proz);
+
+  const cls = g => g >= 0 ? 'good' : 'bad';
+  setCard('abw-ges-card',  cls(gesAbw));
+  setCard('abw-men-card',  cls(menAbw));
+  setCard('abw-prs-card',  cls(prsAbw));
+
+  document.getElementById('abw-note').textContent =
+    '→ Gesamtabweichung ' + sign(gesAbw) + fmt(gesAbw) + ' € | '
+    + 'Mengeneffekt: ' + sign(menAbw) + fmt(menAbw) + ' € | '
+    + 'Preiseffekt: ' + sign(prsAbw) + fmt(prsAbw) + ' €';
+}
+
+/* Rentabilitäts-Rechner */
+function calcRentab() {
+  const ju   = +document.getElementById('r-ju').value   || 0;
+  const gk   = +document.getElementById('r-gk').value   || 1;
+  const ek   = +document.getElementById('r-ek').value   || 1;
+  const ums  = +document.getElementById('r-ums').value  || 1;
+  const fkz  = +document.getElementById('r-fkz').value  || 0;
+
+  const ekr  = ju / ek * 100;
+  const gkr  = (ju + fkz) / gk * 100;
+  const umr  = ju / ums * 100;
+  const fkZins = gk > 0 ? fkz / (gk - ek) * 100 : 0;
+  const leverage = gkr > fkZins;
+
+  document.getElementById('r-ek-val').textContent  = fmtPct(ekr);
+  document.getElementById('r-gk-val').textContent  = fmtPct(gkr);
+  document.getElementById('r-umt-val').textContent = fmtPct(umr);
+  document.getElementById('r-lev-val').textContent = leverage ? '↑ positiv' : '↓ negativ';
+
+  setCard('r-ek-card',  ekr >= 10 ? 'good' : ekr >= 5 ? 'warn' : 'bad');
+  setCard('r-gk-card',  gkr >= 6  ? 'good' : gkr >= 3 ? 'warn' : 'bad');
+  setCard('r-umt-card', umr >= 5  ? 'good' : umr >= 2 ? 'warn' : 'bad');
+  setCard('r-lev-card', leverage  ? 'good' : 'bad');
+}
+
+/* Liquiditäts-Rechner */
+function calcLiquid() {
+  const zm   = +document.getElementById('liq-zm').value   || 0;
+  const ford = +document.getElementById('liq-ford').value  || 0;
+  const vorr = +document.getElementById('liq-vorr').value  || 0;
+  const vb   = +document.getElementById('liq-vb').value   || 1;
+
+  const liq1 = zm / vb * 100;
+  const liq2 = (zm + ford) / vb * 100;
+  const liq3 = (zm + ford + vorr) / vb * 100;
+
+  document.getElementById('liq1-val').textContent = fmtPct(liq1);
+  document.getElementById('liq2-val').textContent = fmtPct(liq2);
+  document.getElementById('liq3-val').textContent = fmtPct(liq3);
+
+  setCard('liq1-card', liq1 >= 20 ? 'good' : liq1 >= 10 ? 'warn' : 'bad');
+  setCard('liq2-card', liq2 >= 100 ? 'good' : liq2 >= 70 ? 'warn' : 'bad');
+  setCard('liq3-card', liq3 >= 150 ? 'good' : liq3 >= 100 ? 'warn' : 'bad');
+}
+
+/* Du-Pont-Rechner */
+function calcDuPont() {
+  const gewinn  = +document.getElementById('dp-gewinn').value  || 0;
+  const umsatz  = +document.getElementById('dp-umsatz').value  || 1;
+  const kapital = +document.getElementById('dp-kapital').value || 1;
+
+  const umr = gewinn / umsatz * 100;
+  const kap = umsatz / kapital;
+  const roi = gewinn / kapital * 100;
+
+  document.getElementById('dp-umr').textContent = fmtPct(umr);
+  document.getElementById('dp-kap').textContent = kap.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '×';
+  document.getElementById('dp-roi').textContent = fmtPct(roi);
+  document.getElementById('dp-note').textContent =
+    '→ ROI ' + fmtPct(roi) + ' = Umsatzrendite ' + fmtPct(umr) + ' × Kapitalumschlag ' +
+    kap.toFixed(2) + '×. Hebel: Marge erhöhen oder schneller umschlagen.';
+
+  setCard('dp-roi', roi >= 12 ? 'good' : roi >= 6 ? 'warn' : 'bad');
+}
+
+/* NPV-Rechner */
+function calcNPV() {
+  const inv = +document.getElementById('npv-inv').value || 0;
+  const cf  = +document.getElementById('npv-cf').value  || 0;
+  const n   = +document.getElementById('npv-n').value   || 1;
+  const i   = (+document.getElementById('npv-i').value  || 0) / 100;
+
+  let bw = 0;
+  for (let t = 1; t <= n; t++) bw += cf / Math.pow(1 + i, t);
+  const npv  = bw - inv;
+  const amor = cf > 0 ? inv / cf : Infinity;
+
+  document.getElementById('npv-bw').textContent   = fmt(Math.round(bw));
+  document.getElementById('npv-val').textContent  = (npv >= 0 ? '+' : '') + fmt(Math.round(npv));
+  document.getElementById('npv-amort').textContent = isFinite(amor) ? amor.toFixed(1) + ' J' : '∞';
+
+  const good = npv >= 0;
+  setCard('npv-card',      good ? 'good' : 'bad');
+  setCard('npv-amort-card', amor <= n ? 'good' : 'warn');
+  document.getElementById('npv-note').textContent =
+    good
+    ? '→ Investition vorteilhaft (NPV > 0). Amortisation nach ca. ' + amor.toFixed(1) + ' Jahren bei ' + n + ' Jahren Nutzungsdauer.'
+    : '→ Investition nicht vorteilhaft bei diesem Zinssatz (NPV < 0). Rückflüsse reichen nicht zur Deckung der Kapitalkosten.';
+}
+
+/* Break-Even-Rechner */
+function calcBreakEven() {
+  const preis = +document.getElementById('be-preis').value || 0;
+  const vk    = +document.getElementById('be-vk').value    || 0;
+  const fk    = +document.getElementById('be-fk').value    || 0;
+  const menge = +document.getElementById('be-menge').value || 0;
+
+  const db   = preis - vk;
+  const bep  = db > 0 ? fk / db : Infinity;
+  const beu  = db > 0 ? fk / (db / preis) : Infinity;
+  const sr   = menge > 0 && isFinite(bep) ? (menge - bep) / menge * 100 : 0;
+
+  document.getElementById('be-db').textContent  = fmtEur(db);
+  document.getElementById('be-bep').textContent = isFinite(bep) ? fmt(Math.ceil(bep)) : '∞';
+  document.getElementById('be-beu').textContent = isFinite(beu) ? fmt(Math.round(beu)) : '∞';
+  document.getElementById('be-sr').textContent  = fmtPct(sr);
+
+  const safe = sr > 0;
+  setCard('be-bep-card', safe ? 'good' : 'bad');
+  setCard('be-beu-card', safe ? 'good' : 'bad');
+  setCard('be-sr-card',  sr >= 20 ? 'good' : sr >= 5 ? 'warn' : 'bad');
+
+  document.getElementById('be-note').textContent =
+    isFinite(bep)
+    ? '→ Gewinnschwelle bei ' + fmt(Math.ceil(bep)) + ' Stück / ' + fmt(Math.round(beu)) + ' € Umsatz. '
+      + (safe
+        ? 'Sicherheitsabstand: ' + fmt(Math.round(menge - bep)) + ' Stück (' + fmtPct(sr) + ').'
+        : 'Geplante Menge liegt UNTER dem Break-Even → Verlust!')
+    : '→ Kein Deckungsbeitrag – prüfe Preis und variable Kosten.';
+}
+
+function runCalculators() {
+  calcZuschlag(); calcKalkulation(); calcDB();
+  calcAbweichung(); calcRentab(); calcLiquid();
+  calcDuPont(); calcNPV(); calcBreakEven();
+}
+
+// Initialisierung
+runCalculators();
+</script>
+</body>
+</html>
