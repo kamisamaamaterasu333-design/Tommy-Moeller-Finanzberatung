@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz: Versicherungsprodukte</title>
+<style>
+  :root {
+    --accent: #0369a1;
+    --accent-dim: #075985;
+    --bg-dark: #0D0D0D;
+    --bg-card: #1E1E1E;
+    --border: #2E2E2E;
+    --text-primary: #F0F0F0;
+    --text-secondary: #A0A0A0;
+    --text-muted: #666;
+    --green: #16a34a;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark); color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh; padding: 40px 20px;
+  }
+  .wrap { max-width: 700px; margin: 0 auto; }
+
+  .quiz-header { text-align: center; margin-bottom: 32px; }
+  .quiz-icon { font-size: 40px; margin-bottom: 12px; }
+  .quiz-header h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .quiz-header h1 span { color: var(--accent); }
+  .quiz-header p { color: var(--text-secondary); font-size: 14px; }
+
+  .progress-track { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; margin-bottom: 28px; }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s ease; }
+  .progress-text { text-align: center; font-size: 12px; color: var(--text-muted); font-family: 'Cascadia Code', monospace; margin-bottom: 24px; }
+
+  .q-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; display: none; }
+  .q-card.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .q-num { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .q-text { font-size: 17px; font-weight: 600; margin-bottom: 22px; line-height: 1.5; }
+
+  .option {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--border);
+    border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all .15s ease; font-size: 14px;
+  }
+  .option:hover { border-color: var(--accent); background: rgba(3,105,161,.08); }
+  .option.selected { border-color: var(--accent); background: rgba(3,105,161,.12); }
+  .option.correct { border-color: var(--green); background: rgba(22,163,74,.12); }
+  .option.incorrect { border-color: var(--red); background: rgba(220,38,38,.12); }
+  .option-letter {
+    width: 26px; height: 26px; border-radius: 50%; background: #2a2a2a; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+  }
+  .option.correct .option-letter { background: var(--green); color: #fff; }
+  .option.incorrect .option-letter { background: var(--red); color: #fff; }
+
+  .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 8px; font-size: 13.5px; display: none; line-height: 1.6; }
+  .feedback.show { display: block; animation: fadeIn .3s ease; }
+  .feedback.correct-fb { background: rgba(22,163,74,.1); border: 1px solid rgba(22,163,74,.3); color: #86efac; }
+  .feedback.incorrect-fb { background: rgba(220,38,38,.1); border: 1px solid rgba(220,38,38,.3); color: #fca5a5; }
+
+  .nav-row { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; }
+  .btn { padding: 11px 24px; border-radius: 7px; border: none; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: opacity .2s ease; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: .88; }
+  .btn-primary:disabled { opacity: .35; cursor: default; }
+  .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+  .btn-secondary:hover { border-color: var(--accent); color: #38bdf8; }
+
+  .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 40px 32px; text-align: center; display: none; }
+  .result-card.show { display: block; animation: fadeIn .4s ease; }
+  .result-emoji { font-size: 52px; margin-bottom: 14px; }
+  .result-score { font-size: 38px; font-weight: 800; margin-bottom: 6px; }
+  .result-score span { color: var(--accent); }
+  .result-label { font-size: 15px; color: var(--text-secondary); margin-bottom: 28px; }
+  .result-bar-track { height: 10px; background: #1a1a1a; border-radius: 5px; overflow: hidden; margin-bottom: 28px; }
+  .result-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #38bdf8); transition: width 1s ease; }
+  .restart-btn { background: var(--accent); color: #fff; border: none; padding: 13px 30px; border-radius: 7px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .restart-btn:hover { opacity: .88; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="quiz-header">
+    <div class="quiz-icon">🛡️</div>
+    <h1>Quiz: <span>Versicherungsprodukte</span></h1>
+    <p>10 Fragen dazu, wann sich welche Versicherung wirklich lohnt.</p>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">Frage 1 von 10</div>
+
+  <div id="quizContainer"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0 / 10</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-bar-track"><div class="result-bar-fill" id="resultBarFill" style="width:0%"></div></div>
+    <button class="restart-btn" onclick="restartQuiz()">↺ Quiz wiederholen</button>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Welche Versicherung gilt im Kurs als eine der wichtigsten überhaupt, weil das Schadenrisiko theoretisch unbegrenzt ist?",
+    options: ["Handyversicherung", "Privathaftpflichtversicherung", "Reisegepäckversicherung", "Glasversicherung"],
+    correct: 1,
+    feedback: "Die Privathaftpflichtversicherung deckt Schäden gegenüber Dritten ab, die theoretisch unbegrenzt hoch ausfallen können – bei vergleichsweise sehr niedrigen Beiträgen."
+  },
+  {
+    q: "Was sichert die Berufsunfähigkeitsversicherung konkret ab?",
+    options: [
+      "Den Verlust des Arbeitsplatzes durch Kündigung",
+      "Das Einkommen, falls der zuletzt ausgeübte Beruf aus gesundheitlichen Gründen nicht mehr ausgeübt werden kann",
+      "Schäden am Firmeneigentum",
+      "Den Verlust von Wertgegenständen im Haushalt"
+    ],
+    correct: 1,
+    feedback: "Die BU zahlt eine Rente, wenn man seinen Beruf zu mindestens 50% gesundheitlich bedingt nicht mehr ausüben kann – sie gilt als Absicherung des größten Einkommensrisikos im Erwerbsleben."
+  },
+  {
+    q: "Welche Aussage zur Risikolebensversicherung ist laut Kurs korrekt?",
+    options: [
+      "Sie kombiniert Risikoschutz mit einer Geldanlage",
+      "Sie ist nur für Personen mit Berufsunfähigkeit relevant",
+      "Sie zahlt im Todesfall eine vereinbarte Summe an die Hinterbliebenen, ohne Sparanteil",
+      "Sie ist gesetzlich für jeden verpflichtend"
+    ],
+    correct: 2,
+    feedback: "Die Risikolebensversicherung ist eine reine Risikoabsicherung ohne Sparanteil – dadurch deutlich günstiger als kapitalbildende Lebensversicherungen, die im Kurs als oft unwirtschaftlich eingeordnet werden."
+  },
+  {
+    q: "In welcher Situation wird die Risikolebensversicherung im Kurs als besonders sinnvoll beschrieben?",
+    options: [
+      "Wenn niemand wirtschaftlich von der eigenen Person abhängt",
+      "Wenn Kinder/Partner finanziell vom eigenen Einkommen abhängen oder eine Immobilienfinanzierung läuft",
+      "Nur bei Selbstständigen",
+      "Ausschließlich bei Personen über 60 Jahren"
+    ],
+    correct: 1,
+    feedback: "Besonders relevant ist die Risikolebensversicherung, wenn Personen (Partner, Kinder) wirtschaftlich abhängig sind oder eine laufende Immobilienfinanzierung im Todesfall abgesichert werden soll."
+  },
+  {
+    q: "Welche der folgenden Versicherungen ist in Deutschland gesetzlich verpflichtend für jedes zugelassene Fahrzeug?",
+    options: ["KFZ-Vollkasko", "KFZ-Teilkasko", "KFZ-Haftpflicht", "Insassenunfallversicherung"],
+    correct: 2,
+    feedback: "Die KFZ-Haftpflichtversicherung ist gesetzlich vorgeschrieben und deckt Schäden ab, die du mit deinem Fahrzeug anderen zufügst."
+  },
+  {
+    q: "Wann wird im Kurs eine Vollkaskoversicherung als eher unwirtschaftlich eingestuft?",
+    options: [
+      "Bei neuen, hochwertigen Fahrzeugen",
+      "Bei älteren Fahrzeugen mit geringem Zeitwert",
+      "Grundsätzlich immer",
+      "Nur bei Leasingfahrzeugen"
+    ],
+    correct: 1,
+    feedback: "Bei älteren Fahrzeugen mit geringem Zeitwert steht die Vollkaskoprämie oft in einem ungünstigen Verhältnis zum maximal möglichen Auszahlungsbetrag – hier kann Teilkasko oder gar keine Kaskoversicherung wirtschaftlicher sein."
+  },
+  {
+    q: "Was deckt die Hausratversicherung typischerweise ab?",
+    options: [
+      "Schäden am Gebäude selbst (z.B. Dach, Mauerwerk)",
+      "Das Inventar der Wohnung bei Feuer, Einbruch, Leitungswasser, Sturm/Hagel",
+      "Berufsunfähigkeit des Versicherten",
+      "Den Wert des Fahrzeugs"
+    ],
+    correct: 1,
+    feedback: "Die Hausratversicherung schützt das Inventar (Möbel, Elektronik, Wertsachen) – nicht das Gebäude selbst, das wäre Aufgabe der Wohngebäudeversicherung."
+  },
+  {
+    q: "Welches Produkt wird im Kurs als häufig überflüssig bzw. unwirtschaftlich eingeordnet?",
+    options: ["Privathaftpflichtversicherung", "Berufsunfähigkeitsversicherung", "Kapitalbildende Lebensversicherung", "KFZ-Haftpflicht"],
+    correct: 2,
+    feedback: "Die kapitalbildende Lebensversicherung vermischt Risikoschutz und Geldanlage und wird im Kurs als für viele Menschen unwirtschaftlich eingeordnet – eine getrennte Lösung aus Risikolebensversicherung und separater Geldanlage gilt häufig als kostengünstiger."
+  },
+  {
+    q: "Warum werden Handyversicherungen im Kurs eher kritisch gesehen?",
+    options: [
+      "Weil sie gesetzlich verboten sind",
+      "Weil das Schadenrisiko im Verhältnis zur Versicherungsprämie oft unwirtschaftlich ist",
+      "Weil sie nur für Geschäftskunden angeboten werden",
+      "Weil sie automatisch in der Hausratversicherung enthalten sind"
+    ],
+    correct: 1,
+    feedback: "Bei vielen Geräten steht die Versicherungsprämie über die Nutzungsdauer in einem ungünstigen Verhältnis zum tatsächlichen Schadenrisiko – eine eigene Rücklage kann oft wirtschaftlicher sein."
+  },
+  {
+    q: "Welche Reihenfolge empfiehlt der Kurs grundsätzlich bei der Priorisierung von Versicherungen?",
+    options: [
+      "Zuerst Komfort-Versicherungen wie Reisegepäck, dann existenzsichernde Risiken",
+      "Zuerst existenzsichernde Risiken wie Haftpflicht und Berufsunfähigkeit, dann Komfort-Versicherungen",
+      "Alle Versicherungen sind gleich wichtig und sollten gleichzeitig abgeschlossen werden",
+      "Die Reihenfolge spielt keine Rolle"
+    ],
+    correct: 1,
+    feedback: "Die empfohlene Reihenfolge ist: zuerst Risiken absichern, die die Existenz bedrohen könnten (z.B. Haftpflicht, Berufsunfähigkeit), erst danach über ergänzende 'Komfort-Versicherungen' nachdenken."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = questions.map((item, i) => `
+    <div class="q-card" id="q-${i}" data-index="${i}">
+      <div class="q-num">Frage ${i+1} von ${questions.length}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options" id="options-${i}">
+        ${item.options.map((opt, j) => `
+          <div class="option" data-q="${i}" data-opt="${j}" onclick="selectOption(${i}, ${j})">
+            <div class="option-letter">${String.fromCharCode(65 + j)}</div>
+            <div>${opt}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback-${i}"></div>
+      <div class="nav-row">
+        <button class="btn btn-secondary" onclick="prevQuestion()" ${i === 0 ? 'style="visibility:hidden"' : ''}>← Zurück</button>
+        <button class="btn btn-primary" id="next-${i}" onclick="nextQuestion()" disabled>
+          ${i === questions.length - 1 ? 'Quiz auswerten' : 'Weiter →'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+  showQuestion(0);
+}
+
+function showQuestion(i) {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('q-' + i).classList.add('active');
+  current = i;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = ((current) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Frage ${current + 1} von ${questions.length}`;
+}
+
+function selectOption(qIndex, optIndex) {
+  if (answered[qIndex] !== undefined) return;
+
+  const item = questions[qIndex];
+  const isCorrect = optIndex === item.correct;
+  answered[qIndex] = optIndex;
+  if (isCorrect) score++;
+
+  const optionEls = document.querySelectorAll(`#options-${qIndex} .option`);
+  optionEls.forEach((el, j) => {
+    el.style.pointerEvents = 'none';
+    if (j === item.correct) el.classList.add('correct');
+    else if (j === optIndex && !isCorrect) el.classList.add('incorrect');
+  });
+
+  const fb = document.getElementById('feedback-' + qIndex);
+  fb.textContent = (isCorrect ? '✓ Richtig! ' : '✗ Nicht ganz. ') + item.feedback;
+  fb.classList.add('show', isCorrect ? 'correct-fb' : 'incorrect-fb');
+
+  document.getElementById('next-' + qIndex).disabled = false;
+}
+
+function nextQuestion() {
+  if (current < questions.length - 1) {
+    showQuestion(current + 1);
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (current > 0) showQuestion(current - 1);
+}
+
+function showResult() {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = 'Quiz abgeschlossen';
+
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('resultScore').innerHTML = `${score} / ${questions.length}`;
+  document.getElementById('resultBarFill').style.width = pct + '%';
+
+  let emoji, label;
+  if (pct === 100) { emoji = '🏆'; label = 'Perfekt! Du hast alle Fragen richtig beantwortet.'; }
+  else if (pct >= 80) { emoji = '🎉'; label = 'Sehr gut! Du hast die wichtigsten Inhalte verinnerlicht.'; }
+  else if (pct >= 50) { emoji = '👍'; label = 'Solide Basis – ein erneuter Blick in die Schulung lohnt sich.'; }
+  else { emoji = '📚'; label = 'Schau dir die Schulungsunterlagen nochmal in Ruhe an.'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('resultCard').classList.add('show');
+}
+
+function restartQuiz() {
+  current = 0;
+  score = 0;
+  answered = [];
+  document.getElementById('resultCard').classList.remove('show');
+  buildQuiz();
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
