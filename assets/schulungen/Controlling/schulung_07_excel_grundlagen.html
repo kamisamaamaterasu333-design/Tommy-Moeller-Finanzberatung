@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel für Controller – Grundlagen | Schulung 7</title>
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: #e2ddd8;
+    --text: #1a1a1a;
+    --muted: #6b6560;
+    --accent: #1d4ed8;
+    --accent-light: #eff6ff;
+    --accent2: #0f766e;
+    --accent2-light: #f0fdf9;
+    --warn: #b45309;
+    --warn-light: #fffbeb;
+    --success: #15803d;
+    --success-light: #f0fdf4;
+    --error: #dc2626;
+    --error-light: #fef2f2;
+    --tag-bg: #e8e4df;
+    --font-body: 'Georgia', 'Times New Roman', serif;
+    --font-ui: 'Segoe UI', system-ui, sans-serif;
+    --font-code: 'Consolas', 'Courier New', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.75; }
+
+  /* HEADER */
+  .site-header { background: var(--text); color: #fff; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; font-family: var(--font-ui); }
+  .site-header a { color: #fff; text-decoration: none; font-size: 0.85rem; opacity: 0.7; }
+  .site-header a:hover { opacity: 1; }
+  .breadcrumb { display: flex; gap: 0.5rem; align-items: center; font-size: 0.82rem; opacity: 0.65; }
+  .breadcrumb span { opacity: 0.4; }
+
+  /* HERO */
+  .hero { background: #1e3a5f; color: #fff; padding: 3.5rem 2rem 3rem; }
+  .hero-inner { max-width: 820px; margin: 0 auto; }
+  .hero-tag { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-family: var(--font-ui); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 3px; margin-bottom: 1.2rem; }
+  .hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: normal; line-height: 1.25; margin-bottom: 1rem; }
+  .hero h1 strong { display: block; font-weight: 700; }
+  .hero-desc { font-family: var(--font-ui); font-size: 1.05rem; opacity: 0.8; max-width: 600px; margin-bottom: 1.8rem; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; font-family: var(--font-ui); font-size: 0.85rem; opacity: 0.7; }
+  .hero-meta span::before { content: '· '; }
+  .hero-meta span:first-child::before { content: ''; }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .progress-bar-inner { max-width: 820px; margin: 0 auto; padding: 0.6rem 2rem; display: flex; align-items: center; gap: 1rem; font-family: var(--font-ui); font-size: 0.8rem; color: var(--muted); }
+  .progress-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+  /* LAYOUT */
+  .content-wrap { max-width: 820px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+  /* TOC */
+  .toc { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); padding: 1.5rem; margin-bottom: 2.5rem; border-radius: 0 4px 4px 0; }
+  .toc h3 { font-family: var(--font-ui); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.8rem; }
+  .toc ol { padding-left: 1.3rem; font-family: var(--font-ui); font-size: 0.9rem; }
+  .toc li { margin-bottom: 0.3rem; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 3rem; }
+  .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 2px solid var(--text); }
+  .section-num { font-family: var(--font-ui); font-size: 0.78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+  .section h2 { font-size: 1.4rem; font-weight: 700; }
+  .section h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.6rem; font-family: var(--font-ui); }
+  .section p { margin-bottom: 1rem; }
+  .section ul, .section ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  .section li { margin-bottom: 0.35rem; }
+
+  /* FORMULA CARDS */
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; margin: 1rem 0 1.5rem; }
+  .formula-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.2rem 1.4rem; }
+  .formula-card .fname { font-family: var(--font-code); font-size: 0.88rem; font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
+  .formula-card .fsyntax { font-family: var(--font-code); font-size: 0.78rem; background: var(--accent-light); color: #1e40af; padding: 0.3rem 0.6rem; border-radius: 3px; margin-bottom: 0.5rem; display: block; }
+  .formula-card .fdesc { font-family: var(--font-ui); font-size: 0.88rem; color: var(--muted); }
+  .formula-card .fexample { font-family: var(--font-code); font-size: 0.78rem; background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 3px; margin-top: 0.4rem; display: block; color: #374151; }
+
+  /* CODE BLOCK */
+  .code-block { background: #1e293b; color: #e2e8f0; font-family: var(--font-code); font-size: 0.85rem; padding: 1.2rem 1.5rem; border-radius: 4px; margin: 1rem 0; overflow-x: auto; line-height: 1.6; }
+  .code-block .keyword { color: #7dd3fc; }
+  .code-block .string { color: #86efac; }
+  .code-block .comment { color: #64748b; }
+
+  /* CALLOUT */
+  .callout { padding: 1rem 1.25rem; border-radius: 4px; margin: 1rem 0; font-family: var(--font-ui); font-size: 0.92rem; border-left: 4px solid; }
+  .callout-info { background: var(--accent-light); border-color: var(--accent); color: #1e40af; }
+  .callout-tip { background: var(--accent2-light); border-color: var(--accent2); color: #115e59; }
+  .callout-warn { background: var(--warn-light); border-color: var(--warn); color: #92400e; }
+  .callout strong { font-weight: 700; }
+
+  /* TABLE */
+  .data-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-family: var(--font-ui); font-size: 0.88rem; }
+  .data-table th { background: var(--text); color: #fff; padding: 0.6rem 1rem; text-align: left; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .data-table td { padding: 0.55rem 1rem; border-bottom: 1px solid var(--border); }
+  .data-table tr:nth-child(even) td { background: #fafaf9; }
+  .data-table .num { font-family: var(--font-code); text-align: right; }
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+
+  /* INTERACTIVE FORMULA DEMO */
+  .demo-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; margin: 1.5rem 0; }
+  .demo-box h4 { font-family: var(--font-ui); font-weight: 700; margin-bottom: 1rem; font-size: 0.95rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.78rem; }
+  .demo-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 0.75rem; }
+  .demo-field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .demo-field label { font-family: var(--font-ui); font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+  .demo-field input, .demo-field select { font-family: var(--font-code); font-size: 0.9rem; border: 1px solid var(--border); border-radius: 3px; padding: 0.45rem 0.7rem; background: var(--bg); color: var(--text); width: 140px; }
+  .demo-result { background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 3px; padding: 0.6rem 1rem; font-family: var(--font-code); font-size: 0.92rem; color: var(--accent); font-weight: 700; }
+  .demo-formula-display { font-family: var(--font-code); font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; }
+
+  /* QUIZ */
+  .quiz-section { background: #fff; border: 2px solid var(--border); border-radius: 6px; padding: 2rem; margin: 2.5rem 0; }
+  .quiz-section h3 { font-family: var(--font-ui); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .quiz-section h3::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+  .quiz-q { margin-bottom: 1.8rem; }
+  .quiz-q .q-text { font-family: var(--font-ui); font-size: 0.97rem; font-weight: 600; margin-bottom: 0.85rem; line-height: 1.4; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.45rem; }
+  .quiz-option { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.65rem 1rem; border: 1.5px solid var(--border); border-radius: 4px; cursor: pointer; font-family: var(--font-ui); font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; line-height: 1.4; }
+  .quiz-option:hover { border-color: var(--accent); background: var(--accent-light); }
+  .quiz-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .quiz-option.correct { border-color: var(--success); background: var(--success-light); color: var(--success); }
+  .quiz-option.wrong { border-color: var(--error); background: var(--error-light); color: var(--error); }
+  .quiz-option .opt-letter { font-weight: 700; min-width: 20px; color: var(--accent); }
+  .quiz-option.correct .opt-letter { color: var(--success); }
+  .quiz-option.wrong .opt-letter { color: var(--error); }
+  .quiz-feedback { margin-top: 0.6rem; font-family: var(--font-ui); font-size: 0.85rem; padding: 0.5rem 0.8rem; border-radius: 3px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: var(--success-light); color: var(--success); }
+  .quiz-feedback.bad { background: var(--error-light); color: var(--error); }
+  .quiz-submit { margin-top: 1.5rem; }
+  .quiz-submit button { background: var(--accent); color: #fff; border: none; padding: 0.7rem 1.8rem; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 600; border-radius: 4px; cursor: pointer; transition: background 0.15s; }
+  .quiz-submit button:hover { background: #1e40af; }
+  .quiz-score { margin-top: 1rem; font-family: var(--font-ui); font-size: 0.95rem; font-weight: 700; padding: 0.8rem 1.2rem; border-radius: 4px; display: none; }
+  .quiz-score.show { display: block; }
+
+  /* PIVOT STEPS */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; margin-bottom: 1rem; }
+  .step-list li::before { content: counter(steps); display: flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; background: var(--accent); color: #fff; border-radius: 50%; font-family: var(--font-ui); font-size: 0.8rem; font-weight: 700; margin-top: 0.2rem; }
+  .step-list li p { font-family: var(--font-ui); font-size: 0.92rem; }
+
+  /* DASHBOARD PREVIEW */
+  .dashboard-preview { background: #1e293b; border-radius: 6px; padding: 1.5rem; margin: 1.5rem 0; }
+  .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+  .dash-kpi { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1rem; text-align: center; }
+  .dash-kpi .kval { font-family: var(--font-ui); font-size: 1.6rem; font-weight: 700; color: #fff; }
+  .dash-kpi .klabel { font-family: var(--font-ui); font-size: 0.72rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+  .dash-kpi .kdelta { font-family: var(--font-ui); font-size: 0.78rem; margin-top: 0.2rem; }
+  .dash-kpi .kdelta.pos { color: #4ade80; }
+  .dash-kpi .kdelta.neg { color: #f87171; }
+  .dash-bar { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 1rem; }
+  .dash-bar-title { font-family: var(--font-ui); font-size: 0.72rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+  .bar-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+  .bar-label { font-family: var(--font-ui); font-size: 0.75rem; color: rgba(255,255,255,0.7); width: 60px; text-align: right; }
+  .bar-track { flex: 1; height: 14px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; background: #3b82f6; }
+  .bar-val { font-family: var(--font-code); font-size: 0.72rem; color: rgba(255,255,255,0.6); width: 45px; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { display: flex; justify-content: space-between; padding: 2rem 0 0; border-top: 1px solid var(--border); margin-top: 3rem; font-family: var(--font-ui); font-size: 0.88rem; }
+  .btn-nav { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; border: 1.5px solid var(--border); border-radius: 4px; color: var(--text); text-decoration: none; background: var(--surface); transition: border-color 0.15s; }
+  .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-nav.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-nav.primary:hover { background: #1e40af; }
+
+  @media (max-width: 600px) {
+    .formula-grid { grid-template-columns: 1fr; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .hero { padding: 2.5rem 1.2rem 2rem; }
+    .content-wrap { padding: 1.5rem 1.2rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="breadcrumb">
+    <a href="schulungen.html">Schulungen</a>
+    <span>›</span>
+    <span>Excel für Controller</span>
+    <span>›</span>
+    <span>Grundlagen</span>
+  </div>
+  <a href="schulungen.html">← Zurück zur Übersicht</a>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Schulung 7 · Controlling</div>
+    <h1>Excel für Controller<strong>Grundlagen</strong></h1>
+    <p class="hero-desc">Die wichtigsten Formeln, Pivot-Tabellen, bedingte Formatierung und einfache Dashboards — praxisnah erklärt für den Controlling-Alltag.</p>
+    <div class="hero-meta">
+      <span>⏱ ca. 60 Min.</span>
+      <span>Einsteiger bis Fortgeschritten</span>
+      <span>5 Abschnitte + Quiz</span>
+      <span>Interaktive Demos</span>
+    </div>
+  </div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner">
+    <span id="progressLabel">0 % abgeschlossen</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <nav class="toc">
+    <h3>Inhalt dieser Schulung</h3>
+    <ol>
+      <li><a href="#formeln">Die wichtigsten Formeln im Controlling-Alltag</a></li>
+      <li><a href="#sverweis">SVERWEIS & XVERWEIS — Daten verbinden</a></li>
+      <li><a href="#pivot">Pivot-Tabellen — Daten analysieren</a></li>
+      <li><a href="#formatierung">Bedingte Formatierung — Abweichungen visualisieren</a></li>
+      <li><a href="#dashboard">Einfache Dashboards aufbauen</a></li>
+      <li><a href="#quiz">Wissenstest</a></li>
+    </ol>
+  </nav>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="formeln">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Die wichtigsten Formeln im Controlling-Alltag</h2>
+    </div>
+    <p>Excel ist das wichtigste Werkzeug im Controlling. Doch statt hunderte Funktionen auswendig zu lernen, reichen im Alltag etwa 15–20 Formeln, die man wirklich beherrscht. Hier sind die unverzichtbaren:</p>
+
+    <h3>Grundrechenarten &amp; Aggregation</h3>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="fname">SUMME / SUM</div>
+        <code class="fsyntax">=SUMME(Bereich)</code>
+        <div class="fdesc">Addiert alle Zahlen in einem Zellbereich. Basis jeder Controlling-Auswertung.</div>
+        <code class="fexample">=SUMME(B2:B13) → Jahresumsatz</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">SUMWENN / SUMIF</div>
+        <code class="fsyntax">=SUMWENN(Bereich; Kriterium; Summe_Bereich)</code>
+        <div class="fdesc">Summiert nur Werte, die eine Bedingung erfüllen — z.B. Umsatz einer bestimmten Kostenstelle.</div>
+        <code class="fexample">=SUMWENN(A:A;"KST-100";B:B)</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">ZÄHLENWENN / COUNTIF</div>
+        <code class="fsyntax">=ZÄHLENWENN(Bereich; Kriterium)</code>
+        <div class="fdesc">Zählt Einträge nach Bedingung. Gut für Häufigkeitsanalysen oder offene Posten.</div>
+        <code class="fexample">=ZÄHLENWENN(C:C;"offen")</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">MITTELWERT / AVERAGE</div>
+        <code class="fsyntax">=MITTELWERT(Bereich)</code>
+        <div class="fdesc">Berechnet den arithmetischen Mittelwert — für Durchschnittswerte bei KPIs.</div>
+        <code class="fexample">=MITTELWERT(D2:D13)</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">MIN / MAX</div>
+        <code class="fsyntax">=MIN(Bereich) / =MAX(Bereich)</code>
+        <div class="fdesc">Findet den kleinsten bzw. größten Wert — für Ausreißer-Analyse bei Kostenpositionen.</div>
+        <code class="fexample">=MAX(E2:E50) → Höchster Auftrag</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">ANZAHL2 / COUNTA</div>
+        <code class="fsyntax">=ANZAHL2(Bereich)</code>
+        <div class="fdesc">Zählt alle nicht-leeren Zellen — für Vollständigkeitsprüfungen bei Datensätzen.</div>
+        <code class="fexample">=ANZAHL2(A:A)-1 → Anzahl Datensätze</code>
+      </div>
+    </div>
+
+    <h3>Logik & Suche</h3>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="fname">WENN / IF</div>
+        <code class="fsyntax">=WENN(Bedingung; Dann; Sonst)</code>
+        <div class="fdesc">Die wichtigste Logikfunktion. Unverzichtbar für Plan-Ist-Ampeln und Abweichungsklassen.</div>
+        <code class="fexample">=WENN(B2>0;"Gewinn";"Verlust")</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">WENNFEHLER / IFERROR</div>
+        <code class="fsyntax">=WENNFEHLER(Formel; Wert_bei_Fehler)</code>
+        <div class="fdesc">Fängt Fehlerwerte (#NV, #DIV/0!) ab. Hält Reports sauber und professionell.</div>
+        <code class="fexample">=WENNFEHLER(A2/B2;0)</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">INDEX / VERGLEICH</div>
+        <code class="fsyntax">=INDEX(Spalte;VERGLEICH(Suchwert;Spalte;0))</code>
+        <div class="fdesc">Flexibler als SVERWEIS: sucht in beliebige Richtung, linke Spalten möglich.</div>
+        <code class="fexample">=INDEX(D:D;VERGLEICH("KST-200";A:A;0))</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">RUNDEN / ROUND</div>
+        <code class="fsyntax">=RUNDEN(Zahl; Stellen)</code>
+        <div class="fdesc">Rundet auf gewünschte Dezimalstellen. Wichtig für konsistente Darstellung in Reports.</div>
+        <code class="fexample">=RUNDEN(A2/1000;1) → Tsd. EUR</code>
+      </div>
+    </div>
+
+    <div class="demo-box">
+      <h4>🔢 Interaktive Demo — Plan-Ist-Berechnung</h4>
+      <div class="demo-row">
+        <div class="demo-field">
+          <label>Ist-Umsatz (€)</label>
+          <input type="number" id="ist" value="485000" oninput="calcDemo()">
+        </div>
+        <div class="demo-field">
+          <label>Plan-Umsatz (€)</label>
+          <input type="number" id="plan" value="500000" oninput="calcDemo()">
+        </div>
+      </div>
+      <div class="demo-result" id="demoResult">Abweichung: −15.000 € | −3,0 %</div>
+      <div class="demo-formula-display" id="demoFormula">=WENN((B2-C2)/C2&lt;−0,05;"⚠ kritisch";"✓ ok") → <span id="demoAmpel">✓ ok</span></div>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>Praxis-Tipp:</strong> Lerne zuerst SUMWENN, WENN und WENNFEHLER — diese drei Formeln lösen rund 60 % aller typischen Controlling-Aufgaben in Excel.
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="sverweis">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>SVERWEIS &amp; XVERWEIS — Daten verbinden</h2>
+    </div>
+    <p>In der Praxis liegen Daten oft in verschiedenen Tabellen: Buchungen in SAP, Stammdaten in einer Planungsdatei. SVERWEIS und XVERWEIS sind die Brücke zwischen diesen Welten.</p>
+
+    <h3>SVERWEIS — der Klassiker</h3>
+    <p>Sucht einen Wert in der ersten Spalte einer Tabelle und gibt einen Wert aus einer anderen Spalte derselben Zeile zurück.</p>
+    <div class="code-block">
+<span class="comment">// Syntax:</span>
+=SVERWEIS(Suchkriterium; Matrix; Spaltenindex; [Bereich_Verweis])
+
+<span class="comment">// Beispiel: Kostenstellen-Bezeichnung nachschlagen</span>
+=SVERWEIS(A2; <span class="string">Kostenstellen!A:B</span>; 2; 0)
+
+<span class="comment">// A2 = gesuchte KST-Nummer</span>
+<span class="comment">// Kostenstellen!A:B = Nachschlagetabelle</span>
+<span class="comment">// 2 = Spalte 2 (Bezeichnung)</span>
+<span class="comment">// 0 = exakte Übereinstimmung (immer 0 im Controlling!)</span></div>
+
+    <div class="callout callout-warn">
+      <strong>Häufiger Fehler:</strong> SVERWEIS sucht immer in der ersten Spalte der Matrix. Liegt der Suchwert rechts vom gesuchten Wert, liefert SVERWEIS #NV. → Lösung: XVERWEIS oder INDEX/VERGLEICH nutzen.
+    </div>
+
+    <h3>XVERWEIS — der moderne Ersatz (Excel 365 / 2021)</h3>
+    <p>XVERWEIS ist flexibler, lesbarer und fehlerresistenter als SVERWEIS. Er kann in jede Richtung suchen und hat einen integrierten Fehlerwert.</p>
+    <div class="code-block">
+<span class="comment">// Syntax:</span>
+=XVERWEIS(Suchkriterium; Suchbereich; Rückgabe; [wenn_nicht_gefunden]; [Übereinstimmungsmodus])
+
+<span class="comment">// Beispiel: Kostenstellen-Budget nachschlagen (auch von rechts nach links!)</span>
+=XVERWEIS(A2; <span class="string">Kostenstellen!B:B</span>; <span class="string">Kostenstellen!A:A</span>; <span class="string">"nicht gefunden"</span>)
+
+<span class="comment">// Vorteil: Kein #NV mehr durch integrierten Fehlerwert</span>
+<span class="comment">// Vorteil: Sucht in jede Richtung</span>
+<span class="comment">// Vorteil: Gibt mehrere Spalten zurück (Matrix)</span></div>
+
+    <div class="callout callout-info">
+      <strong>Empfehlung:</strong> In modernen Umgebungen (Office 365, Excel 2021+) immer XVERWEIS statt SVERWEIS nutzen. Alte Dateien mit SVERWEIS müssen nicht zwingend umgebaut werden — verstehen muss man beide.
+    </div>
+
+    <h3>Typischer Controlling-Anwendungsfall</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>KST-Nr.</th><th>Ist-Kosten</th><th>Bezeichnung (per XVERWEIS)</th><th>Budget (per XVERWEIS)</th><th>Abweichung</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1001</td><td class="num">48.320 €</td><td>Vertrieb Deutschland</td><td class="num">50.000 €</td><td class="num" style="color:var(--success)">−1.680 €</td></tr>
+          <tr><td class="num">1002</td><td class="num">31.750 €</td><td>Marketing</td><td class="num">28.000 €</td><td class="num" style="color:var(--error)">+3.750 €</td></tr>
+          <tr><td class="num">1003</td><td class="num">89.200 €</td><td>Produktion A</td><td class="num">92.000 €</td><td class="num" style="color:var(--success)">−2.800 €</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-family:var(--font-ui); font-size:0.85rem; color:var(--muted);">Spalten 3–4 werden per XVERWEIS aus der Stammdatentabelle gezogen. Spalte 5 ist eine einfache Subtraktion.</p>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="pivot">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Pivot-Tabellen — Daten analysieren</h2>
+    </div>
+    <p>Pivot-Tabellen sind das mächtigste Analyse-Werkzeug in Excel. Was früher Stunden mit SUMWENN-Formeln kostete, geht mit Pivot in Minuten — ohne eine einzige Formel schreiben zu müssen.</p>
+
+    <h3>Pivot in 6 Schritten erstellen</h3>
+    <ol class="step-list">
+      <li><p><strong>Datenbasis vorbereiten:</strong> Tabelle mit Überschriften in jeder Spalte, keine leeren Zeilen/Spalten, jede Zeile = ein Datensatz (z.B. eine Buchung).</p></li>
+      <li><p><strong>Pivot einfügen:</strong> Klick in Datentabelle → Einfügen → PivotTable → "Neues Arbeitsblatt" → OK.</p></li>
+      <li><p><strong>Felder anordnen:</strong> Im PivotTable-Feldbereich die gewünschten Felder in Zeilen, Spalten, Werte und Filter ziehen.</p></li>
+      <li><p><strong>Wertfeldeinstellung:</strong> Rechtsklick auf Wertefeld → "Wertfeldeinstellungen" → Summe, Anzahl, Mittelwert etc. wählen.</p></li>
+      <li><p><strong>Layout anpassen:</strong> PivotTable-Design → kompaktes oder tabellarisches Layout wählen. "Teilergebnisse" ein-/ausblenden.</p></li>
+      <li><p><strong>Pivot aktualisieren:</strong> Rechtsklick → Aktualisieren (bei Änderung der Quelldaten). Oder: Analysieren → Alle aktualisieren.</p></li>
+    </ol>
+
+    <div class="callout callout-tip">
+      <strong>Profi-Tipp:</strong> Wandle deine Rohdaten zuerst in eine "intelligente Tabelle" um (Strg+T) und benne sie z.B. "tbl_Buchungen". Pivot-Tabellen auf Basis solcher Tabellen aktualisieren sich automatisch, wenn neue Zeilen hinzukommen.
+    </div>
+
+    <h3>Sinnvolle Pivot-Auswertungen im Controlling</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Auswertungsziel</th><th>Zeilen</th><th>Spalten</th><th>Werte</th></tr></thead>
+        <tbody>
+          <tr><td>Kosten nach Kostenstelle</td><td>Kostenstelle</td><td>Monat</td><td>Summe Betrag</td></tr>
+          <tr><td>Umsatz nach Produkt + Region</td><td>Produktgruppe</td><td>Region</td><td>Summe Umsatz</td></tr>
+          <tr><td>Top-10-Lieferanten</td><td>Lieferant</td><td>—</td><td>Summe Betrag (sortiert)</td></tr>
+          <tr><td>Plan-Ist-Vergleich</td><td>Kostenstelle</td><td>Plan / Ist</td><td>Summe Betrag</td></tr>
+          <tr><td>Monatliche Entwicklung</td><td>Monat</td><td>Kategorie</td><td>Summe + % der Gesamtsumme</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Pivot-Stolperfallen</h3>
+    <ul>
+      <li><strong>Zahlen werden als Text erkannt:</strong> → Wertfeldeinstellung zeigt "Anzahl" statt "Summe" → Rohdaten prüfen, Zahlenformat korrigieren.</li>
+      <li><strong>Datumsgruppierung fehlt:</strong> Rechtsklick auf Datum in Pivot → Gruppierung → Jahre/Quartale/Monate auswählen.</li>
+      <li><strong>Leere Zellen in Rohdaten:</strong> Entstehen in Pivot als "(leer)" → Daten bereinigen oder Filter setzen.</li>
+      <li><strong>Formatierung geht verloren nach Refresh:</strong> → PivotTable-Optionen → "Zellformatierung beim Aktualisieren beibehalten" aktivieren.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="formatierung">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Bedingte Formatierung — Abweichungen visualisieren</h2>
+    </div>
+    <p>Gute Controller zeigen Abweichungen nicht nur in Zahlen — sie machen sie sofort sichtbar. Bedingte Formatierung ist das einfachste Mittel, um Reports auf einen Blick lesbar zu machen.</p>
+
+    <h3>Die wichtigsten Regeln im Überblick</h3>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="fname">Ampel-Farben (3 Regeln)</div>
+        <div class="fdesc">Grün = Zielerfüllung ≥ 95%, Gelb = 85–95%, Rot = &lt;85%. Ideal für KPI-Übersichten.</div>
+        <code class="fexample">Start → Bedingte Formatierung → Neue Regel</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">Datenbalken</div>
+        <div class="fdesc">Visualisiert Größenverhältnisse direkt in der Zelle. Kein separates Diagramm nötig. Gut für Kostenstellen-Vergleiche.</div>
+        <code class="fexample">Bedingte Formatierung → Datenbalken</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">Farbskalen</div>
+        <div class="fdesc">Grün-Gelb-Rot-Verlauf über einen Bereich. Gut für Heatmaps (z.B. Umsatz nach Monat × Region).</div>
+        <code class="fexample">Bedingte Formatierung → Farbskalen</code>
+      </div>
+      <div class="formula-card">
+        <div class="fname">Formel-basierte Regeln</div>
+        <div class="fdesc">Maximale Flexibilität: eigene Formeln entscheiden über Formatierung. Z.B. ganze Zeile einfärben wenn Abweichung > 10%.</div>
+        <code class="fexample">=ABS((B2-C2)/C2)>0,1</code>
+      </div>
+    </div>
+
+    <h3>Plan-Ist-Ampel — Schritt für Schritt</h3>
+    <ol class="step-list">
+      <li><p>Spalte D enthält die Abweichung in %: <code style="font-family:var(--font-code); background:var(--bg); padding:0.1rem 0.3rem; border-radius:2px;">=(B2-C2)/C2</code></p></li>
+      <li><p>Spalte D markieren → Start → Bedingte Formatierung → Neue Regel → "Zellen formatieren, die enthalten"</p></li>
+      <li><p>Regel 1: Zellwert &lt; −0,05 → Rote Füllung (kritisch)</p></li>
+      <li><p>Regel 2: Zellwert zwischen −0,05 und 0,05 → Grüne Füllung (im Plan)</p></li>
+      <li><p>Regel 3: Zellwert > 0,05 → Orange Füllung (Overrun — je nach Kontext gut oder schlecht)</p></li>
+      <li><p>Reihenfolge der Regeln im Manager prüfen — oben stehende Regeln haben Vorrang.</p></li>
+    </ol>
+
+    <div class="callout callout-warn">
+      <strong>Achtung:</strong> Zu viele bedingte Formatierungsregeln verlangsamen Excel erheblich. Bei großen Dateien besser sparsam einsetzen und auf wichtige Spalten beschränken.
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="dashboard">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Einfache Dashboards aufbauen</h2>
+    </div>
+    <p>Ein gutes Controlling-Dashboard fasst die wichtigsten Kennzahlen auf einer Seite zusammen. Es ist kein Kunstwerk — es ist ein Kommunikationsmittel. Klarheit vor Komplexität.</p>
+
+    <h3>Die 4 Bausteine eines Excel-Dashboards</h3>
+    <ul>
+      <li><strong>KPI-Übersicht:</strong> 3–6 Kennzahlen als große Zahlen mit Trend-Indikator (Pfeile, Ampel)</li>
+      <li><strong>Hauptdiagramm:</strong> Säulen- oder Liniendiagramm für den wichtigsten Trend (z.B. Monatsumsatz)</li>
+      <li><strong>Detailtabelle:</strong> Plan-Ist-Vergleich der wichtigsten Positionen</li>
+      <li><strong>Filter/Slicer:</strong> Interaktive Filter für Zeitraum, Kostenstelle oder Produkt</li>
+    </ul>
+
+    <div class="dashboard-preview">
+      <div class="dash-grid">
+        <div class="dash-kpi"><div class="kval">2,34M</div><div class="klabel">Umsatz YTD</div><div class="kdelta pos">▲ +4,2 % vs. Plan</div></div>
+        <div class="dash-kpi"><div class="kval">18,6%</div><div class="klabel">EBIT-Marge</div><div class="kdelta neg">▼ −1,4 PP vs. Vorjahr</div></div>
+        <div class="dash-kpi"><div class="kval">92%</div><div class="klabel">Plan-Erfüllung</div><div class="kdelta pos">▲ Ziel: ≥ 90%</div></div>
+      </div>
+      <div class="dash-bar">
+        <div class="dash-bar-title">Umsatz nach Kostenstelle (Ist vs. Plan)</div>
+        <div class="bar-row"><div class="bar-label">Vertrieb</div><div class="bar-track"><div class="bar-fill" style="width:96%; background:#4ade80;"></div></div><div class="bar-val">96%</div></div>
+        <div class="bar-row"><div class="bar-label">Marketing</div><div class="bar-track"><div class="bar-fill" style="width:113%; background:#f87171;"></div></div><div class="bar-val">113%</div></div>
+        <div class="bar-row"><div class="bar-label">Produktion</div><div class="bar-track"><div class="bar-fill" style="width:97%;"></div></div><div class="bar-val">97%</div></div>
+        <div class="bar-row"><div class="bar-label">Logistik</div><div class="bar-track"><div class="bar-fill" style="width:88%; background:#fbbf24;"></div></div><div class="bar-val">88%</div></div>
+      </div>
+    </div>
+
+    <h3>Praktische Dashboard-Tipps</h3>
+    <ul>
+      <li>Datenbasis und Dashboard auf getrennten Tabellenblättern halten — das Dashboard zieht nur Werte per Formel.</li>
+      <li>Gridlines ausblenden (Ansicht → Gitternetzlinien deaktivieren) für professionellen Look.</li>
+      <li>Zeilen-/Spaltenköpfe ausblenden auf dem Dashboard-Blatt.</li>
+      <li>Slicer für Pivot-Tabellen verwenden — interaktivere Filterung ohne VBA.</li>
+      <li>Diagramme auf feste Größen snappen: Alt-Taste beim Verschieben/Skalieren.</li>
+      <li>Zellen als Anzeigefelder nutzen: große Schrift, Tausenderpunkte, kein Rahmen → sieht aus wie ein Widget.</li>
+    </ul>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="quiz-section" id="quiz">
+    <h3>Wissenstest — Schulung 7</h3>
+
+    <div class="quiz-q" id="q1">
+      <div class="q-text">1. Was gibt der dritte Parameter bei SVERWEIS an?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(1,0,false)"><span class="opt-letter">A</span> Den Suchbereich, in dem gesucht wird</div>
+        <div class="quiz-option" onclick="selectOpt(1,1,true)"><span class="opt-letter">B</span> Den Spaltenindex — welche Spalte der Matrix zurückgegeben wird</div>
+        <div class="quiz-option" onclick="selectOpt(1,2,false)"><span class="opt-letter">C</span> Die maximale Anzahl der Treffer</div>
+        <div class="quiz-option" onclick="selectOpt(1,3,false)"><span class="opt-letter">D</span> Ob die Suche exakt oder ungefähr ist</div>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-q" id="q2">
+      <div class="q-text">2. Welche Formel summiert nur Werte, bei denen in Spalte A der Text "Berlin" steht?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(2,0,false)"><span class="opt-letter">A</span> =SUMME(WENN(A:A="Berlin";B:B))</div>
+        <div class="quiz-option" onclick="selectOpt(2,1,true)"><span class="opt-letter">B</span> =SUMWENN(A:A;"Berlin";B:B)</div>
+        <div class="quiz-option" onclick="selectOpt(2,2,false)"><span class="opt-letter">C</span> =ZÄHLENWENN(A:A;"Berlin")*B:B</div>
+        <div class="quiz-option" onclick="selectOpt(2,3,false)"><span class="opt-letter">D</span> =SUMME(B:B;A:A="Berlin")</div>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+
+    <div class="quiz-q" id="q3">
+      <div class="q-text">3. Was ist der wichtigste Vorteil von XVERWEIS gegenüber SVERWEIS?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(3,0,false)"><span class="opt-letter">A</span> XVERWEIS ist schneller bei sehr großen Tabellen</div>
+        <div class="quiz-option" onclick="selectOpt(3,1,false)"><span class="opt-letter">B</span> XVERWEIS funktioniert auch in Excel 2003</div>
+        <div class="quiz-option" onclick="selectOpt(3,2,true)"><span class="opt-letter">C</span> XVERWEIS kann in beliebige Richtung suchen und hat einen integrierten Fehlerwert</div>
+        <div class="quiz-option" onclick="selectOpt(3,3,false)"><span class="opt-letter">D</span> XVERWEIS benötigt keine Spaltennummer</div>
+      </div>
+      <div class="quiz-feedback" id="fb3"></div>
+    </div>
+
+    <div class="quiz-q" id="q4">
+      <div class="q-text">4. Warum sollten Rohdaten vor dem Erstellen einer Pivot-Tabelle in eine "intelligente Tabelle" (Strg+T) umgewandelt werden?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(4,0,false)"><span class="opt-letter">A</span> Pivot-Tabellen funktionieren sonst nicht</div>
+        <div class="quiz-option" onclick="selectOpt(4,1,true)"><span class="opt-letter">B</span> Die Pivot-Tabelle aktualisiert sich automatisch, wenn neue Zeilen hinzukommen</div>
+        <div class="quiz-option" onclick="selectOpt(4,2,false)"><span class="opt-letter">C</span> Die Formatierung der Pivot-Tabelle bleibt erhalten</div>
+        <div class="quiz-option" onclick="selectOpt(4,3,false)"><span class="opt-letter">D</span> Excel rechnet dann deutlich schneller</div>
+      </div>
+      <div class="quiz-feedback" id="fb4"></div>
+    </div>
+
+    <div class="quiz-q" id="q5">
+      <div class="q-text">5. Welche Aussage zur bedingten Formatierung ist korrekt?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(5,0,false)"><span class="opt-letter">A</span> Man kann maximal 3 Regeln pro Zellbereich definieren</div>
+        <div class="quiz-option" onclick="selectOpt(5,1,false)"><span class="opt-letter">B</span> Bedingte Formatierung funktioniert nur mit Zahlen, nicht mit Text</div>
+        <div class="quiz-option" onclick="selectOpt(5,2,true)"><span class="opt-letter">C</span> Zu viele Regeln können Excel verlangsamen; oben stehende Regeln haben Vorrang</div>
+        <div class="quiz-option" onclick="selectOpt(5,3,false)"><span class="opt-letter">D</span> Bedingte Formatierung bleibt beim Drucken immer sichtbar, unabhängig von den Druckeinstellungen</div>
+      </div>
+      <div class="quiz-feedback" id="fb5"></div>
+    </div>
+
+    <div class="quiz-submit">
+      <button onclick="submitQuiz()">Auswertung anzeigen</button>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+  </section>
+
+  <div class="bottom-nav">
+    <a href="schulungen.html" class="btn-nav">← Alle Schulungen</a>
+    <a href="schulung_08_excel_fortgeschritten.html" class="btn-nav primary">Schulung 8: Excel Fortgeschritten →</a>
+  </div>
+
+</div>
+
+<script>
+// Demo
+function calcDemo() {
+  const ist = parseFloat(document.getElementById('ist').value) || 0;
+  const plan = parseFloat(document.getElementById('plan').value) || 1;
+  const abs = ist - plan;
+  const pct = (abs / plan * 100);
+  const fmt = n => n.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+  const fmtP = n => n.toLocaleString('de-DE', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+  document.getElementById('demoResult').textContent = `Abweichung: ${abs >= 0 ? '+' : ''}${fmt(abs)} € | ${pct >= 0 ? '+' : ''}${fmtP(pct)} %`;
+  const ampel = Math.abs(pct) <= 5 ? '✓ ok' : pct < -10 ? '⚠ kritisch' : '⚡ auffällig';
+  document.getElementById('demoAmpel').textContent = ampel;
+}
+calcDemo();
+
+// Quiz
+const answers = {};
+function selectOpt(q, idx, correct) {
+  const qEl = document.getElementById('q' + q);
+  const opts = qEl.querySelectorAll('.quiz-option');
+  opts.forEach(o => { o.classList.remove('selected'); });
+  opts[idx].classList.add('selected');
+  answers[q] = { idx, correct };
+}
+function submitQuiz() {
+  let score = 0;
+  const feedbacks = {
+    1: 'Richtig! Der dritte Parameter (Spaltenindex) gibt an, welche Spalte der Suchmatrix zurückgegeben wird.',
+    2: 'Richtig! SUMWENN(Kriterienbereich; Kriterium; Summenbereich) ist die korrekte Syntax.',
+    3: 'Richtig! XVERWEIS sucht in beide Richtungen und hat einen eingebauten Fehlerwert als 4. Parameter.',
+    4: 'Richtig! Intelligente Tabellen erweitern sich automatisch — Pivot-Tabellen darauf müssen nur aktualisiert werden.',
+    5: 'Richtig! Excel prüft Regeln von oben nach unten und stoppt beim ersten Treffer (sofern "Anhalten" aktiviert). Zu viele Regeln verlangsamen die Datei.'
+  };
+  for (let q = 1; q <= 5; q++) {
+    const a = answers[q];
+    const qEl = document.getElementById('q' + q);
+    const opts = qEl.querySelectorAll('.quiz-option');
+    const fb = document.getElementById('fb' + q);
+    if (a) {
+      if (a.correct) {
+        opts[a.idx].classList.add('correct');
+        score++;
+        fb.textContent = '✓ ' + feedbacks[q];
+        fb.className = 'quiz-feedback show ok';
+      } else {
+        opts[a.idx].classList.add('wrong');
+        fb.textContent = '✗ Leider falsch. ' + feedbacks[q];
+        fb.className = 'quiz-feedback show bad';
+      }
+    }
+  }
+  const scoreEl = document.getElementById('quizScore');
+  const pct = Math.round(score / 5 * 100);
+  scoreEl.className = 'quiz-score show';
+  if (pct >= 80) { scoreEl.style.background = 'var(--success-light)'; scoreEl.style.color = 'var(--success)'; }
+  else if (pct >= 60) { scoreEl.style.background = 'var(--warn-light)'; scoreEl.style.color = 'var(--warn)'; }
+  else { scoreEl.style.background = 'var(--error-light)'; scoreEl.style.color = 'var(--error)'; }
+  scoreEl.textContent = `Ergebnis: ${score} von 5 Fragen richtig (${pct} %)${pct === 100 ? ' 🎉 Perfekt!' : pct >= 80 ? ' — Gut gemacht!' : ' — Schau dir die markierten Abschnitte nochmal an.'}`;
+  updateProgress(pct);
+}
+
+// Progress
+function updateProgress(val) {
+  document.getElementById('progressFill').style.width = val + '%';
+  document.getElementById('progressLabel').textContent = val + ' % abgeschlossen';
+}
+// Scroll-based progress
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = (doc.scrollTop || document.body.scrollTop);
+  const total = doc.scrollHeight - doc.clientHeight;
+  const pct = Math.round(scrolled / total * 100);
+  if (!document.getElementById('quizScore').classList.contains('show')) {
+    updateProgress(pct);
+  }
+});
+</script>
+</body>
+</html>
