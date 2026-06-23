@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel für Controller – Fortgeschritten | Schulung 8</title>
+<style>
+  :root {
+    --bg:#f8f7f4;--surface:#fff;--border:#e2ddd8;--text:#1a1a1a;--muted:#6b6560;
+    --accent:#0e7490;--accent-light:#ecfeff;--accent2:#7c3aed;--accent2-light:#f5f3ff;
+    --warn:#b45309;--warn-light:#fffbeb;--success:#15803d;--success-light:#f0fdf4;
+    --error:#dc2626;--error-light:#fef2f2;
+    --font-body:'Georgia','Times New Roman',serif;--font-ui:'Segoe UI',system-ui,sans-serif;--font-code:'Consolas','Courier New',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:17px;line-height:1.75}
+  .site-header{background:var(--text);color:#fff;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;font-family:var(--font-ui)}
+  .site-header a{color:#fff;text-decoration:none;font-size:.85rem;opacity:.7}.site-header a:hover{opacity:1}
+  .breadcrumb{display:flex;gap:.5rem;align-items:center;font-size:.82rem;opacity:.65}.breadcrumb span{opacity:.4}
+  .hero{background:#0c4a6e;color:#fff;padding:3.5rem 2rem 3rem}
+  .hero-inner{max-width:820px;margin:0 auto}
+  .hero-tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:var(--font-ui);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border-radius:3px;margin-bottom:1.2rem}
+  .hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:normal;line-height:1.25;margin-bottom:1rem}
+  .hero h1 strong{display:block;font-weight:700}
+  .hero-desc{font-family:var(--font-ui);font-size:1.05rem;opacity:.8;max-width:600px;margin-bottom:1.8rem}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:1.5rem;font-family:var(--font-ui);font-size:.85rem;opacity:.7}
+  .hero-meta span::before{content:'· '}.hero-meta span:first-child::before{content:''}
+  .progress-bar-wrap{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+  .progress-bar-inner{max-width:820px;margin:0 auto;padding:.6rem 2rem;display:flex;align-items:center;gap:1rem;font-family:var(--font-ui);font-size:.8rem;color:var(--muted)}
+  .progress-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;width:0%}
+  .content-wrap{max-width:820px;margin:0 auto;padding:2.5rem 2rem 4rem}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);padding:1.5rem;margin-bottom:2.5rem;border-radius:0 4px 4px 0}
+  .toc h3{font-family:var(--font-ui);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+  .toc ol{padding-left:1.3rem;font-family:var(--font-ui);font-size:.9rem}.toc li{margin-bottom:.3rem}
+  .toc a{color:var(--accent);text-decoration:none}.toc a:hover{text-decoration:underline}
+  .section{margin-bottom:3rem}
+  .section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:2px solid var(--text)}
+  .section-num{font-family:var(--font-ui);font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+  .section h2{font-size:1.4rem;font-weight:700}
+  .section h3{font-size:1.1rem;font-weight:700;margin:1.5rem 0 .6rem;font-family:var(--font-ui)}
+  .section p{margin-bottom:1rem}.section ul,.section ol{padding-left:1.5rem;margin-bottom:1rem}.section li{margin-bottom:.35rem}
+  .callout{padding:1rem 1.25rem;border-radius:4px;margin:1rem 0;font-family:var(--font-ui);font-size:.92rem;border-left:4px solid}
+  .callout-info{background:var(--accent-light);border-color:var(--accent);color:#155e75}
+  .callout-tip{background:var(--accent2-light);border-color:var(--accent2);color:#4c1d95}
+  .callout-warn{background:var(--warn-light);border-color:var(--warn);color:#92400e}
+  .callout strong{font-weight:700}
+  .data-table{width:100%;border-collapse:collapse;margin:1rem 0;font-family:var(--font-ui);font-size:.88rem}
+  .data-table th{background:var(--text);color:#fff;padding:.6rem 1rem;text-align:left;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+  .data-table td{padding:.55rem 1rem;border-bottom:1px solid var(--border)}
+  .data-table tr:nth-child(even) td{background:#fafaf9}
+  .table-wrap{overflow-x:auto;margin:1rem 0}
+  /* CODE */
+  .code-block{background:#0f172a;color:#e2e8f0;font-family:var(--font-code);font-size:.83rem;padding:1.2rem 1.5rem;border-radius:4px;margin:1rem 0;overflow-x:auto;line-height:1.65}
+  .code-block .kw{color:#7dd3fc}.code-block .fn{color:#86efac}.code-block .cm{color:#475569}.code-block .st{color:#fda4af}.code-block .nu{color:#fb923c}
+  /* STEP LIST */
+  .step-list{counter-reset:steps;list-style:none;padding:0}
+  .step-list li{counter-increment:steps;display:flex;gap:1rem;margin-bottom:1rem}
+  .step-list li::before{content:counter(steps);display:flex;align-items:center;justify-content:center;min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;font-family:var(--font-ui);font-size:.8rem;font-weight:700;margin-top:.2rem;flex-shrink:0}
+  .step-list li p{font-family:var(--font-ui);font-size:.92rem}
+  /* FEATURE GRID */
+  .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem;margin:1rem 0}
+  .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1.2rem 1.4rem}
+  .feature-card .fc-tag{font-family:var(--font-code);font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:.3rem}
+  .feature-card .fc-title{font-family:var(--font-ui);font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+  .feature-card .fc-desc{font-family:var(--font-ui);font-size:.87rem;color:var(--muted)}
+  .feature-card code{font-family:var(--font-code);font-size:.78rem;background:var(--accent-light);color:#155e75;padding:.15rem .4rem;border-radius:2px}
+  /* LAMBDA DEMO */
+  .lambda-demo{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:1.5rem 0}
+  .lambda-demo h4{font-family:var(--font-ui);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem;font-weight:700}
+  .lambda-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem}
+  .lf{display:flex;flex-direction:column;gap:.3rem}
+  .lf label{font-family:var(--font-ui);font-size:.75rem;color:var(--muted);font-weight:600}
+  .lf input{font-family:var(--font-code);font-size:.95rem;border:1.5px solid var(--border);border-radius:3px;padding:.45rem .6rem;background:var(--bg);width:100%}
+  .lambda-result{background:var(--accent-light);border:1px solid #a5f3fc;border-radius:3px;padding:.7rem 1rem;font-family:var(--font-code);font-size:.9rem;color:#155e75;font-weight:700}
+  /* QUIZ */
+  .quiz-section{background:#fff;border:2px solid var(--border);border-radius:6px;padding:2rem;margin:2.5rem 0}
+  .quiz-section h3{font-family:var(--font-ui);font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+  .quiz-section h3::before{content:'';display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%}
+  .quiz-q{margin-bottom:1.8rem}
+  .quiz-q .q-text{font-family:var(--font-ui);font-size:.97rem;font-weight:600;margin-bottom:.85rem;line-height:1.4}
+  .quiz-options{display:flex;flex-direction:column;gap:.45rem}
+  .quiz-option{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;font-family:var(--font-ui);font-size:.9rem;transition:border-color .15s,background .15s;user-select:none;line-height:1.4}
+  .quiz-option:hover{border-color:var(--accent);background:var(--accent-light)}
+  .quiz-option.selected{border-color:var(--accent);background:var(--accent-light)}
+  .quiz-option.correct{border-color:var(--success);background:var(--success-light);color:var(--success)}
+  .quiz-option.wrong{border-color:var(--error);background:var(--error-light);color:var(--error)}
+  .quiz-option .opt-letter{font-weight:700;min-width:20px;color:var(--accent)}
+  .quiz-option.correct .opt-letter{color:var(--success)}.quiz-option.wrong .opt-letter{color:var(--error)}
+  .quiz-feedback{margin-top:.6rem;font-family:var(--font-ui);font-size:.85rem;padding:.5rem .8rem;border-radius:3px;display:none}
+  .quiz-feedback.show{display:block}.quiz-feedback.ok{background:var(--success-light);color:var(--success)}.quiz-feedback.bad{background:var(--error-light);color:var(--error)}
+  .quiz-submit button{background:var(--accent);color:#fff;border:none;padding:.7rem 1.8rem;font-family:var(--font-ui);font-size:.9rem;font-weight:600;border-radius:4px;cursor:pointer;margin-top:1.5rem}
+  .quiz-submit button:hover{background:#0e6480}
+  .quiz-score{margin-top:1rem;font-family:var(--font-ui);font-size:.95rem;font-weight:700;padding:.8rem 1.2rem;border-radius:4px;display:none}
+  .quiz-score.show{display:block}
+  .bottom-nav{display:flex;justify-content:space-between;padding:2rem 0 0;border-top:1px solid var(--border);margin-top:3rem;font-family:var(--font-ui);font-size:.88rem}
+  .btn-nav{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border:1.5px solid var(--border);border-radius:4px;color:var(--text);text-decoration:none;background:var(--surface);transition:border-color .15s}
+  .btn-nav:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-nav.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-nav.primary:hover{background:#0e6480}
+  @media(max-width:600px){.feature-grid{grid-template-columns:1fr}.lambda-inputs{grid-template-columns:1fr 1fr}.hero{padding:2.5rem 1.2rem 2rem}.content-wrap{padding:1.5rem 1.2rem 3rem}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="breadcrumb"><a href="schulungen.html">Schulungen</a><span>›</span><span>Excel für Controller – Fortgeschritten</span></div>
+  <a href="schulungen.html">← Zurück</a>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Schulung 8 · Controlling</div>
+    <h1>Excel für Controller<strong>Fortgeschritten</strong></h1>
+    <p class="hero-desc">Power Query, Datenmodelle, dynamische Diagramme, LAMBDA-Funktionen und automatisierte Reports — Excel auf Profi-Niveau für den Controller-Alltag.</p>
+    <div class="hero-meta"><span>⏱ ca. 75 Min.</span><span>Fortgeschritten</span><span>5 Abschnitte + Quiz</span><span>Interaktive LAMBDA-Demo</span></div>
+  </div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner">
+    <span id="progressLabel">0 % abgeschlossen</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <nav class="toc">
+    <h3>Inhalt dieser Schulung</h3>
+    <ol>
+      <li><a href="#powerquery">Power Query — Daten automatisch aufbereiten</a></li>
+      <li><a href="#datenmodell">Datenmodelle & Power Pivot</a></li>
+      <li><a href="#diagramme">Dynamische Diagramme</a></li>
+      <li><a href="#lambda">LAMBDA-Funktionen — eigene Formeln schreiben</a></li>
+      <li><a href="#reports">Automatisierte Reports</a></li>
+      <li><a href="#quiz">Wissenstest</a></li>
+    </ol>
+  </nav>
+
+  <!-- 01 POWER QUERY -->
+  <section class="section" id="powerquery">
+    <div class="section-header"><span class="section-num">01</span><h2>Power Query — Daten automatisch aufbereiten</h2></div>
+    <p>Power Query ist das wichtigste Werkzeug für alle, die regelmäßig Daten aus SAP, ERP-Systemen, CSV-Exporten oder mehreren Excel-Dateien zusammenführen müssen. Statt monatlich dieselben Schritte manuell zu wiederholen, werden sie einmalig definiert und dann per Klick wiederholt.</p>
+
+    <h3>Warum Power Query statt manueller Aufbereitung?</h3>
+    <ul>
+      <li><strong>Reproduzierbarkeit:</strong> Jede Transformation wird aufgezeichnet und ist jederzeit nachvollziehbar.</li>
+      <li><strong>Geschwindigkeit:</strong> Monatlicher Report-Refresh in Sekunden statt Stunden.</li>
+      <li><strong>Fehlerreduktion:</strong> Kein Copy-Paste, keine vergessenen Filter, keine Formatfehler.</li>
+      <li><strong>Skalierbarkeit:</strong> Funktioniert mit Millionen von Zeilen — Excel-Tabellenblätter haben ein Limit von ~1 Mio. Zeilen.</li>
+    </ul>
+
+    <h3>Der Power Query Editor — Schritt für Schritt</h3>
+    <ol class="step-list">
+      <li><p><strong>Daten laden:</strong> Daten → Daten abrufen → Aus Datei/Datenbank/Web. Power Query öffnet den Editor mit einer Vorschau.</p></li>
+      <li><p><strong>Spalten bereinigen:</strong> Datentypen zuweisen, Leerstellen entfernen, Duplikate löschen, Spalten umbenennen. Jeder Schritt erscheint im Panel "Angewendete Schritte" rechts.</p></li>
+      <li><p><strong>Transformationen anwenden:</strong> Spalten zusammenführen, aufteilen, berechnen. Datumsspalten in Jahr/Monat zerlegen. Texte standardisieren.</p></li>
+      <li><p><strong>Tabellen zusammenführen (Merge/Append):</strong> Mehrere Quelltabellen nach Schlüsselspalten verbinden — wie ein SQL-JOIN, ohne SQL zu kennen.</p></li>
+      <li><p><strong>Laden & Aktualisieren:</strong> Schließen & Laden → Die aufbereiteten Daten landen in Excel. Bei neuen Quelldaten: Rechtsklick → Aktualisieren. Fertig.</p></li>
+    </ol>
+
+    <h3>Häufige Power Query Transformationen im Controlling</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Aufgabe</th><th>Power Query Schritt</th><th>Nutzen</th></tr></thead>
+        <tbody>
+          <tr><td>SAP-Export bereinigen</td><td>Erste N Zeilen entfernen, Kopfzeile hochstufen</td><td>Saubere Spaltenstruktur in Sekunden</td></tr>
+          <tr><td>12 Monats-Dateien verbinden</td><td>Ordner einlesen → Append Queries</td><td>Kein manuelles Copy-Paste mehr</td></tr>
+          <tr><td>Kostenstellen-Bezeichnung anhängen</td><td>Merge mit Stammdatentabelle</td><td>Ersetzt SVERWEIS in Millionen Zeilen</td></tr>
+          <tr><td>Datum in Jahr/Quartal/Monat zerlegen</td><td>Datum-Spalte → Datumsteil extrahieren</td><td>Basis für Pivot-Gruppen ohne Formel</td></tr>
+          <tr><td>Negative Vorzeichen umdrehen</td><td>Spalte → Wert transformieren → ×(-1)</td><td>SAP-Exporte oft mit umgekehrten Vorzeichen</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <strong>M-Sprache:</strong> Im Hintergrund schreibt Power Query automatisch Code in der Sprache "M". Du musst kein M kennen — aber wenn du den generierten Code siehst (<em>Start → Erweiterter Editor</em>), beginnt das Verständnis und du kannst Schritte gezielt anpassen.
+    </div>
+
+    <h3>Beispiel: Einfache M-Formel zur Monatsnummer</h3>
+    <div class="code-block">
+<span class="cm">// Automatisch generierter M-Code für eine Datumsextraktion:</span>
+<span class="kw">let</span>
+    Quelle = Excel.CurrentWorkbook(){[Name=<span class="st">"tbl_Buchungen"</span>]}[Content],
+    Typ = Table.TransformColumnTypes(Quelle,{{<span class="st">"Datum"</span>, <span class="kw">type</span> date}}),
+    MonatHinzu = Table.AddColumn(Typ, <span class="st">"Monat"</span>, <span class="kw">each</span> Date.Month([Datum]), <span class="kw">Int64.Type</span>),
+    JahrHinzu = Table.AddColumn(MonatHinzu, <span class="st">"Jahr"</span>, <span class="kw">each</span> Date.Year([Datum]), <span class="kw">Int64.Type</span>)
+<span class="kw">in</span>
+    JahrHinzu</div>
+    <p>Jeder Schritt ist im Panel "Angewendete Schritte" sichtbar und einzeln rückgängig zu machen. Das macht Power Query deutlich transparenter als VBA-Makros.</p>
+  </section>
+
+  <!-- 02 DATENMODELL -->
+  <section class="section" id="datenmodell">
+    <div class="section-header"><span class="section-num">02</span><h2>Datenmodelle &amp; Power Pivot</h2></div>
+    <p>Wenn mehrere Tabellen miteinander in Beziehung stehen — zum Beispiel Buchungen, Kostenstellen und Kontenrahmen — wird ein Datenmodell gebraucht. Power Pivot (in Excel integriert) ermöglicht relationale Auswertungen ohne SVERWEIS-Ketten.</p>
+
+    <h3>Star-Schema: Das Fundament des Datenmodells</h3>
+    <p>Im Controlling-Kontext orientiert man sich meist am Star-Schema:</p>
+    <ul>
+      <li><strong>Faktentabelle (Mitte):</strong> Transaktionale Daten mit vielen Zeilen — z.B. alle Buchungen mit Betrag, Datum, Kostenstellen-ID, Konto-ID.</li>
+      <li><strong>Dimensionstabellen (Äste):</strong> Stammdaten mit wenigen Zeilen — Kostenstellen, Konten, Perioden, Mitarbeiter.</li>
+      <li><strong>Beziehungen:</strong> Verbindungen zwischen Fakten- und Dimensionstabellen über Schlüsselspalten (1:n).</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong>Vorteil gegenüber SVERWEIS:</strong> Im Datenmodell werden Tabellen einmal verknüpft — danach können alle Pivot-Tabellen auf jede Kombination aus Fakten und Dimensionen zugreifen, ohne dass Spalten kopiert oder SVERWEIS-Formeln gepflegt werden müssen.
+    </div>
+
+    <h3>DAX — Berechnungen im Datenmodell</h3>
+    <p>DAX (Data Analysis Expressions) ist die Formelsprache für Power Pivot und Power BI. Die Syntax ähnelt Excel, aber DAX arbeitet mit ganzen Tabellenspalten statt einzelnen Zellen.</p>
+    <div class="code-block">
+<span class="cm">// Einfache DAX-Measure: Umsatz gesamt</span>
+<span class="fn">Umsatz</span> = SUM(tbl_Buchungen[Betrag])
+
+<span class="cm">// Plan-Ist-Abweichung in %</span>
+<span class="fn">Abweichung %</span> = DIVIDE([Ist_Umsatz] - [Plan_Umsatz], [Plan_Umsatz], <span class="nu">0</span>)
+
+<span class="cm">// Vorjahreszeitraum-Vergleich (Time Intelligence)</span>
+<span class="fn">Umsatz Vorjahr</span> = CALCULATE([Umsatz], SAMEPERIODLASTYEAR(dim_Datum[Datum]))
+
+<span class="cm">// Laufende Jahressumme (YTD)</span>
+<span class="fn">Umsatz YTD</span> = TOTALYTD([Umsatz], dim_Datum[Datum])</div>
+
+    <h3>Wann Datenmodell statt normaler Pivot?</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Situation</th><th>Empfehlung</th></tr></thead>
+        <tbody>
+          <tr><td>Eine Tabelle, &lt; 100.000 Zeilen</td><td>Normale Pivot-Tabelle reicht völlig aus</td></tr>
+          <tr><td>Mehrere Tabellen mit Beziehungen</td><td>→ Datenmodell / Power Pivot</td></tr>
+          <tr><td>Vorjahresvergleich, YTD-Werte nötig</td><td>→ DAX Time Intelligence im Datenmodell</td></tr>
+          <tr><td>&gt; 1 Mio. Zeilen oder Verknüpfung mit Datenbank</td><td>→ Power BI (auf Power Pivot aufbauend)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 03 DYNAMISCHE DIAGRAMME -->
+  <section class="section" id="diagramme">
+    <div class="section-header"><span class="section-num">03</span><h2>Dynamische Diagramme</h2></div>
+    <p>Statische Diagramme zeigen immer denselben Ausschnitt. Dynamische Diagramme passen sich an Filterauswahl, Zeitraum oder Dateneingabe automatisch an — ohne dass der Nutzer in den Chart eingreifen muss.</p>
+
+    <h3>Methode 1: Pivot-Diagramm mit Slicer</h3>
+    <p>Der einfachste Weg zu einem interaktiven Diagramm: Pivot-Tabelle erstellen → PivotChart einfügen → Slicer hinzufügen. Der Slicer filtert gleichzeitig Tabelle und Chart.</p>
+    <ol class="step-list">
+      <li><p>Pivot-Tabelle auf Basis der Datentabelle oder des Datenmodells erstellen.</p></li>
+      <li><p>Pivot-Tabelle markieren → PivotTable-Analyse → PivotChart → Diagrammtyp wählen.</p></li>
+      <li><p>PivotTable-Analyse → Slicer einfügen → Felder auswählen (z.B. Jahr, Kostenstelle, Produkt).</p></li>
+      <li><p>Slicer formatieren: Rechtsklick → Größe und Eigenschaften → Spaltenanzahl anpassen.</p></li>
+    </ol>
+
+    <h3>Methode 2: BEREICH.VERSCHIEBEN für dynamische Datenquellen</h3>
+    <p>Mit der Funktion BEREICH.VERSCHIEBEN (OFFSET) lässt sich der Datenbereich eines Diagramms dynamisch an eine Dropdown-Auswahl koppeln.</p>
+    <div class="code-block">
+<span class="cm">// Dynamischer Named Range für Diagramm-Datenbasis</span>
+<span class="cm">// Name: "DynUmsatz" — bezieht sich auf ausgewählten Monat</span>
+=BEREICH.VERSCHIEBEN(<span class="st">Daten!$B$2</span>; <span class="nu">0</span>; VERGLEICH(<span class="st">$E$1</span>; <span class="st">Daten!$B$1:$M$1</span>; <span class="nu">0</span>)-<span class="nu">1</span>; ANZAHL2(<span class="st">Daten!$A:$A</span>)-<span class="nu">1</span>; <span class="nu">1</span>)</div>
+
+    <h3>Methode 3: Dynamische Arrays + Diagramm (Excel 365)</h3>
+    <p>In Excel 365 können dynamische Arrayfunktionen die Diagrammbasis automatisch anpassen:</p>
+    <div class="code-block">
+<span class="cm">// FILTER: Nur Zeilen einer bestimmten Kostenstelle anzeigen</span>
+=FILTER(A2:D200; C2:C200=<span class="st">$G$1</span>; <span class="st">"Keine Daten"</span>)
+
+<span class="cm">// SORTIEREN: Ergebnisse für Diagramm absteigend sortieren</span>
+=SORTIEREN(FILTER(A2:D200; C2:C200=<span class="st">$G$1</span>); <span class="nu">4</span>; -<span class="nu">1</span>)
+
+<span class="cm">// EINDEUTIG: Alle Kostenstellen für Dropdown-Liste</span>
+=EINDEUTIG(C2:C200)</div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-tag">TIPP</div>
+        <div class="fc-title">Diagramm-Titel dynamisch</div>
+        <div class="fc-desc">Klick auf Diagrammtitel → in Bearbeitungsleiste <code>=E1</code> eingeben (E1 = Zelle mit aktuellem Filter). Titel ändert sich automatisch mit dem Slicer.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-tag">TIPP</div>
+        <div class="fc-title">Sparklines für Mini-Charts</div>
+        <div class="fc-desc">Einfügen → Sparklines → Linien/Balken/Gewinn-Verlust. Ideal für Trenddarstellung direkt in der Zeile einer KPI-Tabelle. Braucht kaum Platz.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-tag">TIPP</div>
+        <div class="fc-title">Sekundärachse für Plan-Ist</div>
+        <div class="fc-desc">Ist-Werte als Balken, Plan-Werte als Linie mit Sekundärachse. Rechtsklick auf Datenreihe → Datenreihen-Diagrammtyp ändern → Linie → Sekundärachse.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-tag">TIPP</div>
+        <div class="fc-title">Wasserfall-Diagramm</div>
+        <div class="fc-desc">Excel 2016+ enthält den Diagrammtyp "Wasserfall" (Waterfall). Ideal für Abweichungsbrücken: Plan → Einzeltreiber → Ist.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 LAMBDA -->
+  <section class="section" id="lambda">
+    <div class="section-header"><span class="section-num">04</span><h2>LAMBDA-Funktionen — eigene Formeln schreiben</h2></div>
+    <p>LAMBDA (verfügbar in Excel 365 ab 2021) ist ein Meilenstein: Erstmals können Controller eigene, wiederverwendbare Funktionen ohne VBA schreiben. Eine LAMBDA-Funktion nimmt Parameter entgegen und führt eine Berechnung durch — wie eine Mini-Programmiersprache innerhalb von Excel.</p>
+
+    <h3>Syntax und Grundprinzip</h3>
+    <div class="code-block">
+<span class="cm">// Allgemeine Syntax:</span>
+=<span class="fn">LAMBDA</span>(Parameter1; Parameter2; ...; Formel)
+
+<span class="cm">// Beispiel 1: Einfache LAMBDA direkt aufrufen (zwei Parameter)</span>
+=<span class="fn">LAMBDA</span>(preis; menge; preis * menge)(<span class="nu">100</span>; <span class="nu">50</span>)   <span class="cm">// → 5000</span>
+
+<span class="cm">// Beispiel 2: Als benannte Funktion im Namens-Manager speichern</span>
+<span class="cm">// Name: "DECKUNGSBEITRAG"</span>
+<span class="cm">// Bezieht sich auf:</span>
+=<span class="fn">LAMBDA</span>(preis; var_kosten; menge; (preis - var_kosten) * menge)
+
+<span class="cm">// Dann in jeder Zelle verwendbar:</span>
+=<span class="fn">DECKUNGSBEITRAG</span>(<span class="nu">150</span>; <span class="nu">90</span>; <span class="nu">200</span>)   <span class="cm">// → 12.000</span></div>
+
+    <h3>Praxisbeispiele für Controller</h3>
+    <div class="code-block">
+<span class="cm">// PLANIST: Relative Plan-Ist-Abweichung</span>
+=<span class="fn">LAMBDA</span>(ist; plan; WENNFEHLER((ist-plan)/plan; <span class="nu">0</span>))
+
+<span class="cm">// AMPEL: Gibt "🟢", "🟡" oder "🔴" zurück</span>
+=<span class="fn">LAMBDA</span>(abw_pct;
+    WENN(ABS(abw_pct) &lt; <span class="nu">0,05</span>; <span class="st">"🟢"</span>;
+    WENN(ABS(abw_pct) &lt; <span class="nu">0,10</span>; <span class="st">"🟡"</span>; <span class="st">"🔴"</span>)))
+
+<span class="cm">// JAHRESKUM: Kumuliert alle Werte bis zum aktuellen Monat</span>
+=<span class="fn">LAMBDA</span>(bereich; monat;
+    SUMME(INDEX(bereich; <span class="nu">1</span>; <span class="nu">1</span>):INDEX(bereich; <span class="nu">1</span>; monat)))</div>
+
+    <h3>Interaktive LAMBDA-Demo: Deckungsbeitragsrechner</h3>
+    <div class="lambda-demo">
+      <h4>🧪 LAMBDA Simulation — =DECKUNGSBEITRAG(preis; var_kosten; menge)</h4>
+      <div class="lambda-inputs">
+        <div class="lf"><label>Preis (€)</label><input type="number" id="lp" value="150" oninput="calcLambda()"></div>
+        <div class="lf"><label>Var. Kosten (€)</label><input type="number" id="lv" value="90" oninput="calcLambda()"></div>
+        <div class="lf"><label>Menge</label><input type="number" id="lm" value="200" oninput="calcLambda()"></div>
+      </div>
+      <div class="lambda-result" id="lambdaResult">Ergebnis: 12.000 €</div>
+      <p style="font-family:var(--font-ui);font-size:.8rem;color:var(--muted);margin-top:.6rem" id="lambdaFormula">=DECKUNGSBEITRAG(150; 90; 200) → (150−90)×200 = 12.000 €</p>
+    </div>
+
+    <h3>LAMBDA mit LET kombinieren</h3>
+    <div class="code-block">
+<span class="cm">// LET ermöglicht benannte Zwischenvariablen innerhalb von LAMBDA</span>
+=<span class="fn">LAMBDA</span>(umsatz; var_kosten; fix_kosten;
+    <span class="kw">LET</span>(
+        db; umsatz - var_kosten;
+        ebit; db - fix_kosten;
+        marge; WENNFEHLER(ebit/umsatz; <span class="nu">0</span>);
+        marge   <span class="cm">// Rückgabewert</span>
+    )
+)</div>
+
+    <div class="callout callout-warn">
+      <strong>Voraussetzung:</strong> LAMBDA und dynamische Arrayfunktionen (FILTER, SORTIEREN, EINDEUTIG) sind nur in Excel 365 / Excel 2021 verfügbar. In älteren Versionen funktionieren diese Formeln nicht. Vor der Einführung in Firmen-Templates Versionsstand der Nutzer prüfen.
+    </div>
+  </section>
+
+  <!-- 05 AUTOMATISIERTE REPORTS -->
+  <section class="section" id="reports">
+    <div class="section-header"><span class="section-num">05</span><h2>Automatisierte Reports</h2></div>
+    <p>Das Ziel fortgeschrittener Excel-Nutzung ist nicht mehr Formeln beherrschen — es ist den Prozess zu eliminieren. Ein vollautomatisierter Report aktualisiert sich mit einem Klick auf "Alle aktualisieren".</p>
+
+    <h3>Architektur eines automatisierten Excel-Reports</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Schicht</th><th>Inhalt</th><th>Werkzeug</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. Datenquelle</strong></td><td>SAP-Export, CSV, Datenbank, SharePoint</td><td>Power Query Verbindung</td></tr>
+          <tr><td><strong>2. Aufbereitung</strong></td><td>Bereinigung, Transformation, Merge</td><td>Power Query</td></tr>
+          <tr><td><strong>3. Berechnung</strong></td><td>KPIs, Abweichungen, Zeitreihen</td><td>Datenmodell / DAX oder Formeln</td></tr>
+          <tr><td><strong>4. Darstellung</strong></td><td>Charts, KPI-Widgets, Tabellen</td><td>Pivot + Slicer + bedingte Formatierung</td></tr>
+          <tr><td><strong>5. Refresh</strong></td><td>Alle Schritte neu berechnen</td><td>Daten → Alle aktualisieren (1 Klick)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Checkliste: Report-Automatisierung</h3>
+    <ul>
+      <li>✅ Datenquelle per Power Query eingebunden (kein Copy-Paste)</li>
+      <li>✅ Alle Transformationen in Power Query dokumentiert (keine manuellen Eingriffe)</li>
+      <li>✅ Formeln mit WENNFEHLER abgesichert (kein #NV in Reports)</li>
+      <li>✅ Pivot-Tabellen auf intelligente Tabellen (Strg+T) aufgebaut</li>
+      <li>✅ Dashboard-Blatt: Gitterlinien aus, Zeilenköpfe aus, Zoom auf 100%</li>
+      <li>✅ Druckbereich definiert für PDF-Export (Seitenansicht → Druckbereich festlegen)</li>
+      <li>✅ Datei als .xlsx gespeichert, nicht .xls (moderne Funktionen, bessere Performance)</li>
+      <li>✅ Schutz der Formeln: Review → Blatt schützen (Eingabezellen freigeben)</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <strong>Nächster Schritt nach Excel:</strong> Wenn ein Report wöchentlich gebraucht wird, komplexe Beziehungen hat und von mehreren Personen gleichzeitig genutzt wird, ist <strong>Power BI</strong> der natürliche nächste Schritt. Die Konzepte (Power Query, DAX, Star-Schema) sind identisch — nur die Oberfläche wechselt.
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="quiz-section" id="quiz">
+    <h3>Wissenstest — Schulung 8</h3>
+
+    <div class="quiz-q" id="q1">
+      <div class="q-text">1. Was ist der Hauptvorteil von Power Query gegenüber manuellem Copy-Paste bei monatlichen Berichten?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(1,0,false)"><span class="opt-letter">A</span> Power Query ist schneller beim Erstmaligen Einrichten</div>
+        <div class="quiz-option" onclick="selectOpt(1,1,false)"><span class="opt-letter">B</span> Power Query funktioniert auch ohne Excel-Installation</div>
+        <div class="quiz-option" onclick="selectOpt(1,2,false)"><span class="opt-letter">C</span> Power Query speichert Daten automatisch in der Cloud</div>
+        <div class="quiz-option" onclick="selectOpt(1,3,true)"><span class="opt-letter">D</span> Alle Transformationsschritte werden gespeichert und können per Klick auf neue Daten angewendet werden</div>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-q" id="q2">
+      <div class="q-text">2. Was versteht man unter einem "Star-Schema" im Datenmodell-Kontext?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(2,0,true)"><span class="opt-letter">A</span> Eine Faktentabelle im Zentrum, umgeben von Dimensionstabellen (Stammdaten) — verbunden über Schlüsselspalten</div>
+        <div class="quiz-option" onclick="selectOpt(2,1,false)"><span class="opt-letter">B</span> Eine Tabelle mit stern-förmiger Formatierung für bessere Lesbarkeit</div>
+        <div class="quiz-option" onclick="selectOpt(2,2,false)"><span class="opt-letter">C</span> Ein Diagrammtyp in Power BI für mehrdimensionale Daten</div>
+        <div class="quiz-option" onclick="selectOpt(2,3,false)"><span class="opt-letter">D</span> Eine Methode, Excel-Dateien sternförmig miteinander zu verknüpfen</div>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+
+    <div class="quiz-q" id="q3">
+      <div class="q-text">3. Welche DAX-Funktion liefert den Umsatz aus dem gleichen Zeitraum des Vorjahres?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(3,0,false)"><span class="opt-letter">A</span> TOTALYTD</div>
+        <div class="quiz-option" onclick="selectOpt(3,1,false)"><span class="opt-letter">B</span> PREVIOUSYEAR</div>
+        <div class="quiz-option" onclick="selectOpt(3,2,true)"><span class="opt-letter">C</span> SAMEPERIODLASTYEAR (kombiniert mit CALCULATE)</div>
+        <div class="quiz-option" onclick="selectOpt(3,3,false)"><span class="opt-letter">D</span> DATEADD mit Offset −1 Jahr</div>
+      </div>
+      <div class="quiz-feedback" id="fb3"></div>
+    </div>
+
+    <div class="quiz-q" id="q4">
+      <div class="q-text">4. Wie wird eine LAMBDA-Funktion dauerhaft als eigene Funktion in Excel gespeichert?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(4,0,false)"><span class="opt-letter">A</span> Als VBA-Makro im Modul abspeichern</div>
+        <div class="quiz-option" onclick="selectOpt(4,1,false)"><span class="opt-letter">B</span> In einer separaten LAMBDA-Definitionstabelle auf Blatt "Funktionen"</div>
+        <div class="quiz-option" onclick="selectOpt(4,2,false)"><span class="opt-letter">C</span> Über Formeln → Weitere Funktionen → Benutzerdefiniert</div>
+        <div class="quiz-option" onclick="selectOpt(4,3,true)"><span class="opt-letter">D</span> Im Namensmanager (Formeln → Namensmanager → Neu) unter einem eigenen Namen</div>
+      </div>
+      <div class="quiz-feedback" id="fb4"></div>
+    </div>
+
+    <div class="quiz-q" id="q5">
+      <div class="q-text">5. Welche Aussage zur Automatisierung von Excel-Reports ist korrekt?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(5,0,false)"><span class="opt-letter">A</span> VBA-Makros sind für moderne Reports die empfohlene Lösung, da sie am flexibelsten sind</div>
+        <div class="quiz-option" onclick="selectOpt(5,1,true)"><span class="opt-letter">B</span> Der ideale Aufbau trennt Datenquelle, Aufbereitung (Power Query), Berechnung und Darstellung auf separate Ebenen</div>
+        <div class="quiz-option" onclick="selectOpt(5,2,false)"><span class="opt-letter">C</span> Automatisierte Reports benötigen immer eine Datenbankverbindung</div>
+        <div class="quiz-option" onclick="selectOpt(5,3,false)"><span class="opt-letter">D</span> "Alle aktualisieren" funktioniert nur bei Pivot-Tabellen, nicht bei Power Query-Abfragen</div>
+      </div>
+      <div class="quiz-feedback" id="fb5"></div>
+    </div>
+
+    <div class="quiz-submit">
+      <button onclick="submitQuiz()">Auswertung anzeigen</button>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+  </section>
+
+  <div class="bottom-nav">
+    <a href="schulung_07_excel_grundlagen.html" class="btn-nav">← Schulung 7: Excel Grundlagen</a>
+    <a href="schulung_09_controlling_grundlagen.html" class="btn-nav primary">Schulung 9: Controlling-Grundlagen →</a>
+  </div>
+</div>
+
+<script>
+function calcLambda(){
+  const p=parseFloat(document.getElementById('lp').value)||0;
+  const v=parseFloat(document.getElementById('lv').value)||0;
+  const m=parseFloat(document.getElementById('lm').value)||0;
+  const db=(p-v)*m;
+  document.getElementById('lambdaResult').textContent='Ergebnis: '+db.toLocaleString('de-DE')+ ' €';
+  document.getElementById('lambdaFormula').textContent=`=DECKUNGSBEITRAG(${p}; ${v}; ${m}) → (${p}−${v})×${m} = ${db.toLocaleString('de-DE')} €`;
+}
+calcLambda();
+const answers={};
+function selectOpt(q,idx,correct){
+  document.getElementById('q'+q).querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('q'+q).querySelectorAll('.quiz-option')[idx].classList.add('selected');
+  answers[q]={idx,correct};
+}
+function submitQuiz(){
+  const fb={
+    1:'Richtig! Power Query speichert jeden Transformationsschritt. Bei neuen Daten einfach "Aktualisieren" — alles läuft automatisch durch.',
+    2:'Richtig! Star-Schema: Faktentabelle im Zentrum (z.B. Buchungen), Dimensionstabellen außen (Kostenstellen, Konten, Datum). Verbunden über Schlüsselspalten (1:n).',
+    3:'Richtig! =CALCULATE([Umsatz], SAMEPERIODLASTYEAR(dim_Datum[Datum])) liefert den Vorjahreszeitraum. TOTALYTD gibt die Jahressumme bis zum aktuellen Datum.',
+    4:'Richtig! Im Namensmanager (Formeln → Namensmanager → Neu) wird die LAMBDA-Formel unter einem eigenen Namen gespeichert und ist dann wie eine eingebaute Funktion verwendbar.',
+    5:'Richtig! Klare Schichttrennung ist das Fundament wartbarer Reports: Quelle → Power Query → Berechnung → Darstellung. VBA ist für moderne Reports die Notlösung.'
+  };
+  let score=0;
+  for(let q=1;q<=5;q++){
+    const a=answers[q];if(!a)continue;
+    const opts=document.getElementById('q'+q).querySelectorAll('.quiz-option');
+    const f=document.getElementById('fb'+q);
+    if(a.correct){opts[a.idx].classList.add('correct');score++;f.textContent='✓ '+fb[q];f.className='quiz-feedback show ok';}
+    else{opts[a.idx].classList.add('wrong');f.textContent='✗ Falsch. '+fb[q];f.className='quiz-feedback show bad';}
+  }
+  const el=document.getElementById('quizScore');const p=Math.round(score/5*100);
+  el.className='quiz-score show';el.style.background=p>=80?'var(--success-light)':p>=60?'var(--warn-light)':'var(--error-light)';
+  el.style.color=p>=80?'var(--success)':p>=60?'var(--warn)':'var(--error)';
+  el.textContent=`Ergebnis: ${score}/5 (${p} %)${p===100?' 🎉 Perfekt!':p>=80?' — Sehr gut!':' — Nochmal durch die schwachen Abschnitte.'}`;
+  document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=p+'% abgeschlossen';
+}
+window.addEventListener('scroll',()=>{
+  if(!document.getElementById('quizScore').classList.contains('show')){
+    const sc=document.documentElement.scrollTop||document.body.scrollTop;
+    const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+    const p=h>0?Math.round(sc/h*100):0;
+    document.getElementById('progressFill').style.width=p+'%';
+    document.getElementById('progressLabel').textContent=p+'% abgeschlossen';
+  }
+});
+</script>
+</body>
+</html>
