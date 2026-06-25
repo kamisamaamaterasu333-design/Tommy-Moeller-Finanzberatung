@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schulung 4 – Immobilie als Kapitalanlage (Vertiefung)</title>
+<style>
+  :root {
+    --navy: #0d1b2a; --navy-light: #1a2e45; --gold: #c9a84c; --gold-light: #e8c97a;
+    --text: #e8e8e8; --text-muted: #9aabb8; --card: #16293d; --card-border: #2a4060;
+    --success: #2ecc71; --error: #e74c3c; --warning: #f39c12; --info: #3498db;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+  header { background: var(--navy-light); border-bottom: 2px solid var(--gold); padding: 1.5rem 2rem; }
+  header .badge { background: var(--gold); color: var(--navy); font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 4px; }
+  header h1 { font-size: 1.4rem; font-weight: 600; margin-top: 0.3rem; }
+  header p { color: var(--text-muted); font-size: 0.9rem; }
+  nav { background: var(--navy-light); border-bottom: 1px solid var(--card-border); padding: 0 2rem; display: flex; gap: 0; overflow-x: auto; }
+  nav button { background: none; border: none; color: var(--text-muted); padding: 0.9rem 1.2rem; cursor: pointer; font-size: 0.88rem; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 600; }
+  main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .section { display: none; } .section.active { display: block; }
+  h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--gold); }
+  h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--gold-light); }
+  p { margin-bottom: 1rem; }
+  .intro-box { background: var(--card); border-left: 4px solid var(--gold); border-radius: 6px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+  .intro-box p { margin: 0; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.25rem; }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .card h4 { font-size: 0.95rem; font-weight: 600; color: var(--gold-light); margin-bottom: 0.4rem; }
+  .card p { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+  .info-box { background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3); border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+  .info-box .label { color: var(--info); font-weight: 600; margin-bottom: 0.25rem; }
+  .tip-box { background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.3); border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+  .tip-box .label { color: var(--success); font-weight: 600; margin-bottom: 0.25rem; }
+  .warn-box { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3); border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+  .warn-box .label { color: var(--error); font-weight: 600; margin-bottom: 0.25rem; }
+  .list-styled { list-style: none; padding: 0; }
+  .list-styled li { padding: 0.4rem 0 0.4rem 1.5rem; position: relative; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .list-styled li::before { content: '→'; position: absolute; left: 0; color: var(--gold); }
+  .calc-box { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+  .calc-box h3 { margin-top: 0; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media(max-width:600px){ .form-row { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+  input[type="number"], select { width: 100%; background: var(--navy); border: 1px solid var(--card-border); color: var(--text); padding: 0.55rem 0.8rem; border-radius: 5px; font-size: 0.9rem; }
+  input:focus, select:focus { outline: none; border-color: var(--gold); }
+  .btn { background: var(--gold); color: var(--navy); border: none; padding: 0.65rem 1.5rem; border-radius: 5px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+  .btn:hover { background: var(--gold-light); }
+  .result-box { background: var(--navy-light); border-radius: 6px; padding: 1rem; margin-top: 1rem; display: none; }
+  .result-box.show { display: block; }
+  .result-row { display: flex; justify-content: space-between; padding: 0.3rem 0; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .result-row:last-child { border-bottom: none; font-weight: 700; color: var(--gold); font-size: 1rem; padding-top: 0.6rem; }
+  .result-row span:last-child { font-family: monospace; }
+  .result-positive { color: var(--success) !important; }
+  .result-negative { color: var(--error) !important; }
+  .quiz-q { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+  .quiz-q .q-text { font-weight: 600; margin-bottom: 1rem; font-size: 0.95rem; }
+  .quiz-q .q-hint { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem; font-style: italic; }
+  .quiz-option { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.55rem 0.75rem; border-radius: 5px; cursor: pointer; margin-bottom: 0.4rem; border: 1px solid transparent; transition: all 0.15s; font-size: 0.88rem; }
+  .quiz-option:hover { background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.3); }
+  .quiz-option input { accent-color: var(--gold); margin-top: 2px; flex-shrink: 0; }
+  .quiz-option.correct { background: rgba(46,204,113,0.12); border-color: rgba(46,204,113,0.4); }
+  .quiz-option.wrong { background: rgba(231,76,60,0.12); border-color: rgba(231,76,60,0.4); }
+  .quiz-option.missed { background: rgba(243,156,18,0.12); border-color: rgba(243,156,18,0.4); }
+  .quiz-feedback { font-size: 0.85rem; margin-top: 0.75rem; padding: 0.75rem; border-radius: 5px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(46,204,113,0.1); color: #2ecc71; }
+  .quiz-feedback.nok { background: rgba(231,76,60,0.1); color: #e74c3c; }
+  .quiz-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 0.6rem 1.2rem; border-radius: 5px; cursor: pointer; font-size: 0.88rem; font-weight: 600; }
+  .btn-outline:hover { background: rgba(201,168,76,0.1); }
+  .score-box { background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 1.5rem; text-align: center; display: none; margin-top: 1rem; }
+  .score-box.show { display: block; }
+  .score-num { font-size: 3rem; font-weight: 800; color: var(--gold); }
+  .progress-bar-wrap { background: var(--card-border); border-radius: 10px; height: 6px; margin-bottom: 1.5rem; }
+  .progress-bar { background: var(--gold); height: 6px; border-radius: 10px; transition: width 0.4s; }
+  .hebel-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  .hebel-table th { background: var(--navy-light); color: var(--gold); font-weight: 600; padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--card-border); font-size: 0.85rem; }
+  .hebel-table td { padding: 0.65rem 1rem; border: 1px solid var(--card-border); font-size: 0.85rem; }
+  .hebel-table tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+  .highlight-gold { color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">SCHULUNG 4</span>
+  <h1>Immobilie als Kapitalanlage – Vertiefung</h1>
+  <p>Hebeleffekt · Cashflow-Modellierung · WEG-Strukturen · Risikomanagement</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('intro')">Überblick</button>
+  <button onclick="showSection('hebel')">Hebeleffekt</button>
+  <button onclick="showSection('cashflow')">Cashflow</button>
+  <button onclick="showSection('weg')">WEG</button>
+  <button onclick="showSection('risiko')">Risiken</button>
+  <button onclick="showSection('rechner')">Rechner</button>
+  <button onclick="showSection('quiz')">Quiz</button>
+</nav>
+
+<main>
+
+<!-- ÜBERBLICK -->
+<div class="section active" id="intro">
+  <h2>Aufbaukurs Immobilien-Investment</h2>
+  <div class="intro-box"><p>Dieser Kurs setzt Grundkenntnisse über Immobilien als Kapitalanlage voraus. Wir vertiefen die zentralen Konzepte, die den Unterschied zwischen einem guten und einem schlechten Investment ausmachen.</p></div>
+  <div class="card-grid">
+    <div class="card"><div class="icon">🔧</div><h4>Hebeleffekt (Leverage)</h4><p>Wie Fremdkapital die Eigenkapitalrendite steigert – und was dabei schiefgehen kann.</p></div>
+    <div class="card"><div class="icon">💶</div><h4>Cashflow-Modellierung</h4><p>Von der Bruttomiete zum Netto-Cashflow: alle Abzüge kennen und einplanen.</p></div>
+    <div class="card"><div class="icon">🏢</div><h4>WEG-Strukturen</h4><p>Eigentümergemeinschaft, Hausgeld, Beschlüsse und Verwaltung verstehen.</p></div>
+    <div class="card"><div class="icon">⚖️</div><h4>Risikomanagement</h4><p>Klumpenrisiko, Leerstand, Instandhaltung – Strategien bei mehreren Objekten.</p></div>
+    <div class="card"><div class="icon">🧮</div><h4>Cashflow-Rechner</h4><p>Berechne deinen monatlichen Netto-Cashflow für eine Anlageimmobilie.</p></div>
+    <div class="card"><div class="icon">🎯</div><h4>Quiz</h4><p>Prüfe dein Verständnis – mehrere Antworten können richtig sein!</p></div>
+  </div>
+</div>
+
+<!-- HEBELEFFEKT -->
+<div class="section" id="hebel">
+  <h2>Der Hebeleffekt (Leverage)</h2>
+  <div class="intro-box"><p>Der Hebel beschreibt, wie du mit wenig Eigenkapital eine größere Investition steuerst – und damit die Rendite auf dein eingesetztes Kapital erheblich steigerst. Der Effekt wirkt in beide Richtungen.</p></div>
+
+  <h3>Grundprinzip – Beispiel</h3>
+  <table class="hebel-table">
+    <tr><th>Szenario</th><th>100 % EK</th><th>70 % FK (30 % EK)</th></tr>
+    <tr><td>Kaufpreis</td><td>300.000 €</td><td>300.000 €</td></tr>
+    <tr><td>Eigenkapital</td><td>300.000 €</td><td>90.000 €</td></tr>
+    <tr><td>Darlehen</td><td>0 €</td><td>210.000 €</td></tr>
+    <tr><td>Jahresmieteinnahme (netto)</td><td>12.000 €</td><td>12.000 €</td></tr>
+    <tr><td>Zinsen (3 % p.a.)</td><td>0 €</td><td>6.300 €</td></tr>
+    <tr><td>Netto-Ertrag</td><td>12.000 €</td><td>5.700 €</td></tr>
+    <tr><td><strong>EK-Rendite</strong></td><td class="highlight-gold">4,0 %</td><td class="highlight-gold">6,3 %</td></tr>
+  </table>
+
+  <div class="tip-box"><div class="label">✅ Positiver Hebel</div>Solange die Immobilienrendite (Gesamtkapitalrendite) höher ist als der Fremdkapitalzins, steigt die Eigenkapitalrendite durch Fremdfinanzierung. Hier: 4 % Immobilienrendite > 3 % Zinsen.</div>
+  <div class="warn-box"><div class="label">⚠️ Negativer Hebel</div>Steigen die Zinsen über die Immobilienrendite (z.B. FK-Zins 5 %, aber nur 4 % Rendite), dreht sich der Hebel um. Die EK-Rendite sinkt unter die Gesamtrendite – ein klassisches Risiko bei variablen Zinsen oder Anschlussfinanzierung.</div>
+
+  <h3>Tilgung und Zinsbindung</h3>
+  <ul class="list-styled">
+    <li>Anfangstilgung von mind. 2 % p.a. empfohlen (bei aktuellen Zinsniveaus)</li>
+    <li>Lange Zinsbindung (10–15 Jahre) reduziert das Zinsänderungsrisiko</li>
+    <li>Sondertilgungsoptionen (5–10 % p.a.) als Flexibilitätspuffer vereinbaren</li>
+    <li>Annuität = Zins + Tilgung, bleibt über Laufzeit konstant</li>
+  </ul>
+
+  <h3>Leverage-Ratio im Blick behalten</h3>
+  <div class="info-box"><div class="label">ℹ️ Faustregeln</div>
+    <ul class="list-styled" style="margin-top:0.5rem">
+      <li>LTV (Loan-to-Value) &lt; 70 %: konservativ und banküblich</li>
+      <li>LTV 70–80 %: üblich für erfahrene Investoren</li>
+      <li>LTV &gt; 80 %: hohe Zinsaufschläge, erhöhtes Risiko</li>
+    </ul>
+  </div>
+</div>
+
+<!-- CASHFLOW -->
+<div class="section" id="cashflow">
+  <h2>Cashflow-Modellierung</h2>
+  <div class="intro-box"><p>Der Cashflow ist die entscheidende Kennzahl im Immobilien-Investment. Nicht der Kaufpreis, nicht die Bruttorendite – sondern was am Ende des Monats übrig bleibt.</p></div>
+
+  <h3>Von Bruttomiete zum Netto-Cashflow</h3>
+  <table class="hebel-table">
+    <tr><th>Position</th><th>Beispiel (monatlich)</th></tr>
+    <tr><td>Bruttokaltmiete</td><td>+ 1.000 €</td></tr>
+    <tr><td>Mietausfall-Rücklage (5–8 %)</td><td>− 60 €</td></tr>
+    <tr><td>Verwaltungskosten</td><td>− 40 €</td></tr>
+    <tr><td>Instandhaltungsrücklage (mind. 1 €/m²)</td><td>− 70 €</td></tr>
+    <tr><td>Hausgeld (nicht umlagefähig)</td><td>− 80 €</td></tr>
+    <tr><td><strong>Nettomieteinnahme</strong></td><td><strong>750 €</strong></td></tr>
+    <tr><td>Zins und Tilgung (Annuität)</td><td>− 850 €</td></tr>
+    <tr><td class="highlight-gold"><strong>Netto-Cashflow</strong></td><td class="highlight-gold"><strong>− 100 €</strong></td></tr>
+  </table>
+
+  <div class="warn-box"><div class="label">⚠️ Negativ-Cashflow als Strategie?</div>Ein kleiner Negativ-Cashflow kann bewusst akzeptiert werden, wenn du auf Wertsteigerung setzt – aber nur wenn du ihn dauerhaft tragen kannst. Niemals ohne Liquiditätspuffer!</div>
+
+  <h3>Wichtige Renditekennzahlen</h3>
+  <ul class="list-styled">
+    <li><strong>Bruttomietrendite:</strong> Jahreskaltmiete ÷ Kaufpreis × 100 – schnelle Ersteinschätzung</li>
+    <li><strong>Nettomietrendite:</strong> Wie oben, aber nach Bewirtschaftungskosten</li>
+    <li><strong>Eigenkapitalrendite:</strong> Netto-Cashflow ÷ eingesetztes EK × 100</li>
+    <li><strong>Gesamtkapitalrendite:</strong> Netto-Ertrag ÷ Gesamtinvestition × 100</li>
+    <li><strong>Kaufpreisfaktor:</strong> Kaufpreis ÷ Jahreskaltmiete (Faustformel: unter 25 ist gut)</li>
+  </ul>
+
+  <div class="tip-box"><div class="label">✅ Steuerlicher Cashflow</div>Durch AfA (Abschreibung 2 % p.a.) entsteht ein steuerlicher Verlust, der mit anderen Einkünften verrechnet werden kann. Dieser Steuereffekt verbessert den tatsächlichen Cashflow – aber er hängt von deinem persönlichen Steuersatz ab.</div>
+</div>
+
+<!-- WEG -->
+<div class="section" id="weg">
+  <h2>WEG – Wohnungseigentümergemeinschaft</h2>
+  <div class="intro-box"><p>Wer eine Eigentumswohnung kauft, wird automatisch Teil einer WEG. Das Verständnis der WEG-Strukturen ist entscheidend für das Risikomanagement als Kapitalanleger.</p></div>
+
+  <h3>Grundstruktur einer WEG</h3>
+  <div class="card-grid">
+    <div class="card"><div class="icon">🏠</div><h4>Sondereigentum</h4><p>Deine eigene Wohnung plus ggf. Keller/Stellplatz. Du entscheidest allein.</p></div>
+    <div class="card"><div class="icon">🤝</div><h4>Gemeinschaftseigentum</h4><p>Dach, Fassade, Treppenhaus, Aufzug. Entschieden wird gemeinsam.</p></div>
+    <div class="card"><div class="icon">📊</div><h4>Miteigentumsanteil (MEA)</h4><p>Dein prozentualer Anteil – bestimmt deinen Anteil an Kosten und Stimmrechten.</p></div>
+    <div class="card"><div class="icon">🏦</div><h4>Hausgeld</h4><p>Monatlicher Beitrag zu Betriebskosten + Rücklagen. Teils umlagefähig, teils nicht.</p></div>
+  </div>
+
+  <h3>Das Hausgeld – was steckt drin?</h3>
+  <ul class="list-styled">
+    <li><strong>Umlagefähig</strong> (Mieter zahlt): Wasser, Müll, Hausreinigung, Strom Gemeinschaftsflächen</li>
+    <li><strong>Nicht umlagefähig</strong> (du zahlst): Verwaltungskosten, Rücklagen, Versicherung anteilig</li>
+    <li>Faustregel: 25–35 % des Hausgelds trägst du selbst als Vermieter</li>
+  </ul>
+
+  <h3>Beschlüsse der WEG</h3>
+  <ul class="list-styled">
+    <li>Einfache Mehrheit: laufende Verwaltungsangelegenheiten</li>
+    <li>Qualifizierte Mehrheit (2/3): bauliche Veränderungen, größere Maßnahmen</li>
+    <li>Allstimmigkeit: grundlegende Änderungen der Gemeinschaftsordnung</li>
+    <li>Wichtig: Umlaufbeschluss möglich (ohne Versammlung, schriftlich)</li>
+  </ul>
+
+  <div class="warn-box"><div class="label">⚠️ Besondere Umlagen</div>Wenn die WEG eine Sonderumlage beschließt (z.B. Dachreparatur), musst du zahlen – unabhängig von deiner Mietsituation. Immer Instandhaltungsrücklage im Protokoll prüfen!</div>
+
+  <div class="tip-box"><div class="label">✅ Due Diligence beim Kauf</div>Vor dem Kauf unbedingt: letzte 3 Protokolle der Eigentümerversammlung lesen, Höhe der Instandhaltungsrücklage prüfen (mind. 0,8–1,0 % des Gebäudewerts p.a.), Hausgeldabrechnungen analysieren.</div>
+</div>
+
+<!-- RISIKEN -->
+<div class="section" id="risiko">
+  <h2>Risikomanagement bei mehreren Objekten</h2>
+  <div class="intro-box"><p>Mit jedem weiteren Objekt steigt das Potenzial – aber auch die Komplexität. Wer mehrere Immobilien hält, braucht eine klare Risikostrategie.</p></div>
+
+  <h3>Klumpenrisiko</h3>
+  <div class="warn-box"><div class="label">⚠️ Geografisches Klumpenrisiko</div>Alle Objekte in einer Stadt oder Region machen dich abhängig von einem lokalen Markt. Bevölkerungsrückgang, Industrieabwanderung oder Überangebot können alle Objekte gleichzeitig treffen.</div>
+  <ul class="list-styled">
+    <li>Streuung über verschiedene Lagen (A-, B-, C-Städte)</li>
+    <li>Mix aus Nutzungsarten: Wohnen, Gewerbe, Garage</li>
+    <li>Verschiedene Mieterstrukturen: Einzel- vs. Mehrmietwohnung</li>
+  </ul>
+
+  <h3>Leerstandsrisiko</h3>
+  <ul class="list-styled">
+    <li>Faustregel: mind. 3 Monatskaltmieten als Liquiditätspuffer halten</li>
+    <li>Mieterselektion: Bonität prüfen (Selbstauskunft, SCHUFA), Vorvermietungshistorie</li>
+    <li>Attraktivität erhalten: Zustand der Wohnung, gute Ausstattung</li>
+  </ul>
+
+  <h3>Instandhaltungsrisiko</h3>
+  <ul class="list-styled">
+    <li>Rücklage: mind. 1 €/m² pro Monat (bei Altbau 1,50–2 €)</li>
+    <li>Energetische Sanierungspflicht durch EU-Richtlinien (Energieeffizienzklassen)</li>
+    <li>Heizungsgesetz: Fernwärme vs. Wärmepumpe langfristig einplanen</li>
+  </ul>
+
+  <h3>Finanzierungsrisiken</h3>
+  <ul class="list-styled">
+    <li>Zinsänderungsrisiko bei Anschlussfinanzierung – frühzeitig Forward-Darlehen prüfen</li>
+    <li>Cross-Collateral: Banken können mehrere Objekte als Sicherheit verknüpfen</li>
+    <li>Bonität sichern: DSCR (Debt Service Coverage Ratio) &gt; 1,2 anstreben</li>
+  </ul>
+
+  <h3>Steuerliche Risiken</h3>
+  <ul class="list-styled">
+    <li>Gewerblicher Grundstückshandel: mehr als 3 Objekte in 5 Jahren = Risiko</li>
+    <li>Spekulationsfrist: 10 Jahre Haltefrist für steuerfreien Verkauf</li>
+    <li>AfA-Verlust bei Selbstnutzung im letzten Jahr vor Verkauf</li>
+  </ul>
+
+  <div class="tip-box"><div class="label">✅ DSCR – die wichtigste Kennzahl für Portfoliofinanzierung</div>DSCR = Nettomietertrag ÷ Kapitaldienst. Ziel: &gt; 1,2. Bedeutet: Die Immobilie erwirtschaftet 20 % mehr als sie kostet. Banken fordern das oft ab dem 2. Objekt.</div>
+</div>
+
+<!-- RECHNER -->
+<div class="section" id="rechner">
+  <h2>Cashflow-Rechner</h2>
+  <div class="intro-box"><p>Berechne den monatlichen Netto-Cashflow für eine Anlageimmobilie. <em>Zur Orientierung – keine Anlageberatung.</em></p></div>
+  <div class="calc-box">
+    <h3>🏠 Cashflow-Modellierung</h3>
+    <div class="form-row">
+      <div><label>Kaufpreis (€)</label><input type="number" id="kp" value="300000"></div>
+      <div><label>Kaufnebenkosten (% des KP)</label><input type="number" id="nk" value="10" step="0.5"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Monatliche Kaltmiete (€)</label><input type="number" id="miete" value="1000"></div>
+      <div><label>Wohnfläche (m²)</label><input type="number" id="flaeche" value="70"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Eigenkapital (€)</label><input type="number" id="ek" value="90000"></div>
+      <div><label>Zinssatz p.a. (%)</label><input type="number" id="zins" value="3.5" step="0.1"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Tilgung p.a. (%)</label><input type="number" id="tilg" value="2.0" step="0.1"></div>
+      <div><label>Hausgeld nicht umlagefähig (€/Mon.)</label><input type="number" id="hg" value="80"></div>
+    </div>
+    <button class="btn" onclick="calcCashflow()">Berechnen</button>
+    <div class="result-box" id="cfResult">
+      <div class="result-row"><span>Gesamtinvestition inkl. NK</span><span id="cfGesamt">–</span></div>
+      <div class="result-row"><span>Darlehensbetrag</span><span id="cfDarlehen">–</span></div>
+      <div class="result-row"><span>Monatliche Annuität</span><span id="cfAnnu">–</span></div>
+      <div class="result-row"><span>Mietausfall-Rücklage (6 %)</span><span id="cfMietausfall">–</span></div>
+      <div class="result-row"><span>Instandhaltungsrücklage (1 €/m²)</span><span id="cfIH">–</span></div>
+      <div class="result-row"><span>Hausgeld nicht umlagefähig</span><span id="cfHG">–</span></div>
+      <div class="result-row"><span>Bruttomietrendite</span><span id="cfBrutto">–</span></div>
+      <div class="result-row"><span>Netto-Cashflow monatlich</span><span id="cfNetto">–</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section" id="quiz">
+  <h2>Wissens-Quiz</h2>
+  <div class="intro-box"><p>Teste dein Wissen zum Immobilien-Investment! Bei manchen Fragen sind <strong>mehrere Antworten richtig</strong>.</p></div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="quizProgress" style="width:0%"></div></div>
+  <div class="quiz-container" id="quizContainer"></div>
+  <div class="quiz-actions">
+    <button class="btn" onclick="submitQuiz()">Auswertung anzeigen</button>
+    <button class="btn-outline" onclick="resetQuiz()">Neu starten</button>
+  </div>
+  <div class="score-box" id="scoreBox">
+    <div class="score-num" id="scoreNum">–</div>
+    <div class="score-label">Richtige Antworten</div>
+    <p style="margin-top:1rem;color:var(--text-muted);font-size:0.88rem;" id="scoreMsg"></p>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+function fmt(n){ return n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
+function fmtp(n){ return n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' %'; }
+
+function calcCashflow(){
+  const kp=+document.getElementById('kp').value||0;
+  const nk=+document.getElementById('nk').value||0;
+  const miete=+document.getElementById('miete').value||0;
+  const flaeche=+document.getElementById('flaeche').value||0;
+  const ek=+document.getElementById('ek').value||0;
+  const zins=(+document.getElementById('zins').value||0)/100;
+  const tilg=(+document.getElementById('tilg').value||0)/100;
+  const hg=+document.getElementById('hg').value||0;
+
+  const gesamt=kp*(1+nk/100);
+  const darlehen=Math.max(0,gesamt-ek);
+  const annu=darlehen*(zins+tilg)/12;
+  const mietausfall=miete*0.06;
+  const ih=flaeche*1.0;
+  const netto=miete-mietausfall-ih-hg-annu;
+  const brutto=(miete*12/kp*100);
+
+  document.getElementById('cfGesamt').textContent=fmt(gesamt);
+  document.getElementById('cfDarlehen').textContent=fmt(darlehen);
+  document.getElementById('cfAnnu').textContent='– '+fmt(annu);
+  document.getElementById('cfMietausfall').textContent='– '+fmt(mietausfall);
+  document.getElementById('cfIH').textContent='– '+fmt(ih);
+  document.getElementById('cfHG').textContent='– '+fmt(hg);
+  document.getElementById('cfBrutto').textContent=fmtp(brutto);
+  const nettoEl=document.getElementById('cfNetto');
+  nettoEl.textContent=(netto>=0?'+ ':'')+fmt(netto);
+  nettoEl.className=netto>=0?'result-positive':'result-negative';
+  document.getElementById('cfResult').classList.add('show');
+}
+
+const quizData=[
+  {
+    q:"Wann spricht man von einem positiven Hebeleffekt bei Immobilien?",
+    type:"single",
+    opts:["Wenn der Tilgungssatz höher ist als der Zinssatz","Wenn die Objektrendite höher ist als der Fremdkapitalzins","Wenn die Immobilie im Wert steigt","Wenn der LTV unter 50 % liegt"],
+    correct:[1],
+    explanation:"Positiver Hebel = Gesamtkapitalrendite > Fremdkapitalzins. Dann steigt die EK-Rendite durch Fremdfinanzierung. Dreht sich dieses Verhältnis um, entsteht ein negativer Hebel."
+  },
+  {
+    q:"Was gehört zu den NICHT umlagefähigen Teilen des Hausgelds?",
+    type:"multi",
+    opts:["Verwaltungskosten","Wasserkosten","Instandhaltungsrücklage","Müllabfuhr","Aufzugswartung (Anteil)"],
+    correct:[0,2],
+    explanation:"Verwaltungskosten und die Instandhaltungsrücklage (WEG) dürfen NICHT auf Mieter umgelegt werden. Wasser, Müll und Aufzugswartung sind hingegen umlagefähig."
+  },
+  {
+    q:"Wie berechnet sich die Bruttomietrendite?",
+    type:"single",
+    opts:["Monatliche Miete ÷ Kaufpreis × 100","Jahreskaltmiete ÷ Kaufpreis × 100","Nettomieteinnahme ÷ Gesamtinvestition × 100","Jahreskaltmiete ÷ (Kaufpreis + Nebenkosten) × 100"],
+    correct:[1],
+    explanation:"Bruttomietrendite = Jahreskaltmiete ÷ Kaufpreis × 100. Es werden keine Kosten abgezogen und keine Nebenkosten einbezogen – daher 'Brutto'. Für reale Vergleiche besser Nettomietrendite nutzen."
+  },
+  {
+    q:"Welche Aussagen zur WEG-Beschlussfassung sind korrekt?",
+    type:"multi",
+    opts:["Einfache Mehrheit reicht für laufende Verwaltung","Alle Beschlüsse brauchen Einstimmigkeit","Bauliche Veränderungen erfordern eine qualifizierte Mehrheit","Umlaufbeschlüsse sind grundsätzlich unzulässig","Jeder Eigentümer hat Stimmrecht entsprechend seinem MEA"],
+    correct:[0,2,4],
+    explanation:"Laufende Verwaltung: einfache Mehrheit. Bauliche Veränderungen: qualifizierte Mehrheit (2/3). Umlaufbeschlüsse sind möglich. Stimmrecht richtet sich nach dem Miteigentumsanteil (MEA)."
+  },
+  {
+    q:"Was bedeutet DSCR von 1,2 bei einer Immobilie?",
+    type:"single",
+    opts:["Die Miete ist 1,2 % höher als der Kaufpreis","Die Immobilie erwirtschaftet 20 % mehr als der jährliche Kapitaldienst","Der LTV beträgt 120 %","Die Eigenkapitalrendite beträgt 1,2 %"],
+    correct:[1],
+    explanation:"DSCR (Debt Service Coverage Ratio) = Nettomietertrag ÷ Kapitaldienst (Zins + Tilgung). 1,2 bedeutet: die Immobilie verdient 20 % mehr als sie kostet. Banken fordern ab dem 2. Objekt oft DSCR > 1,2."
+  },
+  {
+    q:"Welche Risiken entstehen beim Aufbau eines Immobilien-Portfolios?",
+    type:"multi",
+    opts:["Klumpenrisiko durch geografische Konzentration","Zinsänderungsrisiko bei Anschlussfinanzierung","Automatisch steuerfreie Veräußerungsgewinne","Gewerblicher Grundstückshandel ab mehr als 3 Objekten in 5 Jahren","Sonderumlagen der WEG"],
+    correct:[0,1,3,4],
+    explanation:"Alle außer 'automatisch steuerfreie Gewinne' sind reale Risiken. Gewinne sind nur nach 10 Jahren Haltefrist steuerfrei. Die Regel 'mehr als 3 Objekte in 5 Jahren' kann gewerblichen Grundstückshandel begründen."
+  }
+];
+
+function buildQuiz(){
+  const c=document.getElementById('quizContainer'); c.innerHTML='';
+  quizData.forEach((q,i)=>{
+    const isMulti=q.type==='multi';
+    c.insertAdjacentHTML('beforeend',`<div class="quiz-q" id="q${i}">
+      <div class="q-text">${i+1}. ${q.q}</div>
+      <div class="q-hint">${isMulti?'⚠️ Mehrere Antworten können richtig sein':'➡️ Genau eine Antwort ist richtig'}</div>
+      ${q.opts.map((o,j)=>`<label class="quiz-option" id="opt${i}_${j}"><input type="${isMulti?'checkbox':'radio'}" name="q${i}" value="${j}"> ${o}</label>`).join('')}
+      <div class="quiz-feedback" id="fb${i}"></div>
+    </div>`);
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const answered=quizData.filter((_,i)=>document.querySelectorAll(`input[name="q${i}"]:checked`).length>0).length;
+  document.getElementById('quizProgress').style.width=(answered/quizData.length*100)+'%';
+}
+document.addEventListener('change',e=>{ if(e.target.matches('input[type="radio"],input[type="checkbox"]')) updateProgress(); });
+function submitQuiz(){
+  let score=0;
+  quizData.forEach((q,i)=>{
+    const selected=[...document.querySelectorAll(`input[name="q${i}"]:checked`)].map(el=>+el.value);
+    const isCorrect=JSON.stringify(selected.slice().sort())===JSON.stringify(q.correct.slice().sort());
+    if(isCorrect) score++;
+    q.opts.forEach((_,j)=>{
+      const el=document.getElementById(`opt${i}_${j}`);
+      el.classList.remove('correct','wrong','missed');
+      if(q.correct.includes(j)&&selected.includes(j)) el.classList.add('correct');
+      else if(!q.correct.includes(j)&&selected.includes(j)) el.classList.add('wrong');
+      else if(q.correct.includes(j)&&!selected.includes(j)) el.classList.add('missed');
+    });
+    const fb=document.getElementById(`fb${i}`);
+    fb.textContent=q.explanation; fb.className='quiz-feedback show '+(isCorrect?'ok':'nok');
+  });
+  document.getElementById('scoreNum').textContent=`${score}/${quizData.length}`;
+  const pct=score/quizData.length;
+  document.getElementById('scoreMsg').textContent=pct>=0.85?'🏆 Sehr gut! Du denkst wie ein erfahrener Immobilieninvestor.':pct>=0.6?'👍 Solide Basis! Ein paar Details sind noch zu vertiefen.':'📚 Lies die Kapitel nochmals durch und probiere es erneut!';
+  document.getElementById('scoreBox').classList.add('show');
+}
+function resetQuiz(){ document.getElementById('scoreBox').classList.remove('show'); buildQuiz(); }
+buildQuiz();
+</script>
+</body>
+</html>
