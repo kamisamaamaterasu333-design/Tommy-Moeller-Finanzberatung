@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psychologie & Geld | Schulung 15</title>
+<style>
+  :root{
+    --bg:#f8f7f4;--surface:#fff;--border:#e2ddd8;--text:#1a1a1a;--muted:#6b6560;
+    --accent:#4c1d95;--accent-light:#f5f3ff;--accent2:#0f766e;--accent2-light:#f0fdf9;
+    --warn:#b45309;--warn-light:#fffbeb;--success:#15803d;--success-light:#f0fdf4;
+    --error:#dc2626;--error-light:#fef2f2;
+    --font-body:'Georgia','Times New Roman',serif;--font-ui:'Segoe UI',system-ui,sans-serif;--font-code:'Consolas','Courier New',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:17px;line-height:1.75}
+  .site-header{background:var(--text);color:#fff;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;font-family:var(--font-ui)}
+  .site-header a{color:#fff;text-decoration:none;font-size:.85rem;opacity:.7}.site-header a:hover{opacity:1}
+  .breadcrumb{display:flex;gap:.5rem;align-items:center;font-size:.82rem;opacity:.65}.breadcrumb span{opacity:.4}
+  .hero{background:#2e1065;color:#fff;padding:3.5rem 2rem 3rem}
+  .hero-inner{max-width:820px;margin:0 auto}
+  .hero-tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:var(--font-ui);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border-radius:3px;margin-bottom:1.2rem}
+  .hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:normal;line-height:1.25;margin-bottom:1rem}
+  .hero h1 strong{display:block;font-weight:700}
+  .hero-desc{font-family:var(--font-ui);font-size:1.05rem;opacity:.8;max-width:620px;margin-bottom:1.8rem}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:1.5rem;font-family:var(--font-ui);font-size:.85rem;opacity:.7}
+  .hero-meta span::before{content:'· '}.hero-meta span:first-child::before{content:''}
+  .progress-bar-wrap{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+  .progress-bar-inner{max-width:820px;margin:0 auto;padding:.6rem 2rem;display:flex;align-items:center;gap:1rem;font-family:var(--font-ui);font-size:.8rem;color:var(--muted)}
+  .progress-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s;width:0%}
+  .content-wrap{max-width:820px;margin:0 auto;padding:2.5rem 2rem 4rem}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);padding:1.5rem;margin-bottom:2.5rem;border-radius:0 4px 4px 0}
+  .toc h3{font-family:var(--font-ui);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.8rem}
+  .toc ol{padding-left:1.3rem;font-family:var(--font-ui);font-size:.9rem}.toc li{margin-bottom:.3rem}
+  .toc a{color:var(--accent);text-decoration:none}.toc a:hover{text-decoration:underline}
+  .section{margin-bottom:3rem}
+  .section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:2px solid var(--text)}
+  .section-num{font-family:var(--font-ui);font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+  .section h2{font-size:1.4rem;font-weight:700}
+  .section h3{font-size:1.1rem;font-weight:700;margin:1.5rem 0 .6rem;font-family:var(--font-ui)}
+  .section p{margin-bottom:1rem}.section ul,.section ol{padding-left:1.5rem;margin-bottom:1rem}.section li{margin-bottom:.35rem}
+  .callout{padding:1rem 1.25rem;border-radius:4px;margin:1rem 0;font-family:var(--font-ui);font-size:.92rem;border-left:4px solid}
+  .callout-info{background:var(--accent-light);border-color:var(--accent);color:#4c1d95}
+  .callout-tip{background:var(--accent2-light);border-color:var(--accent2);color:#115e59}
+  .callout-warn{background:var(--warn-light);border-color:var(--warn);color:#92400e}
+  .callout strong{font-weight:700}
+  .data-table{width:100%;border-collapse:collapse;margin:1rem 0;font-family:var(--font-ui);font-size:.88rem}
+  .data-table th{background:var(--text);color:#fff;padding:.6rem 1rem;text-align:left;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+  .data-table td{padding:.55rem 1rem;border-bottom:1px solid var(--border)}
+  .data-table tr:nth-child(even) td{background:#fafaf9}
+  .table-wrap{overflow-x:auto;margin:1rem 0}
+  /* BIAS CARDS */
+  .bias-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin:1.2rem 0;border-left:4px solid var(--accent)}
+  .bias-card .bc-header{display:flex;align-items:center;gap:1rem;margin-bottom:.8rem}
+  .bias-card .bc-emoji{font-size:2rem;line-height:1}
+  .bias-card .bc-title{font-family:var(--font-ui);font-weight:700;font-size:1.05rem}
+  .bias-card .bc-subtitle{font-family:var(--font-ui);font-size:.78rem;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .bias-card .bc-example{background:var(--accent-light);border-radius:4px;padding:.7rem 1rem;margin:.75rem 0;font-family:var(--font-ui);font-size:.88rem;font-style:italic;color:#4c1d95}
+  .bias-card .bc-example::before{content:'Beispiel: ';font-style:normal;font-weight:700}
+  .bias-card .bc-fix{background:var(--accent2-light);border-radius:4px;padding:.7rem 1rem;font-family:var(--font-ui);font-size:.88rem;color:#115e59}
+  .bias-card .bc-fix::before{content:'✓ Gegenmittel: ';font-weight:700}
+  /* INTERACTIVE EXPERIMENT */
+  .experiment{background:var(--surface);border:2px solid var(--accent);border-radius:6px;padding:1.5rem;margin:1.5rem 0}
+  .experiment h4{font-family:var(--font-ui);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:1rem}
+  .exp-scenario{background:var(--accent-light);border-radius:4px;padding:1rem 1.2rem;margin-bottom:1rem;font-family:var(--font-ui);font-size:.92rem;line-height:1.5;font-style:italic;color:#2e1065}
+  .exp-options{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+  .exp-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:4px;padding:.75rem 1rem;font-family:var(--font-ui);font-size:.9rem;cursor:pointer;text-align:center;transition:all .15s}
+  .exp-btn:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+  .exp-btn.chosen{border-color:var(--accent);background:var(--accent);color:#fff}
+  .exp-reveal{margin-top:1rem;font-family:var(--font-ui);font-size:.88rem;padding:.8rem 1rem;border-radius:4px;display:none;line-height:1.6}
+  .exp-reveal.show{display:block;background:var(--accent-light);color:#2e1065;border:1px solid #c4b5fd}
+  /* CHECKLIST */
+  .checklist{list-style:none;padding:0}
+  .checklist li{display:flex;align-items:flex-start;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);font-family:var(--font-ui);font-size:.9rem}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li input[type=checkbox]{margin-top:.2rem;width:16px;height:16px;accent-color:var(--accent);flex-shrink:0}
+  .checklist li label{cursor:pointer}
+  /* QUIZ */
+  .quiz-section{background:#fff;border:2px solid var(--border);border-radius:6px;padding:2rem;margin:2.5rem 0}
+  .quiz-section h3{font-family:var(--font-ui);font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+  .quiz-section h3::before{content:'';display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%}
+  .quiz-q{margin-bottom:1.8rem}
+  .quiz-q .q-text{font-family:var(--font-ui);font-size:.97rem;font-weight:600;margin-bottom:.85rem;line-height:1.4}
+  .quiz-options{display:flex;flex-direction:column;gap:.45rem}
+  .quiz-option{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem 1rem;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;font-family:var(--font-ui);font-size:.9rem;transition:border-color .15s,background .15s;user-select:none;line-height:1.4}
+  .quiz-option:hover{border-color:var(--accent);background:var(--accent-light)}
+  .quiz-option.selected{border-color:var(--accent);background:var(--accent-light)}
+  .quiz-option.correct{border-color:var(--success);background:var(--success-light);color:var(--success)}
+  .quiz-option.wrong{border-color:var(--error);background:var(--error-light);color:var(--error)}
+  .quiz-option .opt-letter{font-weight:700;min-width:20px;color:var(--accent)}
+  .quiz-option.correct .opt-letter{color:var(--success)}.quiz-option.wrong .opt-letter{color:var(--error)}
+  .quiz-feedback{margin-top:.6rem;font-family:var(--font-ui);font-size:.85rem;padding:.5rem .8rem;border-radius:3px;display:none}
+  .quiz-feedback.show{display:block}.quiz-feedback.ok{background:var(--success-light);color:var(--success)}.quiz-feedback.bad{background:var(--error-light);color:var(--error)}
+  .quiz-submit button{background:var(--accent);color:#fff;border:none;padding:.7rem 1.8rem;font-family:var(--font-ui);font-size:.9rem;font-weight:600;border-radius:4px;cursor:pointer;margin-top:1.5rem}
+  .quiz-submit button:hover{background:#3b0764}
+  .quiz-score{margin-top:1rem;font-family:var(--font-ui);font-size:.95rem;font-weight:700;padding:.8rem 1.2rem;border-radius:4px;display:none}.quiz-score.show{display:block}
+  .bottom-nav{display:flex;justify-content:space-between;padding:2rem 0 0;border-top:1px solid var(--border);margin-top:3rem;font-family:var(--font-ui);font-size:.88rem}
+  .btn-nav{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border:1.5px solid var(--border);border-radius:4px;color:var(--text);text-decoration:none;background:var(--surface);transition:border-color .15s}
+  .btn-nav:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-nav.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn-nav.primary:hover{background:#3b0764}
+  @media(max-width:600px){.exp-options{grid-template-columns:1fr}.hero{padding:2.5rem 1.2rem 2rem}.content-wrap{padding:1.5rem 1.2rem 3rem}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="breadcrumb"><a href="schulungen.html">Schulungen</a><span>›</span><span>Psychologie & Geld</span></div>
+  <a href="schulungen.html">← Zurück</a>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Schulung 15 · Persönliche Finanzkompetenz</div>
+    <h1>Psychologie &amp; Geld<strong>Warum wir schlechte Entscheidungen treffen</strong></h1>
+    <p class="hero-desc">Verhaltensökonomie für Privatanleger — Loss Aversion, Herdentrieb, Sunk Cost, Anchoring und wie man die eigene Psyche überlistet, bevor sie das Depot ruiniert.</p>
+    <div class="hero-meta"><span>⏱ ca. 60 Min.</span><span>Einsteiger bis Fortgeschritten</span><span>6 Biases + Quiz</span><span>Interaktive Experimente</span></div>
+  </div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-inner">
+    <span id="progressLabel">0 % abgeschlossen</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <nav class="toc">
+    <h3>Inhalt dieser Schulung</h3>
+    <ol>
+      <li><a href="#intro">Warum rationale Finanzentscheidungen so schwer sind</a></li>
+      <li><a href="#loss">Loss Aversion — Verluste schmerzen doppelt</a></li>
+      <li><a href="#herde">Herdentrieb — alle kaufen, also kaufe ich auch</a></li>
+      <li><a href="#sunk">Sunk Cost — der Denkfehler mit dem versunkenen Geld</a></li>
+      <li><a href="#weitere">Weitere Biases: Anchoring, Overconfidence, Confirmation Bias</a></li>
+      <li><a href="#gegenmittel">Systemisch gegensteuern</a></li>
+      <li><a href="#quiz">Wissenstest</a></li>
+    </ol>
+  </nav>
+
+  <section class="section" id="intro">
+    <div class="section-header"><span class="section-num">01</span><h2>Warum rationale Finanzentscheidungen so schwer sind</h2></div>
+    <p>Die klassische Wirtschaftstheorie setzt den "Homo Oeconomicus" voraus: einen Menschen, der immer rational entscheidet, alle Informationen berücksichtigt und seinen Nutzen maximiert. Diesen Menschen gibt es nicht.</p>
+    <p>Kahneman und Tversky zeigten in ihrer Prospect Theory (Nobelpreis 2002), dass Menschen systematisch vorhersagbar irrational entscheiden — vor allem in Situationen mit Unsicherheit, also genau bei Finanzentscheidungen.</p>
+
+    <div class="callout callout-info">
+      <strong>Verhaltensökonomie (Behavioral Finance):</strong> Das Forschungsfeld, das klassische Wirtschaftstheorie mit Psychologie verbindet. Pioniere: Daniel Kahneman ("Schnelles Denken, langsames Denken"), Richard Thaler (Nobelpreis 2017, "Nudge"), Robert Shiller (irrationaler Überschwang).
+    </div>
+
+    <h3>System 1 vs. System 2 (Kahneman)</h3>
+    <ul>
+      <li><strong>System 1 — Schnelles Denken:</strong> Automatisch, emotional, schnell, unbewusst. Zuständig für Alltagsentscheidungen. Anfällig für Biases.</li>
+      <li><strong>System 2 — Langsames Denken:</strong> Analytisch, bewusst, langsam, anstrengend. Zuständig für komplexe Abwägungen. Wird selten eingeschaltet — zu teuer für das Gehirn.</li>
+    </ul>
+    <p>Finanzentscheidungen sollten immer System 2 einschalten. In der Praxis entscheiden die meisten Menschen mit System 1 — und rationalisieren danach. Das Ergebnis: systematische Fehler, die sich wiederholen.</p>
+  </section>
+
+  <section class="section" id="loss">
+    <div class="section-header"><span class="section-num">02</span><h2>Loss Aversion — Verluste schmerzen doppelt</h2></div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">😱</div>
+        <div><div class="bc-subtitle">Bias #1</div><div class="bc-title">Loss Aversion (Verlustaversion)</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">Der Schmerz eines Verlustes ist psychologisch ca. <strong>2-mal so stark</strong> wie die Freude über einen gleichhohen Gewinn. Ein Verlust von 100 € fühlt sich schlimmer an als ein Gewinn von 100 € sich gut anfühlt.</p>
+      <div class="bc-example">Dein ETF ist um 20% gefallen. Obwohl dein Investmentplan "halten und nachkaufen" vorsieht, verkaufst du — weil der tägliche Blick auf das Depot kaum auszuhalten ist.</div>
+      <div class="bc-fix">Depot nur quartalsweise oder halbjährlich anschauen. Automatische Sparpläne ohne manuelle Eingriffe. Investment-Tagebuch mit ursprünglichen Gründen für jede Position.</div>
+    </div>
+
+    <div class="experiment">
+      <h4>🧪 Selbstexperiment: Spürst du Loss Aversion?</h4>
+      <div class="exp-scenario">Du hast die Wahl: A) Du erhältst sicher 50 €. B) Du wirfst eine Münze — Kopf: du bekommst 120 €, Zahl: du bekommst nichts. Der Erwartungswert von B ist 60 € — mathematisch besser. Was wählst du?</div>
+      <div class="exp-options">
+        <button class="exp-btn" onclick="revealExp(1,'A')">A: Sicher 50 € nehmen</button>
+        <button class="exp-btn" onclick="revealExp(1,'B')">B: Münzwurf (0 oder 120 €)</button>
+      </div>
+      <div class="exp-reveal" id="exp1">Die meisten Menschen wählen A — obwohl B mathematisch vorteilhafter ist (Erwartungswert 60 €). Das ist Risk Aversion in Kombination mit Loss Aversion. Bei Gewinnen sind wir risikoscheu. Bei Verlusten (Gegenvariante des Experiments) werden Menschen plötzlich risikofreudig — um Verluste zu vermeiden. Dieser Asymmetrie liegt die Prospect Theory zugrunde.</div>
+    </div>
+  </section>
+
+  <section class="section" id="herde">
+    <div class="section-header"><span class="section-num">03</span><h2>Herdentrieb — alle kaufen, also kaufe ich auch</h2></div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">🐑</div>
+        <div><div class="bc-subtitle">Bias #2</div><div class="bc-title">Herding / Herdentrieb</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">Menschen orientieren sich an dem, was andere tun — besonders in unsicheren Situationen. In Finanzmärkten führt das zu Blasen (alle kaufen) und Panikverkäufen (alle verkaufen).</p>
+      <div class="bc-example">Ende 2021 kaufen plötzlich Millionen Menschen Kryptowährungen, nachdem jeder in der Nachrichtensendung davon hört. Kurz nach dem Einstieg der Masse bricht der Markt ein.</div>
+      <div class="bc-fix">Investmententscheidungen auf Basis eigener Analyse treffen, nicht auf Basis von Nachrichten oder Freundesempfehlungen. Warren Buffett: "Sei ängstlich, wenn andere gierig sind — und gierig, wenn andere ängstlich sind."</div>
+    </div>
+
+    <div class="experiment">
+      <h4>🧪 Selbstexperiment: Herdentrieb bei Preisentscheidungen</h4>
+      <div class="exp-scenario">Du willst ein Restaurant buchen. Restaurant A hat 847 Bewertungen mit Ø 4,2 Sternen. Restaurant B hat 12 Bewertungen mit Ø 4,8 Sternen. Das Essen kostet gleich viel. Welches wählst du?</div>
+      <div class="exp-options">
+        <button class="exp-btn" onclick="revealExp(2,'A')">Restaurant A (viele Bewertungen)</button>
+        <button class="exp-btn" onclick="revealExp(2,'B')">Restaurant B (besserer Schnitt)</button>
+      </div>
+      <div class="exp-reveal" id="exp2">Die meisten wählen A — Social Proof (Beweis durch andere) wirkt stärker als rationale Auswertung. 847 Menschen können nicht irren, oder? Doch statistische Güte mit 12 Bewertungen kann höher sein als mit 847 Bewertungen bei einem politisch verzerrten Bewertungssystem. Im Finanzmarkt: Nur weil viele investieren, ist eine Anlage nicht gut.</div>
+    </div>
+  </section>
+
+  <section class="section" id="sunk">
+    <div class="section-header"><span class="section-num">04</span><h2>Sunk Cost — der Denkfehler mit dem versunkenen Geld</h2></div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">🕳️</div>
+        <div><div class="bc-subtitle">Bias #3</div><div class="bc-title">Sunk Cost Fallacy (Versunkene Kosten)</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">Menschen berücksichtigen bei Entscheidungen Kosten, die bereits unwiederbringlich ausgegeben wurden — obwohl diese für die Zukunftsentscheidung irrelevant sind. "Ich habe schon so viel investiert, ich kann jetzt nicht aufhören."</p>
+      <div class="bc-example">Du hast eine Aktie für 10.000 € gekauft. Sie ist auf 4.000 € gefallen. Fundamental hat sich das Unternehmen verschlechtert. Du hältst trotzdem — weil du "6.000 € Verlust nicht realisieren willst". Ökonomisch falsch: Die 6.000 € sind bereits verloren. Die Frage ist: Ist das jetzt die beste Anlage für die nächsten 5 Jahre?</div>
+      <div class="bc-fix">Immer fragen: "Wenn ich dieses Investment noch nicht hätte — würde ich es heute zum aktuellen Preis kaufen?" Wenn nein → verkaufen, unabhängig vom Einstandskurs.</div>
+    </div>
+
+    <div class="experiment">
+      <h4>🧪 Selbstexperiment: Sunk Cost im Alltag</h4>
+      <div class="exp-scenario">Du hast ein Konzertticket für 80 € gekauft. Am Abend des Konzerts bist du krank, erkältet, und das Wetter ist schlecht. Ein Freund lädt dich zu einem gemütlichen Abend bei ihm ein, den du viel lieber hättest. Was tust du?</div>
+      <div class="exp-options">
+        <button class="exp-btn" onclick="revealExp(3,'A')">Zum Konzert — die 80 € will ich nicht "verschwenden"</button>
+        <button class="exp-btn" onclick="revealExp(3,'B')">Zum Freund — die 80 € sind ohnehin weg</button>
+      </div>
+      <div class="exp-reveal" id="exp3">Die 80 € sind in beiden Szenarien verloren — das Ticket ist bereits bezahlt. Die Frage ist nur: Was macht dich heute Abend glücklicher? Wer zum Konzert geht "um die 80 € nicht zu verschwenden", trifft eine irrationale Entscheidung. Übertragen auf Finanzen: Der Einstandskurs einer Anlage ist irrelevant für die Frage, ob man sie heute halten sollte.</div>
+    </div>
+  </section>
+
+  <section class="section" id="weitere">
+    <div class="section-header"><span class="section-num">05</span><h2>Weitere Biases: Anchoring, Overconfidence, Confirmation</h2></div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">⚓</div>
+        <div><div class="bc-subtitle">Bias #4</div><div class="bc-title">Anchoring (Ankereffekt)</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">Menschen orientieren sich stark an der ersten Zahl, die sie hören — auch wenn diese völlig irrelevant ist.</p>
+      <div class="bc-example">Eine Aktie notierte vor zwei Jahren bei 200 €, heute bei 80 €. Du denkst: "Günstig, fast 60 % Rabatt!" Der Anker ist der frühere Preis. Aber ob 80 € fair ist, hängt vom Unternehmenswert ab — nicht vom historischen Kurs.</div>
+      <div class="bc-fix">Fundamentalanalyse: Was ist das Unternehmen heute wert? KGV, Free Cashflow, Buchwert im Vergleich zu Peers — nicht historische Kurse.</div>
+    </div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">🦸</div>
+        <div><div class="bc-subtitle">Bias #5</div><div class="bc-title">Overconfidence (Selbstüberschätzung)</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">90 % der Autofahrer glauben, überdurchschnittlich gut zu fahren. Ähnliches gilt für Anleger: Die meisten glauben, den Markt schlagen zu können. Studien zeigen: Die meisten schlagen ihn nicht.</p>
+      <div class="bc-example">Nach drei guten Jahren mit Einzelaktien glaubst du, ein Talent für Aktienauswahl zu haben — und investierst einen Großteil in konzentrierte Wetten. Dann dreht der Markt.</div>
+      <div class="bc-fix">Rendite der eigenen Anlage regelmäßig mit einem Benchmark (z.B. MSCI World ETF) vergleichen. Die meisten professionellen Fondsmanager schlagen den Index langfristig nicht. Indexfonds als Default.</div>
+    </div>
+
+    <div class="bias-card">
+      <div class="bc-header">
+        <div class="bc-emoji">🪞</div>
+        <div><div class="bc-subtitle">Bias #6</div><div class="bc-title">Confirmation Bias (Bestätigungsfehler)</div></div>
+      </div>
+      <p style="font-family:var(--font-ui);font-size:.92rem;margin-bottom:.75rem">Menschen suchen und gewichten Informationen, die ihre bestehende Meinung bestätigen. Gegenargumente werden ignoriert oder abgewertet.</p>
+      <div class="bc-example">Du hast Tesla-Aktien und liest täglich bullische Artikel über Elektromobilität. Kritische Berichte zu Bewertung, Wettbewerb oder Elon Musks Ablenkung ignorierst du.</div>
+      <div class="bc-fix">Aktiv nach Gegenargumenten suchen. "Was muss ich glauben, damit ich falsch liege?" Investment-Thesen schriftlich aufschreiben und regelmäßig kritisch prüfen.</div>
+    </div>
+  </section>
+
+  <section class="section" id="gegenmittel">
+    <div class="section-header"><span class="section-num">06</span><h2>Systemisch gegensteuern</h2></div>
+    <p>Biases lassen sich nicht eliminieren — sie sind fest verdrahtet im menschlichen Gehirn. Aber man kann Systeme und Regeln schaffen, die verhindern, dass sie das Depot ruinieren.</p>
+
+    <h3>Die 7 wichtigsten Regeln für rationale Finanzentscheidungen</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Bias</th><th>Systemische Gegenmaßnahme</th></tr></thead>
+        <tbody>
+          <tr><td>Loss Aversion</td><td>Depot nur 1x pro Quartal anschauen. Automatisierte Sparpläne ohne manuelle Eingriffe.</td></tr>
+          <tr><td>Herdentrieb</td><td>Investment-Policy Statement schreiben — vor Marktbewegungen, nicht während.</td></tr>
+          <tr><td>Sunk Cost</td><td>"Zero-Base"-Test: Würde ich dieses Investment heute zum aktuellen Preis kaufen?</td></tr>
+          <tr><td>Anchoring</td><td>Historische Kurse aus dem Entscheidungsprozess ausblenden. Fundamentals prüfen.</td></tr>
+          <tr><td>Overconfidence</td><td>Monatlicher Benchmark-Vergleich. Rendite-Tagebuch führen.</td></tr>
+          <tr><td>Confirmation Bias</td><td>Aktiv Bear-Case lesen. Gegenposition einnehmen ("Pre-Mortem"-Analyse).</td></tr>
+          <tr><td>Recency Bias*</td><td>Langfristige Renditen überprüfen, nicht nur die letzten 12 Monate.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-family:var(--font-ui);font-size:.82rem;color:var(--muted)">* Recency Bias: Die Tendenz, aktuelle Trends als dauerhafte Realität zu sehen. "Aktien steigen immer" nach einem Bullenmarkt.</p>
+
+    <h3>Deine persönliche Finanz-Checkliste</h3>
+    <ul class="checklist">
+      <li><input type="checkbox" id="cl1"><label for="cl1">Investment-Policy Statement schriftlich formuliert (Ziele, Zeithorizont, Risikobereitschaft, Anlageregeln)</label></li>
+      <li><input type="checkbox" id="cl2"><label for="cl2">Depot-Anschauen auf max. einmal pro Quartal begrenzt</label></li>
+      <li><input type="checkbox" id="cl3"><label for="cl3">Sparplan automatisiert — kein monatlicher manueller Entscheid nötig</label></li>
+      <li><input type="checkbox" id="cl4"><label for="cl4">Vor jeder Investitionsentscheidung: "Was spricht dagegen?" aktiv beantwortet</label></li>
+      <li><input type="checkbox" id="cl5"><label for="cl5">Rendite jährlich mit Benchmark (MSCI World) verglichen</label></li>
+      <li><input type="checkbox" id="cl6"><label for="cl6">Keine Investmententscheidungen bei Aufregung, Euphorie oder Panik getroffen</label></li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <strong>Das beste Gegenmittel:</strong> Langweile. Ein diversifizierter ETF-Sparplan, der monatlich automatisch läuft und quartalsweise angeschaut wird, schlägt statistisch die meisten aktiven Anleger — nicht weil er intelligent ist, sondern weil er Biases durch Automatisierung ausschaltet.
+    </div>
+  </section>
+
+  <section class="quiz-section" id="quiz">
+    <h3>Wissenstest — Schulung 15</h3>
+
+    <div class="quiz-q" id="q1">
+      <div class="q-text">1. Was besagt Loss Aversion (Verlustaversion) laut Kahneman und Tversky?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(1,0,false)"><span class="opt-letter">A</span> Menschen vermeiden grundsätzlich alle Risiken bei Finanzentscheidungen</div>
+        <div class="quiz-option" onclick="selectOpt(1,1,false)"><span class="opt-letter">B</span> Verluste und Gewinne werden emotional gleich stark bewertet</div>
+        <div class="quiz-option" onclick="selectOpt(1,2,false)"><span class="opt-letter">C</span> Anleger verkaufen Gewinner zu früh und Verlierer zu spät, weil sie gewinnsüchtig sind</div>
+        <div class="quiz-option" onclick="selectOpt(1,3,true)"><span class="opt-letter">D</span> Der Schmerz eines Verlustes ist ca. doppelt so stark wie die Freude über einen gleichhohen Gewinn</div>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <div class="quiz-q" id="q2">
+      <div class="q-text">2. Welche Frage hilft am besten, den Sunk Cost Bias bei Investmententscheidungen zu überwinden?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(2,0,false)"><span class="opt-letter">A</span> "Wie viel habe ich bereits verloren?"</div>
+        <div class="quiz-option" onclick="selectOpt(2,1,true)"><span class="opt-letter">B</span> "Würde ich diese Anlage heute zum aktuellen Preis kaufen, wenn ich sie noch nicht hätte?"</div>
+        <div class="quiz-option" onclick="selectOpt(2,2,false)"><span class="opt-letter">C</span> "Wie lange halte ich diese Position schon?"</div>
+        <div class="quiz-option" onclick="selectOpt(2,3,false)"><span class="opt-letter">D</span> "Was war der höchste Kurs dieser Aktie in den letzten 5 Jahren?"</div>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+
+    <div class="quiz-q" id="q3">
+      <div class="q-text">3. Was ist der "Ankereffekt" (Anchoring Bias)?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(3,0,false)"><span class="opt-letter">A</span> Die Tendenz, an einer Anlage festzuhalten, weil man sich emotional damit verbunden fühlt</div>
+        <div class="quiz-option" onclick="selectOpt(3,1,false)"><span class="opt-letter">B</span> Die Bindung an einen bestimmten Broker oder eine Plattform aus Gewohnheit</div>
+        <div class="quiz-option" onclick="selectOpt(3,2,true)"><span class="opt-letter">C</span> Die Tendenz, sich bei Urteilen unverhältnismäßig stark an der ersten gehörten Zahl zu orientieren</div>
+        <div class="quiz-option" onclick="selectOpt(3,3,false)"><span class="opt-letter">D</span> Die Überzeugung, dass vergangene Kursgewinne sich zwingend wiederholen</div>
+      </div>
+      <div class="quiz-feedback" id="fb3"></div>
+    </div>
+
+    <div class="quiz-q" id="q4">
+      <div class="q-text">4. Welche Maßnahme hilft am besten gegen den Herdentrieb beim Investieren?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(4,0,false)"><span class="opt-letter">A</span> Täglich die Finanznachrichten lesen, um immer auf dem neusten Stand zu sein</div>
+        <div class="quiz-option" onclick="selectOpt(4,1,false)"><span class="opt-letter">B</span> Nur in populäre Aktien investieren, die viele empfehlen</div>
+        <div class="quiz-option" onclick="selectOpt(4,2,true)"><span class="opt-letter">C</span> Ein Investment-Policy Statement vor Marktbewegungen schreiben, das klare Regeln ohne Emotion festlegt</div>
+        <div class="quiz-option" onclick="selectOpt(4,3,false)"><span class="opt-letter">D</span> Immer das Gegenteil von dem kaufen, was andere kaufen</div>
+      </div>
+      <div class="quiz-feedback" id="fb4"></div>
+    </div>
+
+    <div class="quiz-q" id="q5">
+      <div class="q-text">5. Warum ist ein automatisierter ETF-Sparplan psychologisch vorteilhaft gegenüber manuellem monatlichem Investieren?</div>
+      <div class="quiz-options">
+        <div class="quiz-option" onclick="selectOpt(5,0,false)"><span class="opt-letter">A</span> Weil ETFs grundsätzlich bessere Renditen erzielen als Einzelaktien</div>
+        <div class="quiz-option" onclick="selectOpt(5,1,false)"><span class="opt-letter">B</span> Weil der Broker dann geringere Gebühren verlangt</div>
+        <div class="quiz-option" onclick="selectOpt(5,2,false)"><span class="opt-letter">C</span> Weil man so immer zum günstigsten Zeitpunkt kauft</div>
+        <div class="quiz-option" onclick="selectOpt(5,3,true)"><span class="opt-letter">D</span> Weil Automatisierung Biases (Loss Aversion, Herdentrieb) ausschaltet — Entscheidungen fallen nicht mehr in emotionalen Momenten</div>
+      </div>
+      <div class="quiz-feedback" id="fb5"></div>
+    </div>
+
+    <div class="quiz-submit">
+      <button onclick="submitQuiz()">Auswertung anzeigen</button>
+      <div class="quiz-score" id="quizScore"></div>
+    </div>
+  </section>
+
+  <div class="bottom-nav">
+    <a href="schulung_14_inflation.html" class="btn-nav">← Schulung 14: Inflation</a>
+    <a href="schulungen.html" class="btn-nav primary">Zur Schulungsübersicht ↑</a>
+  </div>
+</div>
+
+<script>
+function revealExp(n, choice) {
+  const el = document.getElementById('exp'+n);
+  const btns = el.previousElementSibling.querySelectorAll('.exp-btn');
+  btns.forEach((b,i) => b.classList.remove('chosen'));
+  btns[choice==='A'?0:1].classList.add('chosen');
+  el.className = 'exp-reveal show';
+}
+
+const answers={};
+function selectOpt(q,idx,correct){
+  document.getElementById('q'+q).querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('q'+q).querySelectorAll('.quiz-option')[idx].classList.add('selected');
+  answers[q]={idx,correct};
+}
+function submitQuiz(){
+  const fb={
+    1:'Richtig! Kahneman & Tversky: Verluste schmerzen ca. 2× so stark wie gleichhohe Gewinne erfreuen. Das erklärt, warum Anleger Verlustpositionen zu lange halten und Gewinne zu früh realisieren.',
+    2:'Richtig! Der "Zero-Base-Test" zwingt zur zukunftsbezogenen Entscheidung. Der Einstandskurs ist für die Zukunft irrelevant — er ist bereits sunk (versunken).',
+    3:'Richtig! Der Ankereffekt: Die erste Zahl, die wir hören (historischer Kurs, Ausgabepreis), beeinflusst unsere Schätzung unverhältnismäßig stark — auch wenn sie für die aktuelle Entscheidung irrelevant ist.',
+    4:'Richtig! Ein vorher festgelegtes Investment-Policy Statement schützt vor impulsiven Entscheidungen. Entscheidungen werden vor emotionalen Marktbewegungen getroffen — nicht währenddessen.',
+    5:'Richtig! Automatisierung eliminiert den Entscheidungsmoment. Es gibt keinen Moment, in dem Angst, Gier oder Herdentrieb eingreifen können. Cost-Average-Effekt als Bonus.'
+  };
+  let score=0;
+  for(let q=1;q<=5;q++){
+    const a=answers[q];if(!a)continue;
+    const opts=document.getElementById('q'+q).querySelectorAll('.quiz-option');
+    const f=document.getElementById('fb'+q);
+    if(a.correct){opts[a.idx].classList.add('correct');score++;f.textContent='✓ '+fb[q];f.className='quiz-feedback show ok';}
+    else{opts[a.idx].classList.add('wrong');f.textContent='✗ Falsch. '+fb[q];f.className='quiz-feedback show bad';}
+  }
+  const el=document.getElementById('quizScore');const p=Math.round(score/5*100);
+  el.className='quiz-score show';el.style.background=p>=80?'var(--success-light)':p>=60?'var(--warn-light)':'var(--error-light)';
+  el.style.color=p>=80?'var(--success)':p>=60?'var(--warn)':'var(--error)';
+  el.textContent=`Ergebnis: ${score}/5 (${p} %)${p===100?' 🎉 Du denkst rational!':p>=80?' — Sehr gut!':' — Lies nochmal in den schwachen Abschnitten nach.'}`;
+  document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=p+'% abgeschlossen';
+}
+window.addEventListener('scroll',()=>{
+  if(!document.getElementById('quizScore').classList.contains('show')){
+    const sc=document.documentElement.scrollTop||document.body.scrollTop;
+    const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+    if(h>0){const p=Math.round(sc/h*100);document.getElementById('progressFill').style.width=p+'%';document.getElementById('progressLabel').textContent=p+'% abgeschlossen';}
+  }
+});
+</script>
+</body>
+</html>
