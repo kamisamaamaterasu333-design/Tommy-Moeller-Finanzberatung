@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schulung 6 – Finanzplanung für Selbstständige</title>
+<style>
+  :root {
+    --navy:#0d1b2a;--navy-light:#1a2e45;--gold:#c9a84c;--gold-light:#e8c97a;
+    --text:#e8e8e8;--text-muted:#9aabb8;--card:#16293d;--card-border:#2a4060;
+    --success:#2ecc71;--error:#e74c3c;--warning:#f39c12;--info:#3498db;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;}
+  header{background:var(--navy-light);border-bottom:2px solid var(--gold);padding:1.5rem 2rem;}
+  header .badge{background:var(--gold);color:var(--navy);font-weight:700;font-size:0.75rem;padding:0.25rem 0.6rem;border-radius:4px;letter-spacing:.05em;}
+  header h1{font-size:1.4rem;font-weight:600;margin-top:0.3rem;}
+  header p{color:var(--text-muted);font-size:0.9rem;}
+  nav{background:var(--navy-light);border-bottom:1px solid var(--card-border);padding:0 2rem;display:flex;overflow-x:auto;}
+  nav button{background:none;border:none;color:var(--text-muted);padding:0.9rem 1.2rem;cursor:pointer;font-size:0.88rem;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
+  nav button:hover{color:var(--text);}
+  nav button.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:600;}
+  main{max-width:900px;margin:0 auto;padding:2rem;}
+  .section{display:none;}.section.active{display:block;}
+  h2{font-size:1.5rem;font-weight:700;margin-bottom:.5rem;color:var(--gold);}
+  h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 .75rem;color:var(--gold-light);}
+  p{margin-bottom:1rem;}
+  .intro-box{background:var(--card);border-left:4px solid var(--gold);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:2rem;}
+  .intro-box p{margin:0;}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1rem;margin:1.5rem 0;}
+  .card{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.25rem;}
+  .card .icon{font-size:1.8rem;margin-bottom:.5rem;}
+  .card h4{font-size:.95rem;font-weight:600;color:var(--gold-light);margin-bottom:.4rem;}
+  .card p{font-size:.88rem;color:var(--text-muted);margin:0;}
+  .tip-box{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.3);border-radius:6px;padding:1rem 1.25rem;margin:1rem 0;font-size:.9rem;}
+  .tip-box .label{color:var(--success);font-weight:600;margin-bottom:.25rem;}
+  .warn-box{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.3);border-radius:6px;padding:1rem 1.25rem;margin:1rem 0;font-size:.9rem;}
+  .warn-box .label{color:var(--error);font-weight:600;margin-bottom:.25rem;}
+  .info-box{background:rgba(52,152,219,.1);border:1px solid rgba(52,152,219,.3);border-radius:6px;padding:1rem 1.25rem;margin:1rem 0;font-size:.9rem;}
+  .info-box .label{color:var(--info);font-weight:600;margin-bottom:.25rem;}
+  .list-styled{list-style:none;padding:0;}
+  .list-styled li{padding:.4rem 0 .4rem 1.5rem;position:relative;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.04);}
+  .list-styled li::before{content:'→';position:absolute;left:0;color:var(--gold);}
+  .data-table{width:100%;border-collapse:collapse;margin:1rem 0;}
+  .data-table th{background:var(--navy-light);color:var(--gold);font-weight:600;padding:.75rem 1rem;text-align:left;border:1px solid var(--card-border);font-size:.85rem;}
+  .data-table td{padding:.65rem 1rem;border:1px solid var(--card-border);font-size:.85rem;}
+  .data-table tr:nth-child(even) td{background:rgba(255,255,255,.03);}
+  .data-table tr:hover td{background:rgba(201,168,76,.04);}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1rem 0;}
+  @media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+  .col-box{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.25rem;}
+  .col-box h4{font-size:.95rem;font-weight:600;margin-bottom:.75rem;color:var(--gold-light);}
+  /* EÜR Struktur */
+  .eur-block{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.25rem;margin:1rem 0;}
+  .eur-block h4{font-size:.9rem;font-weight:700;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.04em;}
+  .eur-block.einnahmen{border-top:3px solid var(--success);}
+  .eur-block.einnahmen h4{color:var(--success);}
+  .eur-block.ausgaben{border-top:3px solid var(--error);}
+  .eur-block.ausgaben h4{color:var(--error);}
+  .eur-block.gewinn{border-top:3px solid var(--gold);}
+  .eur-block.gewinn h4{color:var(--gold);}
+  .eur-item{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.05);}
+  .eur-item:last-child{border:none;}
+  .eur-item span:last-child{font-family:monospace;color:var(--text-muted);}
+  /* Rechner */
+  .calc-box{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.5rem;margin:1.5rem 0;}
+  .calc-box h3{margin-top:0;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+  @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+  label{display:block;font-size:.83rem;color:var(--text-muted);margin-bottom:.3rem;}
+  input[type="number"],select{width:100%;background:var(--navy);border:1px solid var(--card-border);color:var(--text);padding:.55rem .8rem;border-radius:5px;font-size:.9rem;}
+  input:focus,select:focus{outline:none;border-color:var(--gold);}
+  .btn{background:var(--gold);color:var(--navy);border:none;padding:.65rem 1.5rem;border-radius:5px;font-weight:700;cursor:pointer;font-size:.9rem;transition:background .2s;}
+  .btn:hover{background:var(--gold-light);}
+  .result-box{background:var(--navy-light);border-radius:6px;padding:1rem;margin-top:1rem;display:none;}
+  .result-box.show{display:block;}
+  .result-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.9rem;border-bottom:1px solid rgba(255,255,255,.05);}
+  .result-row:last-child{border-bottom:none;font-weight:700;color:var(--gold);font-size:1rem;padding-top:.6rem;}
+  .result-row span:last-child{font-family:monospace;}
+  .result-row.sub{color:var(--text-muted);font-size:.85rem;}
+  /* Quiz */
+  .quiz-q{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
+  .quiz-q .q-text{font-weight:600;margin-bottom:1rem;font-size:.95rem;}
+  .quiz-q .q-hint{font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;font-style:italic;}
+  .quiz-option{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .75rem;border-radius:5px;cursor:pointer;margin-bottom:.4rem;border:1px solid transparent;transition:all .15s;font-size:.88rem;}
+  .quiz-option:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.3);}
+  .quiz-option input{accent-color:var(--gold);margin-top:2px;flex-shrink:0;}
+  .quiz-option.correct{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.4);}
+  .quiz-option.wrong{background:rgba(231,76,60,.12);border-color:rgba(231,76,60,.4);}
+  .quiz-option.missed{background:rgba(243,156,18,.12);border-color:rgba(243,156,18,.4);}
+  .quiz-feedback{font-size:.85rem;margin-top:.75rem;padding:.75rem;border-radius:5px;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.ok{background:rgba(46,204,113,.1);color:#2ecc71;}
+  .quiz-feedback.nok{background:rgba(231,76,60,.1);color:#e74c3c;}
+  .quiz-actions{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap;}
+  .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold);padding:.6rem 1.2rem;border-radius:5px;cursor:pointer;font-size:.88rem;font-weight:600;}
+  .btn-outline:hover{background:rgba(201,168,76,.1);}
+  .score-box{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.5rem;text-align:center;display:none;margin-top:1rem;}
+  .score-box.show{display:block;}
+  .score-num{font-size:3rem;font-weight:800;color:var(--gold);}
+  .progress-bar-wrap{background:var(--card-border);border-radius:10px;height:6px;margin-bottom:1.5rem;}
+  .progress-bar{background:var(--gold);height:6px;border-radius:10px;transition:width .4s;}
+  /* KV Vergleich */
+  .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;}
+  @media(max-width:580px){.kv-grid{grid-template-columns:1fr;}}
+  .kv-card{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1.25rem;}
+  .kv-card.gkv{border-top:3px solid var(--info);}
+  .kv-card.pkv{border-top:3px solid var(--gold);}
+  .kv-card h4{font-size:.95rem;font-weight:700;margin-bottom:.8rem;}
+  .kv-card.gkv h4{color:var(--info);}
+  .kv-card.pkv h4{color:var(--gold);}
+  .kv-row{display:flex;justify-content:space-between;font-size:.86rem;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .kv-row:last-child{border:none;}
+  .kv-row span:first-child{color:var(--text-muted);}
+  /* Altersvorsorge Pyramide */
+  .av-tier{border-radius:6px;padding:1rem 1.25rem;margin:.5rem 0;border:1px solid var(--card-border);}
+  .av-tier h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem;}
+  .av-tier p{font-size:.85rem;color:var(--text-muted);margin:0;}
+  .av-tier.t1{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.3);}
+  .av-tier.t1 h4{color:var(--gold);}
+  .av-tier.t2{background:rgba(52,152,219,.07);border-color:rgba(52,152,219,.25);}
+  .av-tier.t2 h4{color:var(--info);}
+  .av-tier.t3{background:rgba(46,204,113,.07);border-color:rgba(46,204,113,.25);}
+  .av-tier.t3 h4{color:var(--success);}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">SCHULUNG 6</span>
+  <h1>Finanzplanung für Selbstständige</h1>
+  <p>EÜR · Rücklagenplanung · Krankenversicherung · Altersvorsorge ohne bAV</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('intro',this)">Überblick</button>
+  <button onclick="showSection('eur',this)">EÜR</button>
+  <button onclick="showSection('ruecklagen',this)">Rücklagen</button>
+  <button onclick="showSection('kv',this)">Krankenversicherung</button>
+  <button onclick="showSection('altersvorsorge',this)">Altersvorsorge</button>
+  <button onclick="showSection('rechner',this)">Rechner</button>
+  <button onclick="showSection('quiz',this)">Quiz</button>
+</nav>
+
+<main>
+
+<!-- ÜBERBLICK -->
+<div class="section active" id="intro">
+  <h2>Finanzen als Selbstständiger im Griff</h2>
+  <div class="intro-box">
+    <p>Selbstständige haben keine Personalabteilung, die automatisch Steuern, Sozialabgaben und Rente abführt. Wer das eigenverantwortlich nicht strukturiert, riskiert böse Überraschungen beim Finanzamt – oder im Alter. Dieser Kurs zeigt, wie du deine Finanzen professionell steuerst.</p>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="icon">📒</div><h4>Einnahmen-Überschuss-Rechnung</h4><p>Das Standardinstrument für Freiberufler und Gewerbetreibende bis 600.000 € Umsatz.</p></div>
+    <div class="card"><div class="icon">🏦</div><h4>Rücklagenplanung</h4><p>Steuern, Krankenversicherung, Auftragsflauten – was du monatlich zurücklegen musst.</p></div>
+    <div class="card"><div class="icon">🏥</div><h4>Krankenversicherung</h4><p>GKV vs. PKV: Beitragsberechnung, Wahlrecht, Vor- und Nachteile für Selbstständige.</p></div>
+    <div class="card"><div class="icon">🏖️</div><h4>Altersvorsorge ohne bAV</h4><p>Rürup, ETF-Depot, Immobilien – wie du ohne betriebliche Altersvorsorge vorsorgen kannst.</p></div>
+    <div class="card"><div class="icon">🧮</div><h4>Rechner</h4><p>Steuerrücklage, Nettolohn-Äquivalent und Altersvorsorge-Bedarf berechnen.</p></div>
+    <div class="card"><div class="icon">🎯</div><h4>Quiz</h4><p>Mehrere Antworten können korrekt sein – teste dein Selbstständigen-Finanzwissen!</p></div>
+  </div>
+</div>
+
+<!-- EÜR -->
+<div class="section" id="eur">
+  <h2>Einnahmen-Überschuss-Rechnung (EÜR)</h2>
+  <div class="intro-box">
+    <p>Die EÜR ist die vereinfachte Gewinnermittlung für Freiberufler und Gewerbetreibende (bis 600.000 € Umsatz / 60.000 € Gewinn, sonst Bilanzierungspflicht). Prinzip: <strong>Zufluss-Abfluss</strong> – was eingeht und ausgeht zählt, nicht was aufgelaufen ist.</p>
+  </div>
+
+  <h3>Struktur der EÜR</h3>
+  <div class="eur-block einnahmen">
+    <h4>+ Betriebseinnahmen</h4>
+    <div class="eur-item"><span>Honorare / Umsatzerlöse</span><span>variabel</span></div>
+    <div class="eur-item"><span>Vereinnahmte USt (wenn USt-pflichtig)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Sonstige Einnahmen (z.B. Erstattungen)</span><span>variabel</span></div>
+  </div>
+  <div class="eur-block ausgaben">
+    <h4>– Betriebsausgaben</h4>
+    <div class="eur-item"><span>Bürokosten, Miete Büro</span><span>variabel</span></div>
+    <div class="eur-item"><span>Fahrtkosten, Kfz-Kosten</span><span>variabel</span></div>
+    <div class="eur-item"><span>Telefon / Internet (beruflich)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Software, Hardware (GWG &lt; 800 € netto sofort)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Versicherungen (betrieblich)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Fortbildung, Fachliteratur</span><span>variabel</span></div>
+    <div class="eur-item"><span>Abschreibungen (AfA für Anlagevermögen)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Gezahlte Vorsteuer (USt auf Eingangsrechnungen)</span><span>variabel</span></div>
+    <div class="eur-item"><span>Krankenversicherungsbeiträge (anteilig)</span><span>variabel</span></div>
+  </div>
+  <div class="eur-block gewinn">
+    <h4>= Gewinn / Verlust</h4>
+    <div class="eur-item"><span>Grundlage für Einkommensteuer, Gewerbesteuer, GKV-Beitrag</span><span>→ Steuerbescheid</span></div>
+  </div>
+
+  <h3>Wichtige Besonderheiten</h3>
+  <ul class="list-styled">
+    <li><strong>Zufluss-Abfluss-Prinzip:</strong> Rechnung vom Dezember, die im Januar bezahlt wird → Einnahme im Januar</li>
+    <li><strong>GWG-Grenze:</strong> Wirtschaftsgüter bis 800 € netto sofort als Betriebsausgabe abziehen</li>
+    <li><strong>Umsatzsteuer-Separierung:</strong> Vereinnahmte USt gehört dem Finanzamt – nie als Einnahme verplanen!</li>
+    <li><strong>Fahrtenbuch oder 1%-Regel</strong> für betriebliche Kfz-Nutzung</li>
+    <li><strong>Häusliches Arbeitszimmer:</strong> anteilig absetzbar wenn ausschließlich beruflich genutzt</li>
+  </ul>
+
+  <div class="warn-box">
+    <div class="label">⚠️ Kleinunternehmerregelung (§ 19 UStG)</div>
+    Umsatz im Vorjahr ≤ 22.000 € und im laufenden Jahr voraussichtlich ≤ 50.000 €: Keine USt auf Rechnungen. Dafür kein Vorsteuerabzug. Vorteil bei B2C-Kunden (Privatpersonen), Nachteil bei B2B.
+  </div>
+
+  <div class="tip-box">
+    <div class="label">✅ Anlage EÜR in ELSTER</div>
+    Seit 2017 muss die EÜR elektronisch über ELSTER übermittelt werden (Anlage EÜR). Ausnahme: Einnahmen unter 17.500 € – da reicht eine formlose Aufstellung. Trotzdem: Buchhaltungssoftware (z.B. Lexoffice, sevDesk) empfehlenswert.
+  </div>
+</div>
+
+<!-- RÜCKLAGEN -->
+<div class="section" id="ruecklagen">
+  <h2>Rücklagenplanung</h2>
+  <div class="intro-box">
+    <p>Als Selbstständiger bekommst du keine automatischen Abzüge – das ist bequem, aber gefährlich. Wer keine Rücklagen bildet, zahlt am Jahresende eine unerwartete Steuernachzahlung oder steht ohne Krankenversicherung da.</p>
+  </div>
+
+  <h3>Die 5 Pflicht-Rücklagen</h3>
+  <table class="data-table">
+    <tr><th>Rücklage</th><th>Empfehlung</th><th>Warum?</th></tr>
+    <tr><td><strong>Einkommensteuer</strong></td><td>25–30 % des Gewinns</td><td>ESt-Vorauszahlungen quartalsweise, Nachzahlungsrisiko</td></tr>
+    <tr><td><strong>Kirchensteuer</strong> (falls zutreffend)</td><td>~9 % der ESt</td><td>Wird ebenfalls veranlagt</td></tr>
+    <tr><td><strong>Krankenversicherung GKV</strong></td><td>~900–1.200 €/Monat</td><td>GKV-Mindestbeitrag auch bei Verlust</td></tr>
+    <tr><td><strong>Gewerbesteuer</strong> (falls Gewerbetreibender)</td><td>~3–5 % des Gewinns</td><td>Ab ca. 24.500 € Gewinn (Freibetrag)</td></tr>
+    <tr><td><strong>Auftragsflaute-Puffer</strong></td><td>3–6 Monatsumsätze</td><td>Überbrückt Durststrecken, Krankenzeiten</td></tr>
+  </table>
+
+  <div class="tip-box">
+    <div class="label">✅ Praktische Umsetzung: Das Drei-Konten-Modell</div>
+    <ul class="list-styled" style="margin-top:.5rem">
+      <li><strong>Konto 1 – Geschäftskonto:</strong> Alle Einnahmen und Ausgaben</li>
+      <li><strong>Konto 2 – Steuer-Rücklage:</strong> 30 % jeder Einnahme sofort umbuchen</li>
+      <li><strong>Konto 3 – Privatkonto:</strong> Rest = verfügbares Privatentnahme-Budget</li>
+    </ul>
+  </div>
+
+  <h3>Vorauszahlungen im Blick</h3>
+  <ul class="list-styled">
+    <li>ESt-Vorauszahlungen: quartalsweise (10.3. / 10.6. / 10.9. / 10.12.)</li>
+    <li>Basis: Finanzamt schätzt anhand Vorjahresgewinn – kann angepasst werden</li>
+    <li>USt-Voranmeldung: monatlich (Neugründer Pflicht) oder quartalsweise</li>
+    <li>Gewerbesteuer-Vorauszahlung: ebenfalls quartalsweise</li>
+  </ul>
+
+  <div class="warn-box">
+    <div class="label">⚠️ Nachzahlungszinsen</div>
+    Seit 2022: 1,8 % p.a. auf Steuernachzahlungen (§ 238 AO). Bei hohen Gewinnen und zu niedrigen Vorauszahlungen entstehen schnell 3-stellige Beträge. Lieber zu viel zurücklegen und die Erstattung kassieren.
+  </div>
+</div>
+
+<!-- KRANKENVERSICHERUNG -->
+<div class="section" id="kv">
+  <h2>Krankenversicherung für Selbstständige</h2>
+  <div class="intro-box">
+    <p>Selbstständige müssen sich eigenständig krankenversichern – kein Arbeitgeber zahlt mehr die Hälfte. Die Wahl zwischen GKV und PKV ist eine der wichtigsten und langfristigsten Finanzentscheidungen.</p>
+  </div>
+
+  <div class="kv-grid">
+    <div class="kv-card gkv">
+      <h4>🏥 Gesetzliche KV (GKV)</h4>
+      <div class="kv-row"><span>Beitragssatz</span><span>14,6 % + Zusatzbeitrag (~1,7 %)</span></div>
+      <div class="kv-row"><span>Bemessungsgrundlage</span><span>Gewinn (min. 1.178 €, max. 5.175 €/Mon.)</span></div>
+      <div class="kv-row"><span>Mindestbeitrag</span><span>~300–350 €/Monat (auch bei Verlust!)</span></div>
+      <div class="kv-row"><span>Maximalb. (2024)</span><span>~900–950 €/Monat</span></div>
+      <div class="kv-row"><span>Familienversicherung</span><span>✅ Kinder kostenlos mitversichert</span></div>
+      <div class="kv-row"><span>Krankengeld</span><span>Optionaltarif nötig (ab 43. Tag)</span></div>
+    </div>
+    <div class="kv-card pkv">
+      <h4>🏦 Private KV (PKV)</h4>
+      <div class="kv-row"><span>Beitragssatz</span><span>Risikoabhängig (Alter, Gesundheit)</span></div>
+      <div class="kv-row"><span>Einsteiger (jung, gesund)</span><span>~300–500 €/Monat</span></div>
+      <div class="kv-row"><span>Beitragsentwicklung</span><span>Steigt mit Alter / Anpassungen</span></div>
+      <div class="kv-row"><span>Familienversicherung</span><span>⛔ Jedes Mitglied zahlt extra</span></div>
+      <div class="kv-row"><span>Leistung</span><span>Oft besser (Einzelzimmer, Chefarzt)</span></div>
+      <div class="kv-row"><span>Rückkehr zur GKV</span><span>Schwierig (nur &lt; 55 J. unter BBG)</span></div>
+    </div>
+  </div>
+
+  <h3>Wann lohnt sich GKV, wann PKV?</h3>
+  <table class="data-table">
+    <tr><th>Situation</th><th>Empfehlung</th></tr>
+    <tr><td>Selbstständig mit Familie (Kinder, nichtberufstätiger Partner)</td><td>GKV (kostenlose Mitversicherung spart viel)</td></tr>
+    <tr><td>Junger, gesunder Single ohne Kinder, hohes Einkommen</td><td>PKV kann günstiger sein</td></tr>
+    <tr><td>Schwankende Einnahmen, Verlustjahre möglich</td><td>GKV (Mindestbeitrag ist planbar)</td></tr>
+    <tr><td>Mittleres Alter, gesundheitliche Vorgeschichte</td><td>PKV kann teuer werden → GKV bevorzugen</td></tr>
+    <tr><td>Rückkehr ins Angestelltenverhältnis geplant</td><td>GKV (PKV-Rückkehr ist schwierig)</td></tr>
+  </table>
+
+  <div class="warn-box">
+    <div class="label">⚠️ GKV-Mindestbeitrag: immer fällig</div>
+    Auch bei null Gewinn zahlt man in der GKV den Mindestbeitrag (~1.178 € fiktive Mindestbemessungsgrundlage × 16,3 % = ca. 192 €, plus Pflegepflicht). In der Gründungsphase oder Flaute trotzdem einplanen!
+  </div>
+
+  <div class="tip-box">
+    <div class="label">✅ Krankengeld-Absicherung nicht vergessen!</div>
+    Freiwillig GKV-versicherte Selbstständige erhalten Krankengeld erst ab dem 43. Krankheitstag und nur wenn ein entsprechender Wahltarif gewählt wurde. Alternativ: Krankentagegeld-Versicherung ab dem 1., 8. oder 14. Tag abschließen.
+  </div>
+</div>
+
+<!-- ALTERSVORSORGE -->
+<div class="section" id="altersvorsorge">
+  <h2>Altersvorsorge ohne bAV</h2>
+  <div class="intro-box">
+    <p>Selbstständige haben keine betriebliche Altersvorsorge (bAV) und in der Regel keinen Arbeitgeberanteil zur gesetzlichen Rentenversicherung. Wer früh und strukturiert vorsorgt, kann das jedoch gut kompensieren.</p>
+  </div>
+
+  <h3>Die Altersvorsorge-Pyramide für Selbstständige</h3>
+  <div class="av-tier t1">
+    <h4>🥇 Schicht 1 – Basisversorgung (steuerlich gefördert)</h4>
+    <p>Rürup-Rente (Basisrente): bis zu 27.566 € p.a. absetzbar (2024), lebenslange Rente, insolvenzgeschützt. Besonders sinnvoll für Gutverdiener über 40. Nicht vererbbar, nicht beleihbar.</p>
+  </div>
+  <div class="av-tier t2">
+    <h4>🥈 Schicht 2 – Kapitalanlage mit Steuereffekt</h4>
+    <p>ETF-Depot (Aktien, Anleihen): Flexibel, günstig, keine Beitragspflicht. Thesaurierende ETFs für maximalen Zinseszinseffekt. Steuerlich: Abgeltungsteuer 25 % auf Erträge, Sparer-Pauschbetrag 1.000 €.</p>
+  </div>
+  <div class="av-tier t3">
+    <h4>🥉 Schicht 3 – Sachwerte & Immobilien</h4>
+    <p>Vermietete Immobilien: monatlicher Cashflow im Alter, steuerliche Vorteile (AfA). Gold / Edelmetalle: Werterhalt, kein Cashflow. Unternehmensbeteiligungen für erfahrene Investoren.</p>
+  </div>
+
+  <h3>Rürup-Rente: für wen und warum?</h3>
+  <ul class="list-styled">
+    <li>Höchstbeitrag 2024: 27.566 € (Single) → zu 100 % steuerlich absetzbar</li>
+    <li>Bei 42 % Grenzsteuersatz: Steuervorteil bis zu 11.578 € p.a.</li>
+    <li>Insolvenz- und pfändungsgeschützt (anders als Depot)</li>
+    <li>Auszahlung ab 62 J. (neue Verträge: 62 J.), nur als Rente – keine Kapitalauszahlung</li>
+    <li>Nachgelagerte Besteuerung: Renten werden im Alter versteuert (i.d.R. niedrigerer Steuersatz)</li>
+  </ul>
+
+  <h3>ETF-Sparplan als Kernbaustein</h3>
+  <ul class="list-styled">
+    <li>Kein Mindestbeitrag – flexibel an gute und schlechte Monate anpassen</li>
+    <li>Empfehlung: World-ETF (MSCI World oder All World) für breite Streuung</li>
+    <li>Sparrate: 15–20 % des Nettoumsatzes als Richtwert</li>
+    <li>Entnahmeplan im Alter: 4-%-Regel als grobe Orientierung</li>
+  </ul>
+
+  <div class="info-box">
+    <div class="label">ℹ️ Freiwillige gesetzliche Rente für Selbstständige</div>
+    Selbstständige können freiwillig in die gesetzliche Rentenversicherung einzahlen. Flexibler Beitrag: 100,07 € bis 1.404,30 €/Monat (2024). Sinnvoll bei weniger als 5 Jahren bis zur Regelaltersrente oder wenn Erwerbsminderungsrente gewünscht.
+  </div>
+
+  <div class="warn-box">
+    <div class="label">⚠️ Pflichtversicherung für bestimmte Selbstständige</div>
+    Bestimmte Gruppen sind rentenversicherungspflichtig: Handwerker, Lehrer, Erzieher, Künstler (Künstlersozialkasse), Hebammen, Küstenschiffer. Prüfe, ob du betroffen bist!
+  </div>
+</div>
+
+<!-- RECHNER -->
+<div class="section" id="rechner">
+  <h2>Rechner für Selbstständige</h2>
+  <div class="intro-box"><p>Drei praxisnahe Kalkulationshilfen. <em>Alle Ergebnisse sind Schätzungen – kein Steuerberatungsersatz.</em></p></div>
+
+  <div class="calc-box">
+    <h3>📊 Steuerrücklage-Rechner</h3>
+    <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1rem;">Wie viel solltest du monatlich zurücklegen?</p>
+    <div class="form-row">
+      <div><label>Monatlicher Nettoumsatz (€)</label><input type="number" id="sUmsatz" value="5000"></div>
+      <div><label>Monatliche Betriebsausgaben (€)</label><input type="number" id="sAusgaben" value="1500"></div>
+    </div>
+    <div class="form-row">
+      <div><label>KV-Modell</label>
+        <select id="sKV">
+          <option value="900">GKV (ca. 900 €/Monat)</option>
+          <option value="500">GKV günstig (ca. 500 €/Monat)</option>
+          <option value="400">PKV (ca. 400 €/Monat)</option>
+          <option value="700">PKV mittel (ca. 700 €/Monat)</option>
+        </select>
+      </div>
+      <div><label>Rentenvorsorge-Sparrate (€/Mon.)</label><input type="number" id="sRente" value="400"></div>
+    </div>
+    <button class="btn" onclick="calcSteuer()">Berechnen</button>
+    <div class="result-box" id="sResult">
+      <div class="result-row sub"><span>Monatlicher Gewinn (vor Steuern)</span><span id="sGewinn">–</span></div>
+      <div class="result-row sub"><span>Jahresgewinn (geschätzt)</span><span id="sJGewinn">–</span></div>
+      <div class="result-row sub"><span>Einkommensteuer (geschätzt)</span><span id="sEST">–</span></div>
+      <div class="result-row sub"><span>Krankenversicherung</span><span id="sKVOut">–</span></div>
+      <div class="result-row sub"><span>Altersvorsorge-Sparrate</span><span id="sAVOut">–</span></div>
+      <div class="result-row sub"><span>Notfall-Puffer (10 %)</span><span id="sPuffer">–</span></div>
+      <div class="result-row"><span>Monatlich verfügbar (netto privat)</span><span id="sNetto">–</span></div>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <h3>💰 Rürup-Steuerersparnis-Rechner</h3>
+    <div class="form-row">
+      <div><label>Jährlicher Gewinn (zvE, €)</label><input type="number" id="rZve" value="70000"></div>
+      <div><label>Rürup-Jahresbeitrag (€, max. 27.566)</label><input type="number" id="rBeitrag" value="10000"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Kirchensteuerpflichtig?</label>
+        <select id="rKirche"><option value="0">Nein</option><option value="8">Ja – 8 %</option><option value="9">Ja – 9 %</option></select>
+      </div>
+    </div>
+    <button class="btn" onclick="calcRuerup()">Berechnen</button>
+    <div class="result-box" id="rResult">
+      <div class="result-row sub"><span>zvE vor Rürup</span><span id="rVorher">–</span></div>
+      <div class="result-row sub"><span>zvE nach Rürup-Abzug</span><span id="rNachher">–</span></div>
+      <div class="result-row sub"><span>ESt-Ersparnis (geschätzt)</span><span id="rErsparnis">–</span></div>
+      <div class="result-row sub"><span>Kirchensteuer-Ersparnis</span><span id="rKircheOut">–</span></div>
+      <div class="result-row"><span>Effektiver Eigenanteil am Beitrag</span><span id="rNetto">–</span></div>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <h3>📈 ETF-Altersvorsorge-Projektion</h3>
+    <div class="form-row">
+      <div><label>Monatliche Sparrate (€)</label><input type="number" id="eSpar" value="500"></div>
+      <div><label>Anlagehorizont (Jahre)</label><input type="number" id="eJahre" value="25"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Erwartete Rendite p.a. (%)</label><input type="number" id="eRendite" value="7" step="0.5"></div>
+      <div><label>Entnahme pro Monat im Alter (€)</label><input type="number" id="eEntnahme" value="1500"></div>
+    </div>
+    <button class="btn" onclick="calcETF()">Berechnen</button>
+    <div class="result-box" id="eResult">
+      <div class="result-row sub"><span>Depot-Endwert nach Laufzeit</span><span id="eEndwert">–</span></div>
+      <div class="result-row sub"><span>Eingezahltes Kapital</span><span id="eEingezahlt">–</span></div>
+      <div class="result-row sub"><span>Kursgewinne (geschätzt)</span><span id="eGewinne">–</span></div>
+      <div class="result-row sub"><span>Tragbar bei 4-%-Entnahme (monatlich)</span><span id="e4pct">–</span></div>
+      <div class="result-row"><span>Depot hält bei Wunsch-Entnahme ca.</span><span id="eHalt">–</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section" id="quiz">
+  <h2>Wissens-Quiz</h2>
+  <div class="intro-box"><p>Teste dein Finanzwissen für Selbstständige! Manchmal sind <strong>mehrere Antworten korrekt</strong>.</p></div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="quizProgress" style="width:0%"></div></div>
+  <div id="quizContainer"></div>
+  <div class="quiz-actions">
+    <button class="btn" onclick="submitQuiz()">Auswertung anzeigen</button>
+    <button class="btn-outline" onclick="resetQuiz()">Neu starten</button>
+  </div>
+  <div class="score-box" id="scoreBox">
+    <div class="score-num" id="scoreNum">–</div>
+    <div class="score-label">Richtige Antworten</div>
+    <p style="margin-top:1rem;color:var(--text-muted);font-size:.88rem;" id="scoreMsg"></p>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showSection(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+function fmt(n){return n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+
+// Einfache progressiver Steuersatz-Näherung
+function calcEST(zvE){
+  if(zvE<=11604)return 0;
+  if(zvE<=17005)return 0.14*(zvE-11604);
+  if(zvE<=66760){const y=(zvE-17005)/10000;return (924.14*y+1400)*y+965;}
+  if(zvE<=277825){const z=(zvE-66760)/10000;return (228.74*z+2397)*z+10638;}
+  return 0.45*zvE-17374;
+}
+
+function calcSteuer(){
+  const umsatz=+document.getElementById('sUmsatz').value||0;
+  const ausgaben=+document.getElementById('sAusgaben').value||0;
+  const kv=+document.getElementById('sKV').value||0;
+  const rente=+document.getElementById('sRente').value||0;
+  const gewinn=umsatz-ausgaben;
+  const jGewinn=gewinn*12;
+  const estJahr=calcEST(Math.max(0,jGewinn-kv*12*0.88));
+  const estMonat=estJahr/12;
+  const puffer=gewinn*0.10;
+  const netto=gewinn-estMonat-kv-rente-puffer;
+  document.getElementById('sGewinn').textContent=fmt(gewinn);
+  document.getElementById('sJGewinn').textContent=fmt(jGewinn);
+  document.getElementById('sEST').textContent=fmt(estMonat)+' /Mon.';
+  document.getElementById('sKVOut').textContent=fmt(kv)+' /Mon.';
+  document.getElementById('sAVOut').textContent=fmt(rente)+' /Mon.';
+  document.getElementById('sPuffer').textContent=fmt(puffer)+' /Mon.';
+  const el=document.getElementById('sNetto');
+  el.textContent=fmt(Math.max(0,netto));
+  el.style.color=netto>0?'var(--gold)':'var(--error)';
+  document.getElementById('sResult').classList.add('show');
+}
+
+function calcRuerup(){
+  const zve=+document.getElementById('rZve').value||0;
+  const beitrag=Math.min(+document.getElementById('rBeitrag').value||0,27566);
+  const kirchePct=+document.getElementById('rKirche').value||0;
+  const estVorher=calcEST(zve);
+  const estNachher=calcEST(Math.max(0,zve-beitrag));
+  const estErsparnis=estVorher-estNachher;
+  const kircheErsparnis=estErsparnis*kirchePct/100;
+  const gesamt=estErsparnis+kircheErsparnis;
+  const eigenanteil=beitrag-gesamt;
+  document.getElementById('rVorher').textContent=fmt(zve);
+  document.getElementById('rNachher').textContent=fmt(Math.max(0,zve-beitrag));
+  document.getElementById('rErsparnis').textContent=fmt(estErsparnis);
+  document.getElementById('rKircheOut').textContent=fmt(kircheErsparnis);
+  document.getElementById('rNetto').textContent=fmt(eigenanteil)+` (${(eigenanteil/beitrag*100).toFixed(1)} % des Beitrags)`;
+  document.getElementById('rResult').classList.add('show');
+}
+
+function calcETF(){
+  const s=+document.getElementById('eSpar').value||0;
+  const j=+document.getElementById('eJahre').value||1;
+  const r=(+document.getElementById('eRendite').value||0)/100/12;
+  const entnahme=+document.getElementById('eEntnahme').value||0;
+  const monate=j*12;
+  const endwert=r===0?s*monate:s*((Math.pow(1+r,monate)-1)/r)*(1+r);
+  const eingezahlt=s*monate;
+  const gewinne=endwert-eingezahlt;
+  const e4=endwert*0.04/12;
+  let halt='∞ (nachhaltig)';
+  if(entnahme>e4){
+    let depot=endwert,m=0;
+    while(depot>0&&m<600){depot=depot*(1+r)-entnahme;m++;}
+    halt=m<600?`ca. ${(m/12).toFixed(0)} Jahre`:'> 50 Jahre';
+  }
+  document.getElementById('eEndwert').textContent=fmt(endwert);
+  document.getElementById('eEingezahlt').textContent=fmt(eingezahlt);
+  document.getElementById('eGewinne').textContent=fmt(gewinne);
+  document.getElementById('e4pct').textContent=fmt(e4)+' /Mon.';
+  document.getElementById('eHalt').textContent=halt;
+  document.getElementById('eResult').classList.add('show');
+}
+
+const quizData=[
+  {
+    q:"Was ist das Kernprinzip der Einnahmen-Überschuss-Rechnung (EÜR)?",
+    type:"single",
+    opts:["Periodenabgrenzungsprinzip – Leistung zählt","Zufluss-Abfluss-Prinzip – Zahlung zählt","Gewinn = Bilanzvermögen Ende − Beginn","Nur Bareinnahmen werden erfasst"],
+    correct:[1],
+    explanation:"Das Zufluss-Abfluss-Prinzip ist das Herzstück der EÜR: Es zählt, wann Geld tatsächlich eingeht oder ausgeht – nicht wann die Leistung erbracht oder die Rechnung gestellt wurde. Das Gegenteil gilt bei der Bilanzierung."
+  },
+  {
+    q:"Welche Aussagen zur GKV für Selbstständige sind korrekt?",
+    type:"multi",
+    opts:["Der Beitrag richtet sich nach dem Gewinn","Bei null Einkommen zahlt man keinen Beitrag","Kinder sind kostenlos mitversichert","Der Beitragssatz beträgt ca. 14,6 % + Zusatzbeitrag","Ein Krankengeld-Wahltarif ist empfehlenswert"],
+    correct:[0,2,3,4],
+    explanation:"Der GKV-Beitrag berechnet sich nach dem Gewinn (jedoch mit Mindestbemessungsgrundlage – nicht null). Kinder sind kostenlos mitversichert. Beitragssatz ca. 14,6 % + Zusatzbeitrag. Freiwillig GKV-versicherte brauchen einen extra Wahltarif für Krankengeld."
+  },
+  {
+    q:"Bis zu welchem Betrag können Rürup-Beiträge im Jahr 2024 steuerlich abgesetzt werden?",
+    type:"single",
+    opts:["10.347 €","20.000 €","27.566 €","35.000 €"],
+    correct:[2],
+    explanation:"Der Höchstbetrag für Rürup-Beiträge (zusammen mit GRV-Beiträgen) beträgt 2024 27.566 € und ist zu 100 % absetzbar. Dieser Betrag wird jährlich angepasst."
+  },
+  {
+    q:"Welche Rücklagen sollte ein Selbstständiger regelmäßig bilden?",
+    type:"multi",
+    opts:["Einkommensteuer-Rücklage","Urlaubsgeld-Rücklage wie beim Angestellten","Krankenversicherungs-Rücklage","Auftragsflauten-Puffer","Gewerbesteuer (falls Gewerbetreibender)"],
+    correct:[0,2,3,4],
+    explanation:"ESt-Rücklage, KV-Rücklage, Puffer und ggf. Gewerbesteuer sind Pflicht. Ein 'Urlaubsgeld' kennt die Selbstständigkeit nicht – Urlaub muss aus dem laufenden Gewinn finanziert werden."
+  },
+  {
+    q:"Wann ist die Rückkehr von der PKV in die GKV für Selbstständige möglich?",
+    type:"multi",
+    opts:["Jederzeit auf Antrag","Nur durch Aufnahme einer versicherungspflichtigen Beschäftigung unter der Beitragsbemessungsgrenze","Nur vor dem 55. Lebensjahr bei Aufnahme einer sozialversicherungspflichtigen Arbeit","Durch Heirat mit einem GKV-Mitglied (Familienversicherung, wenn Einkommen unter Grenze)","Nie – die PKV ist endgültig"],
+    correct:[1,2,3],
+    explanation:"Die Rückkehr in die GKV ist möglich durch: (1) Angestelltenverhältnis mit Einkommen unter BBG (und Alter unter 55), (2) Familienversicherung durch Heirat (wenn eigenes Einkommen unter der Grenze bleibt). Über 55 ist die Rückkehr fast unmöglich."
+  },
+  {
+    q:"Welche Vorteile hat die Rürup-Rente gegenüber einem ETF-Depot?",
+    type:"multi",
+    opts:["Kapitalauszahlung auf einen Schlag ist möglich","Insolvenz- und Pfändungsschutz","Steuerlicher Abzug der Einzahlungen","Flexible Entnahme ab sofort","Nachgelagerte Besteuerung im Alter (i.d.R. niedrigerer Steuersatz)"],
+    correct:[1,2,4],
+    explanation:"Rürup-Vorteile: Insolvenzschutz, voller Steuerabzug (bis 27.566 €), nachgelagerte Besteuerung. Nachteile: keine Kapitalauszahlung, keine flexible Entnahme vor 62 J. Das ETF-Depot punktet mit Flexibilität."
+  },
+  {
+    q:"Was bedeutet die GWG-Grenze von 800 € in der EÜR?",
+    type:"single",
+    opts:["Ausgaben unter 800 € müssen nicht belegt werden","Wirtschaftsgüter bis 800 € netto können sofort als Betriebsausgabe abgezogen werden (ohne AfA)","Ab 800 € Jahresumsatz ist EÜR Pflicht","Die GWG-Grenze gilt nur für Immobilien"],
+    correct:[1],
+    explanation:"Geringwertige Wirtschaftsgüter (GWG) bis 800 € netto können im Jahr der Anschaffung sofort und vollständig als Betriebsausgabe abgezogen werden – es entfällt die Pflicht zur Abschreibung über die Nutzungsdauer."
+  }
+];
+
+function buildQuiz(){
+  const c=document.getElementById('quizContainer');c.innerHTML='';
+  quizData.forEach((q,i)=>{
+    const m=q.type==='multi';
+    c.insertAdjacentHTML('beforeend',`<div class="quiz-q" id="q${i}">
+      <div class="q-text">${i+1}. ${q.q}</div>
+      <div class="q-hint">${m?'⚠️ Mehrere Antworten können richtig sein':'➡️ Genau eine Antwort ist richtig'}</div>
+      ${q.opts.map((o,j)=>`<label class="quiz-option" id="opt${i}_${j}"><input type="${m?'checkbox':'radio'}" name="q${i}" value="${j}"> ${o}</label>`).join('')}
+      <div class="quiz-feedback" id="fb${i}"></div>
+    </div>`);
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const a=quizData.filter((_,i)=>document.querySelectorAll(`input[name="q${i}"]:checked`).length>0).length;
+  document.getElementById('quizProgress').style.width=(a/quizData.length*100)+'%';
+}
+document.addEventListener('change',e=>{if(e.target.matches('input'))updateProgress();});
+function submitQuiz(){
+  let score=0;
+  quizData.forEach((q,i)=>{
+    const sel=[...document.querySelectorAll(`input[name="q${i}"]:checked`)].map(e=>+e.value);
+    const ok=JSON.stringify(sel.slice().sort())===JSON.stringify(q.correct.slice().sort());
+    if(ok)score++;
+    q.opts.forEach((_,j)=>{
+      const el=document.getElementById(`opt${i}_${j}`);
+      el.classList.remove('correct','wrong','missed');
+      if(q.correct.includes(j)&&sel.includes(j))el.classList.add('correct');
+      else if(!q.correct.includes(j)&&sel.includes(j))el.classList.add('wrong');
+      else if(q.correct.includes(j)&&!sel.includes(j))el.classList.add('missed');
+    });
+    const fb=document.getElementById(`fb${i}`);
+    fb.textContent=q.explanation;fb.className='quiz-feedback show '+(ok?'ok':'nok');
+  });
+  document.getElementById('scoreNum').textContent=`${score}/${quizData.length}`;
+  const p=score/quizData.length;
+  document.getElementById('scoreMsg').textContent=p>=0.85?'🏆 Exzellent! Du bist für die Selbstständigkeit finanziell gut aufgestellt.':p>=0.57?'👍 Solide! Einige Details noch vertiefen.':'📚 Arbeite die Kapitel nochmals durch – besonders KV und Rücklagen sind praxiswichtig!';
+  document.getElementById('scoreBox').classList.add('show');
+}
+function resetQuiz(){document.getElementById('scoreBox').classList.remove('show');buildQuiz();}
+buildQuiz();
+</script>
+</body>
+</html>
