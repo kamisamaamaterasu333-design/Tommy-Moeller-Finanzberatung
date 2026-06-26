@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAX Lernmodul – Power BI</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --surface3: #e8e6de;
+    --text: #1c1b18;
+    --text-sec: #56544e;
+    --text-muted: #9a9890;
+    --border: #dedad0;
+    --border-strong: #c8c4b8;
+    --accent: #1a56db;
+    --accent-bg: #edf2ff;
+    --accent-text: #1a3a8a;
+    --green: #166534;
+    --green-bg: #f0fdf4;
+    --green-border: #86efac;
+    --amber: #92400e;
+    --amber-bg: #fffbeb;
+    --amber-border: #fcd34d;
+    --purple: #5b21b6;
+    --purple-bg: #f5f3ff;
+    --purple-border: #c4b5fd;
+    --red: #991b1b;
+    --red-bg: #fef2f2;
+    --teal: #0f766e;
+    --teal-bg: #f0fdfa;
+    --teal-border: #5eead4;
+    --mono: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+    --radius: 6px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: sticky; top: 0;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+  .sidebar-header p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .progress-bar-wrap { margin: 12px 0 0; }
+  .progress-bar-label { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-bar-track { background: var(--surface3); border-radius: 99px; height: 4px; }
+  .progress-bar-fill { background: var(--accent); height: 4px; border-radius: 99px; transition: width 0.4s; }
+
+  .search-wrap { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .search-input {
+    width: 100%; padding: 7px 10px 7px 30px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; background: var(--bg); color: var(--text);
+    outline: none; font-family: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239a9890' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 9px center;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  .nav { flex: 1; padding: 8px 0 20px; overflow-y: auto; }
+
+  .nav-section { margin-bottom: 4px; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted);
+    padding: 10px 16px 4px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 16px;
+    font-size: 13px; color: var(--text-sec);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent); font-weight: 500; }
+  .nav-item.done .nav-check { background: var(--green); color: white; border-color: var(--green); }
+  .nav-check {
+    width: 18px; height: 18px; min-width: 18px;
+    border-radius: 50%; border: 1.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .nav-cat-icon { font-size: 14px; min-width: 16px; }
+
+  /* ── Main ── */
+  .main { flex: 1; overflow-y: auto; }
+  .content { max-width: 820px; padding: 40px 48px 80px; }
+
+  /* ── Category header ── */
+  .cat-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 8px;
+  }
+  .cat-icon { font-size: 22px; }
+  .cat-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .cat-subtitle { font-size: 14px; color: var(--text-sec); margin-bottom: 28px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Measure cards ── */
+  .measure-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+  .measure-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+  .measure-header {
+    padding: 16px 20px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .measure-header:hover { background: var(--bg); }
+  .measure-header.open { border-bottom-color: var(--border); }
+
+  .measure-header-left { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+  .measure-name { font-size: 14px; font-weight: 600; }
+  .measure-tagline { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .measure-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 99px; letter-spacing: 0.03em;
+  }
+  .badge-easy { background: var(--green-bg); color: var(--green); }
+  .badge-medium { background: var(--amber-bg); color: var(--amber); }
+  .badge-advanced { background: var(--purple-bg); color: var(--purple); }
+  .badge-cat { background: var(--surface3); color: var(--text-sec); }
+
+  .measure-toggle {
+    font-size: 11px; color: var(--text-muted);
+    min-width: 20px; text-align: right; padding-top: 2px;
+    transition: transform 0.2s;
+  }
+  .measure-toggle.open { transform: rotate(180deg); }
+
+  .measure-body { padding: 20px; display: none; }
+  .measure-body.open { display: block; }
+
+  /* ── Sections inside body ── */
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* ── Code ── */
+  .code-block {
+    background: #1a1b26;
+    color: #c0caf5;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 8px 0 16px;
+  }
+  .kw { color: #bb9af7; }
+  .fn { color: #7aa2f7; }
+  .cm { color: #565f89; font-style: italic; }
+  .str { color: #9ece6a; }
+  .num { color: #ff9e64; }
+  .var-color { color: #e0af68; }
+  .op { color: #89ddff; }
+
+  /* ── Example boxes ── */
+  .example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0 16px; }
+  .example-box {
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .example-box .ex-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .ex-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text-sec); }
+  .ex-input .ex-label { color: var(--text-muted); }
+  .ex-result { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+  .ex-result .ex-label { color: var(--green); }
+  .ex-value { font-weight: 600; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .ex-desc { font-size: 12px; margin-top: 4px; opacity: 0.85; }
+
+  /* ── Explanation list ── */
+  .explanation { font-size: 13.5px; color: var(--text-sec); line-height: 1.7; margin: 8px 0 16px; }
+  .explanation strong { color: var(--text); font-weight: 600; }
+
+  /* ── Syntax breakdown table ── */
+  .syntax-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 16px; }
+  .syntax-table th {
+    text-align: left; padding: 7px 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-muted);
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .syntax-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .syntax-table tr:last-child td { border-bottom: none; }
+  .syntax-table tr:hover td { background: var(--bg); }
+  .syntax-table code {
+    font-family: var(--mono); font-size: 11.5px;
+    background: var(--surface2); padding: 1px 5px; border-radius: 3px;
+    color: var(--accent-text);
+  }
+
+  /* ── Tip/warn boxes ── */
+  .info-box {
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-size: 13px;
+    margin: 8px 0 16px;
+    display: flex; gap: 9px; align-items: flex-start;
+    line-height: 1.6;
+  }
+  .info-box .ib-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .ib-tip { background: var(--teal-bg); border-left: 3px solid var(--teal); color: var(--teal); }
+  .ib-warn { background: var(--amber-bg); border-left: 3px solid #d97706; color: var(--amber); }
+  .ib-note { background: var(--accent-bg); border-left: 3px solid var(--accent); color: var(--accent-text); }
+
+  /* ── Done button ── */
+  .done-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-sec); font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: all 0.12s;
+    margin-top: 4px;
+  }
+  .done-btn:hover { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .done-btn.done-active { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 500; }
+
+  /* ── Cheatsheet ── */
+  .cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cheat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px;
+  }
+  .cheat-card h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .cheat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .cheat-row:last-child { border-bottom: none; }
+  .cheat-fn { font-family: var(--mono); color: var(--accent-text); font-size: 11.5px; }
+  .cheat-desc { color: var(--text-muted); font-size: 11.5px; text-align: right; }
+
+  /* ── Search results ── */
+  .search-results { padding: 20px 0; }
+  .sr-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 16px;
+    cursor: pointer; margin-bottom: 8px;
+    transition: background 0.1s;
+  }
+  .sr-item:hover { background: var(--accent-bg); }
+  .sr-name { font-size: 14px; font-weight: 600; }
+  .sr-cat { font-size: 12px; color: var(--text-muted); }
+  .sr-match { font-size: 12px; color: var(--text-sec); margin-top: 3px; }
+  mark { background: #fef08a; border-radius: 2px; padding: 0 2px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sidebar { width: 240px; min-width: 240px; }
+    .content { padding: 24px 20px 60px; }
+    .example-grid { grid-template-columns: 1fr; }
+    .cheat-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 650px) {
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ══════════════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>DAX Lernmodul</h1>
+    <p>Power BI · Measures & Formeln</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-label"><span>Fortschritt</span><span id="prog-text">0 / 28</span></div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" placeholder="Suchen…" id="global-search" oninput="doSearch(this.value)" />
+  </div>
+  <div class="nav" id="nav-tree">
+
+    <div class="nav-section">
+      <div class="nav-section-label">Einstieg</div>
+      <div class="nav-item active" onclick="showPage('basics',this)">
+        <span class="nav-cat-icon">📐</span> Grundlagen
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Aggregation</div>
+      <div class="nav-item" onclick="showPage('aggregation',this)">
+        <span class="nav-cat-icon">➕</span> Basis-Aggregation
+      </div>
+      <div class="nav-item" onclick="showPage('calculate',this)">
+        <span class="nav-cat-icon">🔵</span> CALCULATE
+      </div>
+      <div class="nav-item" onclick="showPage('iteratoren',this)">
+        <span class="nav-cat-icon">🔁</span> Iteratoren (X-Funktionen)
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Filter & Kontext</div>
+      <div class="nav-item" onclick="showPage('filter',this)">
+        <span class="nav-cat-icon">🔍</span> FILTER & ALL
+      </div>
+      <div class="nav-item" onclick="showPage('timeint',this)">
+        <span class="nav-cat-icon">📅</span> Time Intelligence
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Logik & Text</div>
+      <div class="nav-item" onclick="showPage('logik',this)">
+        <span class="nav-cat-icon">⚖️</span> IF, SWITCH, Logik
+      </div>
+      <div class="nav-item" onclick="showPage('text',this)">
+        <span class="nav-cat-icon">🔤</span> Text-Funktionen
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Fortgeschritten</div>
+      <div class="nav-item" onclick="showPage('var',this)">
+        <span class="nav-cat-icon">📦</span> VAR & RETURN
+      </div>
+      <div class="nav-item" onclick="showPage('ranking',this)">
+        <span class="nav-cat-icon">🏆</span> Ranking & Top N
+      </div>
+      <div class="nav-item" onclick="showPage('cheatsheet',this)">
+        <span class="nav-cat-icon">📋</span> Cheatsheet
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════════════ -->
+<main class="main">
+<div class="content">
+<div id="search-results-page" class="page"></div>
+
+<!-- ════════════════════════════
+     GRUNDLAGEN
+════════════════════════════ -->
+<div class="page active" id="page-basics">
+  <div class="cat-header"><span class="cat-icon">📐</span><h2 class="cat-title">Grundlagen</h2></div>
+  <p class="cat-subtitle">Was ist DAX, wie unterscheidet es sich von Excel, und welche Konzepte sind zentral?</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left">
+        <div>
+          <div class="measure-name">Was ist DAX?</div>
+          <div class="measure-tagline">Data Analysis Expressions – die Formelsprache von Power BI</div>
+          <div class="measure-badges"><span class="badge badge-easy">Einstieg</span></div>
+        </div>
+      </div>
+      <div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <p class="explanation">DAX steht für <strong>Data Analysis Expressions</strong>. Es ist die Formelsprache in Power BI (und auch Excel Power Pivot / SSAS). DAX wird verwendet, um <strong>berechnete Spalten</strong>, <strong>Measures</strong> und <strong>berechnete Tabellen</strong> zu erstellen.</p>
+      <div class="info-box ib-note"><span class="ib-icon">💡</span><div><strong>Measure vs. berechnete Spalte:</strong> Ein <strong>Measure</strong> wird dynamisch berechnet, je nach dem aktuellen Filterkontext (Slicer, Visuals). Eine <strong>berechnete Spalte</strong> wird beim Laden einmal berechnet und in der Tabelle gespeichert. In 90 % der Fälle sind Measures die bessere Wahl.</div></div>
+      <hr class="divider">
+      <div class="section-label">Die wichtigsten Konzepte</div>
+      <table class="syntax-table">
+        <thead><tr><th>Konzept</th><th>Erklärung</th></tr></thead>
+        <tbody>
+          <tr><td><code>Filterkontext</code></td><td>Welche Daten aktuell "sichtbar" sind – bestimmt durch Slicer, Zeile/Spalte in Matrix, visuelle Filter</td></tr>
+          <tr><td><code>Zeilenkontext</code></td><td>Existiert in berechneten Spalten und Iteratoren (X-Funktionen) – bezieht sich auf die aktuelle Zeile</td></tr>
+          <tr><td><code>Kontexttransition</code></td><td>CALCULATE wandelt Zeilenkontext in Filterkontext um – sehr wichtig bei Iteratoren</td></tr>
+          <tr><td><code>Tabellen[Spalte]</code></td><td>Standard-Syntax für Spaltenverweise in DAX</td></tr>
+          <tr><td><code>[Measure Name]</code></td><td>Measures werden immer ohne Tabellennamen referenziert</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box ib-tip"><span class="ib-icon">✅</span><div>Schreibe Measures immer in eine eigene <strong>Measures-Tabelle</strong> (leere Tabelle erstellen → Measures per "Neues Measure" hinzufügen). Das hält das Modell sauber.</div></div>
+    </div>
+  </div>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left">
+        <div>
+          <div class="measure-name">DAX vs. Excel-Formeln</div>
+          <div class="measure-tagline">Was ist anders, was ist gleich?</div>
+          <div class="measure-badges"><span class="badge badge-easy">Einstieg</span></div>
+        </div>
+      </div>
+      <div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <table class="syntax-table">
+        <thead><tr><th>Excel</th><th>DAX (Power BI)</th></tr></thead>
+        <tbody>
+          <tr><td><code>=SUMME(A2:A100)</code></td><td><code>SUM(Sales[Amount])</code></td></tr>
+          <tr><td><code>=WENN(A2>100;"Ja";"Nein")</code></td><td><code>IF([Amount]>100,"Ja","Nein")</code></td></tr>
+          <tr><td>Bezieht sich auf Zellen</td><td>Bezieht sich auf Tabellenspalten</td></tr>
+          <tr><td>Kein Filterkontext-Konzept</td><td>Filterkontext ist zentral</td></tr>
+          <tr><td>Semikolon als Trennzeichen (DE)</td><td>Komma als Trennzeichen</td></tr>
+          <tr><td>Kein CALCULATE</td><td>CALCULATE ist die mächtigste Funktion</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <button class="done-btn" id="done-basics" onclick="markDone('basics',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     AGGREGATION
+════════════════════════════ -->
+<div class="page" id="page-aggregation">
+  <div class="cat-header"><span class="cat-icon">➕</span><h2 class="cat-title">Basis-Aggregation</h2></div>
+  <p class="cat-subtitle">SUM, COUNT, AVERAGE, MIN, MAX, DIVIDE – die Grundbausteine jedes Reports.</p>
+
+  <!-- SUM -->
+  <div class="measure-card" data-search="SUM summieren summe total umsatz">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">SUM</div>
+        <div class="measure-tagline">Alle Werte einer Spalte summieren</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span><span class="badge badge-cat">Aggregation</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">SUM</span>(<span class="str">Tabelle</span>[<span class="var-color">Spalte</span>])</div>
+      <div class="section-label">Beispiel</div>
+      <div class="code-block"><span class="cm">-- Gesamtumsatz</span>
+Total Umsatz <span class="op">=</span> <span class="fn">SUM</span>(<span class="str">fct_Sales</span>[<span class="var-color">Betrag</span>])</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Eingabe (Tabelle)</div><div>Jan: 5.000 €<br>Feb: 3.200 €<br>Mär: 7.800 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">Ergebnis</div><div class="ex-value">16.000 €</div><div class="ex-desc">Summe aller sichtbaren Zeilen</div></div>
+      </div>
+      <div class="info-box ib-tip"><span class="ib-icon">💡</span><div>SUM ignoriert automatisch leere Zellen (BLANK). Du musst dafür keine extra Prüfung einbauen.</div></div>
+    </div>
+  </div>
+
+  <!-- COUNT / COUNTA / COUNTROWS -->
+  <div class="measure-card" data-search="COUNT COUNTA COUNTROWS zählen anzahl">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">COUNT / COUNTA / COUNTROWS</div>
+        <div class="measure-tagline">Werte, nicht-leere Einträge oder Zeilen zählen</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span><span class="badge badge-cat">Aggregation</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax & Unterschiede</div>
+      <table class="syntax-table">
+        <thead><tr><th>Funktion</th><th>Zählt</th><th>Wann verwenden</th></tr></thead>
+        <tbody>
+          <tr><td><code>COUNT(Tabelle[Spalte])</code></td><td>Nur numerische Werte</td><td>Zahlen-Spalten</td></tr>
+          <tr><td><code>COUNTA(Tabelle[Spalte])</code></td><td>Alle nicht-leeren Werte (Text + Zahl)</td><td>Text-Spalten</td></tr>
+          <tr><td><code>COUNTROWS(Tabelle)</code></td><td>Anzahl Zeilen der Tabelle</td><td>Häufigste Wahl</td></tr>
+          <tr><td><code>DISTINCTCOUNT(Tabelle[Spalte])</code></td><td>Eindeutige Werte</td><td>z.B. # Kunden</td></tr>
+        </tbody>
+      </table>
+      <div class="section-label">Beispiele</div>
+      <div class="code-block"><span class="cm">-- Anzahl Bestellungen</span>
+Anzahl Bestellungen <span class="op">=</span> <span class="fn">COUNTROWS</span>(<span class="str">fct_Sales</span>)
+
+<span class="cm">-- Anzahl eindeutiger Kunden</span>
+Anzahl Kunden <span class="op">=</span> <span class="fn">DISTINCTCOUNT</span>(<span class="str">fct_Sales</span>[<span class="var-color">KundenID</span>])</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Tabelle (5 Zeilen, 3 Kunden)</div><div>K1: 200 €<br>K2: 150 €<br>K1: 300 €<br>K3: 80 €<br>K2: 420 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">COUNTROWS → 5 / DISTINCTCOUNT → 3</div><div class="ex-value">5 / 3</div><div class="ex-desc">Bestellungen vs. Kunden</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVERAGE / MIN / MAX -->
+  <div class="measure-card" data-search="AVERAGE MIN MAX durchschnitt mittelwert minimum maximum">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">AVERAGE, MIN, MAX</div>
+        <div class="measure-tagline">Durchschnitt, kleinster und größter Wert</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span><span class="badge badge-cat">Aggregation</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Durchschnittlicher Bestellwert</span>
+Ø Bestellwert <span class="op">=</span> <span class="fn">AVERAGE</span>(<span class="str">fct_Sales</span>[<span class="var-color">Betrag</span>])
+
+<span class="cm">-- Höchste Einzelbestellung</span>
+Max Bestellung <span class="op">=</span> <span class="fn">MAX</span>(<span class="str">fct_Sales</span>[<span class="var-color">Betrag</span>])
+
+<span class="cm">-- Frühstes Datum</span>
+Erster Kauf <span class="op">=</span> <span class="fn">MIN</span>(<span class="str">fct_Sales</span>[<span class="var-color">Datum</span>])</div>
+    </div>
+  </div>
+
+  <!-- DIVIDE -->
+  <div class="measure-card" data-search="DIVIDE dividieren division teilen nullfehler">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">DIVIDE</div>
+        <div class="measure-tagline">Sichere Division – verhindert Division-durch-Null-Fehler</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span><span class="badge badge-cat">Aggregation</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">DIVIDE</span>(Zähler, Nenner [, AlternativWert])</div>
+      <div class="section-label">Beispiel</div>
+      <div class="code-block"><span class="cm">-- Marge in % (sicher gegen Division durch Null)</span>
+Marge % <span class="op">=</span> <span class="fn">DIVIDE</span>(
+    [Gewinn],
+    [Total Umsatz],
+    <span class="num">0</span>    <span class="cm">-- Fallback wenn Umsatz = 0</span>
+)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Ohne DIVIDE</div><div><code>[Gewinn] / [Umsatz]</code><br><br>→ Fehler wenn Umsatz = 0!</div></div>
+        <div class="example-box ex-result"><div class="ex-label">Mit DIVIDE</div><div class="ex-value">0 %</div><div class="ex-desc">Gibt 0 zurück statt Fehler</div></div>
+      </div>
+      <div class="info-box ib-warn"><span class="ib-icon">⚠️</span><div>Verwende <strong>immer DIVIDE</strong> statt dem normalen Schrägstrich <code>/</code>, sobald der Nenner 0 werden kann. Sonst erscheinen Fehlermeldungen im Visual.</div></div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-aggregation" onclick="markDone('aggregation',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     CALCULATE
+════════════════════════════ -->
+<div class="page" id="page-calculate">
+  <div class="cat-header"><span class="cat-icon">🔵</span><h2 class="cat-title">CALCULATE</h2></div>
+  <p class="cat-subtitle">Die mächtigste Funktion in DAX – sie verändert den Filterkontext einer Berechnung.</p>
+
+  <div class="measure-card">
+    <div class="measure-header open" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">CALCULATE – Grundprinzip</div>
+        <div class="measure-tagline">Filter ändern, hinzufügen oder entfernen</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span><span class="badge badge-cat">Kernfunktion</span></div>
+      </div></div><div class="measure-toggle open">▼</div>
+    </div>
+    <div class="measure-body open">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">CALCULATE</span>(Ausdruck, Filter1 [, Filter2, ...])</div>
+      <p class="explanation">CALCULATE wertet den <strong>Ausdruck</strong> (meist ein Measure) innerhalb eines veränderten Filterkontexts aus. Die angegebenen Filter <strong>ersetzen oder erweitern</strong> den bestehenden Kontext.</p>
+      <div class="section-label">Beispiel 1 – Nach Kategorie filtern</div>
+      <div class="code-block"><span class="cm">-- Umsatz nur für die Kategorie "Elektronik"</span>
+Umsatz Elektronik <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>] <span class="op">=</span> <span class="str">"Elektronik"</span>
+)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Kontext: Alle Produkte</div><div>Elektronik: 50.000 €<br>Kleidung: 30.000 €<br>Möbel: 20.000 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">Ergebnis (immer)</div><div class="ex-value">50.000 €</div><div class="ex-desc">Unabhängig vom Slicer-Filter</div></div>
+      </div>
+      <div class="section-label">Beispiel 2 – Mehrere Filter</div>
+      <div class="code-block"><span class="cm">-- Umsatz: Elektronik UND Jahr 2024</span>
+Umsatz Elek 2024 <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>] <span class="op">=</span> <span class="str">"Elektronik"</span>,
+    <span class="str">dim_Datum</span>[<span class="var-color">Jahr</span>] <span class="op">=</span> <span class="num">2024</span>
+)</div>
+      <div class="info-box ib-note"><span class="ib-icon">💡</span><div>Mehrere Filter in CALCULATE wirken wie ein <strong>UND</strong>. Für ODER-Filter muss <code>FILTER()</code> mit <code>||</code> kombiniert werden.</div></div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="CALCULATE ALL ALLEXCEPT filter entfernen ignorieren">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">CALCULATE mit ALL / ALLEXCEPT</div>
+        <div class="measure-tagline">Filter aufheben für Prozentanteile und Vergleiche</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <p class="explanation"><strong>ALL(Tabelle)</strong> entfernt alle Filter auf eine Tabelle. <strong>ALLEXCEPT(Tabelle, Spalte1, …)</strong> entfernt alle Filter außer den angegebenen Spalten. Klassischer Einsatz: <strong>%-Anteil vom Gesamten</strong>.</p>
+      <div class="code-block"><span class="cm">-- Anteil am Gesamtumsatz</span>
+Anteil % <span class="op">=</span> <span class="fn">DIVIDE</span>(
+    [Total Umsatz],
+    <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">ALL</span>(<span class="str">fct_Sales</span>))
+)
+
+<span class="cm">-- Anteil innerhalb der Kategorie (Region-Filter bleibt)</span>
+Anteil Kategorie % <span class="op">=</span> <span class="fn">DIVIDE</span>(
+    [Total Umsatz],
+    <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">ALLEXCEPT</span>(<span class="str">dim_Produkt</span>, <span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>]))
+)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Report zeigt: Region Nord</div><div>Elektronik: 15.000 €<br>Kleidung: 9.000 €<br>Gesamt Nord: 24.000 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">Anteil % Elektronik</div><div class="ex-value">62,5 %</div><div class="ex-desc">15.000 / 24.000 (ALL hebt Produkt-Filter auf)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-calculate" onclick="markDone('calculate',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     ITERATOREN
+════════════════════════════ -->
+<div class="page" id="page-iteratoren">
+  <div class="cat-header"><span class="cat-icon">🔁</span><h2 class="cat-title">Iteratoren (X-Funktionen)</h2></div>
+  <p class="cat-subtitle">SUMX, AVERAGEX, COUNTX, MAXX, MINX – Zeile für Zeile berechnen, dann aggregieren.</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">SUMX – Wie Iteratoren funktionieren</div>
+        <div class="measure-tagline">Erst pro Zeile berechnen, dann summieren</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span><span class="badge badge-cat">Iterator</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">SUMX</span>(Tabelle, Ausdruck_pro_Zeile)</div>
+      <p class="explanation">SUMX geht jede Zeile der Tabelle durch, berechnet den <strong>Ausdruck für diese Zeile</strong> und summiert anschließend alle Ergebnisse. Ideal wenn die Berechnung erst auf Zeilenebene erfolgen muss (z.B. Preis × Menge).</p>
+      <div class="section-label">Beispiel: Umsatz = Preis × Menge</div>
+      <div class="code-block"><span class="cm">-- FALSCH: SUM(Preis) * SUM(Menge) → falsches Ergebnis!</span>
+Umsatz Falsch <span class="op">=</span> <span class="fn">SUM</span>(<span class="str">fct_Sales</span>[<span class="var-color">Preis</span>]) <span class="op">*</span> <span class="fn">SUM</span>(<span class="str">fct_Sales</span>[<span class="var-color">Menge</span>])
+
+<span class="cm">-- RICHTIG: Erst pro Zeile multiplizieren, dann summieren</span>
+Umsatz <span class="op">=</span> <span class="fn">SUMX</span>(
+    <span class="str">fct_Sales</span>,
+    <span class="str">fct_Sales</span>[<span class="var-color">Preis</span>] <span class="op">*</span> <span class="str">fct_Sales</span>[<span class="var-color">Menge</span>]
+)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Tabelle</div><div>Zeile 1: 10 € × 3 = 30 €<br>Zeile 2: 25 € × 1 = 25 €<br>Zeile 3: 5 € × 10 = 50 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">SUMX Ergebnis</div><div class="ex-value">105 €</div><div class="ex-desc">30 + 25 + 50 (korrekt!)</div></div>
+      </div>
+      <div class="info-box ib-warn"><span class="ib-icon">⚠️</span><div>Iteratoren mit großen Tabellen (> 1 Mio. Zeilen) können langsam werden. Wenn möglich, berechne die Spalte vorab in Power Query.</div></div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="AVERAGEX MAXX MINX iterator">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">AVERAGEX, MAXX, MINX, COUNTX</div>
+        <div class="measure-tagline">Weitere Iteratoren für verschiedene Aggregationen</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Durchschnittlicher Bestellwert (Preis × Menge pro Bestellung)</span>
+Ø Bestellwert <span class="op">=</span> <span class="fn">AVERAGEX</span>(
+    <span class="str">fct_Sales</span>,
+    <span class="str">fct_Sales</span>[<span class="var-color">Preis</span>] <span class="op">*</span> <span class="str">fct_Sales</span>[<span class="var-color">Menge</span>]
+)
+
+<span class="cm">-- Höchster Bestellwert einer einzelnen Zeile</span>
+Max Bestellwert <span class="op">=</span> <span class="fn">MAXX</span>(
+    <span class="str">fct_Sales</span>,
+    <span class="str">fct_Sales</span>[<span class="var-color">Preis</span>] <span class="op">*</span> <span class="str">fct_Sales</span>[<span class="var-color">Menge</span>]
+)</div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-iteratoren" onclick="markDone('iteratoren',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     FILTER & ALL
+════════════════════════════ -->
+<div class="page" id="page-filter">
+  <div class="cat-header"><span class="cat-icon">🔍</span><h2 class="cat-title">FILTER & ALL-Familie</h2></div>
+  <p class="cat-subtitle">Tabellen dynamisch filtern, Filter aufheben, Werte auswählen.</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">FILTER</div>
+        <div class="measure-tagline">Tabelle mit Bedingung einschränken</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">FILTER</span>(Tabelle, Bedingung)</div>
+      <p class="explanation">FILTER gibt eine <strong>Teilmenge</strong> einer Tabelle zurück. Es wird meist als Argument in CALCULATE verwendet, wenn der Filter komplex ist (z.B. mit ODER oder Vergleichsoperatoren auf Measures).</p>
+      <div class="code-block"><span class="cm">-- Umsatz nur für Bestellungen über 500 €</span>
+Umsatz Grosskunden <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">FILTER</span>(
+        <span class="str">fct_Sales</span>,
+        <span class="str">fct_Sales</span>[<span class="var-color">Betrag</span>] <span class="op">></span> <span class="num">500</span>
+    )
+)
+
+<span class="cm">-- ODER-Filter: Kategorie A ODER B</span>
+Umsatz A oder B <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">FILTER</span>(
+        <span class="str">dim_Produkt</span>,
+        <span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>] <span class="op">=</span> <span class="str">"A"</span> <span class="op">||</span>
+        <span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>] <span class="op">=</span> <span class="str">"B"</span>
+    )
+)</div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="SELECTEDVALUE VALUES HASONEVALUE slicer auswahl">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">SELECTEDVALUE & VALUES</div>
+        <div class="measure-tagline">Aktuellen Slicer-Wert auslesen</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Aktuell ausgewähltes Jahr im Slicer</span>
+Ausgewähltes Jahr <span class="op">=</span> <span class="fn">SELECTEDVALUE</span>(<span class="str">dim_Datum</span>[<span class="var-color">Jahr</span>], <span class="str">"Alle Jahre"</span>)
+
+<span class="cm">-- Dynamischer Titel</span>
+Report Titel <span class="op">=</span> <span class="str">"Umsatz "</span> <span class="op">&</span> <span class="fn">SELECTEDVALUE</span>(<span class="str">dim_Datum</span>[<span class="var-color">Jahr</span>], <span class="str">"(alle Jahre)"</span>)</div>
+      <div class="info-box ib-tip"><span class="ib-icon">💡</span><div><strong>SELECTEDVALUE</strong> gibt BLANK zurück (oder den Fallback-Wert), wenn mehr als ein Wert ausgewählt ist. Ideal für dynamische Titel und bedingte Anzeige in Visuals.</div></div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-filter" onclick="markDone('filter',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     TIME INTELLIGENCE
+════════════════════════════ -->
+<div class="page" id="page-timeint">
+  <div class="cat-header"><span class="cat-icon">📅</span><h2 class="cat-title">Time Intelligence</h2></div>
+  <p class="cat-subtitle">Zeitvergleiche: YTD, Vorjahr, gleitende Durchschnitte. Voraussetzung: eine korrekte Datumstabelle!</p>
+
+  <div class="info-box ib-warn" style="margin-bottom:20px"><span class="ib-icon">⚠️</span><div><strong>Pflicht: Datumstabelle!</strong> Alle Time-Intelligence-Funktionen benötigen eine vollständige, zusammenhängende Datumstabelle (kein einziges Datum darf fehlen), die als "Datumstabelle" markiert ist (Tabellenwerkzeuge → Als Datumstabelle markieren).</div></div>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">TOTALYTD – Year to Date</div>
+        <div class="measure-tagline">Kumulierter Wert vom Jahresanfang bis heute</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span><span class="badge badge-cat">Time Intelligence</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Umsatz YTD (Standard: 1. Januar)</span>
+Umsatz YTD <span class="op">=</span> <span class="fn">TOTALYTD</span>([Total Umsatz], <span class="str">dim_Datum</span>[<span class="var-color">Datum</span>])
+
+<span class="cm">-- Für abweichendes Geschäftsjahr (endet 31. März)</span>
+Umsatz GJ-YTD <span class="op">=</span> <span class="fn">TOTALYTD</span>([Total Umsatz], <span class="str">dim_Datum</span>[<span class="var-color">Datum</span>], <span class="str">"03-31"</span>)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Monatswerte 2024</div><div>Jan: 10.000 €<br>Feb: 8.000 €<br>Mär: 12.000 €</div></div>
+        <div class="example-box ex-result"><div class="ex-label">YTD im März</div><div class="ex-value">30.000 €</div><div class="ex-desc">10.000 + 8.000 + 12.000</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="SAMEPERIODLASTYEAR DATEADD vorjahr PY vergleich">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">SAMEPERIODLASTYEAR & DATEADD</div>
+        <div class="measure-tagline">Vorjahresvergleich (PY) und flexibler Zeitversatz</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span><span class="badge badge-cat">Time Intelligence</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Umsatz Vorjahr (gleicher Zeitraum)</span>
+Umsatz PY <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">SAMEPERIODLASTYEAR</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>])
+)
+
+<span class="cm">-- Veränderung zum Vorjahr absolut</span>
+Δ vs. Vorjahr <span class="op">=</span> [Total Umsatz] <span class="op">-</span> [Umsatz PY]
+
+<span class="cm">-- Veränderung zum Vorjahr in %</span>
+Δ% vs. Vorjahr <span class="op">=</span> <span class="fn">DIVIDE</span>([Δ vs. Vorjahr], [Umsatz PY])
+
+<span class="cm">-- Flexibel: Vormonat (DATEADD)</span>
+Umsatz Vormonat <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">DATEADD</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>], <span class="op">-</span><span class="num">1</span>, <span class="kw">MONTH</span>)
+)</div>
+      <div class="info-box ib-tip"><span class="ib-icon">💡</span><div>DATEADD ist flexibler als SAMEPERIODLASTYEAR. Du kannst <code>-1</code> bis <code>-N</code> Perioden zurückgehen und als Einheit <code>DAY</code>, <code>MONTH</code>, <code>QUARTER</code> oder <code>YEAR</code> wählen.</div></div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="DATESYTD DATESMTD DATESQTD MTD QTD">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">DATESYTD / DATESMTD / DATESQTD</div>
+        <div class="measure-tagline">YTD, MTD, QTD mit CALCULATE kombiniert</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Month to Date (MTD)</span>
+Umsatz MTD <span class="op">=</span> <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">DATESMTD</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>]))
+
+<span class="cm">-- Quarter to Date (QTD)</span>
+Umsatz QTD <span class="op">=</span> <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">DATESQTD</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>]))
+
+<span class="cm">-- YTD Vorjahr (kombiniert)</span>
+Umsatz PY-YTD <span class="op">=</span> <span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">DATESYTD</span>(<span class="fn">SAMEPERIODLASTYEAR</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>]))
+)</div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-timeint" onclick="markDone('timeint',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     LOGIK
+════════════════════════════ -->
+<div class="page" id="page-logik">
+  <div class="cat-header"><span class="cat-icon">⚖️</span><h2 class="cat-title">IF, SWITCH & Logik</h2></div>
+  <p class="cat-subtitle">Bedingte Berechnungen, Kategorisierungen und Ampel-Logik.</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">IF</div>
+        <div class="measure-tagline">Einfache Wenn-Dann-Sonst-Bedingung</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="fn">IF</span>(Bedingung, Wert_wenn_wahr, Wert_wenn_falsch)</div>
+      <div class="code-block"><span class="cm">-- Ampel-Logik: Ziel erreicht?</span>
+Status <span class="op">=</span>
+<span class="fn">IF</span>(
+    [Total Umsatz] <span class="op">>=</span> [Umsatz Ziel],
+    <span class="str">"✅ Ziel erreicht"</span>,
+    <span class="str">"❌ Ziel verfehlt"</span>
+)
+
+<span class="cm">-- Verschachtelt: 3 Stufen</span>
+Bewertung <span class="op">=</span>
+<span class="fn">IF</span>([Marge %] <span class="op">>=</span> <span class="num">0.3</span>, <span class="str">"Gut"</span>,
+    <span class="fn">IF</span>([Marge %] <span class="op">>=</span> <span class="num">0.15</span>, <span class="str">"OK"</span>,
+        <span class="str">"Kritisch"</span>
+    )
+)</div>
+      <div class="info-box ib-tip"><span class="ib-icon">💡</span><div>Bei mehr als 2 Stufen: lieber <strong>SWITCH</strong> verwenden – lesbarer und performanter als tief verschachtelte IFs.</div></div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="SWITCH TRUE() fall unterscheidung kategorie">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">SWITCH & SWITCH(TRUE())</div>
+        <div class="measure-tagline">Mehrere Fälle elegant handhaben</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- SWITCH für feste Werte</span>
+Region Name <span class="op">=</span>
+<span class="fn">SWITCH</span>(<span class="str">fct_Sales</span>[<span class="var-color">RegionID</span>],
+    <span class="num">1</span>, <span class="str">"Nord"</span>,
+    <span class="num">2</span>, <span class="str">"Süd"</span>,
+    <span class="num">3</span>, <span class="str">"West"</span>,
+    <span class="str">"Unbekannt"</span>   <span class="cm">-- Standardwert</span>
+)
+
+<span class="cm">-- SWITCH(TRUE()) für Bereiche – ersetzt verschachtelte IFs</span>
+Umsatz Klasse <span class="op">=</span>
+<span class="fn">SWITCH</span>(<span class="kw">TRUE</span>(),
+    [Total Umsatz] <span class="op">>=</span> <span class="num">100000</span>, <span class="str">"A – Großkunde"</span>,
+    [Total Umsatz] <span class="op">>=</span> <span class="num">50000</span>,  <span class="str">"B – Mittelkunde"</span>,
+    [Total Umsatz] <span class="op">>=</span> <span class="num">10000</span>,  <span class="str">"C – Kleinkunde"</span>,
+    <span class="str">"D – Neukunde"</span>
+)</div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="IFERROR ISBLANK BLANK fehler leer prüfen">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">IFERROR, ISBLANK & BLANK()</div>
+        <div class="measure-tagline">Fehler abfangen und leere Werte behandeln</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Fehler abfangen</span>
+Sicherer Wert <span class="op">=</span> <span class="fn">IFERROR</span>([Komplexes Measure], <span class="num">0</span>)
+
+<span class="cm">-- Leere Zellen explizit zurückgeben (unterdrückt 0-Linien in Charts)</span>
+Kein Wert <span class="op">=</span> <span class="fn">IF</span>([Total Umsatz] <span class="op">=</span> <span class="num">0</span>, <span class="fn">BLANK</span>(), [Total Umsatz])
+
+<span class="cm">-- Prüfen ob Wert leer</span>
+Hat Umsatz <span class="op">=</span> <span class="fn">IF</span>(<span class="fn">ISBLANK</span>([Total Umsatz]), <span class="str">"Kein Umsatz"</span>, <span class="str">"Hat Umsatz"</span>)</div>
+      <div class="info-box ib-note"><span class="ib-icon">💡</span><div><strong>BLANK()</strong> vs. 0: BLANK lässt einen Datenpunkt im Diagramm leer (keine Linie), 0 zeigt eine Null-Linie. Wähle je nach Darstellungsziel.</div></div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-logik" onclick="markDone('logik',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     TEXT
+════════════════════════════ -->
+<div class="page" id="page-text">
+  <div class="cat-header"><span class="cat-icon">🔤</span><h2 class="cat-title">Text-Funktionen</h2></div>
+  <p class="cat-subtitle">Texte zusammenfügen, formatieren, trennen – oft in berechneten Spalten verwendet.</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">CONCATENATE, & und FORMAT</div>
+        <div class="measure-tagline">Texte verbinden und Zahlen formatieren</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- & ist kürzer als CONCATENATE</span>
+Vollständiger Name <span class="op">=</span> <span class="str">dim_Kunden</span>[<span class="var-color">Vorname</span>] <span class="op">&</span> <span class="str">" "</span> <span class="op">&</span> <span class="str">dim_Kunden</span>[<span class="var-color">Nachname</span>]
+
+<span class="cm">-- FORMAT: Zahl als formatierten Text</span>
+Umsatz Text <span class="op">=</span> <span class="fn">FORMAT</span>([Total Umsatz], <span class="str">"#.##0 €"</span>)
+
+<span class="cm">-- Datum formatieren</span>
+Datum Text <span class="op">=</span> <span class="fn">FORMAT</span>(<span class="fn">TODAY</span>(), <span class="str">"DD.MM.YYYY"</span>)
+
+<span class="cm">-- Dynamischer Titel mit Formatierung</span>
+KPI Titel <span class="op">=</span> <span class="str">"Umsatz: "</span> <span class="op">&</span> <span class="fn">FORMAT</span>([Total Umsatz], <span class="str">"#.##0 €"</span>)
+    <span class="op">&</span> <span class="str">" | Stand: "</span> <span class="op">&</span> <span class="fn">FORMAT</span>(<span class="fn">TODAY</span>(), <span class="str">"MMMM YYYY"</span>)</div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="LEFT RIGHT MID LEN UPPER LOWER TRIM text">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">LEFT, RIGHT, MID, LEN, TRIM</div>
+        <div class="measure-tagline">Textteile extrahieren und bereinigen</div>
+        <div class="measure-badges"><span class="badge badge-easy">Einfach</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Erste 3 Zeichen (z.B. Kürzel)</span>
+Kürzel <span class="op">=</span> <span class="fn">LEFT</span>(<span class="str">dim_Produkt</span>[<span class="var-color">Name</span>], <span class="num">3</span>)
+
+<span class="cm">-- Leerzeichen entfernen</span>
+Name Bereinigt <span class="op">=</span> <span class="fn">TRIM</span>(<span class="str">dim_Kunden</span>[<span class="var-color">Name</span>])
+
+<span class="cm">-- Enthält? (SEARCH gibt Position zurück, IFERROR fängt "nicht gefunden")</span>
+Enthält GmbH <span class="op">=</span>
+<span class="fn">IF</span>(<span class="fn">IFERROR</span>(<span class="fn">SEARCH</span>(<span class="str">"GmbH"</span>, <span class="str">dim_Kunden</span>[<span class="var-color">Firma</span>]), <span class="num">0</span>) <span class="op">></span> <span class="num">0</span>, <span class="kw">TRUE</span>, <span class="kw">FALSE</span>)</div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-text" onclick="markDone('text',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     VAR & RETURN
+════════════════════════════ -->
+<div class="page" id="page-var">
+  <div class="cat-header"><span class="cat-icon">📦</span><h2 class="cat-title">VAR & RETURN</h2></div>
+  <p class="cat-subtitle">Measures lesbarer und performanter schreiben durch Zwischenwerte.</p>
+
+  <div class="measure-card">
+    <div class="measure-header open" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">VAR & RETURN – Grundprinzip</div>
+        <div class="measure-tagline">Zwischenergebnisse speichern statt wiederholen</div>
+        <div class="measure-badges"><span class="badge badge-medium">Mittel</span><span class="badge badge-cat">Best Practice</span></div>
+      </div></div><div class="measure-toggle open">▼</div>
+    </div>
+    <div class="measure-body open">
+      <p class="explanation">VAR erlaubt es, Teilberechnungen in <strong>benannten Variablen</strong> zu speichern. Das macht Measures <strong>lesbarer</strong> und <strong>schneller</strong> (da jede VAR nur einmal berechnet wird).</p>
+      <div class="section-label">Ohne VAR (unleserlich, langsam)</div>
+      <div class="code-block"><span class="cm">-- Schlechtes Beispiel: Gleicher Ausdruck mehrfach</span>
+Δ% <span class="op">=</span> <span class="fn">DIVIDE</span>(
+    [Total Umsatz] <span class="op">-</span> <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">SAMEPERIODLASTYEAR</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>])),
+    <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">SAMEPERIODLASTYEAR</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>]))
+)</div>
+      <div class="section-label">Mit VAR (lesbar, einmal berechnet)</div>
+      <div class="code-block"><span class="var-color">VAR</span> AktuellerUmsatz <span class="op">=</span> [Total Umsatz]
+<span class="var-color">VAR</span> VorjahrUmsatz   <span class="op">=</span> <span class="fn">CALCULATE</span>([Total Umsatz], <span class="fn">SAMEPERIODLASTYEAR</span>(<span class="str">dim_Datum</span>[<span class="var-color">Datum</span>]))
+<span class="var-color">VAR</span> Differenz       <span class="op">=</span> AktuellerUmsatz <span class="op">-</span> VorjahrUmsatz
+<span class="kw">RETURN</span>
+    <span class="fn">DIVIDE</span>(Differenz, VorjahrUmsatz)</div>
+      <div class="info-box ib-tip"><span class="ib-icon">✅</span><div>Verwende VAR & RETURN immer wenn du denselben Teilausdruck mehr als einmal brauchst – das ist eine der wichtigsten Best Practices in DAX.</div></div>
+      <div class="section-label">Weiteres Beispiel: Bedingte Logik mit Zwischenwerten</div>
+      <div class="code-block"><span class="var-color">VAR</span> Marge     <span class="op">=</span> <span class="fn">DIVIDE</span>([Gewinn], [Total Umsatz])
+<span class="var-color">VAR</span> Ziel       <span class="op">=</span> <span class="num">0.25</span>
+<span class="var-color">VAR</span> Abweichung <span class="op">=</span> Marge <span class="op">-</span> Ziel
+<span class="kw">RETURN</span>
+    <span class="fn">SWITCH</span>(<span class="kw">TRUE</span>(),
+        Abweichung <span class="op">>=</span>  <span class="num">0.05</span>, <span class="str">"🟢 Sehr gut"</span>,
+        Abweichung <span class="op">>=</span>  <span class="num">0</span>,    <span class="str">"🟡 Im Ziel"</span>,
+        Abweichung <span class="op">>=</span> <span class="op">-</span><span class="num">0.05</span>, <span class="str">"🟠 Leicht darunter"</span>,
+        <span class="str">"🔴 Kritisch"</span>
+    )</div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-var" onclick="markDone('var',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     RANKING
+════════════════════════════ -->
+<div class="page" id="page-ranking">
+  <div class="cat-header"><span class="cat-icon">🏆</span><h2 class="cat-title">Ranking & Top N</h2></div>
+  <p class="cat-subtitle">RANKX, TOPN und dynamische Top-N-Filter.</p>
+
+  <div class="measure-card">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">RANKX</div>
+        <div class="measure-tagline">Rang eines Wertes innerhalb einer Gruppe ermitteln</div>
+        <div class="measure-badges"><span class="badge badge-advanced">Fortgeschritten</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="section-label">Syntax</div>
+      <div class="code-block"><span class="fn">RANKX</span>(Tabelle, Ausdruck [, Wert, Reihenfolge, Gleichstand])</div>
+      <div class="code-block"><span class="cm">-- Rang der aktuellen Kategorie nach Umsatz</span>
+Rang Umsatz <span class="op">=</span>
+<span class="fn">RANKX</span>(
+    <span class="fn">ALL</span>(<span class="str">dim_Produkt</span>[<span class="var-color">Kategorie</span>]),  <span class="cm">-- Alle Kategorien vergleichen</span>
+    [Total Umsatz],                   <span class="cm">-- Nach diesem Wert ranken</span>
+    ,                                 <span class="cm">-- Leer = aktueller Wert</span>
+    <span class="kw">DESC</span>,                             <span class="cm">-- Höchster = Rang 1</span>
+    <span class="kw">DENSE</span>                             <span class="cm">-- Keine Lücken bei Gleichstand</span>
+)
+
+<span class="cm">-- Nur Top 5 anzeigen (für bedingte Formatierung)</span>
+Ist Top 5 <span class="op">=</span> <span class="fn">IF</span>([Rang Umsatz] <span class="op"><=</span> <span class="num">5</span>, <span class="kw">TRUE</span>, <span class="kw">FALSE</span>)</div>
+      <div class="example-grid">
+        <div class="example-box ex-input"><div class="ex-label">Kategorien (nach Umsatz)</div><div>Elektronik: 50.000 € → Rang 1<br>Möbel: 30.000 € → Rang 2<br>Kleidung: 20.000 € → Rang 3</div></div>
+        <div class="example-box ex-result"><div class="ex-label">Rang Kleidung</div><div class="ex-value">3</div><div class="ex-desc">DESC + DENSE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="measure-card" data-search="TOPN top 5 top10 beste produkte">
+    <div class="measure-header" onclick="toggleCard(this)">
+      <div class="measure-header-left"><div>
+        <div class="measure-name">TOPN & dynamisches Top N</div>
+        <div class="measure-tagline">Die besten N Einträge filtern</div>
+        <div class="measure-badges"><span class="badge badge-advanced">Fortgeschritten</span></div>
+      </div></div><div class="measure-toggle">▼</div>
+    </div>
+    <div class="measure-body">
+      <div class="code-block"><span class="cm">-- Umsatz der Top-3-Produkte</span>
+Top 3 Umsatz <span class="op">=</span>
+<span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">TOPN</span>(<span class="num">3</span>, <span class="fn">ALL</span>(<span class="str">dim_Produkt</span>[<span class="var-color">Produkt</span>]), [Total Umsatz])
+)
+
+<span class="cm">-- Dynamisch: Top N via What-If-Parameter (N aus Slicer)</span>
+Top N Umsatz <span class="op">=</span>
+<span class="var-color">VAR</span> N <span class="op">=</span> <span class="fn">SELECTEDVALUE</span>(<span class="str">TopN_Parameter</span>[<span class="var-color">Wert</span>], <span class="num">5</span>)
+<span class="kw">RETURN</span>
+<span class="fn">CALCULATE</span>(
+    [Total Umsatz],
+    <span class="fn">TOPN</span>(N, <span class="fn">ALL</span>(<span class="str">dim_Produkt</span>[<span class="var-color">Produkt</span>]), [Total Umsatz])
+)</div>
+      <div class="info-box ib-tip"><span class="ib-icon">💡</span><div>Für ein dynamisches Top-N erstelle in Power BI einen <strong>What-If-Parameter</strong> (Modellierung → Neuer Parameter). Dieser generiert automatisch eine Tabelle und einen Slicer.</div></div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="done-ranking" onclick="markDone('ranking',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ════════════════════════════
+     CHEATSHEET
+════════════════════════════ -->
+<div class="page" id="page-cheatsheet">
+  <div class="cat-header"><span class="cat-icon">📋</span><h2 class="cat-title">Cheatsheet</h2></div>
+  <p class="cat-subtitle">Alle wichtigen Funktionen auf einen Blick.</p>
+
+  <div class="cheat-grid">
+    <div class="cheat-card">
+      <h3>➕ Aggregation</h3>
+      <div class="cheat-row"><span class="cheat-fn">SUM(T[S])</span><span class="cheat-desc">Summe</span></div>
+      <div class="cheat-row"><span class="cheat-fn">AVERAGE(T[S])</span><span class="cheat-desc">Durchschnitt</span></div>
+      <div class="cheat-row"><span class="cheat-fn">MIN / MAX(T[S])</span><span class="cheat-desc">Min / Max</span></div>
+      <div class="cheat-row"><span class="cheat-fn">COUNTROWS(T)</span><span class="cheat-desc">Zeilen zählen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">DISTINCTCOUNT(T[S])</span><span class="cheat-desc">Eindeutige Werte</span></div>
+      <div class="cheat-row"><span class="cheat-fn">DIVIDE(Z, N, 0)</span><span class="cheat-desc">Sichere Division</span></div>
+    </div>
+    <div class="cheat-card">
+      <h3>🔵 Filter & Kontext</h3>
+      <div class="cheat-row"><span class="cheat-fn">CALCULATE(M, F)</span><span class="cheat-desc">Filter ändern</span></div>
+      <div class="cheat-row"><span class="cheat-fn">ALL(T)</span><span class="cheat-desc">Filter aufheben</span></div>
+      <div class="cheat-row"><span class="cheat-fn">ALLEXCEPT(T, S)</span><span class="cheat-desc">Teilweise aufheben</span></div>
+      <div class="cheat-row"><span class="cheat-fn">FILTER(T, Bed.)</span><span class="cheat-desc">Tabelle filtern</span></div>
+      <div class="cheat-row"><span class="cheat-fn">SELECTEDVALUE(T[S])</span><span class="cheat-desc">Slicer-Wert lesen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">VALUES(T[S])</span><span class="cheat-desc">Gefilterte Werte</span></div>
+    </div>
+    <div class="cheat-card">
+      <h3>🔁 Iteratoren</h3>
+      <div class="cheat-row"><span class="cheat-fn">SUMX(T, Ausdruck)</span><span class="cheat-desc">Zeilenweise summieren</span></div>
+      <div class="cheat-row"><span class="cheat-fn">AVERAGEX(T, A)</span><span class="cheat-desc">Zeilenweise ∅</span></div>
+      <div class="cheat-row"><span class="cheat-fn">MAXX(T, A)</span><span class="cheat-desc">Zeilenweise Max</span></div>
+      <div class="cheat-row"><span class="cheat-fn">COUNTX(T, A)</span><span class="cheat-desc">Zeilenweise zählen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">RANKX(T, A)</span><span class="cheat-desc">Rang ermitteln</span></div>
+      <div class="cheat-row"><span class="cheat-fn">TOPN(N, T, A)</span><span class="cheat-desc">Top N Zeilen</span></div>
+    </div>
+    <div class="cheat-card">
+      <h3>📅 Time Intelligence</h3>
+      <div class="cheat-row"><span class="cheat-fn">TOTALYTD(M, D)</span><span class="cheat-desc">Year to Date</span></div>
+      <div class="cheat-row"><span class="cheat-fn">DATESMTD(D)</span><span class="cheat-desc">Month to Date</span></div>
+      <div class="cheat-row"><span class="cheat-fn">DATESQTD(D)</span><span class="cheat-desc">Quarter to Date</span></div>
+      <div class="cheat-row"><span class="cheat-fn">SAMEPERIODLASTYEAR(D)</span><span class="cheat-desc">Vorjahresperiode</span></div>
+      <div class="cheat-row"><span class="cheat-fn">DATEADD(D, -1, MONTH)</span><span class="cheat-desc">Zeitversatz</span></div>
+      <div class="cheat-row"><span class="cheat-fn">TODAY() / NOW()</span><span class="cheat-desc">Aktuelles Datum</span></div>
+    </div>
+    <div class="cheat-card">
+      <h3>⚖️ Logik</h3>
+      <div class="cheat-row"><span class="cheat-fn">IF(B, W, S)</span><span class="cheat-desc">Wenn-Dann-Sonst</span></div>
+      <div class="cheat-row"><span class="cheat-fn">SWITCH(TRUE(), …)</span><span class="cheat-desc">Mehrere Fälle</span></div>
+      <div class="cheat-row"><span class="cheat-fn">IFERROR(A, 0)</span><span class="cheat-desc">Fehler abfangen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">ISBLANK(A)</span><span class="cheat-desc">Leer prüfen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">BLANK()</span><span class="cheat-desc">Leerewert zurückgeben</span></div>
+      <div class="cheat-row"><span class="cheat-fn">&&, ||, !</span><span class="cheat-desc">UND, ODER, NICHT</span></div>
+    </div>
+    <div class="cheat-card">
+      <h3>🔤 Text & Sonstiges</h3>
+      <div class="cheat-row"><span class="cheat-fn">T1 & " " & T2</span><span class="cheat-desc">Text verbinden</span></div>
+      <div class="cheat-row"><span class="cheat-fn">FORMAT(Z, "#.##0 €")</span><span class="cheat-desc">Zahl formatieren</span></div>
+      <div class="cheat-row"><span class="cheat-fn">LEFT(T, N)</span><span class="cheat-desc">Erste N Zeichen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">TRIM(T)</span><span class="cheat-desc">Leerzeichen entfernen</span></div>
+      <div class="cheat-row"><span class="cheat-fn">RELATED(T[S])</span><span class="cheat-desc">Wert aus Beziehung</span></div>
+      <div class="cheat-row"><span class="cheat-fn">VAR x = … RETURN</span><span class="cheat-desc">Variablen</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+</div><!-- /layout -->
+
+<script>
+// ── State ───────────────────────────────────────────────────────────────────
+const PAGES = ['basics','aggregation','calculate','iteratoren','filter','timeint','logik','text','var','ranking','cheatsheet'];
+const TRACKABLE = ['basics','aggregation','calculate','iteratoren','filter','timeint','logik','text','var','ranking'];
+let done = JSON.parse(localStorage.getItem('dax_done') || '{}');
+
+function saveDone() { localStorage.setItem('dax_done', JSON.stringify(done)); }
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) { page.classList.add('active'); }
+  if (el) { el.classList.add('active'); }
+  document.getElementById('search-results-page').classList.remove('active');
+  document.getElementById('global-search').value = '';
+}
+
+// ── Card toggle ──────────────────────────────────────────────────────────────
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.measure-toggle');
+  body.classList.toggle('open');
+  header.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+// ── Done tracking ────────────────────────────────────────────────────────────
+function markDone(id, btn) {
+  done[id] = !done[id];
+  saveDone();
+  renderDone();
+}
+
+function renderDone() {
+  const total = TRACKABLE.length;
+  const count = TRACKABLE.filter(k => done[k]).length;
+  document.getElementById('prog-text').textContent = count + ' / ' + total;
+  document.getElementById('prog-fill').style.width = Math.round(count / total * 100) + '%';
+
+  TRACKABLE.forEach(id => {
+    const btn = document.getElementById('done-' + id);
+    if (!btn) return;
+    if (done[id]) {
+      btn.textContent = '☑ Erledigt';
+      btn.classList.add('done-active');
+    } else {
+      btn.textContent = '☐ Als erledigt markieren';
+      btn.classList.remove('done-active');
+    }
+  });
+
+  // Nav items
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const onclick = item.getAttribute('onclick') || '';
+    const match = onclick.match(/'([^']+)'/);
+    if (match && done[match[1]]) { item.classList.add('done'); }
+    else { item.classList.remove('done'); }
+  });
+  // Add check marks
+  document.querySelectorAll('.nav-item').forEach(item => {
+    let check = item.querySelector('.nav-check');
+    if (!check) {
+      check = document.createElement('span');
+      check.className = 'nav-check';
+      item.appendChild(check);
+    }
+    const onclick = item.getAttribute('onclick') || '';
+    const match = onclick.match(/'([^']+)'/);
+    if (match && TRACKABLE.includes(match[1])) {
+      check.textContent = done[match[1]] ? '✓' : '';
+    } else { check.style.display = 'none'; }
+  });
+}
+
+// ── Search ───────────────────────────────────────────────────────────────────
+function doSearch(q) {
+  q = q.trim();
+  if (!q) {
+    document.getElementById('search-results-page').classList.remove('active');
+    // Show last active page
+    showPage('basics', document.querySelector('.nav-item:first-of-type'));
+    return;
+  }
+  q = q.toLowerCase();
+  const srPage = document.getElementById('search-results-page');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  srPage.classList.add('active');
+
+  const cards = document.querySelectorAll('.measure-card[data-search], .measure-card');
+  const results = [];
+  cards.forEach(card => {
+    const name = card.querySelector('.measure-name')?.textContent || '';
+    const tagline = card.querySelector('.measure-tagline')?.textContent || '';
+    const body = card.querySelector('.measure-body')?.textContent || '';
+    const extra = card.dataset.search || '';
+    const haystack = (name + ' ' + tagline + ' ' + body + ' ' + extra).toLowerCase();
+    if (haystack.includes(q)) {
+      results.push({ name, tagline, card });
+    }
+  });
+
+  if (!results.length) {
+    srPage.innerHTML = '<div class="page-header" style="padding-top:20px"><h2>Suche: "' + q + '"</h2><p style="color:var(--text-muted)">Keine Ergebnisse gefunden.</p></div>';
+    return;
+  }
+
+  const highlight = t => t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'), m => '<mark>' + m + '</mark>');
+  srPage.innerHTML = '<div class="page-header" style="padding-top:20px"><h2>Suche: "' + q + '"</h2><p>' + results.length + ' Ergebnis' + (results.length > 1 ? 'se' : '') + '</p></div><div class="search-results">'
+    + results.map(r => `<div class="sr-item" onclick="scrollToCard('${r.name}')"><div class="sr-name">${highlight(r.name)}</div><div class="sr-cat">${highlight(r.tagline)}</div></div>`).join('')
+    + '</div>';
+}
+
+function scrollToCard(name) {
+  const cards = document.querySelectorAll('.measure-card');
+  for (const card of cards) {
+    if ((card.querySelector('.measure-name')?.textContent || '') === name) {
+      // Find what page this card is on
+      const page = card.closest('.page');
+      if (page) {
+        const pageId = page.id.replace('page-', '');
+        document.getElementById('global-search').value = '';
+        document.getElementById('search-results-page').classList.remove('active');
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        page.classList.add('active');
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(n => {
+          if ((n.getAttribute('onclick') || '').includes("'" + pageId + "'")) { n.classList.add('active'); }
+          else { n.classList.remove('active'); }
+        });
+        setTimeout(() => { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+      }
+      return;
+    }
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+renderDone();
+</script>
+</body>
+</html>
