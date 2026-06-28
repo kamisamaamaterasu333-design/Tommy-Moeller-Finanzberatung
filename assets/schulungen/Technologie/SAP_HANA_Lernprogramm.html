@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP HANA – Lernprogramm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0e1a;
+    --surface:  #111827;
+    --surface2: #1a2235;
+    --border:   #1e3a5f;
+    --accent:   #00c8ff;
+    --accent2:  #0066cc;
+    --gold:     #f0a500;
+    --green:    #00e676;
+    --red:      #ff5252;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --radius:   6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    padding: 40px 20px;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,200,255,.12) 0%, transparent 70%);
+    pointer-events: none;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+
+  .hero-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    background: rgba(0,200,255,.08);
+    border: 1px solid rgba(0,200,255,.25);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 600;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 48px;
+    position: relative;
+  }
+
+  .nav-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+  }
+
+  .nav-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all .25s;
+    text-align: left;
+  }
+  .nav-card:hover {
+    border-color: var(--accent);
+    background: var(--surface2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,200,255,.12);
+  }
+  .nav-card-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .nav-card-title { font-weight: 600; font-size: .95rem; margin-bottom: 4px; }
+  .nav-card-desc { font-size: .78rem; color: var(--muted); }
+
+  /* ── LAYOUT ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px 0;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo span { font-family: 'IBM Plex Mono', monospace; font-size: .9rem; color: var(--accent); }
+  .sidebar-logo small { display: block; color: var(--muted); font-size: .7rem; margin-top: 2px; }
+
+  .sidebar-section { padding: 8px 20px 4px; font-size: .65rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; font-family: 'IBM Plex Mono', monospace; }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+    font-size: .85rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .sidebar-item:hover { color: var(--text); background: rgba(255,255,255,.03); }
+  .sidebar-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,200,255,.05); }
+  .sidebar-item-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 48px 56px;
+    max-width: 1000px;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn .3s ease; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ── TYPOGRAPHY ── */
+  .section-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-header h2 { font-size: 2rem; font-weight: 600; line-height: 1.2; margin-bottom: 12px; }
+  .section-header p { color: var(--muted); max-width: 620px; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 32px 0 12px; }
+  h4 { font-size: .95rem; font-weight: 600; color: var(--accent); margin: 20px 0 8px; }
+
+  p { color: #a0aec0; margin-bottom: 14px; }
+  p strong { color: var(--text); }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+  .card-grid-3 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: rgba(0,200,255,.4); }
+  .card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+  .card-title { font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+  .card-body { font-size: .82rem; color: var(--muted); }
+
+  /* ── ACCENT CARD ── */
+  .accent-card {
+    background: linear-gradient(135deg, rgba(0,200,255,.08), rgba(0,102,204,.08));
+    border: 1px solid rgba(0,200,255,.2);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .accent-card .label { font-family: 'IBM Plex Mono', monospace; font-size: .7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 8px; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: .85rem;
+  }
+  .compare-table th {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .compare-table th:first-child { color: var(--muted); }
+  .compare-table th.hana { color: var(--accent); }
+  .compare-table th.r3 { color: var(--gold); }
+  .compare-table td {
+    border: 1px solid var(--border);
+    padding: 11px 16px;
+    vertical-align: top;
+    color: #a0aec0;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+  .compare-table td:first-child { color: var(--text); font-weight: 500; }
+
+  /* ── PRO/CON ── */
+  .pro-con-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+  .pro-box, .con-box {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .pro-box { border: 1px solid rgba(0,230,118,.2); }
+  .con-box { border: 1px solid rgba(255,82,82,.2); }
+  .pro-box h4 { color: var(--green); margin-top: 0; }
+  .con-box h4 { color: var(--red); margin-top: 0; }
+  .pro-con-list { list-style: none; padding: 0; }
+  .pro-con-list li {
+    padding: 6px 0;
+    padding-left: 22px;
+    position: relative;
+    font-size: .85rem;
+    color: #a0aec0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .pro-con-list li:last-child { border: none; }
+  .pro-con-list li::before { position: absolute; left: 0; }
+  .pro-box .pro-con-list li::before { content: "✓"; color: var(--green); }
+  .con-box .pro-con-list li::before { content: "✗"; color: var(--red); }
+
+  /* ── MODULE PILL ── */
+  .module-pill {
+    display: inline-block;
+    background: rgba(0,200,255,.1);
+    border: 1px solid rgba(0,200,255,.2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: .75rem;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 3px;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .8rem;
+    color: #79c0ff;
+    overflow-x: auto;
+    margin: 16px 0;
+    line-height: 1.8;
+  }
+  .code-block .kw  { color: #ff7b72; }
+  .code-block .str { color: #a5d6ff; }
+  .code-block .cmt { color: #8b949e; }
+  .code-block .fn  { color: #d2a8ff; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 20px 0; }
+  .step-list li {
+    counter-increment: steps;
+    padding: 14px 14px 14px 56px;
+    position: relative;
+    margin-bottom: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: .88rem;
+    color: #a0aec0;
+  }
+  .step-list li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    background: var(--accent2);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .8rem;
+  }
+  .step-list li strong { color: var(--text); }
+
+  /* ── QUIZ ── */
+  .quiz-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 32px 0;
+  }
+  .quiz-box h4 { color: var(--gold); margin: 0 0 16px; font-size: 1rem; }
+  .quiz-question { font-size: .9rem; margin-bottom: 14px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: .85rem;
+    transition: all .15s;
+    text-align: left;
+    color: var(--text);
+  }
+  .quiz-option:hover { border-color: var(--accent); background: rgba(0,200,255,.05); }
+  .quiz-option.correct { border-color: var(--green); background: rgba(0,230,118,.08); color: var(--green); }
+  .quiz-option.wrong { border-color: var(--red); background: rgba(255,82,82,.08); color: var(--red); }
+  .quiz-feedback { margin-top: 14px; padding: 12px; border-radius: var(--radius); font-size: .85rem; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(0,230,118,.08); border: 1px solid rgba(0,230,118,.2); color: var(--green); }
+  .quiz-feedback.bad { background: rgba(255,82,82,.08); border: 1px solid rgba(255,82,82,.2); color: var(--red); }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch-diagram {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 24px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .78rem;
+    line-height: 2;
+    color: #79c0ff;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .arch-layer {
+    border: 1px solid rgba(0,200,255,.3);
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin: 4px auto;
+    max-width: 500px;
+  }
+  .arch-layer.main { background: rgba(0,200,255,.08); color: var(--accent); font-weight: 600; }
+  .arch-layer.sub  { background: rgba(0,102,204,.08); color: #79c0ff; font-size: .72rem; }
+  .arch-arrow      { color: var(--muted); margin: 2px 0; }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap { background: var(--surface2); border-radius: 4px; height: 4px; margin: 8px 0 20px; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s; }
+
+  /* ── MOBILE ── */
+  .hamburger { display: none; position: fixed; top: 16px; left: 16px; z-index: 999; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 1.2rem; }
+
+  @media (max-width: 768px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .hamburger { display: block; }
+    .sidebar { position: fixed; left: -300px; z-index: 998; transition: left .3s; width: 280px; }
+    .sidebar.open { left: 0; }
+    .content { padding: 72px 20px 40px; }
+    .pro-con-grid { grid-template-columns: 1fr; }
+    .compare-table { font-size: .75rem; }
+  }
+
+  /* ── SCROLLBAR ── */
+  .content::-webkit-scrollbar { width: 4px; }
+  .content::-webkit-scrollbar-track { background: transparent; }
+  .content::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight {
+    background: rgba(240,165,0,.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: .87rem;
+    color: #c8a958;
+  }
+  .highlight strong { color: var(--gold); }
+
+  /* ── AUTOMATION CARD ── */
+  .auto-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .auto-card-title { font-weight: 600; font-size: .9rem; margin-bottom: 6px; }
+  .auto-card-body { font-size: .82rem; color: var(--muted); }
+  .auto-card .pill { background: rgba(0,200,255,.1); border-radius: 3px; padding: 2px 8px; font-family: 'IBM Plex Mono', monospace; font-size: .7rem; color: var(--accent); margin-left: 8px; }
+
+  /* ── TAG ── */
+  .tag-inline { background: rgba(0,200,255,.1); color: var(--accent); padding: 2px 8px; border-radius: 3px; font-size: .75rem; font-family: 'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+
+<!-- HERO PAGE -->
+<div id="hero-page">
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-badge">LERNPROGRAMM · SAP TECHNOLOGY</div>
+    <h1>SAP <span>HANA</span><br>Komplettkurs</h1>
+    <p class="hero-sub">Alle Module · Vergleich zu R/3 · Automatisierung · Vor- und Nachteile — interaktiv und praxisnah erklärt.</p>
+    <div class="nav-cards">
+      <div class="nav-card" onclick="startLearning('architektur')">
+        <div class="nav-card-icon">🏗️</div>
+        <div class="nav-card-title">Architektur & Grundlagen</div>
+        <div class="nav-card-desc">In-Memory, Columnar Store, HANA-Schichten</div>
+      </div>
+      <div class="nav-card" onclick="startLearning('module')">
+        <div class="nav-card-icon">🧩</div>
+        <div class="nav-card-title">Alle Module</div>
+        <div class="nav-card-desc">ERP, BW, CRM, SCM, SRM und mehr</div>
+      </div>
+      <div class="nav-card" onclick="startLearning('vergleich')">
+        <div class="nav-card-icon">⚖️</div>
+        <div class="nav-card-title">HANA vs. R/3</div>
+        <div class="nav-card-desc">Was sich fundamental geändert hat</div>
+      </div>
+      <div class="nav-card" onclick="startLearning('automatisierung')">
+        <div class="nav-card-icon">⚙️</div>
+        <div class="nav-card-title">Automatisierung</div>
+        <div class="nav-card-desc">Bots, AI, Workflows, Code Pushdown</div>
+      </div>
+      <div class="nav-card" onclick="startLearning('vorteile')">
+        <div class="nav-card-icon">📊</div>
+        <div class="nav-card-title">Vor- & Nachteile</div>
+        <div class="nav-card-desc">Ehrliche Bewertung für die Praxis</div>
+      </div>
+      <div class="nav-card" onclick="startLearning('quiz')">
+        <div class="nav-card-icon">🎯</div>
+        <div class="nav-card-title">Wissenstest</div>
+        <div class="nav-card-desc">Quizze zu allen Kapiteln</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none;">
+  <button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span>SAP HANA</span>
+        <small>Interaktives Lernprogramm</small>
+        <div class="progress-bar-wrap" style="margin-top:10px;">
+          <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">Grundlagen</div>
+      <a class="sidebar-item" onclick="showSection('architektur')"><span class="sidebar-item-icon">🏗️</span> Architektur</a>
+      <a class="sidebar-item" onclick="showSection('speicher')"><span class="sidebar-item-icon">💾</span> In-Memory Konzept</a>
+      <a class="sidebar-item" onclick="showSection('datenmodell')"><span class="sidebar-item-icon">📐</span> Datenmodell</a>
+
+      <div class="sidebar-section">Module</div>
+      <a class="sidebar-item" onclick="showSection('module')"><span class="sidebar-item-icon">🧩</span> Übersicht aller Module</a>
+      <a class="sidebar-item" onclick="showSection('s4hana')"><span class="sidebar-item-icon">🏢</span> S/4HANA ERP</a>
+      <a class="sidebar-item" onclick="showSection('bw')"><span class="sidebar-item-icon">📊</span> BW/4HANA Analytics</a>
+      <a class="sidebar-item" onclick="showSection('cloud')"><span class="sidebar-item-icon">☁️</span> Cloud Module</a>
+      <a class="sidebar-item" onclick="showSection('developer')"><span class="sidebar-item-icon">💻</span> Developer Tools</a>
+
+      <div class="sidebar-section">Migration</div>
+      <a class="sidebar-item" onclick="showSection('vergleich')"><span class="sidebar-item-icon">⚖️</span> HANA vs. R/3</a>
+      <a class="sidebar-item" onclick="showSection('migration')"><span class="sidebar-item-icon">🚀</span> Migrationspfade</a>
+
+      <div class="sidebar-section">Praxis</div>
+      <a class="sidebar-item" onclick="showSection('automatisierung')"><span class="sidebar-item-icon">⚙️</span> Automatisierung</a>
+      <a class="sidebar-item" onclick="showSection('vorteile')"><span class="sidebar-item-icon">📊</span> Vor- & Nachteile</a>
+      <a class="sidebar-item" onclick="showSection('quiz')"><span class="sidebar-item-icon">🎯</span> Wissenstest</a>
+
+      <div style="padding: 20px; margin-top: auto; border-top: 1px solid var(--border);">
+        <div style="font-size:.7rem; color: var(--muted); font-family:'IBM Plex Mono',monospace;">
+          10 Kapitel · Interaktiv<br>
+          <span id="sections-done">0</span>/10 abgeschlossen
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: ARCHITEKTUR
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-architektur">
+        <div class="section-header">
+          <div class="tag">Kapitel 1 · Grundlagen</div>
+          <h2>SAP HANA Architektur</h2>
+          <p>SAP HANA (High-Performance Analytic Appliance) ist eine In-Memory-Datenbank- und Applikationsplattform. Sie wurde 2010 eingeführt und vereint OLTP und OLAP in einem System.</p>
+        </div>
+
+        <div class="arch-diagram">
+          <div class="arch-layer main">Application Layer (SAP S/4HANA, BW/4HANA, CRM …)</div>
+          <div class="arch-arrow">▼</div>
+          <div class="arch-layer main">SAP HANA Database Engine</div>
+          <div class="arch-arrow">▼</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:500px;margin:0 auto;">
+            <div class="arch-layer sub">Row Store</div>
+            <div class="arch-layer sub">Column Store</div>
+            <div class="arch-layer sub">Graph / Spatial</div>
+          </div>
+          <div class="arch-arrow">▼</div>
+          <div class="arch-layer sub">In-Memory (RAM) · Persistent Storage (SSD)</div>
+          <div class="arch-arrow">▼</div>
+          <div class="arch-layer sub">Hardware / Cloud Infrastructure</div>
+        </div>
+
+        <h3>Kernkomponenten im Überblick</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🧠</div>
+            <div class="card-title">Index Server</div>
+            <div class="card-body">Hauptkomponente: verwaltet Datenspeicher, SQL-Verarbeitung und Transaktionsmanagement. Enthält Row Store, Column Store und In-Memory Engine.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📡</div>
+            <div class="card-title">XS Engine (Extended Application Services)</div>
+            <div class="card-body">Eingebetteter Web-Server direkt in HANA. Erlaubt Entwicklung von Web-Apps direkt auf der Datenbank. Heute als XSA (Advanced) Architektur.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔄</div>
+            <div class="card-title">Preprocessor Server</div>
+            <div class="card-body">Verarbeitet unstrukturierte Daten und Text für die HANA Search. Ermöglicht Volltext-Suche und linguistische Analyse.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📊</div>
+            <div class="card-title">Statistics Server</div>
+            <div class="card-body">Sammelt Systemmetriken und Performance-Daten. Grundlage für Monitoring und automatische Optimierung.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔐</div>
+            <div class="card-title">Name Server</div>
+            <div class="card-body">Verwaltet die Topologie von HANA-Systemen. In verteilten Umgebungen koordiniert er, welcher Knoten welche Daten hält.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📁</div>
+            <div class="card-title">Compile Server</div>
+            <div class="card-body">Übersetzt HANA-Skripte (HEX, L-Code) in ausführbaren Maschinencode für maximale Laufzeitperformance.</div>
+          </div>
+        </div>
+
+        <div class="highlight">
+          <strong>Schlüsselkonzept:</strong> HANA ist kein klassisches RDBMS. Die Architektur ist so designed, dass Analysen und Transaktionen gleichzeitig auf denselben Daten laufen – ohne Datenkopien oder ETL-Prozesse zwischen OLTP und OLAP.
+        </div>
+
+        <div class="quiz-box">
+          <h4>🎯 Quick-Check</h4>
+          <p class="quiz-question">Was ist der Hauptunterschied zwischen dem Index Server und dem XS Engine?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuiz(this, false)">Beide verwalten nur Datenbank-Transaktionen</button>
+            <button class="quiz-option" onclick="checkQuiz(this, true)">Index Server = Datenbank-Core; XS Engine = Web-Anwendungsserver direkt in HANA</button>
+            <button class="quiz-option" onclick="checkQuiz(this, false)">XS Engine ersetzt den Index Server in neuen Versionen</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! Der Index Server ist das Herzstück der Datenhaltung, während die XS Engine Web-Applikationen direkt auf der Datenbank ermöglicht.</div>
+          <div class="quiz-feedback bad">✗ Nicht ganz. Der Index Server ist der Core für Daten, SQL und Transaktionen. Die XS Engine ist ein eingebetteter Webserver für Applikationen direkt auf HANA.</div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: IN-MEMORY
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-speicher">
+        <div class="section-header">
+          <div class="tag">Kapitel 2 · Grundlagen</div>
+          <h2>Das In-Memory Konzept</h2>
+          <p>Das zentrale Paradigma von SAP HANA: alle relevanten Daten liegen im RAM statt auf der Festplatte. Das verändert alles – Architektur, Performance und Möglichkeiten.</p>
+        </div>
+
+        <h3>Column Store vs. Row Store</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Kriterium</th>
+              <th class="hana">Column Store (HANA Standard)</th>
+              <th class="r3">Row Store (traditionell)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Datenspeicherung</td><td>Spaltenweise (alle Werte einer Spalte zusammen)</td><td>Zeilenweise (ein Datensatz zusammenhängend)</td></tr>
+            <tr><td>Analytische Abfragen</td><td>⚡ Extrem schnell (nur relevante Spalten lesen)</td><td>🐢 Langsam (gesamte Zeilen durchsuchen)</td></tr>
+            <tr><td>Transaktionen (INSERT/UPDATE)</td><td>Gut (mit Delta-Store-Mechanismus)</td><td>⚡ Schnell (direkte Zeilen-Manipulation)</td></tr>
+            <tr><td>Kompression</td><td>Hoch (gleiche Werte in Spalten komprimierbar)</td><td>Gering (heterogene Zeileninhalte)</td></tr>
+            <tr><td>Typischer Einsatz</td><td>OLAP, Analytics, Reports</td><td>OLTP, einfache Lookups</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Der Delta-Store: Brücke zwischen OLTP und OLAP</h3>
+        <div class="accent-card">
+          <div class="label">TECHNISCHES KONZEPT</div>
+          <p style="margin:0;color:#a0aec0;">HANA verwendet einen <strong style="color:var(--text)">zweistufigen Speicher</strong>: Neue Daten landen zuerst im <strong style="color:var(--accent)">Delta Store</strong> (zeilenoptimiert für schnelle Schreibvorgänge). Periodisch wird ein <strong style="color:var(--accent)">Delta Merge</strong> durchgeführt, der diese Daten in den komprimierten <strong style="color:var(--accent)">Main Store</strong> (spaltenoptimiert) überführt. Abfragen werden automatisch über beide Schichten aggregiert – für den Nutzer transparent.</p>
+        </div>
+
+        <div class="arch-diagram">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:480px;margin:0 auto;">
+            <div>
+              <div class="arch-layer sub">📝 Neue Einträge</div>
+              <div class="arch-arrow">▼</div>
+              <div class="arch-layer main">Delta Store</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Row-oriented<br>Schnelle Writes</div>
+            </div>
+            <div>
+              <div class="arch-layer sub">📊 Abfrage-Performance</div>
+              <div class="arch-arrow">▼</div>
+              <div class="arch-layer main">Main Store</div>
+              <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Column-oriented<br>Komprimiert</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:.75rem;color:var(--muted)">← Delta Merge (automatisch/manuell) →</div>
+        </div>
+
+        <h3>Datenkompression in HANA</h3>
+        <div class="card-grid card-grid-3">
+          <div class="card">
+            <div class="card-title">Dictionary Encoding</div>
+            <div class="card-body">Wiederkehrende Werte werden durch kurze Integer-Codes ersetzt. "Deutschland" → 1. Spart massiv Speicher bei Stammdaten.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Run-Length Encoding</div>
+            <div class="card-body">Aufeinanderfolgende gleiche Werte werden als (Wert, Anzahl) kodiert. "AAA" → (A,3). Ideal für sortierte Daten.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Prefix Encoding</div>
+            <div class="card-body">Häufige Präfixe werden ausgelagert. Spart Platz bei Textfeldern mit ähnlichem Anfang wie Produktcodes.</div>
+          </div>
+        </div>
+
+        <div class="quiz-box">
+          <h4>🎯 Quick-Check</h4>
+          <p class="quiz-question">Warum ist Column Store für analytische Abfragen schneller als Row Store?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuiz(this, false)">Weil alle Daten im RAM liegen</button>
+            <button class="quiz-option" onclick="checkQuiz(this, true)">Weil nur die relevanten Spalten gelesen werden müssen, nicht ganze Zeilen</button>
+            <button class="quiz-option" onclick="checkQuiz(this, false)">Weil Column Store neuere Hardware nutzt</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Genau! Bei "SELECT SUM(Umsatz)" muss Column Store nur die Umsatz-Spalte lesen – Row Store muss alle Zeilen mit allen Feldern scannen.</div>
+          <div class="quiz-feedback bad">✗ RAM allein ist nicht der Faktor. Der entscheidende Vorteil liegt im Zugriffsmuster: Spaltenweise Speicherung bedeutet, dass Aggregationen nur die relevanten Datenbereiche lesen.</div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: DATENMODELL
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-datenmodell">
+        <div class="section-header">
+          <div class="tag">Kapitel 3 · Grundlagen</div>
+          <h2>Datenmodellierung in HANA</h2>
+          <p>HANA ersetzt traditionelle ABAP-Aggregat-Views durch virtuelle Informationsmodelle. Das verändert grundlegend, wie Geschäftsdaten strukturiert und abgefragt werden.</p>
+        </div>
+
+        <h3>HANA Views – die Informationsmodelle</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">📋</div>
+            <div class="card-title">Attribute View</div>
+            <div class="card-body">(Veraltet in HANA 2.0) Beschreibende Stammdaten-Dimensionen. Wurde durch CDS Views abgelöst. Vergleichbar mit Master-Data-Tabellen in BW.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📈</div>
+            <div class="card-title">Analytic View</div>
+            <div class="card-body">(Veraltet) Faktentabellen mit Kennzahlen. Kombinierte Messwerte mit Dimensionen. Heute: Calculation Views übernehmen diese Rolle.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔢</div>
+            <div class="card-title">Calculation View</div>
+            <div class="card-body">Das moderne Herzstück der HANA-Modellierung. Unterstützt komplexe Berechnungen, Joins, Unions, Aggregationen – graphisch oder in SQLScript.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗂️</div>
+            <div class="card-title">CDS Views (Core Data Services)</div>
+            <div class="card-body">Deklarative Datendefinitionen in ABAP oder HANA. Standard für S/4HANA. Definieren Datenzugriff und -semantik auf Applikationsebene.</div>
+          </div>
+        </div>
+
+        <h3>SQLScript – Programmierung auf der Datenbank</h3>
+        <div class="code-block">
+<span class="cmt">-- SQLScript: Berechnung direkt auf HANA-Ebene</span>
+<span class="kw">CREATE PROCEDURE</span> <span class="fn">GetTopCustomers</span> (
+    <span class="kw">IN</span>  p_year    <span class="fn">INTEGER</span>,
+    <span class="kw">OUT</span> customers <span class="fn">TABLE</span>(CustomerID NVARCHAR(10), Revenue DECIMAL(15,2))
+)
+<span class="kw">LANGUAGE SQLSCRIPT AS</span>
+<span class="kw">BEGIN</span>
+    customers = <span class="kw">SELECT</span> c.CustomerID, 
+                       <span class="fn">SUM</span>(o.NetAmount) <span class="kw">AS</span> Revenue
+                <span class="kw">FROM</span> Orders o
+                <span class="kw">JOIN</span> Customers c <span class="kw">ON</span> o.CustomerID = c.CustomerID
+                <span class="kw">WHERE YEAR</span>(o.OrderDate) = :p_year
+                <span class="kw">GROUP BY</span> c.CustomerID
+                <span class="kw">ORDER BY</span> Revenue <span class="kw">DESC</span>
+                <span class="kw">LIMIT</span> 10;
+<span class="kw">END</span>;
+        </div>
+
+        <div class="highlight">
+          <strong>Code Pushdown Prinzip:</strong> In HANA wird Logik so weit wie möglich auf Datenbankebene ausgeführt ("pushed down"), statt Daten in die Applikationsschicht zu laden. Das reduziert Netzwerk-Traffic und nutzt HANAs Parallelverarbeitung optimal.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: MODULE ÜBERSICHT
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-module">
+        <div class="section-header">
+          <div class="tag">Kapitel 4 · Module</div>
+          <h2>Alle SAP HANA Module im Überblick</h2>
+          <p>SAP HANA ist nicht nur eine Datenbank – es ist eine Plattform mit einem ganzen Ökosystem an Modulen für verschiedene Geschäftsbereiche.</p>
+        </div>
+
+        <h3>Core-Datenbank-Module</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🗄️</div>
+            <div class="card-title">HANA Database</div>
+            <div class="card-body">In-Memory Relationale Datenbank. Unterstützt SQL, OLAP, Text, Graph und räumliche Daten (Spatial) in einem System.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📦</div>
+            <div class="card-title">HANA Extended Services (XSA)</div>
+            <div class="card-body">Microservices-Plattform direkt auf HANA. Cloud Foundry-basiert. Ermöglicht Node.js, Java, Python-Applikationen direkt neben der DB.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">HANA Search</div>
+            <div class="card-body">Volltext-Suche, Fuzzy-Suche und linguistische Analyse auf strukturierten und unstrukturierten Daten ohne externe Suchmaschine.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤖</div>
+            <div class="card-title">HANA Predictive Analytics Library (PAL)</div>
+            <div class="card-body">Über 90 eingebettete ML-Algorithmen: Regression, Klassifikation, Clustering, Zeitreihen – direkt in der Datenbank, ohne Datenbewegung.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🌐</div>
+            <div class="card-title">HANA Graph</div>
+            <div class="card-body">Graphdatenbank-Fähigkeiten innerhalb HANA. Netzwerkanalysen, Pfadfindung und hierarchische Auswertungen für Netzwerk- und Sozialdaten.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📍</div>
+            <div class="card-title">HANA Spatial</div>
+            <div class="card-body">Geospatiale Daten und Analysen. Integration von Standortdaten, Kartenvisualisierung und räumlichen Berechnungen direkt in SQL.</div>
+          </div>
+        </div>
+
+        <h3>Business-Applikations-Module</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🏢</div>
+            <div class="card-title">SAP S/4HANA</div>
+            <div class="card-body">Das ERP-System der nächsten Generation. Finance, Logistics, Manufacturing, Procurement – vollständig auf HANA optimiert. Nachfolger von SAP ECC/R3.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📊</div>
+            <div class="card-title">SAP BW/4HANA</div>
+            <div class="card-body">Business Warehouse neu gedacht. Optimiertes Data Warehousing auf HANA – weniger Layer, direkte HANA-Native-Modellierung.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👥</div>
+            <div class="card-title">SAP CRM (C/4HANA / SAP CX)</div>
+            <div class="card-body">Customer Experience Suite: Sales Cloud, Service Cloud, Commerce, Marketing, Customer Data. Echtzeit-Kundenanalysen auf HANA-Basis.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🚛</div>
+            <div class="card-title">SAP SCM / IBP</div>
+            <div class="card-body">Integrated Business Planning für Supply Chain. Echtzeit-Planung, Demand Sensing, Inventory Optimization – ersetzt APO auf HANA.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">💰</div>
+            <div class="card-title">SAP SRM / Ariba</div>
+            <div class="card-body">Supplier Relationship Management. Ariba Network-Integration für Einkauf, Lieferantenbewertung und Procurement-Prozesse.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">👨‍💼</div>
+            <div class="card-title">SAP HCM / SuccessFactors</div>
+            <div class="card-body">Human Capital Management: Gehaltsabrechnung, Talent Management, Learning, Employee Central – teilweise on-premise, teilweise Cloud.</div>
+          </div>
+        </div>
+
+        <h3>Technologie- und Entwicklungs-Module</h3>
+        <div class="card-grid card-grid-3">
+          <div class="card"><div class="card-title">SAP HANA Studio</div><div class="card-body">Eclipse-basierte Entwicklungsumgebung für HANA-Administration und Modellierung (wird durch HANA Cockpit abgelöst).</div></div>
+          <div class="card"><div class="card-title">SAP HANA Cockpit</div><div class="card-body">Web-basiertes Admin-Tool für Monitoring, Backup, Systemkonfiguration und User-Management.</div></div>
+          <div class="card"><div class="card-title">SAP Web IDE / BAS</div><div class="card-body">Business Application Studio: Cloud-basierte IDE für ABAP, CAP (Cloud Application Programming), Fiori UI5 Entwicklung.</div></div>
+          <div class="card"><div class="card-title">SAP Data Intelligence</div><div class="card-body">Machine Learning Operationalisierung, Datenpipelines und KI-Modell-Deployment. Nachfolger von SAP HANA Vora und Data Hub.</div></div>
+          <div class="card"><div class="card-title">SAP Integration Suite</div><div class="card-body">Cloud Integration, API Management, Event Mesh. Verbindet SAP und Non-SAP-Systeme in Hybrid- und Cloud-Szenarien.</div></div>
+          <div class="card"><div class="card-title">SAP Datasphere</div><div class="card-body">Business Data Fabric: zentrales Datenmanagement über alle Quellen hinweg. Nachfolger von SAP Data Warehouse Cloud.</div></div>
+        </div>
+
+        <h3>Alle verfügbaren Module auf einen Blick</h3>
+        <div style="margin:16px 0;">
+          <span class="module-pill">S/4HANA Finance</span>
+          <span class="module-pill">S/4HANA Logistics</span>
+          <span class="module-pill">S/4HANA Manufacturing</span>
+          <span class="module-pill">BW/4HANA</span>
+          <span class="module-pill">HANA PAL</span>
+          <span class="module-pill">HANA Graph</span>
+          <span class="module-pill">HANA Spatial</span>
+          <span class="module-pill">HANA Search</span>
+          <span class="module-pill">HANA XSA</span>
+          <span class="module-pill">SAP Datasphere</span>
+          <span class="module-pill">SAP IBP</span>
+          <span class="module-pill">SAP Ariba</span>
+          <span class="module-pill">SuccessFactors</span>
+          <span class="module-pill">SAP CX Suite</span>
+          <span class="module-pill">SAP Integration Suite</span>
+          <span class="module-pill">SAP Data Intelligence</span>
+          <span class="module-pill">SAP Signavio</span>
+          <span class="module-pill">SAP LeanIX</span>
+          <span class="module-pill">HANA Cloud</span>
+          <span class="module-pill">SAP Build</span>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: S/4HANA
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-s4hana">
+        <div class="section-header">
+          <div class="tag">Kapitel 5 · Module</div>
+          <h2>SAP S/4HANA – Das neue ERP</h2>
+          <p>S/4HANA ist der direkte Nachfolger von SAP ECC (auf Basis von R/3). Es ist ausschließlich auf HANA lauffähig und wurde von Grund auf neu designed.</p>
+        </div>
+
+        <h3>S/4HANA Finance (Central Finance)</h3>
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">📒</div><div class="card-title">Universal Journal (ACDOCA)</div><div class="card-body">Eine einzige Tabelle für alle buchhalterischen Sichten: FI, CO, ML, AA, PS. Keine getrennten Ledger mehr – ein einheitliches Datenmodell.</div></div>
+          <div class="card"><div class="card-icon">⚡</div><div class="card-title">Echtzeit-Abschluss</div><div class="card-body">Monatsabschlüsse dauern Stunden statt Tage. Period-End-Closing kann durch kontinuierliche Buchführung vereinfacht werden.</div></div>
+          <div class="card"><div class="card-icon">🔄</div><div class="card-title">Integrated Business Planning</div><div class="card-body">Finance und Controlling auf einer Datenquelle. Budgetplanung, Forecast und Actuals auf denselben Strukturen.</div></div>
+        </div>
+
+        <h3>S/4HANA Logistik & Supply Chain</h3>
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">📦</div><div class="card-title">Material Management (MM)</div><div class="card-body">Vereinfachtes Datenmodell: MATDOC statt MSEG/MKPF. Echtzeit-Lagerbestand ohne Aggregat-Tabellen.</div></div>
+          <div class="card"><div class="card-icon">🏭</div><div class="card-title">Production Planning (PP)</div><div class="card-body">MRP Live: Produktionsplanung in Echtzeit auf HANA. Planläufe die früher Stunden dauerten, laufen in Minuten.</div></div>
+          <div class="card"><div class="card-icon">🚚</div><div class="card-title">Sales & Distribution (SD)</div><div class="card-body">Available-to-Promise (ATP) in Echtzeit. Lieferterminbestätigung auf Basis tatsächlicher Lagerbestände, nicht aggregierter Werte.</div></div>
+        </div>
+
+        <h3>Deployment-Optionen</h3>
+        <table class="compare-table">
+          <thead>
+            <tr><th>Option</th><th class="hana">Details</th><th>Für wen geeignet</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>S/4HANA On-Premise</td><td>Eigene Hardware / eigenes Rechenzentrum</td><td>Große Konzerne, regulierte Branchen</td></tr>
+            <tr><td>S/4HANA Cloud, Private Edition</td><td>Managed Cloud (z.B. AWS, Azure), Single-Tenant</td><td>Mittelstand, individuelle Anpassungen</td></tr>
+            <tr><td>S/4HANA Cloud, Public Edition</td><td>Multi-Tenant SaaS, Best Practices vordefiniert</td><td>Schnelle Einführung, Standard-Prozesse</td></tr>
+            <tr><td>Rise with SAP</td><td>Komplettpaket: Cloud + Migration + Services</td><td>ECC-Migrationen bis 2027/2030</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: BW/4HANA
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-bw">
+        <div class="section-header">
+          <div class="tag">Kapitel 6 · Module</div>
+          <h2>BW/4HANA – Analytics & Data Warehouse</h2>
+          <p>BW/4HANA ist das modernisierte SAP Business Warehouse, komplett auf HANA native optimiert und von altem BW-Ballast befreit.</p>
+        </div>
+
+        <h3>Was BW/4HANA von klassischem BW unterscheidet</h3>
+        <table class="compare-table">
+          <thead>
+            <tr><th>Merkmal</th><th class="hana">BW/4HANA</th><th class="r3">SAP BW 7.x (klassisch)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Datenmodell</td><td>Vereinfacht: aDSO als zentrales Objekt</td><td>InfoProvider-Zoo: InfoCube, DSO, MultiProvider…</td></tr>
+            <tr><td>Aggregation</td><td>In-Memory – keine vorberechneten Aggregate</td><td>Aggregat-Tabellen notwendig für Performance</td></tr>
+            <tr><td>Transformationen</td><td>HANA-native: SQLScript, Flowgraphs</td><td>ABAP-Transformationsroutinen</td></tr>
+            <tr><td>Daten-Layer</td><td>Direkte HANA-Modellierung via CDS Views</td><td>Mehrere Schichten (PSA → DSO → InfoCube)</td></tr>
+            <tr><td>Echtzeit</td><td>Real-Time Reporting ohne Aggregataufbau</td><td>Abhängig von Aggregat-Lade-Timing</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Advanced DSO (aDSO) – das universelle Objekt</h3>
+        <div class="accent-card">
+          <div class="label">KERNKONZEPT BW/4HANA</div>
+          <p style="color:#a0aec0;margin:0;">Das <strong style="color:var(--text)">Advanced DataStore Object (aDSO)</strong> ist das zentrale Speicherobjekt in BW/4HANA und ersetzt InfoCube, DSO und DataStore. Es kombiniert alle Speichertypen in einem einzigen, konfigurierbaren Objekt – je nach Einstellung verhält es sich als Reporting Layer, Data Mart oder Write-optimierter Store.</p>
+        </div>
+
+        <h3>SAP Datasphere – der nächste Schritt</h3>
+        <p>SAP Datasphere ist der Cloud-Nachfolger und ergänzt BW/4HANA um eine <strong>Business Data Fabric</strong>: es verbindet Daten aus S/4HANA, Azure, Google Cloud, und externen Quellen in einem einzigen, semantisch reichhaltigen Datenmodell – ohne physische Kopien.</p>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: CLOUD MODULE
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-cloud">
+        <div class="section-header">
+          <div class="tag">Kapitel 7 · Module</div>
+          <h2>Cloud-Module & SAP BTP</h2>
+          <p>SAP Business Technology Platform (BTP) ist die zentrale Cloud-Plattform, auf der alle modernen SAP-Dienste basieren.</p>
+        </div>
+
+        <h3>SAP Business Technology Platform (BTP)</h3>
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">🗄️</div><div class="card-title">HANA Cloud</div><div class="card-body">Fully Managed HANA as a Service auf BTP. Skalierbar, kein Infrastrukturmanagement, HANA-native Entwicklung in der Cloud.</div></div>
+          <div class="card"><div class="card-icon">🔗</div><div class="card-title">Integration Suite</div><div class="card-body">Cloud Integration (früher CPI), API Management, Event Mesh, Open Connectors. Verbindet alle SAP und Non-SAP-Systeme.</div></div>
+          <div class="card"><div class="card-icon">🛠️</div><div class="card-title">SAP Build</div><div class="card-body">Low-Code/No-Code Plattform: Build Apps (früher AppGyver), Build Process Automation (RPA), Build Work Zone.</div></div>
+          <div class="card"><div class="card-icon">🤖</div><div class="card-title">AI Core & AI Launchpad</div><div class="card-body">Machine Learning Modelle trainieren, deployen und verwalten. Integration von OpenAI, Vertex AI und eigenen Modellen.</div></div>
+          <div class="card"><div class="card-icon">📊</div><div class="card-title">SAP Analytics Cloud (SAC)</div><div class="card-body">Cloud-BI: Reporting, Planning und Predictive in einer Oberfläche. Direkte HANA Live-Verbindungen möglich.</div></div>
+          <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Kyma Runtime</div><div class="card-body">Kubernetes-basierte Runtime für Container auf BTP. Für komplexe Cloud-native Erweiterungen mit voller Kontrolle.</div></div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: DEVELOPER TOOLS
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-developer">
+        <div class="section-header">
+          <div class="tag">Kapitel 8 · Entwicklung</div>
+          <h2>Developer Tools & Programmiermodelle</h2>
+          <p>SAP bietet eine umfangreiche Toolchain für HANA-native Entwicklung, ABAP Cloud und Full-Stack-Entwicklung auf BTP.</div>
+        </div>
+
+        <h3>Entwicklungsparadigmen</h3>
+        <div class="card-grid">
+          <div class="card"><div class="card-icon">📝</div><div class="card-title">ABAP Cloud</div><div class="card-body">Modernes ABAP auf S/4HANA: Klassen statt Function Modules, CDS Views statt SELECT auf DB-Tabellen, strict mode für sauberen Code.</div></div>
+          <div class="card"><div class="card-icon">☁️</div><div class="card-title">Cloud Application Programming (CAP)</div><div class="card-body">Node.js / Java Framework für BTP. Deklarative CDS-Modelle, automatische OData-Services, integrierte Auth. Der Standard für neue BTP-Apps.</div></div>
+          <div class="card"><div class="card-icon">🎨</div><div class="card-title">SAP Fiori / SAPUI5</div><div class="card-body">Design System und JavaScript-Framework für alle SAP-Oberflächen. Responsive, Accessibility-konform, rollenbasiertes UX-Konzept.</div></div>
+          <div class="card"><div class="card-icon">🔄</div><div class="card-title">SQLScript & Stored Procedures</div><div class="card-body">HANA-spezifisches SQL mit Prozedurkonstrukten. Parallel-Verarbeitung, Set-basierte Logik, direkte PAL-Integration.</div></div>
+        </div>
+
+        <h3>CAP – Beispiel eines einfachen Services</h3>
+        <div class="code-block">
+<span class="cmt">// CAP CDS-Definition: Service automatisch aus Datenmodell</span>
+<span class="kw">using</span> { cuid, managed } <span class="kw">from</span> <span class="str">'@sap/cds/common'</span>;
+
+<span class="kw">entity</span> <span class="fn">Orders</span> : cuid, managed {
+  customer : Association to Customers;
+  items    : Composition of many OrderItems on items.order = $self;
+  status   : <span class="fn">String</span>(20) <span class="kw">enum</span> { open; shipped; closed };
+}
+
+<span class="kw">service</span> <span class="fn">OrderService</span> @(path:<span class="str">'/orders'</span>) {
+  entity Orders <span class="kw">as</span> projection <span class="kw">on</span> <span class="fn">Orders</span>;
+  <span class="cmt">// → Automatisch: GET, POST, PUT, DELETE + OData-Metadaten</span>
+}
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: VERGLEICH HANA vs R3
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-vergleich">
+        <div class="section-header">
+          <div class="tag">Kapitel 9 · Migration</div>
+          <h2>SAP HANA vs. SAP R/3 / ECC</h2>
+          <p>Was hat sich fundamental verändert? Ein direkter Vergleich der beiden Welten – technisch und fachlich.</p>
+        </div>
+
+        <h3>Grundlegende technische Unterschiede</h3>
+        <table class="compare-table">
+          <thead>
+            <tr><th>Thema</th><th class="hana">SAP S/4HANA</th><th class="r3">SAP R/3 / ECC</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Datenbank</td><td>Ausschließlich HANA (In-Memory)</td><td>Oracle, DB2, MSSQL, MaxDB, HANA</td></tr>
+            <tr><td>Datenbankschicht</td><td>Applikationslogik teilweise in DB (Pushdown)</td><td>Applikationslogik komplett in ABAP</td></tr>
+            <tr><td>Datenmodell Finance</td><td>ACDOCA: 1 Tabelle für alle Sichten</td><td>BKPF/BSEG + CO-Tabellen getrennt</td></tr>
+            <tr><td>Datenmodell Logistik</td><td>MATDOC statt MSEG/MKPF</td><td>MSEG, MKPF, MARM, MARA separat</td></tr>
+            <tr><td>Aggregat-Tabellen</td><td>Keine (Echtzeit-Aggregation in HANA)</td><td>FAGLFLEXT, KNC1, LFC1 etc.</td></tr>
+            <tr><td>ABAP-Programmierung</td><td>ABAP Cloud, CDS Views, Code Pushdown</td><td>Klassisches ABAP, Function Modules</td></tr>
+            <tr><td>Benutzeroberfläche</td><td>SAP Fiori (Web/Responsive)</td><td>SAP GUI (Desktop-Client)</td></tr>
+            <tr><td>Reporting</td><td>HANA Live, Embedded Analytics, SAC</td><td>BEx, CO-PA, Drilldown-Reports</td></tr>
+            <tr><td>Planungswerkzeuge</td><td>IBP, Embedded BPC, SAP Analytics Cloud</td><td>CO-PA Planung, BPS, BPC 10.x</td></tr>
+            <tr><td>Erweiterbarkeit</td><td>Side-by-Side auf BTP, In-App-Extensions</td><td>User Exits, BADIs, Enhancement Spots</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Was in HANA entfallen ist (deprecated)</h3>
+        <div class="card-grid card-grid-3">
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ Materialstamm-Cluster</div><div class="card-body">Die MARA/MAKT/MARC/MARD-Cluster-Tabellen wurden durch ein vereinfachtes Modell ersetzt.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ BSEG / BKPF Aggregation</div><div class="card-body">Separate FI-Dokumenttabellen ersetzt durch das Universal Journal ACDOCA.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ Auftragsnummernkreise</div><div class="card-body">Traditionelle CO-Objekte wurden in S/4HANA vereinfacht oder neu strukturiert.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ Klassisches MRP</div><div class="card-body">Ersetzt durch MRP Live – optimiert für HANA Parallelverarbeitung.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ Account-based CO-PA</div><div class="card-body">Costing-based CO-PA wird schrittweise zugunsten Account-based CO-PA in ACDOCA abgelöst.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">❌ Klassisches BW-Reporting</div><div class="card-body">BEx Analyzer und viele BW-Objekte sind deprecated – SAC übernimmt.</div></div>
+        </div>
+
+        <h3>Was in HANA neu hinzugekommen ist</h3>
+        <div class="card-grid card-grid-3">
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ Echtzeit-Analysen</div><div class="card-body">Kein nächtlicher Batch mehr – Berichte auf Live-Daten in Millisekunden.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ Machine Learning nativ</div><div class="card-body">PAL, AutoML, Predictive direkt in der DB – ohne externe Systeme.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ Fiori UX</div><div class="card-body">Rollenbasierte, intuitive Web-Oberflächen statt SAP GUI Transaktionen.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ HANA Graph/Spatial</div><div class="card-body">Netzwerk- und Geodatenanalysen direkt in der Geschäfts-DB.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ Agile Deployments</div><div class="card-body">BTP ermöglicht schnelle Cloud-Extensions ohne Core-Modifikationen.</div></div>
+          <div class="card"><div class="card-title" style="color:var(--green)">✅ Joule (AI Copilot)</div><div class="card-body">Generativer KI-Assistent direkt in S/4HANA und Fiori integriert.</div></div>
+        </div>
+
+        <div class="quiz-box">
+          <h4>🎯 Quick-Check</h4>
+          <p class="quiz-question">Welche Tabelle ersetzt in S/4HANA die getrennten FI-Tabellen BKPF und BSEG sowie CO-Tabellen?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkQuiz(this, false)">FAGLFLEXT</button>
+            <button class="quiz-option" onclick="checkQuiz(this, true)">ACDOCA (Universal Journal)</button>
+            <button class="quiz-option" onclick="checkQuiz(this, false)">MATDOC</button>
+            <button class="quiz-option" onclick="checkQuiz(this, false)">COEP</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! ACDOCA ist das Universal Journal – eine Tabelle für FI, CO, ML, AA und PS-Buchungen. Das vereinfacht das Datenmodell enorm.</div>
+          <div class="quiz-feedback bad">✗ Die Antwort ist ACDOCA – das Universal Journal. FAGLFLEXT war eine Aggregat-Tabelle (deprecated), MATDOC ist für Materialbewegungen.</div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: MIGRATION
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-migration">
+        <div class="section-header">
+          <div class="tag">Kapitel 10 · Migration</div>
+          <h2>Migrationspfade von R/3 zu HANA</h2>
+          <p>Es gibt verschiedene Wege von SAP ECC / R/3 nach S/4HANA – abhängig von Komplexität, Budget und gewünschtem Scope.</p>
+        </div>
+
+        <h3>Die drei Migrationspfade</h3>
+        <div class="card-grid">
+          <div class="card" style="border-left: 3px solid var(--green);">
+            <div class="card-icon">🔄</div>
+            <div class="card-title">Greenfield (Neuimplementierung)</div>
+            <div class="card-body"><strong>Was:</strong> Kompletter Neuaufbau in S/4HANA, keine Datenübernahme aus R/3.<br><br><strong>Vorteile:</strong> Sauberes System, Best Practices, maximale HANA-Nutzung.<br><br><strong>Nachteile:</strong> Hoher Aufwand, historische Daten bleiben im Altsystem.<br><br><strong>Geeignet für:</strong> Organisatorische Veränderung, komplexe Altlasten.</div>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--accent);">
+            <div class="card-icon">🏗️</div>
+            <div class="card-title">Brownfield (System Conversion)</div>
+            <div class="card-body"><strong>Was:</strong> Technische Migration des bestehenden ECC-Systems auf S/4HANA.<br><br><strong>Vorteile:</strong> Historische Daten bleiben erhalten, weniger Projektrisiko.<br><br><strong>Nachteile:</strong> Altlasten (Custom Code, Z-Programme) müssen angepasst werden.<br><br><strong>Geeignet für:</strong> Stabile ECC-Systeme, begrenzte Ressourcen.</div>
+          </div>
+          <div class="card" style="border-left: 3px solid var(--gold);">
+            <div class="card-icon">🌿</div>
+            <div class="card-title">Selective Data Transition</div>
+            <div class="card-body"><strong>Was:</strong> Selektive Übernahme von Unternehmensobjekten – Mix aus Green- und Brownfield.<br><br><strong>Vorteile:</strong> Flexibilität, nur relevante Daten migrieren, neue Strukturen möglich.<br><br><strong>Nachteile:</strong> Komplex in der Planung und Durchführung.<br><br><strong>Geeignet für:</strong> Fusionen, Entflechtungen, selektive Modernisierung.</div>
+          </div>
+        </div>
+
+        <h3>Migrations-Vorgehen (Brownfield Überblick)</h3>
+        <ol class="step-list">
+          <li><strong>Custom Code Analyse:</strong> SAP Readiness Check identifiziert Z-Programme, die angepasst werden müssen. Typisch: 20–40% des Custom Codes betroffen.</li>
+          <li><strong>Simplifizierungsliste prüfen:</strong> SAP liefert eine Liste aller in S/4HANA veränderten oder entfernten Objekte. Jeder Punkt muss bewertet werden.</li>
+          <li><strong>Datenbankkonvertierung:</strong> Lauf des Software Update Managers (SUM) mit dem Data Management & Landscape Transformation (DMLT) Addon.</li>
+          <li><strong>Konvertierung der DB-Tabellen:</strong> Automatische Umwandlung z.B. MSEG → MATDOC, BSEG/BKPF → ACDOCA durch Migrationsprogramme.</li>
+          <li><strong>Funktionale Aktivierung:</strong> S/4HANA-Funktionen aktivieren (Fiori, neue Prozesse), User Exits auf BADIs umstellen.</li>
+          <li><strong>Endbenutzer-Schulung:</strong> SAP Fiori statt SAP GUI – neues UX-Konzept erfordert oft vollständige Neuschulungen.</li>
+        </ol>
+
+        <div class="highlight">
+          <strong>Deadline 2027/2030:</strong> SAP hat den Mainstream-Wartungsend für SAP ECC / ERP 6.0 auf Ende 2027 gesetzt (mit optionaler Extended Maintenance bis 2030). Danach gibt es nur noch Extended Customer Maintenance. Die Migration zu S/4HANA ist für die meisten Unternehmen keine Option mehr, sondern eine Pflicht.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: AUTOMATISIERUNG
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-automatisierung">
+        <div class="section-header">
+          <div class="tag">Kapitel 11 · Praxis</div>
+          <h2>Automatisierungsmöglichkeiten in SAP HANA</h2>
+          <p>HANA und die BTP-Plattform bieten umfangreiche Werkzeuge für Automatisierung – von einfachen Workflows bis zu KI-gestützter Prozessoptimierung.</p>
+        </div>
+
+        <h3>Prozessautomatisierung</h3>
+        <div class="auto-card">
+          <div class="auto-card-title">SAP Build Process Automation (früher iRPA) <span class="pill">RPA + Workflow</span></div>
+          <div class="auto-card-body">Robotic Process Automation kombiniert mit Workflow-Management. Bots können SAP-Transaktionen automatisieren (z.B. Rechnungseingang, Bestellanforderungen). Low-Code-Editor, kein Programmieraufwand für einfache Bots. Integration mit HANA-Events möglich.</div>
+        </div>
+        <div class="auto-card">
+          <div class="auto-card-title">SAP Workflow / BPF <span class="pill">BTP Workflow</span></div>
+          <div class="auto-card-body">Business Process Flows auf BTP definieren Genehmigungsworkflows ohne Programmierung. Trigger durch S/4HANA-Events (z.B. Bestellfreigabe, Kreditlimitüberschreitung). Integration in Fiori My Inbox für Endbenutzer.</div>
+        </div>
+        <div class="auto-card">
+          <div class="auto-card-title">SAP Event Mesh <span class="pill">Event-Driven</span></div>
+          <div class="auto-card-body">Asynchrone, ereignisgesteuerte Kommunikation zwischen Systemen. S/4HANA publiziert Business Events (z.B. "Auftrag erstellt"), die andere Systeme oder Bots abonnieren. Entkopplung und Skalierbarkeit ohne direkte System-zu-System-Aufrufe.</div>
+        </div>
+
+        <h3>Intelligente Automatisierung mit KI</h3>
+        <div class="auto-card">
+          <div class="auto-card-title">SAP Joule – Generativer KI-Assistent <span class="pill">Gen AI</span></div>
+          <div class="auto-card-body">SAPs KI-Copilot, integriert in S/4HANA, SuccessFactors, Ariba. Nutzer stellen Fragen in natürlicher Sprache ("Zeige alle überfälligen Lieferungen"), Joule analysiert HANA-Daten und gibt strukturierte Antworten zurück. Keine SQL-Kenntnisse notwendig.</div>
+        </div>
+        <div class="auto-card">
+          <div class="auto-card-title">Predictive Analytics Library (PAL) <span class="pill">ML in DB</span></div>
+          <div class="auto-card-body">Über 90 ML-Algorithmen direkt in HANA: Demand Forecast, Anomalie-Erkennung, Churn-Prediction. Code läuft in der Datenbank – keine Datenextraktion in externe ML-Systeme. Kann automatisch in Geschäftsprozesse integriert werden (z.B. automatische Bestellauslösung bei Nachfrage-Forecast).</div>
+        </div>
+        <div class="auto-card">
+          <div class="auto-card-title">SAP Document Information Extraction (DOX) <span class="pill">AI Services</span></div>
+          <div class="auto-card-body">KI-basierte Dokumentenextraktion für Rechnungen, Bestellungen, Verträge. Automatische Befüllung von SAP-Feldern aus Scans oder PDFs. Reduziert manuelle Dateneingabe im Rechnungseingang massiv.</div>
+        </div>
+
+        <h3>Technische Automatisierung</h3>
+        <div class="auto-card">
+          <div class="auto-card-title">HANA Smart Data Integration (SDI) <span class="pill">Datenintegration</span></div>
+          <div class="auto-card-body">Automatisierte Datenreplikation und -transformation aus externen Quellen in HANA. Real-Time Replication mit Change Data Capture (CDC) ohne manuelle ETL-Prozesse. Unterstützt SAP- und Non-SAP-Quellen.</div>
+        </div>
+        <div class="auto-card">
+          <div class="auto-card-title">Automated HANA Database Administration <span class="pill">Self-Tuning</span></div>
+          <div class="auto-card-body">HANA optimiert sich selbst: automatische Memory Management, Query-Optimierung durch Adaptive Execution Engine, automatische Table Classification (hot/warm/cold Data Tiering). Der DBA-Aufwand sinkt erheblich im Vergleich zu klassischen Datenbanken.</div>
+        </div>
+
+        <h3>Code Pushdown – Automatisierung auf DB-Ebene</h3>
+        <div class="code-block">
+<span class="cmt">-- ABAP Cloud: Code Pushdown statt ABAP-Loop</span>
+
+<span class="cmt">-- ❌ Klassisches ABAP (R/3-Stil): Daten in App laden, dann verarbeiten</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> vbap <span class="kw">INTO TABLE</span> @lt_items.
+<span class="kw">LOOP AT</span> lt_items <span class="kw">INTO</span> ls_item.
+  ls_item-netwr = ls_item-netwr * 1.19.
+<span class="kw">ENDLOOP</span>.
+
+<span class="cmt">-- ✅ HANA-native (Pushdown): Berechnung in der DB</span>
+<span class="kw">SELECT</span> vbeln, posnr, netwr * 1.19 <span class="kw">AS</span> netwr_brutto
+  <span class="kw">FROM</span> vbap
+  <span class="kw">WHERE</span> erdat >= @lv_date
+  <span class="kw">INTO TABLE</span> @lt_items.
+        </div>
+        <div class="highlight">
+          <strong>Ergebnis:</strong> Beim Pushdown-Ansatz werden keine Millionen Zeilen in den Applikationsserver geladen – die Berechnung erfolgt direkt in HANA mit voll parallelisierter Ausführung.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: VOR- UND NACHTEILE
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-vorteile">
+        <div class="section-header">
+          <div class="tag">Kapitel 12 · Bewertung</div>
+          <h2>Vor- und Nachteile von SAP HANA</h2>
+          <p>Eine ehrliche, praxisnahe Bewertung – sowohl aus technischer als auch aus unternehmerischer Perspektive.</p>
+        </div>
+
+        <h3>Technische Bewertung</h3>
+        <div class="pro-con-grid">
+          <div class="pro-box">
+            <h4>✅ Vorteile (Technisch)</h4>
+            <ul class="pro-con-list">
+              <li>Extrem hohe Abfragegeschwindigkeit durch In-Memory und Column Store</li>
+              <li>OLTP und OLAP auf demselben System – keine Datenkopien notwendig</li>
+              <li>Native ML-Algorithmen (PAL) ohne externe ML-Infrastruktur</li>
+              <li>Automatisches Memory-Management und Self-Tuning</li>
+              <li>Graph- und Geo-Daten nativ unterstützt</li>
+              <li>Horizontale Skalierbarkeit für sehr große Datenmengen</li>
+              <li>Integrierte Volltext-Suche ohne externe Suchmaschine</li>
+              <li>ACID-konforme Transaktionen trotz In-Memory</li>
+              <li>Multi-Model: Relational, Document, Graph, Spatial in einem System</li>
+            </ul>
+          </div>
+          <div class="con-box">
+            <h4>❌ Nachteile (Technisch)</h4>
+            <ul class="pro-con-list">
+              <li>Hohe RAM-Anforderungen – teuer bei großen Datenmengen</li>
+              <li>Komplexe Administration erfordert spezialisiertes Know-how</li>
+              <li>Delta Merge kann kurzzeitig Performance beeinflussen</li>
+              <li>Nicht jede Anwendung profitiert von In-Memory (kleine Transaktionssysteme)</li>
+              <li>Backup und Recovery komplexer als bei traditionellen DBs</li>
+              <li>Proprietäre Technologien (SQLScript, PAL) = Vendor Lock-in</li>
+              <li>Datenpersistenz erfordert sorgfältiges Savepoint-Management</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Geschäftliche Bewertung</h3>
+        <div class="pro-con-grid">
+          <div class="pro-box">
+            <h4>✅ Vorteile (Business)</h4>
+            <ul class="pro-con-list">
+              <li>Echtzeit-Reporting ohne Wartezeit auf Batch-Läufe</li>
+              <li>Schnellere Monats- und Jahresabschlüsse</li>
+              <li>Einheitliches Datenmodell (ACDOCA) reduziert Abstimmungsaufwand</li>
+              <li>Bessere Entscheidungsgrundlage durch Live-Daten</li>
+              <li>Fiori vereinfacht die Benutzerakzeptanz erheblich</li>
+              <li>Joule / KI-Assistenz reduziert Schulungsaufwand</li>
+              <li>Zukunftssicherheit (SAP ECC End of Life 2027/2030)</li>
+              <li>Niedrigere IT-Infrastruktur durch konsolidierte Systeme</li>
+            </ul>
+          </div>
+          <div class="con-box">
+            <h4>❌ Nachteile (Business)</h4>
+            <ul class="pro-con-list">
+              <li>Sehr hohe Lizenz- und Implementierungskosten</li>
+              <li>Lange Migrationsprojekte (12–36 Monate typisch)</li>
+              <li>Starker Vendor Lock-in bei SAP und BTP</li>
+              <li>Fachkräftemangel: HANA-Spezialisten sind rar und teuer</li>
+              <li>Custom Code muss aufwändig angepasst werden</li>
+              <li>Prozessveränderungen (Best Practices) oft gegen Unternehmenskultur</li>
+              <li>Lernkurve für End-User trotz Fiori nicht zu unterschätzen</li>
+              <li>Ongoing-Kosten für Cloud-Betrieb und Updates (Public Cloud)</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Wann lohnt sich SAP HANA – und wann nicht?</h3>
+        <table class="compare-table">
+          <thead>
+            <tr><th>Szenario</th><th class="hana">HANA empfehlenswert</th><th class="r3">Kritisch zu hinterfragen</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Unternehmensgröße</td><td>Mittelstand bis Konzern (>200 User)</td><td>Kleinunternehmen – TCO oft nicht wirtschaftlich</td></tr>
+            <tr><td>Reporting-Anforderungen</td><td>Komplexe Echtzeit-Analysen nötig</td><td>Einfache monatliche Reports reichen aus</td></tr>
+            <tr><td>Datenmenge</td><td>Terabyte-Bereich, schnell wachsend</td><td>Stabile, kleine Datenmenge</td></tr>
+            <tr><td>Internationalisierung</td><td>Multi-Country, Multi-Currency, Legal-Entity</td><td>Einzelland, einfache Compliance</td></tr>
+            <tr><td>Innovationsdruck</td><td>KI, ML, IoT-Integration geplant</td><td>Stabiler Betrieb ohne Innovationsbedarf</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight">
+          <strong>Fazit:</strong> SAP HANA ist ein leistungsfähiges, zukunftssicheres System – aber kein Allheilmittel. Der Nutzen muss gegen die erheblichen Implementierungs- und Betriebskosten abgewogen werden. Für Unternehmen, die bereits SAP ECC nutzen, ist die Migration zu S/4HANA bis 2027/2030 jedoch faktisch obligatorisch.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           SECTION: WISSENSTEST
+      ══════════════════════════════════════════════════ -->
+      <div class="section" id="section-quiz">
+        <div class="section-header">
+          <div class="tag">Abschluss · Wissenstest</div>
+          <h2>Wissenstest: SAP HANA</h2>
+          <p>Teste dein Wissen mit diesen 8 Fragen zu allen Kapiteln. Klicke auf die richtige Antwort.</p>
+        </div>
+
+        <div id="quiz-score-box" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;text-align:center;">
+          <div style="font-size:2rem;font-weight:700;color:var(--accent);" id="final-score">0/8</div>
+          <div style="color:var(--muted);margin-top:8px;">Beantwortet. Starte neu um nochmals zu üben.</div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 1 – Architektur</h4>
+          <p class="quiz-question">Was bedeutet die Abkürzung "HANA" in SAP HANA?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,1)">Highly Automated Network Architecture</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,1)">High-Performance Analytic Appliance</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,1)">Hybrid Advanced Normalization Analytics</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! HANA steht für High-Performance Analytic Appliance.</div>
+          <div class="quiz-feedback bad">✗ HANA = High-Performance Analytic Appliance. Eingeführt 2010 als In-Memory Plattform.</div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 2 – Speicherkonzept</h4>
+          <p class="quiz-question">Welche Speichertechnik nutzt SAP HANA als primäre Datenablage?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,2)">NVMe SSD mit direktem Dateizugriff</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,2)">Verteilte Festplatten-Arrays (RAID)</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,2)">RAM (Arbeitsspeicher) mit persistenter SSD-Sicherung</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Korrekt! Daten liegen primär im RAM für maximale Geschwindigkeit, SSD dient der Persistenz.</div>
+          <div class="quiz-feedback bad">✗ HANA hält alle operativen Daten im RAM (In-Memory). SSD dient nur der Datenpersistenz (Savepoints, Logs).</div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 3 – Module</h4>
+          <p class="quiz-question">Welches Modul ersetzt SAP APO in S/4HANA für die Supply-Chain-Planung?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,3)">SAP EWM</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,3)">SAP IBP (Integrated Business Planning)</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,3)">SAP Ariba</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! SAP IBP (Integrated Business Planning) ist der HANA-native Nachfolger von SAP APO.</div>
+          <div class="quiz-feedback bad">✗ SAP IBP (Integrated Business Planning) löst APO ab. EWM ist Lagerverwaltung, Ariba ist Procurement.</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 4 – S/4HANA vs. R/3</h4>
+          <p class="quiz-question">Was ist das ACDOCA-Konzept in S/4HANA?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,4)">Ein neues Debugger-Tool für ABAP-Programme</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,4)">Ein Automatisierungsrahmen für Monatsabschlüsse</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,4)">Das Universal Journal – eine einzige Tabelle für alle buchhalterischen Sichten (FI, CO, AA, ML)</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! ACDOCA ist das Universal Journal – ersetzt BKPF, BSEG und alle CO-Einzeltabellen durch ein einheitliches Datenmodell.</div>
+          <div class="quiz-feedback bad">✗ ACDOCA ist das Universal Journal in S/4HANA – eine Tabelle statt vieler separater FI/CO-Tabellen. Massiv vereinfachtes Finanz-Datenmodell.</div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 5 – Automatisierung</h4>
+          <p class="quiz-question">Was versteht man unter "Code Pushdown" in SAP HANA?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,5)">Berechnungslogik wird zur Ausführung auf die Datenbankschicht verlagert statt im Applikationsserver</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,5)">ABAP-Code wird automatisch in Python-Code übersetzt</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,5)">Daten werden in den Cloud-Speicher hochgeladen</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! Code Pushdown verlagert Logik in die DB – weniger Datentransfer, maximale Parallelisierung durch HANA.</div>
+          <div class="quiz-feedback bad">✗ Code Pushdown bedeutet: statt Daten in den ABAP-Stack zu laden und dort zu verarbeiten, führt HANA die Logik direkt auf DB-Ebene aus.</div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 6 – Datenmodell</h4>
+          <p class="quiz-question">Welche Migrationsstrategie wählt man, wenn man ein bestehendes ECC-System direkt zu S/4HANA konvertiert?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,6)">Greenfield</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,6)">Brownfield (System Conversion)</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,6)">Bluefield</div>
+          </div>
+          <div class="quiz-feedback ok">✓ Brownfield = technische Systemkonvertierung. Daten bleiben erhalten, das System wird direkt auf S/4HANA "upgegradet".</div>
+          <div class="quiz-feedback bad">✗ Brownfield ist die System Conversion – das bestehende ECC-System wird technisch auf S/4HANA migriert. Greenfield = Neuaufbau.</div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 7 – Vor- und Nachteile</h4>
+          <p class="quiz-question">Was ist ein wesentlicher Nachteil von SAP HANA aus technischer Sicht?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,7)">HANA unterstützt keine SQL-Abfragen</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,7)">Hohe RAM-Anforderungen führen zu erheblichen Hardware-Kosten</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,7)">HANA kann keine Backups erstellen</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! In-Memory bedeutet: alle Daten im RAM → teurer Arbeitsspeicher ist der primäre Kostenfaktor für On-Premise HANA-Systeme.</div>
+          <div class="quiz-feedback bad">✗ Der größte technische Nachteil ist der hohe RAM-Bedarf. Da alle operativen Daten im Arbeitsspeicher gehalten werden, sind die Hardware-Kosten erheblich.</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-box">
+          <h4>🎯 Frage 8 – Cloud & BTP</h4>
+          <p class="quiz-question">Was ist SAP Joule?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,8)">Ein neues Datenbankformat für HANA</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,false,8)">Ein Migrationstool von ECC zu S/4HANA</button>
+            <button class="quiz-option" onclick="checkFinalQuiz(this,true,8)">SAPs generativer KI-Copilot, integriert in S/4HANA und andere SAP-Produkte</button>
+          </div>
+          <div class="quiz-feedback ok">✓ Richtig! Joule ist SAPs KI-Assistent – man stellt Fragen in natürlicher Sprache und bekommt Analysen und Aktionen direkt in SAP zurück.</div>
+          <div class="quiz-feedback bad">✗ Joule ist SAPs generativer KI-Copilot (ähnlich wie Microsoft Copilot), der in S/4HANA, SuccessFactors und Ariba integriert ist.</div>
+        </div>
+
+        <div style="text-align:center;margin-top:32px;">
+          <button onclick="showScore()" style="background:var(--accent2);color:white;border:none;padding:14px 36px;border-radius:var(--radius);font-size:.95rem;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;font-weight:600;">Ergebnis anzeigen →</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let visitedSections = new Set();
+  let quizAnswers = {};
+  let finalQuizAnswers = {};
+
+  const SECTIONS = ['architektur','speicher','datenmodell','module','s4hana','bw','cloud','developer','vergleich','migration','automatisierung','vorteile','quiz'];
+
+  // ── Navigation ─────────────────────────────────────────────────────────────
+  function startLearning(section) {
+    document.getElementById('hero-page').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    showSection(section);
+  }
+
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+
+    const el = document.getElementById('section-' + id);
+    if (el) {
+      el.classList.add('active');
+      visitedSections.add(id);
+      updateProgress();
+    }
+
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'")) {
+        item.classList.add('active');
+      }
+    });
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    window.scrollTo(0, 0);
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // ── Progress ───────────────────────────────────────────────────────────────
+  function updateProgress() {
+    const total = SECTIONS.length;
+    const done = visitedSections.size;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('sections-done').textContent = done;
+  }
+
+  // ── Inline Quizzes ─────────────────────────────────────────────────────────
+  function checkQuiz(btn, isCorrect) {
+    const optionsContainer = btn.parentElement;
+    const feedbacks = btn.closest('.quiz-box').querySelectorAll('.quiz-feedback');
+
+    // Prevent re-answering
+    if (optionsContainer.dataset.answered) return;
+    optionsContainer.dataset.answered = 'true';
+
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    optionsContainer.querySelectorAll('.quiz-option').forEach(b => b.style.cursor = 'default');
+
+    if (isCorrect) {
+      feedbacks[0].classList.add('show');
+    } else {
+      feedbacks[1].classList.add('show');
+      // Also highlight correct
+      optionsContainer.querySelectorAll('.quiz-option').forEach(b => {
+        b._correct && b.classList.add('correct');
+      });
+    }
+  }
+
+  // ── Final Quiz ─────────────────────────────────────────────────────────────
+  function checkFinalQuiz(btn, isCorrect, qNum) {
+    if (finalQuizAnswers[qNum] !== undefined) return;
+    finalQuizAnswers[qNum] = isCorrect;
+
+    const optionsContainer = btn.parentElement;
+    optionsContainer.dataset.answered = 'true';
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    optionsContainer.querySelectorAll('.quiz-option').forEach(b => b.style.cursor = 'default');
+
+    const feedbacks = btn.closest('.quiz-box').querySelectorAll('.quiz-feedback');
+    feedbacks[isCorrect ? 0 : 1].classList.add('show');
+  }
+
+  function showScore() {
+    const correct = Object.values(finalQuizAnswers).filter(v => v).length;
+    const total = 8;
+    const box = document.getElementById('quiz-score-box');
+    const scoreEl = document.getElementById('final-score');
+    scoreEl.textContent = correct + '/' + total;
+
+    if (correct >= 7) scoreEl.style.color = 'var(--green)';
+    else if (correct >= 5) scoreEl.style.color = 'var(--gold)';
+    else scoreEl.style.color = 'var(--red)';
+
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  // Start on architektur if navigated directly
+  if (window.location.hash) {
+    const id = window.location.hash.replace('#','');
+    startLearning(id);
+  }
+</script>
+</body>
+</html>
