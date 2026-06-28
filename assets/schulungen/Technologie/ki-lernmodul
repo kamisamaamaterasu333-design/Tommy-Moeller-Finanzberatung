@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KI verstehen & nutzen | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-50: #EFF6FF;
+    --blue-100: #DBEAFE;
+    --blue-200: #BFDBFE;
+    --blue-400: #60A5FA;
+    --blue-600: #2563EB;
+    --blue-700: #1D4ED8;
+    --blue-800: #1E40AF;
+    --blue-900: #1E3A8A;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-500: #6B7280;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --amber-50: #FFFBEB;
+    --amber-100: #FEF3C7;
+    --amber-600: #D97706;
+    --amber-700: #B45309;
+    --green-50: #F0FDF4;
+    --green-100: #DCFCE7;
+    --green-600: #16A34A;
+    --green-700: #15803D;
+    --purple-50: #FAF5FF;
+    --purple-100: #F3E8FF;
+    --purple-600: #9333EA;
+    --purple-700: #7E22CE;
+    --red-50: #FFF1F2;
+    --red-100: #FFE4E6;
+    --red-600: #DC2626;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-serif: 'Lora', Georgia, serif;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 100%);
+    color: white;
+    padding: 0;
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 56px;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .header-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #60A5FA;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .site-header h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+
+  .site-header p.subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.75);
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-strip {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-inner::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    padding: 14px 18px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--gray-500);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+  }
+
+  .nav-tab:hover { color: var(--blue-700); }
+  .nav-tab.active { color: var(--blue-700); border-bottom-color: var(--blue-600); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+  }
+  .section.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card h2 {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blue-900);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 20px 0 8px;
+  }
+
+  .card p { color: var(--gray-600); margin-bottom: 12px; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* ── INFO BOXES ── */
+  .info-box {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .info-box .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-box.blue { background: var(--blue-50); color: var(--blue-800); border-left: 3px solid var(--blue-400); }
+  .info-box.amber { background: var(--amber-50); color: var(--amber-700); border-left: 3px solid #F59E0B; }
+  .info-box.green { background: var(--green-50); color: var(--green-700); border-left: 3px solid #22C55E; }
+  .info-box.purple { background: var(--purple-50); color: var(--purple-700); border-left: 3px solid #A855F7; }
+
+  /* ── COMPARISON GRID ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    background: white;
+  }
+
+  .compare-card.highlight {
+    border-color: var(--blue-300);
+    background: var(--blue-50);
+  }
+
+  .compare-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .tag.llm { background: var(--blue-100); color: var(--blue-800); }
+  .tag.classic { background: var(--gray-100); color: var(--gray-600); }
+  .tag.hybrid { background: var(--purple-100); color: var(--purple-700); }
+  .tag.good { background: var(--green-100); color: var(--green-700); }
+  .tag.careful { background: var(--amber-100); color: var(--amber-700); }
+
+  .compare-card h4 { font-size: 15px; font-weight: 600; color: var(--gray-900); margin-bottom: 8px; }
+  .compare-card ul { list-style: none; }
+  .compare-card ul li {
+    font-size: 13.5px;
+    color: var(--gray-600);
+    padding: 4px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .compare-card ul li::before { content: '→'; color: var(--blue-500); flex-shrink: 0; font-size: 12px; margin-top: 2px; }
+
+  /* ── PROMPT STRATEGIES ── */
+  .strategy-list { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+
+  .strategy-item {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .strategy-item:hover { border-color: var(--blue-300); }
+  .strategy-item.open { border-color: var(--blue-400); }
+
+  .strategy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    user-select: none;
+  }
+  .strategy-item.open .strategy-header { background: var(--blue-50); }
+
+  .strategy-header-left { display: flex; align-items: center; gap: 14px; }
+  .strategy-num {
+    width: 28px; height: 28px;
+    background: var(--blue-600);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .strategy-item.open .strategy-num { background: var(--blue-700); }
+  .strategy-title { font-size: 14.5px; font-weight: 600; color: var(--gray-800); }
+  .strategy-subtitle { font-size: 12.5px; color: var(--gray-500); }
+  .strategy-chevron { font-size: 18px; color: var(--gray-400); transition: transform 0.2s; }
+  .strategy-item.open .strategy-chevron { transform: rotate(180deg); color: var(--blue-600); }
+
+  .strategy-body {
+    display: none;
+    padding: 0 20px 20px;
+    background: white;
+    border-top: 1px solid var(--gray-100);
+  }
+  .strategy-item.open .strategy-body { display: block; }
+
+  .code-example {
+    background: var(--gray-900);
+    color: #93C5FD;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .code-example .comment { color: #6B7280; }
+  .code-example .label { color: #FCD34D; }
+  .code-example .value { color: #6EE7B7; }
+
+  /* ── TOOLS TABLE ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .tool-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .tool-card:hover { border-color: var(--blue-300); box-shadow: var(--shadow-md); }
+
+  .tool-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .tool-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .tool-icon.blue { background: var(--blue-100); }
+  .tool-icon.green { background: var(--green-100); }
+  .tool-icon.purple { background: var(--purple-100); }
+  .tool-icon.amber { background: var(--amber-100); }
+  .tool-icon.gray { background: var(--gray-100); }
+
+  .tool-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .tool-type { font-size: 11.5px; color: var(--gray-500); }
+  .tool-desc { font-size: 13px; color: var(--gray-600); line-height: 1.5; margin-bottom: 8px; }
+
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .pill.blue { background: var(--blue-50); color: var(--blue-700); }
+  .pill.green { background: var(--green-50); color: var(--green-700); }
+  .pill.amber { background: var(--amber-50); color: var(--amber-700); }
+
+  /* ── DECISION MATRIX ── */
+  .decision-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-top: 16px;
+  }
+  .decision-table th {
+    background: var(--blue-900);
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+  }
+  .decision-table th:first-child { border-radius: 8px 0 0 0; }
+  .decision-table th:last-child { border-radius: 0 8px 0 0; }
+  .decision-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); vertical-align: top; }
+  .decision-table tr:last-child td { border-bottom: none; }
+  .decision-table tr:nth-child(even) td { background: var(--gray-50); }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .badge.yes { background: var(--green-100); color: var(--green-700); }
+  .badge.no { background: var(--red-100); color: var(--red-600); }
+  .badge.maybe { background: var(--amber-100); color: var(--amber-700); }
+
+  /* ── QUIZ ── */
+  .quiz-question {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  .quiz-q { font-size: 15px; font-weight: 600; color: var(--gray-800); margin-bottom: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--gray-700);
+    transition: background 0.12s, border-color 0.12s;
+    text-align: left;
+    font-family: inherit;
+    width: 100%;
+  }
+  .quiz-opt:hover { background: var(--blue-50); border-color: var(--blue-300); color: var(--blue-800); }
+  .quiz-opt.correct { background: var(--green-50); border-color: #22C55E; color: var(--green-700); }
+  .quiz-opt.wrong { background: var(--red-50); border-color: #FCA5A5; color: var(--red-600); }
+  .quiz-feedback { font-size: 13px; margin-top: 10px; padding: 10px 14px; border-radius: 6px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: var(--green-50); color: var(--green-700); }
+  .quiz-feedback.wrong { background: var(--red-50); color: var(--red-600); }
+
+  .quiz-score {
+    background: var(--blue-900);
+    color: white;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    display: none;
+    margin-top: 20px;
+  }
+  .quiz-score h3 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .quiz-score p { color: rgba(255,255,255,0.75); font-size: 14px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-600);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: background 0.12s;
+  }
+  .btn:hover { background: var(--blue-700); }
+  .btn.secondary { background: white; color: var(--blue-700); border: 1.5px solid var(--blue-200); }
+  .btn.secondary:hover { background: var(--blue-50); }
+
+  /* ── PROMPT BUILDER ── */
+  .prompt-builder {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  .prompt-builder label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+  }
+  .prompt-builder select, .prompt-builder textarea {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--gray-900);
+    background: white;
+    margin-bottom: 16px;
+    transition: border-color 0.12s;
+    outline: none;
+  }
+  .prompt-builder select:focus, .prompt-builder textarea:focus { border-color: var(--blue-400); }
+  .prompt-builder textarea { resize: vertical; min-height: 90px; }
+
+  .prompt-output {
+    background: var(--gray-900);
+    color: #D1FAE5;
+    border-radius: 8px;
+    padding: 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 80px;
+    margin-top: 12px;
+  }
+  .prompt-output .placeholder { color: #6B7280; font-style: italic; }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--blue-900);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .section-desc { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; }
+
+  /* ── CHECKLIST ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.5;
+  }
+  .checklist li::before {
+    content: '✓';
+    color: var(--green-600);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .checklist.cross li::before { content: '✗'; color: var(--red-600); }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    background: var(--gray-900);
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    padding: 28px 24px;
+    font-size: 13px;
+  }
+  .site-footer a { color: rgba(255,255,255,0.75); text-decoration: none; }
+  .site-footer a:hover { color: white; }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--blue-600);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">Lernmodul · Künstliche Intelligenz</div>
+    <h1>KI verstehen &amp; strategisch einsetzen</h1>
+    <p class="subtitle">Von den Grundlagen bis zur Praxis: Was KI wirklich ist, wie LLMs funktionieren, welche Tools wann sinnvoll sind und wie du optimale Ergebnisse mit Prompts erzielst.</p>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('llm-vs-ki')">KI mit &amp; ohne LLM</button>
+    <button class="nav-tab" onclick="showSection('tools')">Software &amp; Tools</button>
+    <button class="nav-tab" onclick="showSection('prompting')">Prompt-Strategien</button>
+    <button class="nav-tab" onclick="showSection('anwendung')">Wann was?</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ════════════════════════════════════════
+       SECTION 1: GRUNDLAGEN
+  ════════════════════════════════════════ -->
+  <div id="grundlagen" class="section active">
+    <h2 class="section-title">Was ist Künstliche Intelligenz?</h2>
+    <p class="section-desc">Eine solide Basis: Definitionen, Kategorien und die wichtigsten Konzepte der KI.</p>
+
+    <div class="card">
+      <h2>Definition &amp; Überblick</h2>
+      <p>Künstliche Intelligenz (KI) bezeichnet Computersysteme, die Aufgaben ausführen, die normalerweise menschliche Intelligenz erfordern – wie Problemlösung, Sprachverständnis, Mustererkennung oder Entscheidungsfindung.</p>
+      <div class="info-box blue">
+        <span class="icon">💡</span>
+        <span>KI ist kein einzelnes Verfahren, sondern ein Oberbegriff für viele verschiedene Technologien. Nicht jede KI lernt – und nicht jede lernende KI versteht Sprache.</span>
+      </div>
+      <h3>Die drei KI-Kategorien</h3>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <span class="tag classic">Schwache KI (Narrow AI)</span>
+          <h4>Spezialisierte Systeme</h4>
+          <ul>
+            <li>Löst genau eine definierte Aufgabe</li>
+            <li>Schachcomputer, Bilderkennungs-KI</li>
+            <li>Spam-Filter, Empfehlungsalgorithmen</li>
+            <li>Aktueller Stand der Technik (99% aller KI)</li>
+          </ul>
+        </div>
+        <div class="compare-card highlight">
+          <span class="tag llm">Allgemeine KI (AGI)</span>
+          <h4>Menschenähnliche Intelligenz</h4>
+          <ul>
+            <li>Theoretisches Konzept – noch nicht erreicht</li>
+            <li>Kann beliebige intellektuelle Aufgaben lösen</li>
+            <li>Überträgt Wissen zwischen Domänen</li>
+            <li>Aktives Forschungsziel von OpenAI, Anthropic, Google</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Wie KI „lernt" – die Kernkonzepte</h2>
+      <h3>1. Maschinelles Lernen (ML)</h3>
+      <p>Systeme lernen aus Daten, ohne explizit programmiert zu werden. Je mehr Trainingsdaten, desto besser die Leistung. Beispiele: Betrugserkennung bei Banken, Kreditscoring, Produktempfehlungen.</p>
+
+      <h3>2. Tiefes Lernen (Deep Learning)</h3>
+      <p>Neuronale Netze mit vielen Schichten, die komplexe Muster in großen Datensätzen erkennen. Grundlage für Bild-, Sprach- und Texterkennung. Benötigt enorme Rechenleistung und Datenmengen.</p>
+
+      <h3>3. Reinforcement Learning</h3>
+      <p>Das Modell lernt durch Belohnung und Bestrafung – ähnlich wie ein Tier mit Leckerlis trainiert wird. Eingesetzt bei Spielen (AlphaGo), Robotik und auch beim Training großer Sprachmodelle (RLHF).</p>
+
+      <div class="info-box amber">
+        <span class="icon">⚠️</span>
+        <span><strong>Wichtig für die Praxis:</strong> KI „versteht" nicht im menschlichen Sinne. Sie erkennt statistische Muster in Trainingsdaten. Das erklärt sowohl ihre Stärken als auch ihre Halluzinationen.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Die KI-Wertschöpfungskette</h2>
+      <p>Vom Rohmodell bis zur fertigen Anwendung durchläuft KI typischerweise diese Stufen:</p>
+      <h3>Stufe 1: Foundation Model</h3>
+      <p>Ein riesiges Basismodell, trainiert auf Billionen von Datenpunkten. Beispiele: GPT-4, Claude 3, Gemini. Entwickelt von großen Tech-Unternehmen mit massiven Ressourcen.</p>
+      <h3>Stufe 2: Fine-Tuning / Spezialisierung</h3>
+      <p>Das Basismodell wird für spezifische Aufgaben angepasst – z.B. medizinische Diagnose, Rechtsberatung oder Finanzanalyse. Dabei braucht man deutlich weniger Daten und Rechenleistung.</p>
+      <h3>Stufe 3: Anwendung / Integration</h3>
+      <p>Das spezialisierte Modell wird in Software eingebettet. Hier entstehen die Produkte, die du als Nutzer kennst: ChatGPT, Copilot, Perplexity, Claude.ai.</p>
+      <div class="info-box green">
+        <span class="icon">🎯</span>
+        <span>Als Nutzer oder Controller interessiert dich primär Stufe 3 – aber das Verständnis der Stufen 1 und 2 hilft dir, Grenzen und Kosten von KI-Lösungen realistisch einzuschätzen.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SECTION 2: LLM VS. KLASSISCHE KI
+  ════════════════════════════════════════ -->
+  <div id="llm-vs-ki" class="section">
+    <h2 class="section-title">KI mit LLM vs. klassische KI</h2>
+    <p class="section-desc">Große Sprachmodelle (LLMs) sind eine spezielle Form der KI – mit eigenen Stärken und Grenzen.</p>
+
+    <div class="card">
+      <h2>Was ist ein LLM?</h2>
+      <p>Ein Large Language Model (LLM) ist ein KI-Modell, das auf riesigen Textmengen trainiert wurde und Sprache generiert, versteht und verarbeitet. Bekannte Beispiele: GPT-4 (OpenAI), Claude (Anthropic), Gemini (Google), Llama (Meta).</p>
+      <div class="info-box blue">
+        <span class="icon">🔑</span>
+        <span>LLMs funktionieren durch <strong>Next-Token-Prediction</strong>: Sie sagen statistisch das wahrscheinlichste nächste Wort voraus – iterativ, Token für Token. Daraus entsteht scheinbar "intelligentes" Schreiben und Denken.</span>
+      </div>
+      <h3>Der Transformer-Durchbruch (2017)</h3>
+      <p>Google veröffentlichte 2017 das Paper "Attention is All You Need" – dies revolutionierte die KI. Der Transformer-Mechanismus ermöglicht es, lange Kontexte zu verarbeiten und semantische Beziehungen zwischen Wörtern zu erfassen. Alle modernen LLMs basieren darauf.</p>
+    </div>
+
+    <div class="card">
+      <h2>LLM vs. klassische KI im Vergleich</h2>
+      <div class="compare-grid">
+        <div class="compare-card highlight">
+          <span class="tag llm">LLM-basierte KI</span>
+          <h4>Stärken</h4>
+          <ul>
+            <li>Versteht und generiert natürliche Sprache</li>
+            <li>Flexibel für viele verschiedene Aufgaben</li>
+            <li>Kein domänenspezifisches Training nötig</li>
+            <li>Reasoning / Schlussfolgerungen möglich</li>
+            <li>Kreative und analytische Aufgaben</li>
+            <li>Einfache Integration via API</li>
+          </ul>
+          <h4 style="margin-top:14px">Schwächen</h4>
+          <ul>
+            <li>Halluziniert (erfindet Fakten)</li>
+            <li>Kein aktuelles Wissen (ohne Tools)</li>
+            <li>Nicht deterministisch – variierte Antworten</li>
+            <li>Teuer bei hohem Volumen</li>
+            <li>Datenschutz (externe Server)</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <span class="tag classic">Klassische KI / ML</span>
+          <h4>Stärken</h4>
+          <ul>
+            <li>Präzise und reproduzierbar</li>
+            <li>Sehr effizient bei spezifischen Aufgaben</li>
+            <li>Gut erklärbar und auditierbar</li>
+            <li>Lokal betreibbar (kein Datenschutzrisiko)</li>
+            <li>Günstiger bei großem Volumen</li>
+            <li>Vorhersagbare Performance</li>
+          </ul>
+          <h4 style="margin-top:14px">Schwächen</h4>
+          <ul>
+            <li>Braucht strukturierte, gelabelte Daten</li>
+            <li>Kein Sprachverständnis</li>
+            <li>Unflexibel bei neuen Aufgaben</li>
+            <li>Aufwendiges Training nötig</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Wann LLM – wann klassisches ML?</h2>
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th>Aufgabe</th>
+            <th>LLM sinnvoll?</th>
+            <th>Klassisches ML?</th>
+            <th>Begründung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Betrugserkennung (ja/nein, Millionen Fälle)</td>
+            <td><span class="badge no">Nein</span></td>
+            <td><span class="badge yes">Ja</span></td>
+            <td>Strukturierte Daten, Volumen, Latenz</td>
+          </tr>
+          <tr>
+            <td>Kundensupport-Chatbot</td>
+            <td><span class="badge yes">Ja</span></td>
+            <td><span class="badge no">Nein</span></td>
+            <td>Natürliche Sprache, Flexibilität</td>
+          </tr>
+          <tr>
+            <td>Kreditscoring</td>
+            <td><span class="badge no">Nein</span></td>
+            <td><span class="badge yes">Ja</span></td>
+            <td>Erklärbarkeit (regulatorisch), Reproduzierbarkeit</td>
+          </tr>
+          <tr>
+            <td>Vertragsanalyse/-zusammenfassung</td>
+            <td><span class="badge yes">Ja</span></td>
+            <td><span class="badge no">Nein</span></td>
+            <td>Unstrukturierter Text, Kontext</td>
+          </tr>
+          <tr>
+            <td>Nachfrageprognose (Zeitreihen)</td>
+            <td><span class="badge maybe">Bedingt</span></td>
+            <td><span class="badge yes">Ja</span></td>
+            <td>Numerische Daten, Zeit-Abhängigkeiten</td>
+          </tr>
+          <tr>
+            <td>Report-Generierung aus Daten</td>
+            <td><span class="badge yes">Ja</span></td>
+            <td><span class="badge no">Nein</span></td>
+            <td>Natürlichsprachige Ausgabe gewünscht</td>
+          </tr>
+          <tr>
+            <td>Bild-Klassifikation (Qualitätskontrolle)</td>
+            <td><span class="badge no">Nein</span></td>
+            <td><span class="badge yes">Ja</span></td>
+            <td>Computer Vision, nicht LLM-Domäne</td>
+          </tr>
+          <tr>
+            <td>Code-Review / Dokumentation</td>
+            <td><span class="badge yes">Ja</span></td>
+            <td><span class="badge no">Nein</span></td>
+            <td>Sprachverständnis, Reasoning</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>RAG – das Beste aus beiden Welten</h2>
+      <p>Retrieval-Augmented Generation (RAG) kombiniert LLMs mit einem strukturierten Wissenssystem: Relevante Dokumente werden zur Laufzeit abgerufen und dem LLM als Kontext übergeben.</p>
+      <div class="compare-grid">
+        <div class="compare-card highlight">
+          <span class="tag hybrid">RAG-System</span>
+          <h4>Wie es funktioniert</h4>
+          <ul>
+            <li>Frage wird gestellt</li>
+            <li>Retriever sucht relevante Dokumente</li>
+            <li>Dokumente + Frage gehen an LLM</li>
+            <li>LLM antwortet auf Basis echter Quellen</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <span class="tag good">Vorteile von RAG</span>
+          <h4>Warum es mächtig ist</h4>
+          <ul>
+            <li>Aktuelles Wissen ohne Neutraining</li>
+            <li>Quellen-Transparenz (Zitate möglich)</li>
+            <li>Weniger Halluzinationen</li>
+            <li>Unternehmenswissen integrierbar</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box purple">
+                <span>Im Controlling-Kontext: RAG könnte interne Richtlinien, Kreditrichtlinien oder regulatorische Dokumente abrufbar machen – und ein LLM stellt dann fundierte Fragen dazu, ohne das Modell neu trainieren zu müssen.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SECTION 3: SOFTWARE & TOOLS
+  ════════════════════════════════════════ -->
+  <div id="tools" class="section">
+    <h2 class="section-title">KI-Software &amp; Tool-Übersicht</h2>
+    <p class="section-desc">Welche Tools gibt es, was können sie – und welches passt für welchen Zweck?</p>
+
+    <div class="card">
+      <h2>KI-Assistenten (Chat / Generalist)</h2>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon blue">🤖</div>
+            <div>
+              <div class="tool-name">Claude (Anthropic)</div>
+              <div class="tool-type">LLM-Assistent</div>
+            </div>
+          </div>
+          <p class="tool-desc">Besonders stark bei langen Texten, Analyse, Coding und nuanciertem Reasoning. Fokus auf Sicherheit und Zuverlässigkeit.</p>
+          <div class="pill-row">
+            <span class="pill blue">Texte</span>
+            <span class="pill blue">Analyse</span>
+            <span class="pill green">Code</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon green">💬</div>
+            <div>
+              <div class="tool-name">ChatGPT (OpenAI)</div>
+              <div class="tool-type">LLM-Assistent</div>
+            </div>
+          </div>
+          <p class="tool-desc">Marktführer, riesiges Plugin-Ökosystem, gute Websuche. GPT-4o auch für Bilder und Sprache.</p>
+          <div class="pill-row">
+            <span class="pill blue">Generalist</span>
+            <span class="pill green">Plugins</span>
+            <span class="pill amber">Bilder</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon purple">🔷</div>
+            <div>
+              <div class="tool-name">Gemini (Google)</div>
+              <div class="tool-type">LLM-Assistent</div>
+            </div>
+          </div>
+          <p class="tool-desc">Tief integriert in Google Workspace (Docs, Sheets, Gmail). Stärke bei Echtzeitsuche und multimodalen Aufgaben.</p>
+          <div class="pill-row">
+            <span class="pill blue">Google-Integration</span>
+            <span class="pill green">Suche</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon amber">🔍</div>
+            <div>
+              <div class="tool-name">Perplexity AI</div>
+              <div class="tool-type">KI-Suchmaschine</div>
+            </div>
+          </div>
+          <p class="tool-desc">Kombiniert LLM mit Echtzeit-Websuche und gibt immer Quellen an. Ideal für aktuelle Recherchen.</p>
+          <div class="pill-row">
+            <span class="pill blue">Recherche</span>
+            <span class="pill green">Quellen</span>
+            <span class="pill amber">Aktuell</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Produktivitäts- &amp; Office-KI</h2>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon blue">📊</div>
+            <div>
+              <div class="tool-name">Microsoft Copilot</div>
+              <div class="tool-type">Office-Integration</div>
+            </div>
+          </div>
+          <p class="tool-desc">KI direkt in Word, Excel, PowerPoint, Outlook, Teams. Erstellt Präsentationen, analysiert Tabellen, fasst Meetings zusammen.</p>
+          <div class="pill-row">
+            <span class="pill blue">Office 365</span>
+            <span class="pill green">Excel</span>
+            <span class="pill amber">Teams</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon green">📝</div>
+            <div>
+              <div class="tool-name">Notion AI</div>
+              <div class="tool-type">Wissensmanagement</div>
+            </div>
+          </div>
+          <p class="tool-desc">KI-Features direkt in Notion: Texte schreiben/verbessern, Datenbanken abfragen, Zusammenfassungen erstellen.</p>
+          <div class="pill-row">
+            <span class="pill blue">Dokumente</span>
+            <span class="pill green">Notizen</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon purple">💻</div>
+            <div>
+              <div class="tool-name">GitHub Copilot</div>
+              <div class="tool-type">Code-Assistent</div>
+            </div>
+          </div>
+          <p class="tool-desc">Vervollständigt Code in Echtzeit, erklärt Bugs, schreibt Unit-Tests. Standard-Tool für Entwickler.</p>
+          <div class="pill-row">
+            <span class="pill blue">Code</span>
+            <span class="pill green">Debugging</span>
+            <span class="pill amber">Tests</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon amber">🎨</div>
+            <div>
+              <div class="tool-name">Canva AI / Adobe Firefly</div>
+              <div class="tool-type">Bildgenerierung</div>
+            </div>
+          </div>
+          <p class="tool-desc">KI-Bildgenerierung und Design-Assistenten. Erstellen von Grafiken, Marketing-Material, Präsentationen aus Textbeschreibungen.</p>
+          <div class="pill-row">
+            <span class="pill blue">Bilder</span>
+            <span class="pill amber">Design</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Spezialisierte KI-Tools</h2>
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon blue">📈</div>
+            <div>
+              <div class="tool-name">Power BI Copilot</div>
+              <div class="tool-type">Analytics / BI</div>
+            </div>
+          </div>
+          <p class="tool-desc">KI-Features in Power BI: Auto-Zusammenfassungen, natürlichsprachige Abfragen, DAX-Vorschläge, Anomalieerkennung.</p>
+          <div class="pill-row">
+            <span class="pill blue">BI</span>
+            <span class="pill green">DAX</span>
+            <span class="pill amber">Reports</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon green">🔒</div>
+            <div>
+              <div class="tool-name">Lokale LLMs (Ollama)</div>
+              <div class="tool-type">On-Premise KI</div>
+            </div>
+          </div>
+          <p class="tool-desc">Llama, Mistral & Co. lokal betreiben – kein Datenschutzrisiko, kein Cloud-Zwang. Ideal für sensible Daten.</p>
+          <div class="pill-row">
+            <span class="pill blue">Datenschutz</span>
+            <span class="pill green">Offline</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon purple">⚡</div>
+            <div>
+              <div class="tool-name">Make / Zapier AI</div>
+              <div class="tool-type">Automatisierung</div>
+            </div>
+          </div>
+          <p class="tool-desc">KI-gesteuerte Workflows zwischen verschiedenen Apps. E-Mails klassifizieren, Daten transformieren, Berichte automatisch versenden.</p>
+          <div class="pill-row">
+            <span class="pill blue">Automation</span>
+            <span class="pill amber">Workflows</span>
+          </div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <div class="tool-icon amber">🎙️</div>
+            <div>
+              <div class="tool-name">Whisper / ElevenLabs</div>
+              <div class="tool-type">Audio-KI</div>
+            </div>
+          </div>
+          <p class="tool-desc">Transkription von Meetings, Podcasts, Calls. Text-zu-Sprache für barrierefreie Inhalte oder Erklärvideos.</p>
+          <div class="pill-row">
+            <span class="pill blue">Transkription</span>
+            <span class="pill green">Sprache</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Datenschutz &amp; Compliance im Tool-Einsatz</h2>
+      <div class="info-box amber">
+        <span class="icon">⚠️</span>
+        <span><strong>DSGVO-Hinweis:</strong> Personenbezogene oder vertrauliche Unternehmensdaten dürfen ohne Prüfung und Verträge nicht in externe KI-Tools eingegeben werden. Die meisten LLM-Anbieter nutzen Gratis-Eingaben für Training.</span>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <span class="tag good">Sicher in externe KI</span>
+          <h4>Diese Daten sind OK</h4>
+          <ul>
+            <li>Öffentliche Informationen</li>
+            <li>Anonymisierte Beispieldaten</li>
+            <li>Eigene Texte ohne Kundenbezug</li>
+            <li>Allgemeine Fragen &amp; Recherchen</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <span class="tag careful">Vorsicht / Nicht eingeben</span>
+          <h4>Diese Daten sind kritisch</h4>
+          <ul>
+            <li>Kundendaten mit Namen/Adresse</li>
+            <li>Interne Finanzzahlen des Arbeitgebers</li>
+            <li>Vertragsdetails mit Geschäftspartnern</li>
+            <li>Passwörter, API-Keys, Zugangsdaten</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box green">
+        <span class="icon">✅</span>
+        <span><strong>Lösung für sensible Daten:</strong> Microsoft Copilot für Business (M365) hat einen Unternehmensvertrag und trainiert nicht auf deinen Daten. Lokale LLMs (Ollama) sind die datenschutz-sicherste Option.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SECTION 4: PROMPT-STRATEGIEN
+  ════════════════════════════════════════ -->
+  <div id="prompting" class="section">
+    <h2 class="section-title">Prompt-Strategien &amp; Techniken</h2>
+    <p class="section-desc">Wie du aus LLMs konsistent bessere Ergebnisse holst – von Grundprinzipien bis zu fortgeschrittenen Methoden.</p>
+
+    <div class="card">
+      <h2>Die 5 Grundprinzipien guter Prompts</h2>
+      <div class="compare-grid">
+        <div class="compare-card highlight">
+          <span class="tag good">Gut</span>
+          <ul>
+            <li>Klare Rolle definieren</li>
+            <li>Kontext mitliefern</li>
+            <li>Gewünschtes Format angeben</li>
+            <li>Beispiele geben (Few-Shot)</li>
+            <li>Schrittweise denken lassen</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <span class="tag careful">Häufige Fehler</span>
+          <ul>
+            <li>Zu vage ("Schreib etwas über...")</li>
+            <li>Kein Kontext ("Analysiere das.")</li>
+            <li>Mehrere Aufgaben in einem</li>
+            <li>Kein Feedback auf schlechte Antworten</li>
+            <li>Ergebnis nicht iteriert</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Strategie-Bibliothek</h2>
+      <p style="color:var(--gray-500); font-size:13px; margin-bottom:16px">Klicke auf eine Strategie, um Details und ein Beispiel zu sehen.</p>
+
+      <div class="strategy-list">
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">1</div>
+              <div>
+                <div class="strategy-title">Rollen-Prompting (Persona)</div>
+                <div class="strategy-subtitle">Dem Modell eine Expertenrolle zuweisen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">Du weist dem LLM eine konkrete Rolle zu – dadurch aktivierst du domänenspezifisches Wissen und einen passenden Schreibstil.</p>
+            <div class="code-example"><span class="label">Grundform:</span>
+<span class="value">„Du bist [Rolle] mit [X Jahren] Erfahrung in [Domäne]."</span>
+
+<span class="label">Beispiel Controlling:</span>
+<span class="value">„Du bist ein erfahrener Bank-Controller mit Fokus auf Marktzinsmethode und IRRBB. Erkläre mir den Unterschied zwischen Festzins- und variablen Einlagen aus Sicht des Funds Transfer Pricing."</span></div>
+            <div class="info-box blue" style="margin-top:12px">
+              <span class="icon">💡</span>
+              <span>Kombiniere die Rolle mit dem gewünschten Niveau: "...erkläre so, dass ein Junior-Analyst es versteht" vs. "...geh auf technische Details ein."</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">2</div>
+              <div>
+                <div class="strategy-title">Chain-of-Thought (CoT)</div>
+                <div class="strategy-subtitle">Schritt-für-Schritt-Denken erzwingen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">Durch die Aufforderung, Schritt für Schritt zu denken, verbessert sich die Qualität bei komplexen Analysen und Rechenaufgaben deutlich.</p>
+            <div class="code-example"><span class="label">Trigger-Phrasen:</span>
+<span class="value">„Denke Schritt für Schritt..."
+„Erkläre deinen Gedankengang..."
+„Geh systematisch vor..."
+„Zeige deine Überlegung..."</span>
+
+<span class="label">Beispiel Finanzanalyse:</span>
+<span class="value">„Analysiere diesen Kredit Schritt für Schritt: (1) Ertragslage, (2) Liquidität, (3) Verschuldung, (4) Risikobewertung. Zeige für jeden Schritt die Kennzahlen und deine Einschätzung."</span></div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">3</div>
+              <div>
+                <div class="strategy-title">Few-Shot Prompting</div>
+                <div class="strategy-subtitle">Durch Beispiele das gewünschte Format zeigen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">Statt das gewünschte Format zu beschreiben, zeigst du dem Modell 2–3 Beispiele. Das ist oft effektiver als lange Formatbeschreibungen.</p>
+            <div class="code-example"><span class="label">Struktur:</span>
+<span class="value">Eingabe: [Beispiel 1]
+Ausgabe: [Ergebnis 1]
+
+Eingabe: [Beispiel 2]
+Ausgabe: [Ergebnis 2]
+
+Eingabe: [Deine eigentliche Anfrage]
+Ausgabe:</span>
+
+<span class="label">Anwendung: E-Mail-Klassifikation</span>
+<span class="value">Klassifiziere E-Mails als DRINGEND / NORMAL / INFO:
+
+E-Mail: „System ausgefallen, Login unmöglich" → DRINGEND
+E-Mail: „Meeting morgen verschoben" → NORMAL
+E-Mail: „Newsletter KW 24" → INFO
+
+E-Mail: „Regulatorischer Bericht Abgabe heute 18 Uhr" → ?</span></div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">4</div>
+              <div>
+                <div class="strategy-title">Strukturierte Ausgabe (Format-Forcing)</div>
+                <div class="strategy-subtitle">Tabellen, JSON, Markdown, Listen erzwingen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">Für die Weiterverarbeitung von Antworten (z.B. in Excel, Power BI, Code) brauchst du konsistente Formate. Definiere sie explizit.</p>
+            <div class="code-example"><span class="label">JSON-Output:</span>
+<span class="value">„Analysiere den Text und gib die Ergebnisse als JSON zurück:
+{
+  'hauptthemen': [...],
+  'stimmung': 'positiv/neutral/negativ',
+  'handlungsempfehlungen': [...],
+  'dringlichkeit': 1-5
+}"</span>
+
+<span class="label">Tabellen-Output:</span>
+<span class="value">„Erstelle eine Markdown-Tabelle mit den Spalten:
+| Tool | Kosten/Monat | Stärken | Schwächen | Empfehlung |"</span></div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">5</div>
+              <div>
+                <div class="strategy-title">System-Prompt / Kontext-Framing</div>
+                <div class="strategy-subtitle">Dauerhaften Kontext und Regeln setzen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">In API-Nutzung oder in Tools mit System-Prompt: Du definierst einmalig den Grundkontext, der für alle Anfragen gilt.</p>
+            <div class="code-example"><span class="label">System-Prompt Beispiel (Finanzberatung):</span>
+<span class="value">Du bist ein freundlicher Finanzberater auf tommy-moeller.de.
+Du hilfst Privatpersonen und Unternehmen bei Finanzfragen.
+Regeln:
+- Antworte immer auf Deutsch
+- Gib keine rechtlich bindenden Ratschläge
+- Empfehle immer, einen Berater zu konsultieren
+- Bleibe sachlich und verständlich
+- Nutze maximal 3 Fachbegriffe pro Antwort und erkläre sie</span></div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">6</div>
+              <div>
+                <div class="strategy-title">Iteratives Prompting</div>
+                <div class="strategy-subtitle">Ergebnisse durch Feedback verbessern</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">Ein Prompt auf Anhieb perfekt zu formulieren ist schwer. Besser: Starten, Feedback geben, verfeinern.</p>
+            <div class="code-example"><span class="label">Typischer Workflow:</span>
+<span class="value">1. Erster Entwurf: „Schreibe einen Blogartikel über ETFs."
+
+2. Feedback geben: 
+   „Gut, aber: kürzer, mehr Beispiele, 
+    Risiken stärker betonen, Zielgruppe: 
+    Berufseinsteiger 25-35 Jahre"
+
+3. Weiter verfeinern:
+   „Der Ton ist zu technisch. Schreibe 
+    wie ein guter Freund, der erklärt."
+
+4. Spezifizieren:
+   „Abschnitt 3 ist sehr gut. Schreibe 
+    Abschnitt 1 in demselben Stil."</span></div>
+          </div>
+        </div>
+
+        <div class="strategy-item" onclick="toggleStrategy(this)">
+          <div class="strategy-header">
+            <div class="strategy-header-left">
+              <div class="strategy-num">7</div>
+              <div>
+                <div class="strategy-title">Kritischer Modus (Red-Teaming)</div>
+                <div class="strategy-subtitle">Das Modell seine eigene Antwort hinterfragen lassen</div>
+              </div>
+            </div>
+            <span class="strategy-chevron">▾</span>
+          </div>
+          <div class="strategy-body">
+            <p style="font-size:14px; color:var(--gray-600); margin: 14px 0 8px">LLMs tendieren dazu, bestätigendes Feedback zu geben. Mit gezielten Prompts kannst du sie dazu bringen, ihre eigenen Antworten kritisch zu prüfen.</p>
+            <div class="code-example"><span class="label">Selbst-Kritik erzwingen:</span>
+<span class="value">„Nenne mir 5 Gegenargumente zu deiner 
+ soeben gegebenen Empfehlung."
+
+„Was könntest du übersehen haben?"
+
+„Unter welchen Umständen wäre deine 
+ Empfehlung falsch?"
+
+„Wie würde ein Kritiker dieser Analyse 
+ widersprechen?"</span></div>
+            <div class="info-box amber">
+              <span class="icon">⚠️</span>
+              <span>Besonders wichtig bei Finanz- und Rechtsthemen: Immer eine zweite Meinung einholen und LLM-Aussagen verifizieren.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Interaktiver Prompt-Builder</h2>
+      <p style="color:var(--gray-500); font-size:13px; margin-bottom:20px">Kombiniere Strategien zu einem optimierten Prompt für deine Aufgabe.</p>
+
+      <div class="prompt-builder">
+        <label>Aufgabentyp</label>
+        <select id="pb-task" onchange="buildPrompt()">
+          <option value="">— Wähle einen Aufgabentyp —</option>
+          <option value="analyse">Dokument / Text analysieren</option>
+          <option value="schreiben">Text / Bericht schreiben</option>
+          <option value="entscheidung">Entscheidungshilfe / Vergleich</option>
+          <option value="daten">Daten aufbereiten / transformieren</option>
+          <option value="email">E-Mail formulieren</option>
+          <option value="code">Code schreiben / erklären</option>
+        </select>
+
+        <label>Dein konkretes Thema</label>
+        <textarea id="pb-topic" placeholder="z.B. Monatsbericht für Vorstand, Kreditantrag von Müller GmbH, Python-Skript für CSV-Import..." oninput="buildPrompt()"></textarea>
+
+        <label>Gewünschtes Ausgabeformat</label>
+        <select id="pb-format" onchange="buildPrompt()">
+          <option value="fliesstext">Fließtext</option>
+          <option value="stichpunkte">Stichpunkte / Aufzählung</option>
+          <option value="tabelle">Tabelle (Markdown)</option>
+          <option value="json">JSON-Struktur</option>
+          <option value="email">E-Mail-Format</option>
+        </select>
+
+        <label>Gewünschter Stil / Zielgruppe</label>
+        <select id="pb-style" onchange="buildPrompt()">
+          <option value="professionell">Professionell (Geschäftlich)</option>
+          <option value="einfach">Einfach (Laien-verständlich)</option>
+          <option value="technisch">Technisch (Experten)</option>
+          <option value="knapp">Sehr knapp (max. 5 Sätze)</option>
+        </select>
+
+        <div style="margin-top: 4px; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">Generierter Prompt:</div>
+        <div class="prompt-output" id="pb-output"><span class="placeholder">Wähle Aufgabentyp und gib dein Thema ein...</span></div>
+        <div style="margin-top: 12px; display: flex; gap: 10px;">
+          <button class="btn" onclick="copyPrompt()">Kopieren</button>
+          <button class="btn secondary" onclick="resetBuilder()">Zurücksetzen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SECTION 5: WANN WAS?
+  ════════════════════════════════════════ -->
+  <div id="anwendung" class="section">
+    <h2 class="section-title">Wann ist KI sinnvoll – und wann nicht?</h2>
+    <p class="section-desc">Ein pragmatischer Entscheidungsrahmen für den beruflichen und privaten KI-Einsatz.</p>
+
+    <div class="card">
+      <h2>KI-Einsatz im Controlling &amp; Finanzbereich</h2>
+      <h3>Sehr geeignet für KI</h3>
+      <ul class="checklist">
+        <li>Berichte und Kommentare aus Rohdaten formulieren (Variance Commentary)</li>
+        <li>Excel-Formeln und DAX-Measures entwickeln und erklären</li>
+        <li>Regulatorische Texte zusammenfassen (EBA-Guidelines, IRRBB etc.)</li>
+        <li>Präsentationen und Vorstandsberichte strukturieren</li>
+        <li>Erste Entwürfe für interne Kommunikation</li>
+        <li>Recherche zu Methoden (Marktzinsmethode, Transferpreisgestaltung)</li>
+        <li>Fehler in Formeln oder Code finden</li>
+        <li>Prozesse und Entscheidungsbäume dokumentieren</li>
+      </ul>
+
+      <h3>Vorsicht / Nicht geeignet</h3>
+      <ul class="checklist cross" style="margin-top:8px">
+        <li>Endgültige Kreditentscheidungen (fehlende Auditierbarkeit)</li>
+        <li>Regulatorische Berichte ohne manuelle Prüfung</li>
+        <li>Präzise Zahlenberechnungen (LLMs rechnen schlecht!)</li>
+        <li>Kundendaten eingeben ohne DSGVO-Prüfung</li>
+        <li>Vertragsdetails des Arbeitgebers extern teilen</li>
+      </ul>
+      <div class="info-box amber">
+        <span class="icon">🔢</span>
+        <span><strong>Wichtig:</strong> LLMs sind keine Taschenrechner. Sie können bei komplexen Berechnungen Fehler machen. Nutze für Berechnungen Excel, Python oder Power BI – LLMs können dir dabei helfen, aber nicht selbst rechnen.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Der KI-Nutzen-Entscheidungsbaum</h2>
+      <div class="info-box blue">
+        <span class="icon">🌳</span>
+        <span>Stelle dir diese Fragen der Reihe nach, bevor du KI einsetzt:</span>
+      </div>
+      <div style="margin-top:16px">
+        <h3>1. Ist die Aufgabe sprachbasiert oder analytisch-interpretativ?</h3>
+        <p>→ Ja: KI kann wahrscheinlich helfen. Nein (reine Berechnung, strukturierte DB-Abfrage): Andere Tools nutzen.</p>
+
+        <h3>2. Gibt es sensible Daten?</h3>
+        <p>→ Ja: Lokale LLMs oder unternehmenseigene Instanz nutzen (Copilot M365). Nein: Externe Tools möglich.</p>
+
+        <h3>3. Muss das Ergebnis verifizierbar / reproduzierbar sein?</h3>
+        <p>→ Ja: Klassisches ML oder regelbasierte Systeme bevorzugen, LLM nur zur Unterstützung. Nein: LLM geeignet.</p>
+
+        <h3>4. Ist Expertenprüfung des Outputs möglich?</h3>
+        <p>→ Ja: LLM als Entwurfshilfe sinnvoll – du prüfst das Ergebnis. Nein: Vorsicht, nicht für kritische Entscheidungen nutzen.</p>
+
+        <h3>5. Wie hoch ist das Volumen?</h3>
+        <p>→ Hoch (tausende Anfragen täglich): Kostenoptimierung nötig, ggf. spezialisiertes ML-Modell. Niedrig: LLM-API gut geeignet.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>KI-Reifegradmodell – wo stehst du?</h2>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+        <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; display: flex; gap: 14px; align-items: flex-start;">
+          <div style="min-width: 32px; height: 32px; background: var(--gray-100); color: var(--gray-600); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0;">1</div>
+          <div>
+            <div style="font-weight:600; font-size:14px; color:var(--gray-800)">Bewusstsein</div>
+            <div style="font-size:13px; color:var(--gray-600); margin-top:4px">Du weißt, dass KI existiert. Du liest darüber, probierst erste Tools aus (ChatGPT, Claude).</div>
+          </div>
+        </div>
+        <div style="border: 1.5px solid var(--blue-300); border-radius: 8px; padding: 16px; display: flex; gap: 14px; align-items: flex-start; background: var(--blue-50);">
+          <div style="min-width: 32px; height: 32px; background: var(--blue-600); color: white; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0;">2</div>
+          <div>
+            <div style="font-weight:600; font-size:14px; color:var(--blue-800)">Exploration ← Du bist hier</div>
+            <div style="font-size:13px; color:var(--blue-700); margin-top:4px">Du nutzt KI regelmäßig, lernst Prompting-Strategien, erkennst Stärken und Grenzen. Dieses Lernmodul hilft dir hier.</div>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; display: flex; gap: 14px; align-items: flex-start;">
+          <div style="min-width: 32px; height: 32px; background: var(--gray-100); color: var(--gray-600); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0;">3</div>
+          <div>
+            <div style="font-weight:600; font-size:14px; color:var(--gray-800)">Integration</div>
+            <div style="font-size:13px; color:var(--gray-600); margin-top:4px">KI ist Teil deiner täglichen Workflows. Du hast eigene Prompts, integrierst APIs, automatisierst Routinen.</div>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; display: flex; gap: 14px; align-items: flex-start;">
+          <div style="min-width: 32px; height: 32px; background: var(--gray-100); color: var(--gray-600); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0;">4</div>
+          <div>
+            <div style="font-weight:600; font-size:14px; color:var(--gray-800)">Orchestrierung</div>
+            <div style="font-size:13px; color:var(--gray-600); margin-top:4px">Du baust eigene KI-gestützte Anwendungen und Produkte. KI ist Teil deines Geschäftsmodells (z.B. Finanzberatungsplattform mit KI).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Konkrete Ideen für deinen Alltag</h2>
+      <h3>Als Controller bei SKP</h3>
+      <ul class="checklist">
+        <li>Variance Commentary schreiben lassen (Abweichungsanalysen formulieren)</li>
+        <li>Regulatorische Anforderungen (LCR, NSFR, IRRBB) erklären und zusammenfassen</li>
+        <li>DAX-Measures und Power Query-Schritte per Prompt entwickeln</li>
+        <li>Meeting-Protokolle und Entscheidungsdokumente strukturieren</li>
+        <li>Schnelle Recherche zu Markt- und Branchenthemen</li>
+      </ul>
+      <h3>Als Finanzberater (tommy-moeller.de)</h3>
+      <ul class="checklist" style="margin-top:8px">
+        <li>Blogartikel und FAQ-Inhalte zu Finanzthemen erstellen</li>
+        <li>Kundensupport-Texte und E-Mail-Vorlagen optimieren</li>
+        <li>Lernmodule und Quiz-Fragen generieren</li>
+        <li>Komplexe Finanzprodukte in einfacher Sprache erklären</li>
+        <li>Code für Supabase, HTML und JavaScript verbessern</li>
+      </ul>
+      <h3>Als Vermieter</h3>
+      <ul class="checklist" style="margin-top:8px">
+        <li>Mietverträge und Übergabeprotokolle formulieren</li>
+        <li>Mietrechtliche Fragen recherchieren (immer anwaltlich prüfen lassen!)</li>
+        <li>Nebenkostenabrechnungen erklären und prüfen lassen</li>
+        <li>Korrespondenz mit Mietern professionell formulieren</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SECTION 6: QUIZ
+  ════════════════════════════════════════ -->
+  <div id="quiz" class="section">
+    <h2 class="section-title">Wissenscheck</h2>
+    <p class="section-desc">Teste dein Verständnis – 8 Fragen zu den wichtigsten Konzepten.</p>
+
+    <div id="quiz-container">
+      <!-- Frage 1 -->
+      <div class="quiz-question" id="q1">
+        <div class="quiz-q">1. Was unterscheidet ein LLM grundlegend von klassischem Machine Learning?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">LLMs können nur Text generieren, ML kann auch rechnen</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q1')">LLMs verarbeiten natürliche Sprache flexibel ohne aufgabenspezifisches Training</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">LLMs sind schneller und günstiger als ML-Modelle</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Es gibt keinen Unterschied, LLM ist nur ein anderer Name</button>
+        </div>
+        <div class="quiz-feedback" id="fb1">LLMs können flexible Sprachaufgaben lösen, ohne für jede einzelne Aufgabe neu trainiert zu werden. Klassische ML-Modelle brauchen domänenspezifische Daten und sind auf eine Aufgabe spezialisiert.</div>
+      </div>
+
+      <!-- Frage 2 -->
+      <div class="quiz-question" id="q2">
+        <div class="quiz-q">2. Du willst täglich 100.000 Kreditanträge automatisch klassifizieren. Welche KI-Lösung ist am besten geeignet?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">ChatGPT API – weil es das bekannteste Modell ist</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Claude – wegen der langen Kontextfenster</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q2')">Spezialisiertes ML-Modell – wegen Kosten, Latenz und Reproduzierbarkeit</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Google Gemini – wegen der Google-Integration</button>
+        </div>
+        <div class="quiz-feedback" id="fb2">Bei hohem Volumen, strukturierten Daten und Reproduzierbarkeitsanforderungen (regulatorisch!) sind spezialisierte ML-Modelle effizienter und kostengünstiger als LLMs. LLMs wären hier zu teuer und zu langsam.</div>
+      </div>
+
+      <!-- Frage 3 -->
+      <div class="quiz-question" id="q3">
+        <div class="quiz-q">3. Was ist "Halluzination" bei einem LLM?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Wenn das Modell zu kreative Antworten gibt</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Ein Fehler der Server-Infrastruktur</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q3')">Das Modell erfindet Fakten, die plausibel klingen aber falsch sind</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Wenn das Modell keine Antwort liefert</button>
+        </div>
+        <div class="quiz-feedback" id="fb3">LLMs generieren statistisch wahrscheinliche Tokens – manchmal führt das zu überzeugend klingenden, aber faktisch falschen Aussagen. Daher ist Verifikation bei kritischen Informationen immer notwendig.</div>
+      </div>
+
+      <!-- Frage 4 -->
+      <div class="quiz-question" id="q4">
+        <div class="quiz-q">4. Welche Prompt-Strategie erzwingt, dass das Modell seinen Denkprozess offenlegt?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Few-Shot Prompting</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q4')">Chain-of-Thought (CoT)</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Format-Forcing</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Rollen-Prompting</button>
+        </div>
+        <div class="quiz-feedback" id="fb4">Chain-of-Thought-Prompting fordert das Modell auf, "Schritt für Schritt" zu denken. Das verbessert die Qualität bei komplexen Analysen erheblich, weil Zwischenschritte sichtbar werden.</div>
+      </div>
+
+      <!-- Frage 5 -->
+      <div class="quiz-question" id="q5">
+        <div class="quiz-q">5. Was ist RAG (Retrieval-Augmented Generation)?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ein neues LLM-Modell von Google</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q5')">LLM + externe Wissensbasis: Dokumente werden abgerufen und als Kontext übergeben</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Eine Methode zum Trainieren von Modellen mit weniger Daten</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ein Prompt-Format für strukturierte Ausgaben</button>
+        </div>
+        <div class="quiz-feedback" id="fb5">RAG kombiniert Retrieval (Abrufen relevanter Dokumente) mit Generation (LLM antwortet darauf). So bekommt das LLM aktuelles und spezifisches Wissen, ohne neu trainiert zu werden – und halluziniert weniger.</div>
+      </div>
+
+      <!-- Frage 6 -->
+      <div class="quiz-question" id="q6">
+        <div class="quiz-q">6. Welche Daten darfst du NICHT in externe KI-Tools wie ChatGPT eingeben?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Allgemeine Fragen zu Finanzkonzepten</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Eigene Textentwürfe ohne Kundenbezug</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q6')">Vertrauliche Kundendaten und interne Unternehmenszahlen</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Öffentliche Gesetzestexte zur Erklärung</button>
+        </div>
+        <div class="quiz-feedback" id="fb6">Personenbezogene Daten und Geschäftsgeheimnisse dürfen ohne DSGVO-konforme Auftragsverarbeitungsverträge nicht in externe KI-Tools. Die meisten Gratis-Dienste nutzen Eingaben für Training.</div>
+      </div>
+
+      <!-- Frage 7 -->
+      <div class="quiz-question" id="q7">
+        <div class="quiz-q">7. Für was ist ein LLM als Werkzeug NICHT gut geeignet?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Texte zusammenfassen</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Code erklären</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q7')">Präzise Finanzberechnungen durchführen</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q7')">E-Mails formulieren</button>
+        </div>
+        <div class="quiz-feedback" id="fb7">LLMs sind Sprachmodelle – sie sind nicht für Berechnungen konzipiert und machen dabei Fehler. Für Berechnungen nutze Excel, Python oder Power BI. LLMs können dir beim Aufsetzen dieser Tools helfen, aber nicht selbst rechnen.</div>
+      </div>
+
+      <!-- Frage 8 -->
+      <div class="quiz-question" id="q8">
+        <div class="quiz-q">8. Welcher Ansatz verbessert die Qualität von KI-Antworten am stärksten?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Das teuerste Modell nutzen</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Sehr lange Prompts schreiben</button>
+          <button class="quiz-opt" onclick="answer(this,'correct','q8')">Iteratives Prompting mit gezieltem Feedback auf den Entwurf</button>
+          <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Immer denselben Prompt verwenden</button>
+        </div>
+        <div class="quiz-feedback" id="fb8">Iteratives Prompting – also Starten, Feedback geben, verfeinern – ist der effektivste Weg. Ein Prompt perfekt beim ersten Mal zu formulieren ist schwer. Durch gezielte Rückmeldungen kannst du das Ergebnis deutlich verbessern.</div>
+      </div>
+
+      <div style="margin-top: 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+        <button class="btn secondary" onclick="resetQuiz()">Quiz zurücksetzen</button>
+      </div>
+
+      <div class="quiz-score" id="quiz-score">
+        <h3 id="score-text">0 von 8 richtig</h3>
+        <p id="score-msg"></p>
+        <div style="margin-top: 16px;">
+          <div class="progress-bar" style="height:8px; background: rgba(255,255,255,0.2);">
+            <div class="progress-fill" id="score-bar" style="background: #60A5FA;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top: 6px; font-size: 12px;">Dieses Lernmodul dient der allgemeinen Weiterbildung. Keine Finanz- oder Rechtsberatung.</p>
+</footer>
+
+<script>
+  /* ── Navigation ── */
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── Accordion ── */
+  function toggleStrategy(el) {
+    const wasOpen = el.classList.contains('open');
+    document.querySelectorAll('.strategy-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) el.classList.add('open');
+  }
+
+  /* ── Quiz ── */
+  let quizAnswers = {};
+
+  function answer(btn, type, qId) {
+    const qEl = document.getElementById(qId);
+    if (qEl.dataset.answered) return;
+    qEl.dataset.answered = '1';
+
+    const opts = qEl.querySelectorAll('.quiz-opt');
+    opts.forEach(o => { o.disabled = true; o.style.cursor = 'default'; });
+    btn.classList.add(type);
+
+    const fb = document.getElementById('fb' + qId.replace('q',''));
+    fb.classList.add('show', type);
+
+    quizAnswers[qId] = type === 'correct';
+  }
+
+  function showScore() {
+    const total = 8;
+    const correct = Object.values(quizAnswers).filter(Boolean).length;
+    const pct = Math.round((correct / total) * 100);
+
+    document.getElementById('score-text').textContent = correct + ' von ' + total + ' richtig (' + pct + '%)';
+
+    let msg = '';
+    if (pct >= 88) msg = 'Ausgezeichnet! Du hast die Konzepte sehr gut verstanden.';
+    else if (pct >= 62) msg = 'Solide Kenntnisse! Lies die Abschnitte zu deinen Fehlerquellen nochmals.';
+    else msg = 'Noch Luft nach oben – geh die Grundlagen und LLM-Abschnitte nochmal durch.';
+
+    document.getElementById('score-msg').textContent = msg;
+    document.getElementById('score-bar').style.width = pct + '%';
+
+    const scoreEl = document.getElementById('quiz-score');
+    scoreEl.style.display = 'block';
+    scoreEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function resetQuiz() {
+    quizAnswers = {};
+    document.querySelectorAll('.quiz-question').forEach(q => {
+      delete q.dataset.answered;
+    });
+    document.querySelectorAll('.quiz-opt').forEach(b => {
+      b.disabled = false;
+      b.style.cursor = 'pointer';
+      b.classList.remove('correct', 'wrong');
+    });
+    document.querySelectorAll('.quiz-feedback').forEach(f => {
+      f.classList.remove('show', 'correct', 'wrong');
+    });
+    document.getElementById('quiz-score').style.display = 'none';
+  }
+
+  /* ── Prompt Builder ── */
+  const taskTemplates = {
+    analyse: {
+      role: 'Du bist ein erfahrener Analyst mit Expertise im Bereich [THEMA].',
+      chain: 'Analysiere Schritt für Schritt: (1) Zusammenfassung, (2) Kernaussagen, (3) Risiken/Chancen, (4) Empfehlung.',
+    },
+    schreiben: {
+      role: 'Du bist ein professioneller Autor mit Erfahrung in Finanz- und Geschäftstexten.',
+      chain: 'Strukturiere deinen Text mit: Einleitung, Hauptteil (3 Punkte), Fazit.',
+    },
+    entscheidung: {
+      role: 'Du bist ein objektiver Berater ohne Interessenkonflikte.',
+      chain: 'Vergleiche systematisch: Kriterien definieren → Optionen bewerten → Empfehlung geben → Risiken nennen.',
+    },
+    daten: {
+      role: 'Du bist ein Data Engineer mit Kenntnissen in Excel, Python und SQL.',
+      chain: 'Gehe vor: Datenstruktur verstehen → Transformationslogik → Code/Formel → Erklärung.',
+    },
+    email: {
+      role: 'Du bist ein erfahrener Kommunikationsprofi für geschäftliche Korrespondenz.',
+      chain: 'Schreibe: Betreff → professionelle Anrede → Kernbotschaft → Handlungsaufruf → freundlicher Abschluss.',
+    },
+    code: {
+      role: 'Du bist ein Senior-Entwickler mit Fokus auf sauberen, kommentierten Code.',
+      chain: 'Vorgehen: Anforderung verstehen → Lösungsansatz nennen → Code schreiben → Erklärung → Testfälle.',
+    },
+  };
+
+  const formatMap = {
+    fliesstext: 'Antworte in klar strukturiertem Fließtext mit Absätzen.',
+    stichpunkte: 'Nutze Stichpunkte und Aufzählungen für maximale Übersichtlichkeit.',
+    tabelle: 'Erstelle eine Markdown-Tabelle als Ausgabe.',
+    json: 'Antworte ausschließlich mit einem validen JSON-Objekt, ohne weitere Erklärung.',
+    email: 'Schreibe im E-Mail-Format mit Betreff, Anrede, Text und Grußformel.',
+  };
+
+  const styleMap = {
+    professionell: 'Ton: professionell und sachlich, geeignet für Geschäftskommunikation.',
+    einfach: 'Ton: einfach und verständlich, ohne Fachjargon – auch Laien sollen es verstehen.',
+    technisch: 'Ton: technisch präzise, für Experten – Fachbegriffe sind willkommen.',
+    knapp: 'Ton: äußerst knapp – maximal 5 Sätze, kein Fülltext.',
+  };
+
+  function buildPrompt() {
+    const task = document.getElementById('pb-task').value;
+    const topic = document.getElementById('pb-topic').value.trim();
+    const format = document.getElementById('pb-format').value;
+    const style = document.getElementById('pb-style').value;
+    const out = document.getElementById('pb-output');
+
+    if (!task || !topic) {
+      out.innerHTML = '<span class="placeholder">Wähle Aufgabentyp und gib dein Thema ein...</span>';
+      return;
+    }
+
+    const tmpl = taskTemplates[task];
+    const topicFilled = tmpl.role.replace('[THEMA]', topic);
+
+    const prompt = topicFilled + '\n\n' +
+      'Thema/Aufgabe: ' + topic + '\n\n' +
+      tmpl.chain + '\n\n' +
+      formatMap[format] + '\n' +
+      styleMap[style];
+
+    out.textContent = prompt;
+  }
+
+  function copyPrompt() {
+    const text = document.getElementById('pb-output').textContent;
+    if (text.includes('Wähle')) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.currentTarget;
+      const orig = btn.textContent;
+      btn.textContent = '✓ Kopiert';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+  }
+
+  function resetBuilder() {
+    document.getElementById('pb-task').value = '';
+    document.getElementById('pb-topic').value = '';
+    document.getElementById('pb-format').value = 'fliesstext';
+    document.getElementById('pb-style').value = 'professionell';
+    document.getElementById('pb-output').innerHTML = '<span class="placeholder">Wähle Aufgabentyp und gib dein Thema ein...</span>';
+  }
+</script>
+</body>
+</html>
