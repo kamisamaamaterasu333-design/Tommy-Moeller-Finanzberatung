@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python für Controller | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-300:#93C5FD;--blue-400:#60A5FA;
+    --blue-600:#2563EB;--blue-700:#1D4ED8;--blue-800:#1E40AF;--blue-900:#1E3A8A;
+    --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+    --gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-900:#111827;
+    --amber-50:#FFFBEB;--amber-100:#FEF3C7;--amber-600:#D97706;--amber-700:#B45309;
+    --green-50:#F0FDF4;--green-100:#DCFCE7;--green-600:#16A34A;--green-700:#15803D;
+    --purple-50:#FAF5FF;--purple-100:#F3E8FF;--purple-600:#9333EA;--purple-700:#7E22CE;
+    --red-50:#FFF1F2;--red-100:#FFE4E6;--red-600:#DC2626;
+    --yellow-50:#FEFCE8;--yellow-700:#A16207;
+    --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+  .site-header{background:linear-gradient(135deg,#1A1A2E 0%,#16213E 50%,#0F3460 100%);color:white;padding:0;}
+  .header-inner{max-width:900px;margin:0 auto;padding:48px 24px 56px;}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);}
+  .header-badge::before{content:'';width:6px;height:6px;background:#FBBF24;border-radius:50%;display:inline-block;}
+  .site-header h1{font-family:var(--font-serif);font-size:clamp(28px,5vw,40px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+  .site-header p.subtitle{font-size:16px;color:rgba(255,255,255,.75);max-width:600px;line-height:1.6;}
+  .nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .nav-inner{max-width:900px;margin:0 auto;padding:0 24px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+  .nav-inner::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:14px 18px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+  .nav-tab:hover{color:var(--blue-700);}.nav-tab.active{color:var(--blue-700);border-bottom-color:var(--blue-600);}
+  main{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section{display:none;}.section.active{display:block;}
+  .card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:28px 32px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h2{font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--blue-900);margin-bottom:12px;line-height:1.3;}
+  .card h3{font-size:15px;font-weight:600;color:var(--gray-700);margin:20px 0 8px;}
+  .card h3:first-of-type{margin-top:10px;}
+  .card p{color:var(--gray-600);margin-bottom:12px;}
+  .card p:last-child{margin-bottom:0;}
+  .section-title{font-family:var(--font-serif);font-size:24px;font-weight:600;color:var(--blue-900);margin-bottom:6px;}
+  .section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+  .info-box{border-radius:8px;padding:14px 18px;margin:14px 0;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.6;}
+  .info-box .icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .info-box.blue{background:var(--blue-50);color:var(--blue-800);border-left:3px solid var(--blue-400);}
+  .info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid #F59E0B;}
+  .info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #22C55E;}
+  .info-box.yellow{background:var(--yellow-50);color:var(--yellow-700);border-left:3px solid #EAB308;}
+  .info-box.purple{background:var(--purple-50);color:var(--purple-700);border-left:3px solid #A855F7;}
+
+  /* Python code blocks */
+  .py-block{background:#0D1117;border-radius:10px;overflow:hidden;margin:14px 0;}
+  .py-header{background:#161B22;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .py-lang{font-size:11px;font-weight:600;color:#8B949E;text-transform:uppercase;letter-spacing:.06em;}
+  .py-copy{background:none;border:1px solid #30363D;color:#8B949E;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:inherit;}
+  .py-copy:hover{background:#21262D;color:white;}
+  .py-body{padding:18px;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;color:#C9D1D9;white-space:pre;overflow-x:auto;}
+  .kw{color:#FF7B72;}       /* red – keywords */
+  .fn{color:#D2A8FF;}       /* purple – functions */
+  .str{color:#A5D6FF;}      /* blue – strings */
+  .cm{color:#8B949E;font-style:italic;}  /* gray – comments */
+  .num{color:#79C0FF;}      /* light blue – numbers */
+  .op{color:#FFA657;}       /* orange – operators */
+  .cls{color:#FFA657;font-weight:600;}   /* class names */
+
+  /* Concept grid */
+  .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:14px 0;}
+  .concept-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;border-top:3px solid var(--blue-400);}
+  .concept-card.yellow{border-top-color:#EAB308;}
+  .concept-card.green{border-top-color:#22C55E;}
+  .concept-card.purple{border-top-color:#A855F7;}
+  .concept-card.red{border-top-color:#EF4444;}
+  .concept-card h4{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:6px;}
+  .concept-card p{font-size:13px;color:var(--gray-600);line-height:1.5;margin:0;}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+  @media(max-width:600px){.compare-grid,.concept-grid{grid-template-columns:1fr;}}
+  .compare-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px 20px;background:white;}
+  .compare-card h4{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:8px;}
+  .compare-card ul{list-style:none;}
+  .compare-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;}
+  .compare-card ul li::before{content:'→';color:var(--blue-400);flex-shrink:0;font-size:12px;margin-top:2px;}
+
+  .checklist{list-style:none;}
+  .checklist li{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:14px;color:var(--gray-700);line-height:1.5;}
+  .checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+
+  .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;margin-bottom:8px;}
+  .tag.blue{background:var(--blue-100);color:var(--blue-800);}
+  .tag.green{background:var(--green-100);color:var(--green-700);}
+  .tag.amber{background:var(--amber-100);color:var(--amber-700);}
+  .tag.purple{background:var(--purple-100);color:var(--purple-700);}
+
+  /* Interactive mini interpreter */
+  .mini-repl{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin-bottom:20px;}
+  .mini-repl label{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:8px;}
+  .mini-repl select{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;margin-bottom:14px;outline:none;transition:border-color .12s;}
+  .mini-repl select:focus{border-color:var(--blue-400);}
+  .snippet-display{background:#0D1117;border-radius:10px;padding:18px;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;color:#C9D1D9;white-space:pre;min-height:60px;margin-bottom:14px;overflow-x:auto;}
+  .output-display{background:var(--gray-900);border-radius:8px;padding:14px;font-family:'Courier New',monospace;font-size:13px;color:#6EE7B7;min-height:40px;white-space:pre-wrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--blue-600);color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+  .btn:hover{background:var(--blue-700);}
+  .btn.secondary{background:white;color:var(--blue-700);border:1.5px solid var(--blue-200);}
+  .btn.secondary:hover{background:var(--blue-50);}
+
+  /* Quiz */
+  .quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:24px 28px;margin-bottom:16px;}
+  .quiz-q{font-size:15px;font-weight:600;color:var(--gray-800);margin-bottom:16px;}
+  .quiz-options{display:flex;flex-direction:column;gap:10px;}
+  .quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 16px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+  .quiz-opt:hover{background:var(--blue-50);border-color:var(--blue-300);color:var(--blue-800);}
+  .quiz-opt.correct{background:var(--green-50);border-color:#22C55E;color:var(--green-700);}
+  .quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+  .quiz-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:6px;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+  .quiz-feedback.wrong{background:var(--red-50);color:var(--red-600);}
+  .quiz-score{background:var(--blue-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:20px;}
+  .quiz-score h3{font-size:22px;font-weight:600;margin-bottom:4px;}
+  .quiz-score p{color:rgba(255,255,255,.75);font-size:14px;}
+  .progress-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin-top:16px;overflow:hidden;}
+  .progress-fill{height:100%;background:#60A5FA;border-radius:4px;transition:width .3s;}
+  .site-footer{background:var(--gray-900);color:rgba(255,255,255,.55);text-align:center;padding:28px 24px;font-size:13px;}
+  .site-footer a{color:rgba(255,255,255,.75);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">Lernmodul · Programmierung</div>
+    <h1>Python für Controller &amp; Analysten</h1>
+    <p class="subtitle">Python als Automatisierungs- und Analysewerkzeug: von den Grundlagen bis zu pandas, openpyxl und API-Anbindungen – praxisnah für den Finanzbereich.</p>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('pandas')">pandas</button>
+    <button class="nav-tab" onclick="showSection('excel')">Excel &amp; Dateien</button>
+    <button class="nav-tab" onclick="showSection('automation')">Automatisierung</button>
+    <button class="nav-tab" onclick="showSection('praxis')">Praxisfälle</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══ GRUNDLAGEN ══ -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Python – Warum und Wie?</h2>
+  <p class="section-desc">Warum Python für Controller sinnvoll ist, Grundkonzepte und der erste Code.</p>
+
+  <div class="card">
+    <h2>Warum Python für Controller?</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Excel-Grenzen überwinden</h4>
+        <p>Excel hat Grenzen bei Dateigrößen, Automatisierung und Reproduzierbarkeit. Python kennt diese Limits nicht.</p>
+      </div>
+      <div class="concept-card yellow">
+        <h4>Automatisierung</h4>
+        <p>Wiederkehrende Reports, Datentransformation und Konsolidierung laufen automatisch – einmal programmiert, immer nutzbar.</p>
+      </div>
+      <div class="concept-card green">
+        <h4>Datenanalyse</h4>
+        <p>Millionen Zeilen in Sekunden, statistische Auswertungen, Visualisierungen – mit pandas und matplotlib.</p>
+      </div>
+      <div class="concept-card purple">
+        <h4>API-Integration</h4>
+        <p>Daten aus Supabase, REST-APIs, Webseiten oder internen Systemen direkt in Python verarbeiten.</p>
+      </div>
+    </div>
+    <div class="info-box yellow">
+      <span class="icon">🐍</span>
+      <span>Python ist der Standard für Datenanalyse weltweit. Lernst du Python, kannst du auch KI-Modelle nutzen, Web-Scraping betreiben und Berichte automatisieren – alles mit derselben Sprache.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Setup – erste Schritte</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">Lokal (empfohlen)</span>
+        <h4>Python + VS Code</h4>
+        <ul>
+          <li>Python von python.org installieren</li>
+          <li>VS Code + Python-Extension</li>
+          <li>pip install pandas openpyxl requests</li>
+          <li>Volle Kontrolle, alle Bibliotheken verfügbar</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag green">Online (Einstieg)</span>
+        <h4>Google Colab / Jupyter</h4>
+        <ul>
+          <li>Direkt im Browser, keine Installation</li>
+          <li>Google Colab: kostenlos, Cloud-basiert</li>
+          <li>Ideal zum Lernen und Testen</li>
+          <li>Für größere Projekte lokal besser</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Python-Grundbausteine</h2>
+    <h3>Variablen und Datentypen</h3>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="cm"># Variablen – kein Typ-Deklaration nötig</span>
+name      = <span class="str">"Tommy Möller"</span>        <span class="cm"># str (Text)</span>
+volumen   = <span class="num">1_250_000.50</span>          <span class="cm"># float (Dezimalzahl)</span>
+anzahl    = <span class="num">42</span>                    <span class="cm"># int (Ganzzahl)</span>
+ist_aktiv = <span class="kw">True</span>                  <span class="cm"># bool</span>
+kunden    = [<span class="str">"Müller GmbH"</span>, <span class="str">"ABC AG"</span>]  <span class="cm"># list</span>
+produkt   = {<span class="str">"name"</span>: <span class="str">"Ratenkredit"</span>, <span class="str">"zins"</span>: <span class="num">4.5</span>}  <span class="cm"># dict</span>
+
+<span class="cm"># Ausgabe</span>
+<span class="fn">print</span>(name)                   <span class="cm"># Tommy Möller</span>
+<span class="fn">print</span>(<span class="fn">type</span>(volumen))          <span class="cm"># &lt;class 'float'&gt;</span>
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"Volumen: {volumen:,.2f} €"</span>)  <span class="cm"># 1,250,000.50 €</span></div>
+    </div>
+
+    <h3>Kontrollstrukturen</h3>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="cm"># if/elif/else</span>
+rating = <span class="str">"B+"</span>
+
+<span class="kw">if</span> rating <span class="kw">in</span> [<span class="str">"AAA"</span>, <span class="str">"AA"</span>, <span class="str">"A"</span>]:
+    risiko = <span class="str">"Niedrig"</span>
+<span class="kw">elif</span> rating <span class="kw">in</span> [<span class="str">"BBB"</span>, <span class="str">"BB"</span>, <span class="str">"B+"</span>]:
+    risiko = <span class="str">"Mittel"</span>
+<span class="kw">else</span>:
+    risiko = <span class="str">"Hoch"</span>
+
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"Rating {rating}: {risiko}"</span>)  <span class="cm"># Rating B+: Mittel</span>
+
+<span class="cm"># for-Schleife über Liste</span>
+vertraege = [<span class="num">50000</span>, <span class="num">120000</span>, <span class="num">800000</span>, <span class="num">2500000</span>]
+<span class="kw">for</span> v <span class="kw">in</span> vertraege:
+    klasse = <span class="str">"Groß"</span> <span class="kw">if</span> v >= <span class="num">1_000_000</span> <span class="kw">else</span> <span class="str">"Klein/Mittel"</span>
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"{v:>12,.0f} € → {klasse}"</span>)</div>
+    </div>
+
+    <h3>Funktionen</h3>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">def</span> <span class="fn">berechne_annuitaet</span>(kapital: <span class="fn">float</span>, zinssatz: <span class="fn">float</span>, laufzeit: <span class="fn">int</span>) -> <span class="fn">float</span>:
+    <span class="str">"""Berechnet die monatliche Annuität (Annuitätendarlehen)."""</span>
+    r = zinssatz / <span class="num">12</span>           <span class="cm"># Monatszins</span>
+    n = laufzeit * <span class="num">12</span>           <span class="cm"># Monate gesamt</span>
+    annuitaet = kapital * (r * (<span class="num">1</span> + r) ** n) / ((<span class="num">1</span> + r) ** n - <span class="num">1</span>)
+    <span class="kw">return</span> <span class="fn">round</span>(annuitaet, <span class="num">2</span>)
+
+<span class="cm"># Nutzung</span>
+rate = <span class="fn">berechne_annuitaet</span>(<span class="num">200_000</span>, <span class="num">0.045</span>, <span class="num">20</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"Monatliche Rate: {rate:,.2f} €"</span>)  <span class="cm"># 1,265.30 €</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANDAS ══ -->
+<div id="pandas" class="section">
+  <h2 class="section-title">pandas – Datenanalyse wie Excel</h2>
+  <p class="section-desc">pandas ist das Excel von Python: DataFrames, Filter, Pivot-Tabellen und mehr.</p>
+
+  <div class="card">
+    <h2>DataFrame – die Grundstruktur</h2>
+    <div class="info-box blue">
+      <span class="icon">📊</span>
+      <span>Ein pandas DataFrame ist wie eine Excel-Tabelle: Zeilen und Spalten, filterbar, sortierbar, aggregierbar. Aber: Millionen von Zeilen in Sekunden, reproduzierbar und automatisierbar.</span>
+    </div>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># DataFrame aus Dictionary erstellen</span>
+data = {
+    <span class="str">"kunde"</span>:    [<span class="str">"Müller GmbH"</span>, <span class="str">"Schmitt AG"</span>, <span class="str">"Weber KG"</span>, <span class="str">"Braun SE"</span>],
+    <span class="str">"segment"</span>:  [<span class="str">"KMU"</span>, <span class="str">"Corporate"</span>, <span class="str">"KMU"</span>, <span class="str">"Corporate"</span>],
+    <span class="str">"volumen"</span>:  [<span class="num">250000</span>, <span class="num">1500000</span>, <span class="num">80000</span>, <span class="num">3200000</span>],
+    <span class="str">"zinssatz"</span>: [<span class="num">4.8</span>, <span class="num">3.9</span>, <span class="num">5.2</span>, <span class="num">3.5</span>],
+    <span class="str">"status"</span>:   [<span class="str">"aktiv"</span>, <span class="str">"aktiv"</span>, <span class="str">"gekuendigt"</span>, <span class="str">"aktiv"</span>],
+}
+df = pd.<span class="cls">DataFrame</span>(data)
+
+<span class="cm"># Erste Einblicke</span>
+<span class="fn">print</span>(df.shape)        <span class="cm"># (4, 5) – 4 Zeilen, 5 Spalten</span>
+<span class="fn">print</span>(df.dtypes)       <span class="cm"># Datentypen je Spalte</span>
+<span class="fn">print</span>(df.describe())   <span class="cm"># Statistik für numerische Spalten</span>
+<span class="fn">print</span>(df.head(<span class="num">2</span>))      <span class="cm"># Erste 2 Zeilen</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Filtern, Sortieren, Aggregieren</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="cm"># Filtern (wie WHERE in SQL)</span>
+aktive    = df[df[<span class="str">"status"</span>] == <span class="str">"aktiv"</span>]
+corporate = df[df[<span class="str">"segment"</span>] == <span class="str">"Corporate"</span>]
+grosskred = df[df[<span class="str">"volumen"</span>] >= <span class="num">1_000_000</span>]
+
+<span class="cm"># Mehrere Bedingungen</span>
+zielgruppe = df[
+    (df[<span class="str">"status"</span>] == <span class="str">"aktiv"</span>) &
+    (df[<span class="str">"volumen"</span>] >= <span class="num">500_000</span>)
+]
+
+<span class="cm"># Sortieren</span>
+df_sorted = df.<span class="fn">sort_values</span>(<span class="str">"volumen"</span>, ascending=<span class="kw">False</span>)
+
+<span class="cm"># Neue Spalte berechnen</span>
+df[<span class="str">"jahreszins"</span>] = df[<span class="str">"volumen"</span>] * df[<span class="str">"zinssatz"</span>] / <span class="num">100</span>
+
+<span class="cm"># Aggregationen (wie GROUP BY in SQL)</span>
+zusammenfassung = df.<span class="fn">groupby</span>(<span class="str">"segment"</span>).<span class="fn">agg</span>(
+    anzahl      = (<span class="str">"volumen"</span>, <span class="str">"count"</span>),
+    volumen_sum = (<span class="str">"volumen"</span>, <span class="str">"sum"</span>),
+    zins_avg    = (<span class="str">"zinssatz"</span>, <span class="str">"mean"</span>),
+)
+<span class="fn">print</span>(zusammenfassung)</div>
+    </div>
+
+    <h3>Pivot-Tabellen</h3>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="cm"># Pivot: wie in Excel, aber in Code</span>
+pivot = df.<span class="fn">pivot_table</span>(
+    values  = <span class="str">"volumen"</span>,
+    index   = <span class="str">"segment"</span>,
+    columns = <span class="str">"status"</span>,
+    aggfunc = <span class="str">"sum"</span>,
+    fill_value = <span class="num">0</span>
+)
+<span class="fn">print</span>(pivot)
+
+<span class="cm"># Ergebnis:
+# status      aktiv  gekuendigt
+# segment
+# Corporate  4700000           0
+# KMU         250000       80000</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Daten einlesen</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="cm"># CSV einlesen (häufigste Quelle)</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">"kreditportfolio.csv"</span>, sep=<span class="str">";"</span>, encoding=<span class="str">"utf-8"</span>)
+
+<span class="cm"># Excel einlesen</span>
+df = pd.<span class="fn">read_excel</span>(<span class="str">"report.xlsx"</span>, sheet_name=<span class="str">"Daten"</span>)
+
+<span class="cm"># Datumsspalten korrekt parsen</span>
+df[<span class="str">"datum"</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="str">"datum"</span>], format=<span class="str">"%d.%m.%Y"</span>)
+df[<span class="str">"jahr"</span>]  = df[<span class="str">"datum"</span>].dt.year
+df[<span class="str">"monat"</span>] = df[<span class="str">"datum"</span>].dt.month
+
+<span class="cm"># Schnelle Datenqualitätsprüfung</span>
+<span class="fn">print</span>(df.<span class="fn">isnull</span>().<span class="fn">sum</span>())    <span class="cm"># Fehlende Werte je Spalte</span>
+<span class="fn">print</span>(df.<span class="fn">duplicated</span>().<span class="fn">sum</span>())  <span class="cm"># Duplikate</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EXCEL & DATEIEN ══ -->
+<div id="excel" class="section">
+  <h2 class="section-title">Excel &amp; Dateien automatisieren</h2>
+  <p class="section-desc">Berichte generieren, Excel-Dateien befüllen und PDFs verarbeiten – alles in Python.</p>
+
+  <div class="card">
+    <h2>Excel mit openpyxl schreiben</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> openpyxl
+<span class="kw">from</span> openpyxl.styles <span class="kw">import</span> <span class="cls">Font</span>, <span class="cls">PatternFill</span>, <span class="cls">Alignment</span>
+<span class="kw">from</span> openpyxl.utils <span class="kw">import</span> get_column_letter
+
+wb = openpyxl.<span class="cls">Workbook</span>()
+ws = wb.active
+ws.title = <span class="str">"Portfolio-Report"</span>
+
+<span class="cm"># Header mit Formatierung</span>
+headers = [<span class="str">"Kunde"</span>, <span class="str">"Segment"</span>, <span class="str">"Volumen (€)"</span>, <span class="str">"Zinssatz (%)"</span>, <span class="str">"Status"</span>]
+<span class="kw">for</span> col, h <span class="kw">in</span> <span class="fn">enumerate</span>(headers, <span class="num">1</span>):
+    cell = ws.<span class="fn">cell</span>(row=<span class="num">1</span>, column=col, value=h)
+    cell.font = <span class="cls">Font</span>(bold=<span class="kw">True</span>, color=<span class="str">"FFFFFF"</span>)
+    cell.fill = <span class="cls">PatternFill</span>(fill_type=<span class="str">"solid"</span>, fgColor=<span class="str">"1E3A8A"</span>)
+
+<span class="cm"># Daten einfügen</span>
+daten = [
+    [<span class="str">"Müller GmbH"</span>, <span class="str">"KMU"</span>, <span class="num">250000</span>, <span class="num">4.8</span>, <span class="str">"aktiv"</span>],
+    [<span class="str">"Schmitt AG"</span>,  <span class="str">"Corporate"</span>, <span class="num">1500000</span>, <span class="num">3.9</span>, <span class="str">"aktiv"</span>],
+]
+<span class="kw">for</span> row_idx, row <span class="kw">in</span> <span class="fn">enumerate</span>(daten, <span class="num">2</span>):
+    <span class="kw">for</span> col_idx, val <span class="kw">in</span> <span class="fn">enumerate</span>(row, <span class="num">1</span>):
+        ws.<span class="fn">cell</span>(row=row_idx, column=col_idx, value=val)
+
+<span class="cm"># Spaltenbreite automatisch anpassen</span>
+<span class="kw">for</span> col <span class="kw">in</span> ws.columns:
+    max_len = <span class="fn">max</span>(<span class="fn">len</span>(<span class="fn">str</span>(c.value <span class="kw">or</span> <span class="str">""</span>)) <span class="kw">for</span> c <span class="kw">in</span> col)
+    ws.column_dimensions[get_column_letter(col[<span class="num">0</span>].column)].width = max_len + <span class="num">4</span>
+
+wb.<span class="fn">save</span>(<span class="str">"portfolio_report.xlsx"</span>)
+<span class="fn">print</span>(<span class="str">"Bericht gespeichert!"</span>)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Mehrere Dateien zusammenführen</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> pathlib <span class="kw">import</span> <span class="cls">Path</span>
+
+<span class="cm"># Alle CSV-Dateien in einem Ordner einlesen</span>
+ordner = <span class="cls">Path</span>(<span class="str">"./monatsreports"</span>)
+alle_dfs = []
+
+<span class="kw">for</span> datei <span class="kw">in</span> ordner.<span class="fn">glob</span>(<span class="str">"*.csv"</span>):
+    df_tmp = pd.<span class="fn">read_csv</span>(datei)
+    df_tmp[<span class="str">"quelldatei"</span>] = datei.name   <span class="cm"># Herkunft merken</span>
+    alle_dfs.<span class="fn">append</span>(df_tmp)
+
+<span class="cm"># Alle DataFrames stapeln</span>
+df_gesamt = pd.<span class="fn">concat</span>(alle_dfs, ignore_index=<span class="kw">True</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"{len(alle_dfs)} Dateien, {len(df_gesamt)} Zeilen gesamt"</span>)
+
+<span class="cm"># Als konsolidierter Report speichern</span>
+df_gesamt.<span class="fn">to_excel</span>(<span class="str">"konsolidiert.xlsx"</span>, index=<span class="kw">False</span>)</div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">⚡</span>
+      <span>Statt 12 monatliche CSV-Dateien manuell in Excel zu öffnen und zu kopieren: Dieses Skript macht das in 3 Sekunden – für beliebig viele Dateien.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTOMATISIERUNG ══ -->
+<div id="automation" class="section">
+  <h2 class="section-title">Automatisierung &amp; APIs</h2>
+  <p class="section-desc">Wiederkehrende Aufgaben automatisieren, APIs ansprechen, E-Mails versenden.</p>
+
+  <div class="card">
+    <h2>HTTP-Requests &amp; APIs</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> requests
+
+<span class="cm"># GET-Request (Daten abrufen)</span>
+url = <span class="str">"https://api.example.com/kurse"</span>
+response = requests.<span class="fn">get</span>(url, params={<span class="str">"waehrung"</span>: <span class="str">"EUR"</span>})
+
+<span class="kw">if</span> response.status_code == <span class="num">200</span>:
+    daten = response.<span class="fn">json</span>()
+    <span class="fn">print</span>(daten)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"Fehler: {response.status_code}"</span>)
+
+<span class="cm"># POST-Request mit Auth-Header (z.B. Supabase)</span>
+headers = {
+    <span class="str">"apikey"</span>:        <span class="str">"dein-api-key"</span>,
+    <span class="str">"Authorization"</span>: <span class="str">"Bearer dein-api-key"</span>,
+    <span class="str">"Content-Type"</span>:  <span class="str">"application/json"</span>
+}
+payload = {<span class="str">"name"</span>: <span class="str">"Neuer Kunde"</span>, <span class="str">"segment"</span>: <span class="str">"KMU"</span>}
+
+resp = requests.<span class="fn">post</span>(
+    <span class="str">"https://xyz.supabase.co/rest/v1/kunden"</span>,
+    json=payload,
+    headers=headers
+)
+<span class="fn">print</span>(resp.status_code)  <span class="cm"># 201 = Created</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Supabase direkt aus Python</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">from</span> supabase <span class="kw">import</span> <span class="fn">create_client</span>
+
+<span class="cm"># Verbindung aufbauen</span>
+url  = <span class="str">"https://dein-projekt.supabase.co"</span>
+key  = <span class="str">"dein-anon-key"</span>
+sb   = <span class="fn">create_client</span>(url, key)
+
+<span class="cm"># Daten lesen</span>
+response = sb.<span class="fn">table</span>(<span class="str">"lernfortschritt"</span>).<span class="fn">select</span>(<span class="str">"*"</span>).<span class="fn">execute</span>()
+df = pd.<span class="cls">DataFrame</span>(response.data)
+
+<span class="cm"># Daten einfügen</span>
+sb.<span class="fn">table</span>(<span class="str">"lernfortschritt"</span>).<span class="fn">insert</span>({
+    <span class="str">"user_id"</span>:  <span class="str">"uuid-des-nutzers"</span>,
+    <span class="str">"modul_id"</span>: <span class="str">"python-grundlagen"</span>,
+    <span class="str">"score"</span>:    <span class="num">85</span>,
+}).<span class="fn">execute</span>()
+
+<span class="cm"># Filterabfrage</span>
+aktive = (sb.<span class="fn">table</span>(<span class="str">"kunden"</span>)
+           .<span class="fn">select</span>(<span class="str">"name,segment,volumen"</span>)
+           .<span class="fn">eq</span>(<span class="str">"status"</span>, <span class="str">"aktiv"</span>)
+           .<span class="fn">gte</span>(<span class="str">"volumen"</span>, <span class="num">500000</span>)
+           .<span class="fn">execute</span>())</div>
+    </div>
+    <div class="info-box purple">
+      <span class="icon">🔗</span>
+      <span>Das ist exakt der Stack von tommy-moeller.de: Supabase als Backend, Python (oder JavaScript) als Client. Alles was hier gezeigt wird, kannst du direkt in deinen Projekten nutzen.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>E-Mails automatisch versenden</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> smtplib
+<span class="kw">from</span> email.mime.multipart <span class="kw">import</span> <span class="cls">MIMEMultipart</span>
+<span class="kw">from</span> email.mime.text <span class="kw">import</span> <span class="cls">MIMEText</span>
+<span class="kw">from</span> email.mime.base <span class="kw">import</span> <span class="cls">MIMEBase</span>
+<span class="kw">from</span> email <span class="kw">import</span> encoders
+
+<span class="kw">def</span> <span class="fn">sende_bericht</span>(empfaenger: <span class="fn">str</span>, betreff: <span class="fn">str</span>, text: <span class="fn">str</span>, anhang: <span class="fn">str</span> = <span class="kw">None</span>):
+    msg = <span class="cls">MIMEMultipart</span>()
+    msg[<span class="str">"From"</span>]    = <span class="str">"bericht@tommy-moeller.de"</span>
+    msg[<span class="str">"To"</span>]      = empfaenger
+    msg[<span class="str">"Subject"</span>] = betreff
+    msg.<span class="fn">attach</span>(<span class="cls">MIMEText</span>(text, <span class="str">"html"</span>))
+
+    <span class="kw">if</span> anhang:
+        <span class="kw">with</span> <span class="fn">open</span>(anhang, <span class="str">"rb"</span>) <span class="kw">as</span> f:
+            teil = <span class="cls">MIMEBase</span>(<span class="str">"application"</span>, <span class="str">"octet-stream"</span>)
+            teil.<span class="fn">set_payload</span>(f.<span class="fn">read</span>())
+            encoders.<span class="fn">encode_base64</span>(teil)
+            teil.<span class="fn">add_header</span>(<span class="str">"Content-Disposition"</span>, <span class="fn">f</span><span class="str">'attachment; filename="{anhang}"'</span>)
+            msg.<span class="fn">attach</span>(teil)
+
+    <span class="kw">with</span> smtplib.<span class="cls">SMTP_SSL</span>(<span class="str">"smtp.gmail.com"</span>, <span class="num">465</span>) <span class="kw">as</span> server:
+        server.<span class="fn">login</span>(<span class="str">"user@gmail.com"</span>, <span class="str">"app-passwort"</span>)
+        server.<span class="fn">send_message</span>(msg)
+
+<span class="cm"># Automatischer Monatsbericht</span>
+<span class="fn">sende_bericht</span>(
+    <span class="str">"chef@unternehmen.de"</span>,
+    <span class="str">"Portfolio-Report Mai 2025"</span>,
+    <span class="str">"&lt;h2&gt;Anbei der monatliche Report&lt;/h2&gt;"</span>,
+    anhang=<span class="str">"portfolio_report.xlsx"</span>
+)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRAXIS ══ -->
+<div id="praxis" class="section">
+  <h2 class="section-title">Praxisfälle für Controller</h2>
+  <p class="section-desc">Drei vollständige Skripte für typische Controller-Aufgaben.</p>
+
+  <div class="card">
+    <h2>Vollständiger Monatsreport-Generator</h2>
+    <div class="py-block">
+      <div class="py-header"><span class="py-lang">Python – Vollständiges Skript</span><button class="py-copy" onclick="copyPY(this)">Kopieren</button></div>
+      <div class="py-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">def</span> <span class="fn">erstelle_monatsreport</span>(csv_pfad: <span class="fn">str</span>, monat: <span class="fn">int</span>, jahr: <span class="fn">int</span>) -> <span class="fn">str</span>:
+    <span class="str">"""Liest Zahlungsdaten und erstellt Excel-Monatsbericht."""</span>
+    df = pd.<span class="fn">read_csv</span>(csv_pfad, parse_dates=[<span class="str">"datum"</span>])
+
+    <span class="cm"># Monatsfilter</span>
+    mask = (df[<span class="str">"datum"</span>].dt.month == monat) & (df[<span class="str">"datum"</span>].dt.year == jahr)
+    df_monat = df[mask].<span class="fn">copy</span>()
+
+    <span class="cm"># KPIs berechnen</span>
+    kpis = {
+        <span class="str">"Anzahl Zahlungen"</span>:  <span class="fn">len</span>(df_monat),
+        <span class="str">"Summe Eingänge"</span>:    df_monat[<span class="str">"betrag"</span>].<span class="fn">sum</span>(),
+        <span class="str">"Durchschnitt"</span>:      df_monat[<span class="str">"betrag"</span>].<span class="fn">mean</span>(),
+        <span class="str">"Höchste Zahlung"</span>:   df_monat[<span class="str">"betrag"</span>].<span class="fn">max</span>(),
+        <span class="str">"Rückstände"</span>:        <span class="fn">len</span>(df_monat[df_monat[<span class="str">"status"</span>] == <span class="str">"offen"</span>]),
+    }
+
+    <span class="cm"># Segment-Auswertung</span>
+    seg_pivot = df_monat.<span class="fn">groupby</span>(<span class="str">"segment"</span>)[<span class="str">"betrag"</span>].<span class="fn">agg</span>(
+        [<span class="str">"count"</span>, <span class="str">"sum"</span>, <span class="str">"mean"</span>]
+    ).<span class="fn">rename</span>(columns={<span class="str">"count"</span>:<span class="str">"Anzahl"</span>,<span class="str">"sum"</span>:<span class="str">"Summe"</span>,<span class="str">"mean"</span>:<span class="str">"Durchschnitt"</span>})
+
+    <span class="cm"># In Excel schreiben</span>
+    dateiname = <span class="fn">f</span><span class="str">"report_{jahr}_{monat:02d}.xlsx"</span>
+    <span class="kw">with</span> pd.<span class="cls">ExcelWriter</span>(dateiname, engine=<span class="str">"openpyxl"</span>) <span class="kw">as</span> writer:
+        pd.<span class="cls">DataFrame</span>([kpis]).<span class="fn">to_excel</span>(writer, sheet_name=<span class="str">"KPIs"</span>, index=<span class="kw">False</span>)
+        seg_pivot.<span class="fn">to_excel</span>(writer, sheet_name=<span class="str">"Segmente"</span>)
+        df_monat.<span class="fn">to_excel</span>(writer, sheet_name=<span class="str">"Rohdaten"</span>, index=<span class="kw">False</span>)
+
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"✓ Report gespeichert: {dateiname}"</span>)
+    <span class="kw">return</span> dateiname
+
+<span class="cm"># Ausführen</span>
+<span class="fn">erstelle_monatsreport</span>(<span class="str">"zahlungen.csv"</span>, monat=<span class="num">5</span>, jahr=<span class="num">2025</span>)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wann Python vs. Excel?</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">Python besser</span>
+        <h4>Wähle Python wenn...</h4>
+        <ul>
+          <li>Mehr als 100.000 Zeilen Daten</li>
+          <li>Wiederkehrende Aufgabe (Automatisierung)</li>
+          <li>Mehrere Dateien zusammenführen</li>
+          <li>API-Anbindung nötig</li>
+          <li>Komplexe Transformationslogik</li>
+          <li>Versionskontrolle (Git) gewünscht</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag amber">Excel besser</span>
+        <h4>Wähle Excel wenn...</h4>
+        <ul>
+          <li>Einmalige Ad-hoc-Analyse</li>
+          <li>Kollegen ohne Python-Kenntnisse</li>
+          <li>Interaktive Pivot-Analyse</li>
+          <li>Charts für Präsentationen</li>
+          <li>Kleines Datenvolumen (&lt;50k Zeilen)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">🎯</span>
+      <span>Ideale Kombination: Python für Datenabruf, Bereinigung und Aggregation – dann Export als Excel für die manuelle Review und Präsentation. Das Beste aus beiden Welten.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck Python</h2>
+  <p class="section-desc">7 Fragen zu Python-Grundlagen und pandas.</p>
+
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was ist ein pandas DataFrame?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Eine Python-Bibliothek für Datenbankverbindungen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">Eine zweidimensionale Tabellenstruktur (Zeilen + Spalten) – wie eine Excel-Tabelle in Python</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Ein Grafik-Framework für Python</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Ein spezieller Dateityp für CSV-Dateien</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">Ein DataFrame ist die zentrale Datenstruktur von pandas – tabellarische Daten mit Zeilen und Spalten, ähnlich wie Excel oder eine SQL-Tabelle, aber mit Python-Operationen.</div>
+  </div>
+
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Was macht df.groupby("segment").agg({"volumen": "sum"})?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Filtert den DataFrame nach dem Segment</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Sortiert nach Segment und Volumen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">Gruppiert nach Segment und summiert das Volumen je Gruppe – wie GROUP BY SUM in SQL</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Erstellt eine Pivot-Tabelle mit Segmenten als Spalten</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">groupby() kombiniert mit agg() ist das Python-Äquivalent von SQL's GROUP BY mit Aggregationsfunktionen. Hier: Volumen-Summe je Segment.</div>
+  </div>
+
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Wie liest du eine Excel-Datei "report.xlsx" in einen DataFrame?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">pd.read_csv("report.xlsx")</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">pd.read_excel("report.xlsx")</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">pd.open_file("report.xlsx")</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">pandas.load("report.xlsx")</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">pd.read_excel() liest Excel-Dateien. pd.read_csv() ist für CSV-Dateien. Zusätzlich kann man sheet_name angeben, um ein bestimmtes Tabellenblatt zu laden.</div>
+  </div>
+
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist der Unterschied zwischen & und "and" in pandas-Filtern?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">&amp; ist der bitweise AND-Operator für pandas-Masken, "and" funktioniert nicht für Arrays</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Es gibt keinen Unterschied</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">"and" ist schneller als &amp;</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">&amp; ist nur für numerische Werte</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">Bei pandas-Filtern mit mehreren Bedingungen muss & statt "and" verwendet werden, da pandas mit Arrays (Series) arbeitet. Außerdem müssen Bedingungen in Klammern stehen: (df["a"] > 0) & (df["b"] == "x").</div>
+  </div>
+
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Was ist ein f-String in Python?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ein spezieller Dateityp für Python-Skripte</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Eine Funktion zum Formatieren von Zahlen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Ein String mit f-Prefix, der Ausdrücke in {} direkt einbettet: f"Wert: {variable}"</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ein verschlüsselter String</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">f-Strings (Format-Strings) sind die modernste Art der String-Formatierung in Python. Mit f"Hallo {name}, Volumen: {v:,.2f} €" werden Variablen direkt in Strings eingebettet.</div>
+  </div>
+
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Wann ist Python Excel klar überlegen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Immer – Python ist in jedem Fall besser</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Nur bei mathematischen Berechnungen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Bei der Automatisierung wiederkehrender Aufgaben und großen Datenmengen (&gt;100k Zeilen)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Nur wenn man kein Excel hat</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Python glänzt bei Automatisierung (einmal schreiben, immer laufen lassen), großen Datenmengen, API-Integration und komplexen Transformationen. Excel bleibt besser für interaktive Analysen und Kollaboration ohne Programmierkenntnisse.</div>
+  </div>
+
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Was gibt df.isnull().sum() aus?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Die Summe aller Null-Werte im DataFrame</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Die Anzahl fehlender Werte (NaN) pro Spalte</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">True/False ob der DataFrame leer ist</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Die Gesamtanzahl der Zeilen</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">df.isnull() gibt eine Boolean-Maske zurück (True = fehlend), .sum() zählt die True-Werte pro Spalte. Das ist der schnellste Weg zur Datenqualitätsprüfung.</div>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3><p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Alle Code-Beispiele für Python 3.10+ und pandas 2.x.</p>
+</footer>
+<script>
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.currentTarget.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function copyPY(btn){const code=btn.closest('.py-block').querySelector('.py-body').innerText;navigator.clipboard.writeText(code).then(()=>{const o=btn.textContent;btn.textContent='✓ Kopiert';setTimeout(()=>btn.textContent=o,1500);});}
+let quizAnswers={};const TOTAL=7;
+function answer(btn,type,qId){const qEl=document.getElementById(qId);if(qEl.dataset.answered)return;qEl.dataset.answered='1';qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});btn.classList.add(type);const num=qId.replace('q','');document.getElementById('fb'+num).classList.add('show',type);quizAnswers[qId]=type==='correct';}
+function showScore(){const correct=Object.values(quizAnswers).filter(Boolean).length;const pct=Math.round(correct/TOTAL*100);document.getElementById('score-text').textContent=correct+' von '+TOTAL+' richtig ('+pct+'%)';document.getElementById('score-msg').textContent=pct>=85?'Hervorragend! Python-Kenntnisse solide verankert.':pct>=57?'Gute Basis – die Code-Abschnitte nochmal durchlesen.':'Noch Lernbedarf – starte mit den Grundlagen nochmal neu.';document.getElementById('score-bar').style.width=pct+'%';const el=document.getElementById('quiz-score');el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function resetQuiz(){quizAnswers={};document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));document.getElementById('quiz-score').style.display='none';}
+</script>
+</body>
+</html>
