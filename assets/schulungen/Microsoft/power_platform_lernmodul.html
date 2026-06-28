@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Platform Lernmodul</title>
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #efede7;
+    --surface3: #e5e2d8;
+    --text: #1c1b18;
+    --text-sec: #55534d;
+    --text-muted: #98968e;
+    --border: #dbd8ce;
+    --border-strong: #c6c2b4;
+    --radius: 6px;
+    --radius-lg: 12px;
+    --mono: 'Cascadia Code','Fira Code','Courier New',monospace;
+
+    /* App colors */
+    --apps-purple: #5b21b6;
+    --apps-purple-bg: #f5f3ff;
+    --apps-purple-border: #c4b5fd;
+    --automate-blue: #0369a1;
+    --automate-blue-bg: #f0f9ff;
+    --automate-blue-border: #7dd3fc;
+    --pages-green: #15803d;
+    --pages-green-bg: #f0fdf4;
+    --pages-green-border: #86efac;
+    --copilot-amber: #92400e;
+    --copilot-amber-bg: #fffbeb;
+    --copilot-amber-border: #fcd34d;
+    --dataverse-teal: #0f766e;
+    --dataverse-teal-bg: #f0fdfa;
+    --dataverse-teal-border: #5eead4;
+    --accent: #1a56db;
+    --accent-bg: #edf2ff;
+    --accent-text: #1a3a8a;
+    --green: #166534;
+    --green-bg: #f0fdf4;
+    --green-border: #86efac;
+    --amber: #92400e;
+    --amber-bg: #fffbeb;
+    --red: #991b1b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 272px; min-width: 272px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    height: 100vh; position: sticky; top: 0;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-header h1 { font-size: 14px; font-weight: 700; }
+  .sidebar-header p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .prog-wrap { margin-top: 10px; }
+  .prog-label { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .prog-track { background: var(--surface3); border-radius: 99px; height: 4px; }
+  .prog-fill { background: var(--accent); height: 4px; border-radius: 99px; transition: width .4s; }
+
+  .search-wrap { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .search-input {
+    width: 100%; padding: 7px 10px 7px 30px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: 13px; background: var(--bg); color: var(--text);
+    outline: none; font-family: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2398968e' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 9px center;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  .nav { flex: 1; padding: 6px 0 20px; overflow-y: auto; }
+  .nav-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--text-muted);
+    padding: 10px 14px 3px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 13px; color: var(--text-sec);
+    cursor: pointer; border-left: 2px solid transparent;
+    transition: all .12s; user-select: none; position: relative;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent); font-weight: 500; }
+  .nav-item.done-nav .nav-ck { background: var(--green); color: #fff; border-color: var(--green); }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-ck {
+    width: 16px; height: 16px; min-width: 16px; border-radius: 50%;
+    border: 1.5px solid var(--border-strong); display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--text-muted); margin-left: auto; transition: all .2s;
+  }
+  .app-pill {
+    font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 99px;
+    letter-spacing: .03em; margin-left: 2px;
+  }
+
+  /* ── Main ── */
+  .main { flex: 1; overflow-y: auto; }
+  .content { max-width: 840px; padding: 38px 46px 80px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Page header ── */
+  .page-hd { margin-bottom: 24px; }
+  .page-hd-top { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .page-app-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px;
+    border: 1px solid; letter-spacing: .03em; margin-bottom: 8px;
+  }
+  .page-hd h2 { font-size: 22px; font-weight: 700; letter-spacing: -.4px; }
+  .page-hd p { font-size: 14px; color: var(--text-sec); margin-top: 4px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); margin-bottom: 16px; overflow: hidden;
+    transition: box-shadow .15s;
+  }
+  .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .card-hd {
+    padding: 14px 18px; display: flex; align-items: flex-start;
+    justify-content: space-between; cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent; transition: background .1s, border-color .1s;
+  }
+  .card-hd:hover { background: var(--bg); }
+  .card-hd.open { border-bottom-color: var(--border); }
+  .card-hd-left { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+  .card-title { font-size: 14px; font-weight: 600; }
+  .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .card-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+  .badge {
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 99px; letter-spacing: .03em;
+  }
+  .b-easy { background: var(--green-bg); color: var(--green); }
+  .b-med { background: var(--amber-bg); color: var(--amber); }
+  .b-adv { background: var(--apps-purple-bg); color: var(--apps-purple); }
+  .b-cat { background: var(--surface3); color: var(--text-sec); }
+  .card-toggle { font-size: 11px; color: var(--text-muted); transition: transform .2s; padding-top: 2px; }
+  .card-toggle.open { transform: rotate(180deg); }
+  .card-body { padding: 18px 20px; display: none; }
+  .card-body.open { display: block; }
+
+  /* ── Body content ── */
+  .sec-lbl {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px;
+  }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+  .expl { font-size: 13.5px; color: var(--text-sec); line-height: 1.7; margin: 6px 0 14px; }
+  .expl strong { color: var(--text); font-weight: 600; }
+
+  /* ── Code ── */
+  .code-block {
+    background: #1a1b26; color: #c0caf5;
+    border-radius: var(--radius); padding: 13px 15px;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.65;
+    overflow-x: auto; white-space: pre; margin: 7px 0 14px;
+  }
+  .kw { color: #bb9af7; }
+  .fn { color: #7aa2f7; }
+  .str { color: #9ece6a; }
+  .cm { color: #565f89; font-style: italic; }
+  .num { color: #ff9e64; }
+  .op { color: #89ddff; }
+
+  /* ── Example boxes ── */
+  .ex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 7px 0 14px; }
+  .ex-box { border-radius: var(--radius); padding: 12px 14px; font-size: 13px; }
+  .ex-lbl { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .ex-scenario { background: var(--surface2); border: 1px solid var(--border); color: var(--text-sec); }
+  .ex-scenario .ex-lbl { color: var(--text-muted); }
+  .ex-result { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+  .ex-result .ex-lbl { color: var(--green); }
+  .ex-val { font-weight: 700; font-size: 15px; margin-top: 2px; }
+
+  /* ── Info boxes ── */
+  .ib {
+    border-radius: var(--radius); padding: 10px 13px; font-size: 13px;
+    margin: 7px 0 14px; display: flex; gap: 9px; align-items: flex-start; line-height: 1.6;
+  }
+  .ib-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .ib-tip { background: var(--dataverse-teal-bg); border-left: 3px solid var(--dataverse-teal); color: var(--dataverse-teal); }
+  .ib-warn { background: var(--amber-bg); border-left: 3px solid #d97706; color: var(--amber); }
+  .ib-note { background: var(--accent-bg); border-left: 3px solid var(--accent); color: var(--accent-text); }
+  .ib-use { background: var(--apps-purple-bg); border-left: 3px solid var(--apps-purple); color: var(--apps-purple); }
+
+  /* ── Comparison table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 7px 0 14px; }
+  th {
+    text-align: left; padding: 7px 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-muted); background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+  code { font-family: var(--mono); font-size: 11.5px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; color: var(--accent-text); }
+
+  /* ── Step list ── */
+  .steps { list-style: none; margin: 7px 0 14px; }
+  .step { display: flex; gap: 12px; margin-bottom: 14px; position: relative; }
+  .step::before { content: ''; position: absolute; left: 13px; top: 28px; bottom: -14px; width: 1px; background: var(--border); }
+  .step:last-child::before { display: none; }
+  .step-num {
+    width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--text-sec);
+  }
+  .step-body { flex: 1; padding-top: 3px; }
+  .step-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .step-desc { font-size: 13px; color: var(--text-sec); }
+
+  /* ── Use-case chips ── */
+  .use-case-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 7px 0 14px; }
+  .uc-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 6px 12px; font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .uc-icon { font-size: 14px; }
+
+  /* ── Overview page ── */
+  .app-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .app-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 18px 20px; cursor: pointer;
+    transition: box-shadow .15s, transform .12s;
+  }
+  .app-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .app-card-icon { font-size: 26px; margin-bottom: 8px; }
+  .app-card-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .app-card-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; }
+  .app-card-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-top: 8px; display: inline-block; }
+
+  /* ── Done button ── */
+  .done-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-sec); font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: all .12s; margin-top: 4px;
+  }
+  .done-btn:hover { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .done-btn.active { background: var(--green-bg); border-color: var(--green); color: var(--green); font-weight: 500; }
+
+  /* ── Search results ── */
+  .sr-list { padding: 16px 0; }
+  .sr-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 15px; cursor: pointer;
+    margin-bottom: 8px; transition: background .1s;
+  }
+  .sr-item:hover { background: var(--accent-bg); }
+  .sr-name { font-size: 14px; font-weight: 600; }
+  .sr-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  mark { background: #fef08a; border-radius: 2px; padding: 0 2px; }
+
+  /* ── Connector diagram (Dataverse) ── */
+  .conn-list { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 7px 0 14px; }
+  .conn-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 10px; font-size: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .conn-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 220px; min-width: 220px; }
+    .content { padding: 22px 18px 60px; }
+    .ex-grid, .app-cards-grid { grid-template-columns: 1fr; }
+    .conn-list { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 620px) {
+    .sidebar { display: none; }
+    .content { padding: 16px 14px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h1>⚡ Power Platform</h1>
+    <p>Microsoft Low-Code Plattform · Lernmodul</p>
+    <div class="prog-wrap">
+      <div class="prog-label"><span>Fortschritt</span><span id="prog-txt">0 / 7</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" placeholder="Suchen…" id="g-search" oninput="doSearch(this.value)" />
+  </div>
+  <div class="nav">
+
+    <div class="nav-label">Überblick</div>
+    <div class="nav-item active" onclick="nav('overview',this)">
+      <span class="nav-icon">🏠</span> Plattform-Überblick
+    </div>
+
+    <div class="nav-label">Apps & Automatisierung</div>
+    <div class="nav-item" onclick="nav('apps',this)">
+      <span class="nav-icon">📱</span> Power Apps
+      <span class="app-pill" style="background:var(--apps-purple-bg);color:var(--apps-purple)">Apps</span>
+      <span class="nav-ck"></span>
+    </div>
+    <div class="nav-item" onclick="nav('automate',this)">
+      <span class="nav-icon">⚙️</span> Power Automate
+      <span class="app-pill" style="background:var(--automate-blue-bg);color:var(--automate-blue)">Flows</span>
+      <span class="nav-ck"></span>
+    </div>
+    <div class="nav-item" onclick="nav('pages',this)">
+      <span class="nav-icon">🌐</span> Power Pages
+      <span class="app-pill" style="background:var(--pages-green-bg);color:var(--pages-green)">Web</span>
+      <span class="nav-ck"></span>
+    </div>
+
+    <div class="nav-label">KI & Daten</div>
+    <div class="nav-item" onclick="nav('copilot',this)">
+      <span class="nav-icon">🤖</span> Copilot Studio
+      <span class="app-pill" style="background:var(--copilot-amber-bg);color:var(--copilot-amber)">KI</span>
+      <span class="nav-ck"></span>
+    </div>
+    <div class="nav-item" onclick="nav('dataverse',this)">
+      <span class="nav-icon">🗄️</span> Dataverse
+      <span class="app-pill" style="background:var(--dataverse-teal-bg);color:var(--dataverse-teal)">Daten</span>
+      <span class="nav-ck"></span>
+    </div>
+    <div class="nav-item" onclick="nav('connectors',this)">
+      <span class="nav-icon">🔌</span> Connectors & APIs
+      <span class="nav-ck"></span>
+    </div>
+
+    <div class="nav-label">Praxis</div>
+    <div class="nav-item" onclick="nav('licensing',this)">
+      <span class="nav-icon">💰</span> Lizenzierung & Grenzen
+      <span class="nav-ck"></span>
+    </div>
+    <div class="nav-item" onclick="nav('scenarios',this)">
+      <span class="nav-icon">💡</span> Szenarien & Best Practices
+    </div>
+
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════ -->
+<main class="main">
+<div class="content">
+
+<!-- Search results (hidden by default) -->
+<div class="page" id="page-search">
+  <div class="page-hd"><h2 id="sr-heading">Suchergebnisse</h2></div>
+  <div class="sr-list" id="sr-list"></div>
+</div>
+
+<!-- ═══════════════════ OVERVIEW ═══════════════════ -->
+<div class="page active" id="page-overview">
+  <div class="page-hd">
+    <h2>⚡ Microsoft Power Platform</h2>
+    <p>Eine Low-Code / No-Code Plattform aus 5 integrierten Tools – ohne Power BI und MS Fabric.</p>
+  </div>
+
+  <div class="ib ib-note"><span class="ib-icon">ℹ️</span><div>Dieses Modul deckt <strong>Power Apps, Power Automate, Power Pages, Copilot Studio</strong> und <strong>Dataverse</strong> ab. Power BI und Microsoft Fabric sind bewusst ausgenommen.</div></div>
+
+  <div class="app-cards-grid">
+    <div class="app-card" onclick="nav('apps', null)">
+      <div class="app-card-icon">📱</div>
+      <div class="app-card-name">Power Apps</div>
+      <div class="app-card-desc">Geschäftsanwendungen ohne klassische Programmierung erstellen – Canvas Apps, Model-Driven Apps und mehr.</div>
+      <span class="app-card-tag" style="background:var(--apps-purple-bg);color:var(--apps-purple)">Low-Code Apps</span>
+    </div>
+    <div class="app-card" onclick="nav('automate', null)">
+      <div class="app-card-icon">⚙️</div>
+      <div class="app-card-name">Power Automate</div>
+      <div class="app-card-desc">Workflows und Prozesse automatisieren – Cloud Flows, Desktop Flows (RPA), Genehmigungsprozesse.</div>
+      <span class="app-card-tag" style="background:var(--automate-blue-bg);color:var(--automate-blue)">Automatisierung</span>
+    </div>
+    <div class="app-card" onclick="nav('pages', null)">
+      <div class="app-card-icon">🌐</div>
+      <div class="app-card-name">Power Pages</div>
+      <div class="app-card-desc">Externe Websites und Portale erstellen – für Kunden, Partner oder Bürger ohne Web-Entwicklerkenntnisse.</div>
+      <span class="app-card-tag" style="background:var(--pages-green-bg);color:var(--pages-green)">Webportale</span>
+    </div>
+    <div class="app-card" onclick="nav('copilot', null)">
+      <div class="app-card-icon">🤖</div>
+      <div class="app-card-name">Copilot Studio</div>
+      <div class="app-card-desc">KI-Chatbots und Copiloten erstellen und anpassen – für Teams, Websites oder interne Prozesse.</div>
+      <span class="app-card-tag" style="background:var(--copilot-amber-bg);color:var(--copilot-amber)">KI / Chatbots</span>
+    </div>
+    <div class="app-card" onclick="nav('dataverse', null)">
+      <div class="app-card-icon">🗄️</div>
+      <div class="app-card-name">Dataverse</div>
+      <div class="app-card-desc">Die zentrale Datenbank der Power Platform – sicher, skalierbar und tief integriert in alle Apps.</div>
+      <span class="app-card-tag" style="background:var(--dataverse-teal-bg);color:var(--dataverse-teal)">Datenplattform</span>
+    </div>
+    <div class="app-card" onclick="nav('connectors', null)">
+      <div class="app-card-icon">🔌</div>
+      <div class="app-card-name">Connectors & APIs</div>
+      <div class="app-card-desc">900+ vorgefertigte Verbindungen zu Microsoft 365, SAP, Salesforce und externen Diensten.</div>
+      <span class="app-card-tag" style="background:var(--surface2);color:var(--text-sec)">Integration</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Wie hängen die Tools zusammen?</div>
+        <div class="card-sub">Das Power Platform Ökosystem im Überblick</div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Alle fünf Tools teilen sich die gleiche <strong>Infrastruktur</strong>: Dataverse als gemeinsame Datenbasis, Connectors als Verbindungsschicht zu externen Systemen und das <strong>Power Platform Admin Center</strong> für Verwaltung und Governance.</p>
+      <table>
+        <thead><tr><th>Tool</th><th>Erstellt…</th><th>Nutzt…</th><th>Typische Nutzer</th></tr></thead>
+        <tbody>
+          <tr><td>Power Apps</td><td>Business-Apps</td><td>Dataverse, SharePoint, SQL</td><td>Fachabteilung, Citizen Dev.</td></tr>
+          <tr><td>Power Automate</td><td>Workflows / Flows</td><td>Alle Connectors, HTTP APIs</td><td>Alle Mitarbeiter</td></tr>
+          <tr><td>Power Pages</td><td>Externe Websites</td><td>Dataverse (Pflicht), AAD</td><td>Web-Teams, Marketing</td></tr>
+          <tr><td>Copilot Studio</td><td>KI-Chatbots</td><td>Power Automate, Dataverse</td><td>IT, Support-Teams</td></tr>
+          <tr><td>Dataverse</td><td>Datentabellen & Logik</td><td>Azure SQL im Hintergrund</td><td>Admins, Architekten</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-tip"><span class="ib-icon">💡</span><div>Die Power Platform ist eng mit <strong>Microsoft 365</strong> (Teams, SharePoint, Outlook) und <strong>Azure</strong> (AAD/Entra ID, Azure Functions) verzahnt. Viele Szenarien nutzen diese Kombination.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ POWER APPS ═══════════════════ -->
+<div class="page" id="page-apps">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--apps-purple-bg);color:var(--apps-purple);border-color:var(--apps-purple-border)">📱 Power Apps</span>
+    <h2>Power Apps</h2>
+    <p>Business-Anwendungen ohne klassische Programmierung – mit der Formelsprache Power Fx.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">App-Typen: Canvas vs. Model-Driven</div>
+        <div class="card-sub">Welcher App-Typ passt wann?</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <table>
+        <thead><tr><th></th><th>Canvas App</th><th>Model-Driven App</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Layout</strong></td><td>Freies Design (drag & drop auf "Leinwand")</td><td>Automatisch durch Datenmodell generiert</td></tr>
+          <tr><td><strong>Datenquelle</strong></td><td>SharePoint, Excel, SQL, Dataverse, uvm.</td><td>Nur Dataverse (Pflicht)</td></tr>
+          <tr><td><strong>Aufwand</strong></td><td>Mehr Designarbeit</td><td>Schneller – Datenmodell = App-Struktur</td></tr>
+          <tr><td><strong>Ideal für</strong></td><td>Individuelle UX, Tablet/Mobil-Apps</td><td>Komplexe Daten-Apps, CRM-ähnlich</td></tr>
+          <tr><td><strong>Beispiel</strong></td><td>Schadensmelde-App, Urlaubsantrag</td><td>Kundenverwaltung, Servicefälle</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-note"><span class="ib-icon">💡</span><div>Es gibt auch <strong>Page-Apps</strong> (eine Unterseite in einer Model-Driven App mit Canvas-Logik) und <strong>Cards</strong> (Mini-Apps für Teams/Viva).</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Power Fx – die Formelsprache</div>
+        <div class="card-sub">Excel-ähnliche Formeln für App-Logik</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span><span class="badge b-cat">Power Fx</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Power Fx ist die Open-Source-Formelsprache von Power Apps – stark an <strong>Excel-Formeln</strong> angelehnt. Formeln steuern das Verhalten von Controls, navigieren zwischen Screens und schreiben Daten.</p>
+      <div class="sec-lbl">Häufige Formeln</div>
+      <div class="code-block"><span class="cm">// Datensätze filtern (z.B. nur aktive Kunden)</span>
+<span class="fn">Filter</span>(Kunden, Status <span class="op">=</span> <span class="str">"Aktiv"</span>)
+
+<span class="cm">// Datensatz speichern</span>
+<span class="fn">Patch</span>(Auftraege, <span class="fn">Defaults</span>(Auftraege), {
+    Titel: txtTitel.Text,
+    Status: <span class="str">"Neu"</span>,
+    Erstellt: <span class="fn">Now</span>()
+})
+
+<span class="cm">// Zwischen Screens navigieren</span>
+<span class="fn">Navigate</span>(Screen_Detail, <span class="fn">ScreenTransition</span>.Fade)
+
+<span class="cm">// Bedingte Sichtbarkeit eines Controls</span>
+<span class="kw">If</span>(Rolle.Selected.Value <span class="op">=</span> <span class="str">"Admin"</span>, <span class="kw">true</span>, <span class="kw">false</span>)
+
+<span class="cm">// Datensatz löschen</span>
+<span class="fn">Remove</span>(Auftraege, Gallery1.Selected)</div>
+      <div class="ex-grid">
+        <div class="ex-box ex-scenario"><div class="ex-lbl">Szenario</div><div>Mitarbeiter füllt Formular aus → App validiert → speichert in SharePoint Liste</div></div>
+        <div class="ex-box ex-result"><div class="ex-lbl">Formeln</div><div class="ex-val">Patch() + Notify()</div><div style="font-size:12px;margin-top:3px">Schreiben + Erfolgsmeldung</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Typische Anwendungsfälle</div>
+        <div class="card-sub">Was baut man mit Power Apps in der Praxis?</div>
+        <div class="card-badges"><span class="badge b-easy">Praxis</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <div class="use-case-grid">
+        <div class="uc-chip"><span class="uc-icon">🏖️</span> Urlaubsantrag & -genehmigung</div>
+        <div class="uc-chip"><span class="uc-icon">🔧</span> Wartungs- / Schadensmeldung</div>
+        <div class="uc-chip"><span class="uc-icon">📦</span> Inventar / Lagererfassung</div>
+        <div class="uc-chip"><span class="uc-icon">🧾</span> Ausgabenabrechnung</div>
+        <div class="uc-chip"><span class="uc-icon">🏥</span> Mitarbeiter-Onboarding</div>
+        <div class="uc-chip"><span class="uc-icon">📋</span> Inspektions-Checklisten</div>
+        <div class="uc-chip"><span class="uc-icon">📞</span> Kundenbesuche / CRM-Light</div>
+        <div class="uc-chip"><span class="uc-icon">🚗</span> Fuhrparkverwaltung</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-apps" onclick="markDone('apps',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ POWER AUTOMATE ═══════════════════ -->
+<div class="page" id="page-automate">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--automate-blue-bg);color:var(--automate-blue);border-color:var(--automate-blue-border)">⚙️ Power Automate</span>
+    <h2>Power Automate</h2>
+    <p>Prozesse und Workflows automatisieren – von einfachen Genehmigungen bis zu RPA-Robotern.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Flow-Typen im Überblick</div>
+        <div class="card-sub">Cloud Flows, Desktop Flows und Process Mining</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <table>
+        <thead><tr><th>Flow-Typ</th><th>Läuft…</th><th>Trigger</th><th>Typischer Einsatz</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Automated Cloud Flow</strong></td><td>In der Cloud</td><td>Ereignis (z.B. neue E-Mail)</td><td>Benachrichtigungen, Datenintegration</td></tr>
+          <tr><td><strong>Instant Cloud Flow</strong></td><td>In der Cloud</td><td>Manuell / Button / App</td><td>Genehmigungen, Daten senden</td></tr>
+          <tr><td><strong>Scheduled Cloud Flow</strong></td><td>In der Cloud</td><td>Zeitplan (täglich, wöchentl.)</td><td>Reports, Datensynchronisation</td></tr>
+          <tr><td><strong>Desktop Flow (RPA)</strong></td><td>Auf dem PC</td><td>Cloud Flow oder manuell</td><td>Legacy-Systeme ohne API, SAP GUI</td></tr>
+          <tr><td><strong>Business Process Flow</strong></td><td>In Dataverse</td><td>Datensatz-Stufen</td><td>Guided CRM-Prozesse</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Aufbau eines Cloud Flows</div>
+        <div class="card-sub">Trigger → Aktionen → Bedingungen → Schleifen</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Jeder Cloud Flow besteht aus genau einem <strong>Trigger</strong> (was startet den Flow?) und beliebig vielen <strong>Aktionen</strong>. Steuerelement-Aktionen wie <em>Bedingung</em>, <em>Schleife</em> und <em>Scope</em> ermöglichen Logik.</p>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Trigger wählen</div><div class="step-desc">z.B. „Wenn ein Element in SharePoint erstellt wird" oder „Täglich um 08:00 Uhr"</div></div></li>
+        <li class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Dynamische Inhalte nutzen</div><div class="step-desc">Ausgaben des Triggers (z.B. E-Mail-Betreff, Datei-Name) in späteren Schritten verwenden</div></div></li>
+        <li class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Bedingungen & Schleifen</div><div class="step-desc">„Condition" für Ja/Nein-Verzweigungen; „Apply to each" für Listen; „Do until" für Warteschleifen</div></div></li>
+        <li class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Aktionen ausführen</div><div class="step-desc">E-Mail senden, Dataverse-Datensatz anlegen, Teams-Nachricht, HTTP-Aufruf, …</div></div></li>
+        <li class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Fehlerbehandlung</div><div class="step-desc">Scope + „Configure run after" für Try/Catch-Pattern; Flow-History für Debugging</div></div></li>
+      </ul>
+
+      <div class="sec-lbl">Beispiel: Genehmigungsworkflow</div>
+      <div class="code-block"><span class="cm">// Trigger: Neuer Datensatz in Dataverse-Tabelle "Urlaubsanträge"</span>
+
+<span class="fn">Genehmigung senden</span>: Start and wait for an approval
+  → Typ: <span class="str">"Approve/Reject – First to respond"</span>
+  → An: <span class="kw">manager@firma.de</span>
+  → Details: <span class="str">"Urlaubsantrag von "</span> + triggerBody/Mitarbeiter
+
+<span class="kw">Condition</span>: Outcome <span class="op">is equal to</span> <span class="str">"Approve"</span>
+  Ja  → Dataverse: Status auf <span class="str">"Genehmigt"</span> setzen
+         + E-Mail an Mitarbeiter: <span class="str">"Urlaub genehmigt ✅"</span>
+  Nein → Status auf <span class="str">"Abgelehnt"</span> setzen
+          + E-Mail mit Begründung</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Desktop Flows & RPA</div>
+        <div class="card-sub">Robotic Process Automation – Legacy-Systeme automatisieren</div>
+        <div class="card-badges"><span class="badge b-adv">Fortgeschritten</span><span class="badge b-cat">RPA</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Desktop Flows automatisieren <strong>Aktionen auf dem Windows-Desktop</strong>: Klicks, Tastatureingaben, Fensterinteraktionen – auch in Anwendungen ohne API (SAP GUI, alte Windows-Programme, Webseiten ohne API).</p>
+      <table>
+        <thead><tr><th>Modus</th><th>Bedeutung</th><th>Wann?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Attended</strong></td><td>Läuft auf dem aktiven PC des Nutzers</td><td>Wenn Benutzerinteraktion nötig (Login, CAPTCHA)</td></tr>
+          <tr><td><strong>Unattended</strong></td><td>Läuft auf einem dedizierten Bot-PC</td><td>Nächtliche Batch-Jobs, vollständig automatisiert</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-warn"><span class="ib-icon">⚠️</span><div>Unattended Desktop Flows erfordern ein <strong>Premium-Addon</strong> (Power Automate Premium oder Process). Für einfache Cloud-Flows reicht oft das M365-Lizenzrecht.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Expressions – Ausdrücke in Flows</div>
+        <div class="card-sub">Daten transformieren mit der Expression-Sprache</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Überall wo im Flow ein Wert erwartet wird, kann man statt eines fixen Werts einen <strong>Ausdruck</strong> eingeben. Die Sprache ist Azure Logic Apps Expression Language.</p>
+      <div class="code-block"><span class="cm">// Aktuelles Datum formatiert</span>
+<span class="fn">formatDateTime</span>(<span class="fn">utcNow</span>(), <span class="str">'dd.MM.yyyy'</span>)
+
+<span class="cm">// Text zusammensetzen</span>
+<span class="fn">concat</span>(<span class="str">'Hallo '</span>, triggerBody()?[<span class="str">'Vorname'</span>], <span class="str">'!'</span>)
+
+<span class="cm">// Bedingung: Leer-Prüfung</span>
+<span class="fn">empty</span>(body(<span class="str">'Get_items'</span>)?[<span class="str">'value'</span>])
+
+<span class="cm">// Zahl formatieren</span>
+<span class="fn">formatNumber</span>(variables(<span class="str">'Betrag'</span>), <span class="str">'N2'</span>, <span class="str">'de-DE'</span>)
+
+<span class="cm">// Erstes Element einer Liste</span>
+<span class="fn">first</span>(body(<span class="str">'Get_items'</span>)?[<span class="str">'value'</span>])</div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-automate" onclick="markDone('automate',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ POWER PAGES ═══════════════════ -->
+<div class="page" id="page-pages">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--pages-green-bg);color:var(--pages-green);border-color:var(--pages-green-border)">🌐 Power Pages</span>
+    <h2>Power Pages</h2>
+    <p>Externe Websites und Self-Service-Portale – für Kunden, Partner und Bürger.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Was ist Power Pages?</div>
+        <div class="card-sub">Low-Code Webportale mit Dataverse-Backend</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <p class="expl">Power Pages (früher <em>Power Apps Portals</em>) ermöglicht den Aufbau öffentlicher oder authentifizierter Websites, die direkt auf <strong>Dataverse-Daten</strong> zugreifen. Externe Benutzer können sich registrieren, Formulare ausfüllen und Daten einsehen.</p>
+      <div class="ex-grid">
+        <div class="ex-box ex-scenario"><div class="ex-lbl">Typische Portale</div><div>• Kundenportal (Tickets, Status)<br>• Lieferantenportal<br>• Bürgerportal (Behörden)<br>• Partnerportal</div></div>
+        <div class="ex-box ex-result"><div class="ex-lbl">Kernfunktionen</div><div>• Authentifizierung (AAD, Social)<br>• Formulare mit Dataverse<br>• Listenansichten<br>• Mehrspr. Unterstützung</div></div>
+      </div>
+      <div class="ib ib-warn"><span class="ib-icon">⚠️</span><div>Power Pages ist das einzige Tool der Power Platform, das <strong>ausschließlich Dataverse</strong> als Datenquelle nutzt. SharePoint oder SQL sind nicht direkt anbindbar – ggf. über Power Automate als Zwischenschicht.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Seitenerstellung & Design Studio</div>
+        <div class="card-sub">Der Pages Design Studio & Liquid-Templates</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Das <strong>Power Pages Design Studio</strong> bietet einen visuellen Editor für Seiten, Themes und Komponenten. Für komplexere Logik wird <strong>Liquid</strong> verwendet – eine Template-Sprache für dynamische Inhalte.</p>
+      <div class="code-block"><span class="cm">{% comment %} Liquid-Beispiel: Aktuellen Benutzer begrüßen {% endcomment %}</span>
+{% <span class="kw">if</span> user %}
+  <span class="fn">&lt;h2&gt;</span>Hallo, {{ user.fullname }}!<span class="fn">&lt;/h2&gt;</span>
+  <span class="fn">&lt;p&gt;</span>Deine offenen Anfragen: {{ user.incidents.size }}<span class="fn">&lt;/p&gt;</span>
+{% <span class="kw">else</span> %}
+  <span class="fn">&lt;p&gt;</span>Bitte melde dich an.<span class="fn">&lt;/p&gt;</span>
+{% <span class="kw">endif</span> %}</div>
+      <div class="ib ib-tip"><span class="ib-icon">💡</span><div>Für einfache Portale reicht das Design Studio vollkommen aus. Liquid und Web Templates werden erst bei komplexer Darstellungslogik oder individuellen Layouts benötigt.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Authentifizierung & Sicherheit</div>
+        <div class="card-sub">Wer darf was sehen? – Tabellen-Berechtigungen und Rollen</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Konzept</th><th>Funktion</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Web Roles</strong></td><td>Rolle, die einem Portal-User zugewiesen wird (z.B. "Kunde", "Partner-Admin")</td></tr>
+          <tr><td><strong>Table Permissions</strong></td><td>Steuert für welche Dataverse-Tabelle eine Rolle Lese-/Schreib-/Löschrechte hat</td></tr>
+          <tr><td><strong>Authentifizierungsanbieter</strong></td><td>Azure AD/Entra ID, Microsoft Accounts, Google, LinkedIn, lokale Registrierung</td></tr>
+          <tr><td><strong>Anonyme Nutzer</strong></td><td>Portale können auch ohne Login öffentlich zugänglich sein</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-pages" onclick="markDone('pages',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ COPILOT STUDIO ═══════════════════ -->
+<div class="page" id="page-copilot">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--copilot-amber-bg);color:var(--copilot-amber);border-color:var(--copilot-amber-border)">🤖 Copilot Studio</span>
+    <h2>Copilot Studio</h2>
+    <p>KI-Chatbots und Copiloten erstellen, anpassen und in bestehende Kanäle integrieren.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Was ist Copilot Studio?</div>
+        <div class="card-sub">Von Power Virtual Agents zu generativer KI</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <p class="expl">Copilot Studio (früher <em>Power Virtual Agents</em>) ist ein Low-Code-Tool zum Erstellen von <strong>KI-Chatbots</strong> und zur Anpassung von <strong>Microsoft 365 Copilot</strong>. Es kombiniert klassische regelbasierte Konversationsflows mit generativer KI (GPT).</p>
+      <table>
+        <thead><tr><th>Modus</th><th>Beschreibung</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Klassischer Bot</strong></td><td>Themen-basiert: Trigger-Phrasen → vordefinierte Dialog-Trees → Aktionen</td></tr>
+          <tr><td><strong>Generativer Modus</strong></td><td>KI beantwortet Fragen direkt aus Wissensdatenquellen (Websites, Sharepoint, Dateien)</td></tr>
+          <tr><td><strong>M365 Copilot Erweiterung</strong></td><td>Eigene Plugins / Copilot Actions für den Unternehmens-Copiloten erstellen</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Aufbau eines Bots: Themen & Topics</div>
+        <div class="card-sub">Trigger, Dialog-Nodes und Aktionsaufrufe</div>
+        <div class="card-badges"><span class="badge b-med">Mittel</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Trigger Phrases definieren</div><div class="step-desc">Welche Nutzeräußerungen starten dieses Thema? z.B. "Urlaub beantragen", "Wo ist meine Bestellung?"</div></div></li>
+        <li class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Dialog-Nodes aufbauen</div><div class="step-desc">Fragen stellen, Variablen befüllen, Bedingungen prüfen, Nachrichten ausgeben</div></div></li>
+        <li class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Power Automate-Flow aufrufen</div><div class="step-desc">Für Datenbankabfragen, externe API-Calls oder E-Mails → Flow gibt Ergebnis zurück</div></div></li>
+        <li class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Kanal publizieren</div><div class="step-desc">Teams, Website, SharePoint, Dynamics 365, Telegram, Slack uvm.</div></div></li>
+      </ul>
+      <div class="ib ib-tip"><span class="ib-icon">💡</span><div>Mit <strong>„Generative Antworten"</strong> (Generative Answers) kann der Bot Fragen automatisch aus einer SharePoint-Bibliothek oder Website beantworten – ohne manuelles Anlegen von Themen.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Anwendungsfälle</div>
+        <div class="card-sub">Wo macht ein Bot Sinn?</div>
+        <div class="card-badges"><span class="badge b-easy">Praxis</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <div class="use-case-grid">
+        <div class="uc-chip"><span class="uc-icon">🆘</span> IT-Helpdesk (Ticket erstellen)</div>
+        <div class="uc-chip"><span class="uc-icon">📚</span> HR-FAQ-Bot (Urlaub, Gehalt)</div>
+        <div class="uc-chip"><span class="uc-icon">📦</span> Bestellstatus-Auskunft</div>
+        <div class="uc-chip"><span class="uc-icon">🔐</span> Passwort-Reset-Prozess</div>
+        <div class="uc-chip"><span class="uc-icon">📝</span> Onboarding-Assistent</div>
+        <div class="uc-chip"><span class="uc-icon">🌍</span> Kundendienst-Bot (Website)</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-copilot" onclick="markDone('copilot',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ DATAVERSE ═══════════════════ -->
+<div class="page" id="page-dataverse">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--dataverse-teal-bg);color:var(--dataverse-teal);border-color:var(--dataverse-teal-border)">🗄️ Dataverse</span>
+    <h2>Dataverse</h2>
+    <p>Die zentrale Datenbankplattform der Power Platform – sicher, skalierbar, tief integriert.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Was ist Dataverse?</div>
+        <div class="card-sub">Mehr als eine Datenbank – eine Geschäftsdatenplattform</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <p class="expl">Dataverse ist ein <strong>SaaS-Datenbankdienst</strong> auf Basis von Azure SQL + Azure Storage. Im Gegensatz zu einer rohen Datenbank bietet Dataverse eingebaute Geschäftslogik, Sicherheit, Audit-Trails und sofortige REST-APIs.</p>
+      <table>
+        <thead><tr><th>Feature</th><th>Beschreibung</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Tabellen</strong></td><td>Entsprechen Datenbanktabellen; es gibt Standard- (z.B. Account, Contact) und Custom-Tabellen</td></tr>
+          <tr><td><strong>Spaltentypen</strong></td><td>Text, Zahl, Datum, Lookup, Choice, Ja/Nein, Datei, Bild, Formel, Rollup uvm.</td></tr>
+          <tr><td><strong>Beziehungen</strong></td><td>1:N, N:N und Hierarchie-Beziehungen direkt in der Oberfläche konfigurierbar</td></tr>
+          <tr><td><strong>Business Rules</strong></td><td>Validierungsregeln und Feld-Sichtbarkeit ohne Code direkt auf Tabelle definieren</td></tr>
+          <tr><td><strong>Plugins / Cloud Flows</strong></td><td>Serverside-Logik bei Datensatz-Ereignissen (Create, Update, Delete)</td></tr>
+          <tr><td><strong>Sicherheitsrollen</strong></td><td>Granulare Zugriffssteuerung auf Tabellen-, Zeilen- und Spaltenebene</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Dataverse vs. SharePoint-Listen</div>
+        <div class="card-sub">Wann Dataverse, wann SharePoint?</div>
+        <div class="card-badges"><span class="badge b-med">Entscheidung</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th></th><th>SharePoint-Liste</th><th>Dataverse</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lizenz</strong></td><td>In M365 enthalten</td><td>Erfordert Power Apps / Dataverse-Lizenz</td></tr>
+          <tr><td><strong>Datenmenge</strong></td><td>Bis ~30 Mio. Elemente (mit Hürden)</td><td>Skaliert bis Milliardenbereich</td></tr>
+          <tr><td><strong>Beziehungen</strong></td><td>Eingeschränkt (Lookup-Spalten)</td><td>Vollständige relationale Beziehungen</td></tr>
+          <tr><td><strong>Geschäftslogik</strong></td><td>Sehr begrenzt</td><td>Business Rules, Plugins, Rollup-Felder</td></tr>
+          <tr><td><strong>Sicherheit</strong></td><td>SharePoint-Gruppen (Item-Level)</td><td>Rollenbasiert bis auf Feldebene</td></tr>
+          <tr><td><strong>Offline-fähig</strong></td><td>Nein</td><td>Ja (mit Mobile App)</td></tr>
+          <tr><td><strong>Empfehlung</strong></td><td>Einfache Listen, Dokumente, Teams-Integration</td><td>Komplexe App-Backends, CRM, Portale</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Dataverse for Teams</div>
+        <div class="card-sub">Kostenlose Dataverse-Variante direkt in Microsoft Teams</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl"><strong>Dataverse for Teams</strong> ist eine abgespeckte Version von Dataverse, die direkt in Teams-Umgebungen integriert ist und im M365-Plan enthalten ist. Ideal für Team-interne Apps ohne Extra-Lizenz.</p>
+      <div class="ex-grid">
+        <div class="ex-box ex-scenario"><div class="ex-lbl">Dataverse for Teams</div><div>✅ In M365 enthalten<br>✅ Gut für Team-Apps<br>❌ Max. 1 Mio. Zeilen<br>❌ Nur in Teams nutzbar</div></div>
+        <div class="ex-box ex-result"><div class="ex-lbl">Vollständiges Dataverse</div><div class="ex-val">Power Apps Premium</div><div style="font-size:12px;margin-top:3px">Unbegrenzt, alle Features</div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-dataverse" onclick="markDone('dataverse',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ CONNECTORS ═══════════════════ -->
+<div class="page" id="page-connectors">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--surface2);color:var(--text-sec);border-color:var(--border)">🔌 Connectors</span>
+    <h2>Connectors & APIs</h2>
+    <p>900+ Verbindungen zu Microsoft-Diensten, Drittanbieter-Apps und eigenen APIs.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Standard vs. Premium Connectors</div>
+        <div class="card-sub">Der Unterschied bestimmt die Lizenzanforderung</div>
+        <div class="card-badges"><span class="badge b-easy">Einstieg</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <table>
+        <thead><tr><th></th><th>Standard Connectors</th><th>Premium Connectors</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Beispiele</strong></td><td>SharePoint, Teams, Outlook, Excel, OneDrive, Forms</td><td>Dataverse, SQL, HTTP, Salesforce, SAP, ServiceNow</td></tr>
+          <tr><td><strong>Lizenz</strong></td><td>In M365 / Office enthalten</td><td>Erfordert Power Apps / Automate Premium</td></tr>
+          <tr><td><strong>Erkennbar an</strong></td><td>Kein Blitz-Symbol</td><td>Blitz-Symbol ⚡ im Maker Portal</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-warn"><span class="ib-icon">⚠️</span><div>Sobald ein Flow oder eine App einen <strong>Premium-Connector</strong> enthält, benötigt <strong>jeder Nutzer</strong> dieser App/dieses Flows eine Premium-Lizenz – nicht nur der Ersteller!</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Wichtige Connectors im Überblick</div>
+        <div class="card-sub">Die meistgenutzten Verbindungen</div>
+        <div class="card-badges"><span class="badge b-easy">Referenz</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <div class="conn-list">
+        <div class="conn-item"><div class="conn-dot" style="background:#0078d4"></div>SharePoint</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#217346"></div>Excel Online</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#6264a7"></div>Teams</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#0072c6"></div>Outlook</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#741472"></div>Dataverse ⚡</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#cc2027"></div>SQL Server ⚡</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#00a1f1"></div>OneDrive</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#1565c0"></div>HTTP ⚡</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#009fd4"></div>Salesforce ⚡</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#0070f3"></div>Azure AD</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#f4a21e"></div>SAP ⚡</div>
+        <div class="conn-item"><div class="conn-dot" style="background:#81bc00"></div>ServiceNow ⚡</div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px">⚡ = Premium Connector</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Custom Connectors</div>
+        <div class="card-sub">Eigene REST-APIs einbinden</div>
+        <div class="card-badges"><span class="badge b-adv">Fortgeschritten</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <p class="expl">Wenn kein vorgefertigter Connector existiert, kann man jede <strong>REST-API</strong> als Custom Connector einbinden. Basis ist eine <strong>OpenAPI (Swagger)</strong>-Beschreibung.</p>
+      <ul class="steps">
+        <li class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">OpenAPI-Datei importieren oder manuell definieren</div><div class="step-desc">Endpunkte, Parameter und Auth-Typ (API Key, OAuth 2.0, Basic) festlegen</div></div></li>
+        <li class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Verbindung testen</div><div class="step-desc">Im Custom-Connector-Portal direkt API-Calls absetzen</div></div></li>
+        <li class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">In App / Flow verwenden</div><div class="step-desc">Custom Connector erscheint dann in der Connector-Auswahl wie ein nativer Connector</div></div></li>
+      </ul>
+      <div class="ib ib-tip"><span class="ib-icon">💡</span><div>Mit dem <strong>HTTP-Connector</strong> (Premium) kann man auch ohne Custom Connector direkt REST-Calls machen – ideal für schnelle Prototypen oder einmalige API-Abfragen.</div></div>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-connectors" onclick="markDone('connectors',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ LICENSING ═══════════════════ -->
+<div class="page" id="page-licensing">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--surface2);color:var(--text-sec);border-color:var(--border)">💰 Lizenzierung</span>
+    <h2>Lizenzierung & Grenzen</h2>
+    <p>Welche Lizenz braucht wer – und wo sind die wichtigsten technischen Limits?</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Lizenzübersicht</div>
+        <div class="card-sub">M365, Premium, Per App und Pay-as-you-go</div>
+        <div class="card-badges"><span class="badge b-easy">Wichtig</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <table>
+        <thead><tr><th>Lizenz</th><th>Enthält</th><th>Premium?</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Microsoft 365 / Office</strong></td><td>Standard-Connectors in Power Automate; Dataverse for Teams; Power Apps for Teams</td><td>❌</td></tr>
+          <tr><td><strong>Power Apps Premium</strong></td><td>Alle Connectors, volles Dataverse, alle Canvas & Model-Driven Apps</td><td>✅</td></tr>
+          <tr><td><strong>Power Apps per App</strong></td><td>Wie Premium, aber nur für 1 App pro Nutzer</td><td>✅</td></tr>
+          <tr><td><strong>Power Automate Premium</strong></td><td>Cloud Flows mit Premium-Connectors + attended Desktop Flows</td><td>✅</td></tr>
+          <tr><td><strong>Power Automate Process</strong></td><td>Unattended Desktop Flows (RPA Bot-Lizenzen)</td><td>✅</td></tr>
+          <tr><td><strong>Power Pages</strong></td><td>Lizenzierung nach Seitenaufrufen (angemeldete vs. anonyme Nutzer)</td><td>✅</td></tr>
+          <tr><td><strong>Copilot Studio</strong></td><td>Lizenzierung nach Nachrichten (Messages/Monat)</td><td>✅</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-note"><span class="ib-icon">ℹ️</span><div>Lizenzpreise und -bedingungen ändern sich regelmäßig. Immer die aktuellen Infos auf <strong>microsoft.com/licensing</strong> oder im Microsoft 365 Admin Center prüfen.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Wichtige technische Limits</div>
+        <div class="card-sub">API-Limits, Delegation und Dataverse-Kapazität</div>
+        <div class="card-badges"><span class="badge b-med">Limits</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Bereich</th><th>Limit</th><th>Hinweis</th></tr></thead>
+        <tbody>
+          <tr><td>Power Apps – SharePoint Delegation</td><td>Max. 500 / 2.000 Datensätze</td><td>Filter müssen delegierbar sein (z.B. kein StartsWith bei Zahlen)</td></tr>
+          <tr><td>Power Automate – API-Calls / 24h</td><td>Je nach Lizenz 2.000–250.000</td><td>Wird pro User-Lizenz gepoolt</td></tr>
+          <tr><td>Cloud Flow – Max. Laufzeit</td><td>30 Tage</td><td>Genehmigungsflows können warten</td></tr>
+          <tr><td>Cloud Flow – Trigger-Interval</td><td>Min. 60 Sekunden (Standard)</td><td>Premium ermöglicht kürzere Intervalle</td></tr>
+          <tr><td>Dataverse – Datei-Attachments</td><td>Max. 128 MB pro Datei</td><td>Größere Dateien → SharePoint/Azure Blob</td></tr>
+          <tr><td>Power Pages – Dateiupload</td><td>Max. 10 MB (konfigurierbar)</td><td>Größere Dateien erfordern Azure Storage</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="done-btn" id="db-licensing" onclick="markDone('licensing',this)">☐ Als erledigt markieren</button>
+</div>
+
+<!-- ═══════════════════ SCENARIOS ═══════════════════ -->
+<div class="page" id="page-scenarios">
+  <div class="page-hd">
+    <span class="page-app-badge" style="background:var(--surface2);color:var(--text-sec);border-color:var(--border)">💡 Szenarien</span>
+    <h2>Szenarien & Best Practices</h2>
+    <p>Wie kombiniert man die Tools? Typische End-to-End-Lösungen und Architekturempfehlungen.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-hd open" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Szenario 1: Digitaler Genehmigungsprozess</div>
+        <div class="card-sub">Urlaubsantrag ohne Papier – End to End</div>
+        <div class="card-badges"><span class="badge b-easy">Praxis</span></div>
+      </div></div><div class="card-toggle open">▼</div>
+    </div>
+    <div class="card-body open">
+      <ul class="steps">
+        <li class="step"><div class="step-num">📱</div><div class="step-body"><div class="step-title">Power Apps: Canvas App</div><div class="step-desc">Mitarbeiter füllt Formular aus (Von/Bis, Grund) → Daten werden in Dataverse gespeichert</div></div></li>
+        <li class="step"><div class="step-num">⚙️</div><div class="step-body"><div class="step-title">Power Automate: Genehmigungsflow</div><div class="step-desc">Trigger: neuer Datensatz in Dataverse → Approval an Vorgesetzten → Teams-Benachrichtigung</div></div></li>
+        <li class="step"><div class="step-num">🗄️</div><div class="step-body"><div class="step-title">Dataverse: Statusupdate</div><div class="step-desc">Bei Genehmigung: Status → "Genehmigt", bei Ablehnung: Status → "Abgelehnt" + Kommentar</div></div></li>
+        <li class="step"><div class="step-num">📱</div><div class="step-body"><div class="step-title">Power Apps: Rückmeldung</div><div class="step-desc">Mitarbeiter sieht Status in der App + bekommt Outlook-Mail mit Ergebnis</div></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Szenario 2: Externer Kundenservice</div>
+        <div class="card-sub">Kombination aus Power Pages + Copilot Studio + Dataverse</div>
+        <div class="card-badges"><span class="badge b-med">Praxis</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <ul class="steps">
+        <li class="step"><div class="step-num">🌐</div><div class="step-body"><div class="step-title">Power Pages: Kundenportal</div><div class="step-desc">Kunde loggt sich ein, sieht seine Servicefälle, erstellt neue Anfragen</div></div></li>
+        <li class="step"><div class="step-num">🤖</div><div class="step-body"><div class="step-title">Copilot Studio: Chatbot</div><div class="step-desc">Bot beantwortet häufige Fragen (FAQ), eskaliert komplexe Fälle an Mitarbeiter</div></div></li>
+        <li class="step"><div class="step-num">⚙️</div><div class="step-body"><div class="step-title">Power Automate: Routing</div><div class="step-desc">Neuer Fall → Kategorisierung → Zuweisung an richtiges Team → Benachrichtigung</div></div></li>
+        <li class="step"><div class="step-num">🗄️</div><div class="step-body"><div class="step-title">Dataverse: Single Source of Truth</div><div class="step-desc">Alle Daten (Fälle, Kunden, Kommentare) an einem Ort – sichtbar in Portal + intern</div></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd" onclick="toggleCard(this)">
+      <div class="card-hd-left"><div>
+        <div class="card-title">Best Practices & Governance</div>
+        <div class="card-sub">Was sollte man von Anfang an richtig machen?</div>
+        <div class="card-badges"><span class="badge b-adv">Governance</span></div>
+      </div></div><div class="card-toggle">▼</div>
+    </div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th>Thema</th><th>Empfehlung</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Umgebungen</strong></td><td>Dev / Test / Production trennen – nie direkt in Production entwickeln</td></tr>
+          <tr><td><strong>Naming Conventions</strong></td><td>z.B. <code>[Team]_[App]_[Version]</code> für Apps, <code>FlowName_Trigger_Beschreibung</code> für Flows</td></tr>
+          <tr><td><strong>DLP Policies</strong></td><td>Data Loss Prevention Policies im Admin Center setzen – Premium-Connectors einschränken</td></tr>
+          <tr><td><strong>Solutions</strong></td><td>Alle Artefakte in einer Solution verwalten → ermöglicht sauberes Deployment per ALM</td></tr>
+          <tr><td><strong>Fehlerbehandlung</strong></td><td>In jedem Flow Scope + Configure Run After implementieren (Try/Catch-Pattern)</td></tr>
+          <tr><td><strong>Dokumentation</strong></td><td>Flows kommentieren, App-Screens beschriften, Dataverse-Spalten mit Beschreibung versehen</td></tr>
+          <tr><td><strong>Co-Ownership</strong></td><td>Nie nur ein Owner – immer mind. 2 Personen als Co-Owner eintragen</td></tr>
+        </tbody>
+      </table>
+      <div class="ib ib-tip"><span class="ib-icon">💡</span><div>Das <strong>Center of Excellence (CoE) Starter Kit</strong> von Microsoft ist ein kostenloses Solution-Paket mit Governance-Tools, Monitoring-Dashboards und Adoption-Metriken – sehr empfehlenswert für Unternehmen mit mehr als 10 Makern.</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+</div><!-- /layout -->
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const TRACKABLE = ['apps','automate','pages','copilot','dataverse','connectors','licensing'];
+let doneState = JSON.parse(localStorage.getItem('pp_done') || '{}');
+let currentPage = 'overview';
+
+function saveDone() { localStorage.setItem('pp_done', JSON.stringify(doneState)); }
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if ((n.getAttribute('onclick') || '').includes("'" + id + "'")) n.classList.add('active');
+    });
+  }
+  // Hide search
+  document.getElementById('page-search').classList.remove('active');
+  document.getElementById('g-search').value = '';
+  currentPage = id;
+}
+
+// ── Card toggle ────────────────────────────────────────────────────────────
+function toggleCard(hd) {
+  const body = hd.nextElementSibling;
+  const tog = hd.querySelector('.card-toggle');
+  body.classList.toggle('open');
+  hd.classList.toggle('open');
+  tog.classList.toggle('open');
+}
+
+// ── Done tracking ──────────────────────────────────────────────────────────
+function markDone(id, btn) {
+  doneState[id] = !doneState[id];
+  saveDone();
+  renderDone();
+}
+
+function renderDone() {
+  const count = TRACKABLE.filter(k => doneState[k]).length;
+  document.getElementById('prog-txt').textContent = count + ' / ' + TRACKABLE.length;
+  document.getElementById('prog-fill').style.width = Math.round(count / TRACKABLE.length * 100) + '%';
+
+  TRACKABLE.forEach(id => {
+    const btn = document.getElementById('db-' + id);
+    if (btn) {
+      if (doneState[id]) { btn.textContent = '☑ Erledigt'; btn.classList.add('active'); }
+      else { btn.textContent = '☐ Als erledigt markieren'; btn.classList.remove('active'); }
+    }
+  });
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const oc = item.getAttribute('onclick') || '';
+    const m = oc.match(/'([^']+)'/);
+    let ck = item.querySelector('.nav-ck');
+    if (!ck) return;
+    if (m && TRACKABLE.includes(m[1])) {
+      ck.style.display = 'flex';
+      ck.textContent = doneState[m[1]] ? '✓' : '';
+      if (doneState[m[1]]) {
+        ck.style.background = 'var(--green)';
+        ck.style.color = '#fff';
+        ck.style.borderColor = 'var(--green)';
+      } else {
+        ck.style.background = '';
+        ck.style.color = 'var(--text-muted)';
+        ck.style.borderColor = '';
+      }
+    } else { ck.style.display = 'none'; }
+  });
+}
+
+// ── Search ─────────────────────────────────────────────────────────────────
+function doSearch(q) {
+  q = q.trim();
+  if (!q) {
+    document.getElementById('page-search').classList.remove('active');
+    nav(currentPage, null);
+    return;
+  }
+  const ql = q.toLowerCase();
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const srPage = document.getElementById('page-search');
+  srPage.classList.add('active');
+
+  const results = [];
+  document.querySelectorAll('.card').forEach(card => {
+    const name = card.querySelector('.card-title')?.textContent || '';
+    const sub = card.querySelector('.card-sub')?.textContent || '';
+    const body = card.querySelector('.card-body')?.textContent || '';
+    const haystack = (name + ' ' + sub + ' ' + body).toLowerCase();
+    if (haystack.includes(ql)) {
+      const page = card.closest('.page');
+      const pageId = page ? page.id.replace('page-','') : '';
+      results.push({ name, sub, pageId, card });
+    }
+  });
+
+  document.getElementById('sr-heading').textContent = 'Suche: "' + q + '" – ' + results.length + ' Ergebnis' + (results.length !== 1 ? 'se' : '');
+
+  const hi = t => t.replace(new RegExp(ql.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => '<mark>' + m + '</mark>');
+  const pnames = {overview:'Überblick',apps:'Power Apps',automate:'Power Automate',pages:'Power Pages',copilot:'Copilot Studio',dataverse:'Dataverse',connectors:'Connectors & APIs',licensing:'Lizenzierung',scenarios:'Szenarien'};
+
+  document.getElementById('sr-list').innerHTML = results.length
+    ? results.map(r => `<div class="sr-item" onclick="goToCard('${r.pageId}','${r.name}')">
+        <div class="sr-name">${hi(r.name)}</div>
+        <div class="sr-meta">${pnames[r.pageId] || r.pageId} · ${hi(r.sub)}</div>
+      </div>`).join('')
+    : '<div style="color:var(--text-muted);font-size:13px">Keine Ergebnisse gefunden.</div>';
+}
+
+function goToCard(pageId, name) {
+  document.getElementById('g-search').value = '';
+  nav(pageId, null);
+  setTimeout(() => {
+    document.querySelectorAll('.card').forEach(card => {
+      if ((card.querySelector('.card-title')?.textContent || '') === name) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const body = card.querySelector('.card-body');
+        const hd = card.querySelector('.card-hd');
+        const tog = card.querySelector('.card-toggle');
+        if (body && !body.classList.contains('open')) {
+          body.classList.add('open');
+          hd?.classList.add('open');
+          tog?.classList.add('open');
+        }
+      }
+    });
+  }, 120);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+renderDone();
+</script>
+</body>
+</html>
