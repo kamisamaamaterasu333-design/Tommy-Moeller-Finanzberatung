@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REST APIs & Webhooks | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-200:#BFDBFE;--blue-300:#93C5FD;
+    --blue-400:#60A5FA;--blue-600:#2563EB;--blue-700:#1D4ED8;--blue-800:#1E40AF;--blue-900:#1E3A8A;
+    --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;
+    --gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-900:#111827;
+    --amber-50:#FFFBEB;--amber-100:#FEF3C7;--amber-600:#D97706;--amber-700:#B45309;
+    --green-50:#F0FDF4;--green-100:#DCFCE7;--green-600:#16A34A;--green-700:#15803D;
+    --purple-50:#FAF5FF;--purple-100:#F3E8FF;--purple-600:#9333EA;--purple-700:#7E22CE;
+    --red-50:#FFF1F2;--red-100:#FFE4E6;--red-600:#DC2626;
+    --teal-50:#F0FDFA;--teal-100:#CCFBF1;--teal-600:#0D9488;--teal-700:#0F766E;
+    --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+  .site-header{background:linear-gradient(135deg,#0C1A2E 0%,#0F2D4A 50%,#0F766E 100%);color:white;padding:0;}
+  .header-inner{max-width:900px;margin:0 auto;padding:48px 24px 56px;}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);}
+  .header-badge::before{content:'';width:6px;height:6px;background:#5EEAD4;border-radius:50%;display:inline-block;}
+  .site-header h1{font-family:var(--font-serif);font-size:clamp(28px,5vw,40px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+  .site-header p.subtitle{font-size:16px;color:rgba(255,255,255,.75);max-width:600px;line-height:1.6;}
+  .nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .nav-inner{max-width:900px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+  .nav-inner::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:14px 18px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+  .nav-tab:hover{color:var(--blue-700);}.nav-tab.active{color:var(--blue-700);border-bottom-color:var(--blue-600);}
+  main{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section{display:none;}.section.active{display:block;}
+  .card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:28px 32px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h2{font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--blue-900);margin-bottom:12px;}
+  .card h3{font-size:15px;font-weight:600;color:var(--gray-700);margin:20px 0 8px;}
+  .card h3:first-of-type{margin-top:10px;}
+  .card p{color:var(--gray-600);margin-bottom:12px;}
+  .card p:last-child{margin-bottom:0;}
+  .section-title{font-family:var(--font-serif);font-size:24px;font-weight:600;color:var(--blue-900);margin-bottom:6px;}
+  .section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+  .info-box{border-radius:8px;padding:14px 18px;margin:14px 0;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.6;}
+  .info-box .icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .info-box.blue{background:var(--blue-50);color:var(--blue-800);border-left:3px solid var(--blue-400);}
+  .info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid #F59E0B;}
+  .info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #22C55E;}
+  .info-box.teal{background:var(--teal-50);color:var(--teal-700);border-left:3px solid #14B8A6;}
+  .info-box.purple{background:var(--purple-50);color:var(--purple-700);border-left:3px solid #A855F7;}
+
+  /* Code blocks */
+  .code-block{background:#0D1117;border-radius:10px;overflow:hidden;margin:14px 0;}
+  .code-header{background:#161B22;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .code-lang{font-size:11px;font-weight:600;color:#8B949E;text-transform:uppercase;letter-spacing:.06em;}
+  .code-copy{background:none;border:1px solid #30363D;color:#8B949E;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:inherit;}
+  .code-copy:hover{background:#21262D;color:white;}
+  .code-body{padding:18px;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;color:#C9D1D9;white-space:pre;overflow-x:auto;}
+  .kw{color:#FF7B72;}.fn{color:#D2A8FF;}.str{color:#A5D6FF;}.cm{color:#8B949E;font-style:italic;}
+  .num{color:#79C0FF;}.key{color:#FFA657;}.val{color:#6EE7B7;}.meth{color:#FBBF24;}
+
+  /* HTTP method badges */
+  .http-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 0;}
+  .http-card{border-radius:10px;padding:16px;text-align:center;}
+  .http-card.get{background:#DCFCE7;border:1.5px solid #86EFAC;}
+  .http-card.post{background:#DBEAFE;border:1.5px solid #93C5FD;}
+  .http-card.put{background:#FEF3C7;border:1.5px solid #FCD34D;}
+  .http-card.delete{background:#FFE4E6;border:1.5px solid #FCA5A5;}
+  .http-card.patch{background:#F3E8FF;border:1.5px solid #C4B5FD;}
+  .http-badge{display:inline-block;font-family:'Courier New',monospace;font-weight:700;font-size:14px;padding:4px 10px;border-radius:6px;margin-bottom:8px;}
+  .http-card.get .http-badge{background:#16A34A;color:white;}
+  .http-card.post .http-badge{background:#2563EB;color:white;}
+  .http-card.put .http-badge{background:#D97706;color:white;}
+  .http-card.delete .http-badge{background:#DC2626;color:white;}
+  .http-card.patch .http-badge{background:#7C3AED;color:white;}
+  .http-card p{font-size:12px;color:var(--gray-600);margin:0;line-height:1.5;}
+
+  /* Status codes */
+  .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0;}
+  .status-item{border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;}
+  .status-item.s2{background:var(--green-50);border:1px solid #86EFAC;}
+  .status-item.s3{background:var(--blue-50);border:1px solid var(--blue-200);}
+  .status-item.s4{background:var(--amber-50);border:1px solid #FCD34D;}
+  .status-item.s5{background:var(--red-50);border:1px solid #FCA5A5;}
+  .status-code{font-family:'Courier New',monospace;font-size:15px;font-weight:700;flex-shrink:0;}
+  .status-item.s2 .status-code{color:var(--green-700);}
+  .status-item.s3 .status-code{color:var(--blue-700);}
+  .status-item.s4 .status-code{color:var(--amber-700);}
+  .status-item.s5 .status-code{color:var(--red-600);}
+  .status-desc{font-size:12.5px;color:var(--gray-600);}
+
+  /* Request builder */
+  .req-builder{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:24px 28px;margin-bottom:20px;}
+  .req-builder label{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;}
+  .req-builder select,.req-builder input,.req-builder textarea{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;margin-bottom:14px;outline:none;transition:border-color .12s;}
+  .req-builder select:focus,.req-builder input:focus,.req-builder textarea:focus{border-color:var(--blue-400);}
+  .req-builder textarea{font-family:'Courier New',monospace;min-height:80px;resize:vertical;}
+  .req-output{background:#0D1117;border-radius:8px;padding:16px;font-family:'Courier New',monospace;font-size:13px;color:#C9D1D9;white-space:pre-wrap;min-height:60px;margin-top:4px;word-break:break-all;}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--blue-600);color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+  .btn:hover{background:var(--blue-700);}
+  .btn.secondary{background:white;color:var(--blue-700);border:1.5px solid var(--blue-200);}
+  .btn.secondary:hover{background:var(--blue-50);}
+
+  /* Flow diagram */
+  .flow{display:flex;align-items:center;gap:0;margin:20px 0;flex-wrap:wrap;row-gap:14px;}
+  .flow-step{background:white;border:1.5px solid var(--blue-200);border-radius:10px;padding:14px 18px;flex:1;min-width:130px;text-align:center;}
+  .flow-step.teal{border-color:#5EEAD4;background:var(--teal-50);}
+  .flow-step.purple{border-color:#C4B5FD;background:var(--purple-50);}
+  .flow-step.green{border-color:#86EFAC;background:var(--green-50);}
+  .flow-step .step-icon{font-size:22px;display:block;margin-bottom:6px;}
+  .flow-step .step-label{font-size:12.5px;font-weight:600;color:var(--gray-800);}
+  .flow-step .step-sub{font-size:11px;color:var(--gray-500);margin-top:3px;}
+  .flow-arrow{padding:0 8px;color:var(--gray-400);font-size:18px;font-weight:600;flex-shrink:0;}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+  @media(max-width:600px){.compare-grid,.http-grid,.status-grid{grid-template-columns:1fr 1fr;}.flow{flex-direction:column;}.flow-arrow{transform:rotate(90deg);}}
+  @media(max-width:420px){.compare-grid{grid-template-columns:1fr;}}
+  .compare-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px 20px;background:white;}
+  .compare-card h4{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:8px;}
+  .compare-card ul{list-style:none;}
+  .compare-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;}
+  .compare-card ul li::before{content:'→';color:var(--blue-400);flex-shrink:0;font-size:12px;margin-top:2px;}
+  .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;margin-bottom:8px;}
+  .tag.blue{background:var(--blue-100);color:var(--blue-800);}
+  .tag.teal{background:var(--teal-100);color:var(--teal-700);}
+  .tag.purple{background:var(--purple-100);color:var(--purple-700);}
+  .tag.amber{background:var(--amber-100);color:var(--amber-700);}
+  .checklist{list-style:none;}
+  .checklist li{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:14px;color:var(--gray-700);}
+  .checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;}
+
+  /* Quiz */
+  .quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:24px 28px;margin-bottom:16px;}
+  .quiz-q{font-size:15px;font-weight:600;color:var(--gray-800);margin-bottom:16px;}
+  .quiz-options{display:flex;flex-direction:column;gap:10px;}
+  .quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 16px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+  .quiz-opt:hover{background:var(--blue-50);border-color:var(--blue-300);color:var(--blue-800);}
+  .quiz-opt.correct{background:var(--green-50);border-color:#22C55E;color:var(--green-700);}
+  .quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+  .quiz-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:6px;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+  .quiz-feedback.wrong{background:var(--red-50);color:var(--red-600);}
+  .quiz-score{background:var(--blue-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:20px;}
+  .quiz-score h3{font-size:22px;font-weight:600;margin-bottom:4px;}
+  .quiz-score p{color:rgba(255,255,255,.75);font-size:14px;}
+  .progress-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin-top:16px;overflow:hidden;}
+  .progress-fill{height:100%;background:#60A5FA;border-radius:4px;transition:width .3s;}
+  .site-footer{background:var(--gray-900);color:rgba(255,255,255,.55);text-align:center;padding:28px 24px;font-size:13px;}
+  .site-footer a{color:rgba(255,255,255,.75);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">Lernmodul · Web-Technologien</div>
+    <h1>REST APIs &amp; Webhooks verstehen</h1>
+    <p class="subtitle">Wie Apps miteinander kommunizieren: HTTP-Methoden, JSON, Authentifizierung, Webhooks – und wie du APIs in deinen Projekten nutzt (Supabase, Gemini, GitHub).</p>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('http')">HTTP &amp; JSON</button>
+    <button class="nav-tab" onclick="showSection('auth')">Authentifizierung</button>
+    <button class="nav-tab" onclick="showSection('webhooks')">Webhooks</button>
+    <button class="nav-tab" onclick="showSection('praxis')">Praxisfälle</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══ GRUNDLAGEN ══ -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Was ist eine REST API?</h2>
+  <p class="section-desc">Das Konzept hinter APIs – und warum du als Controller und Entwickler davon wissen musst.</p>
+
+  <div class="card">
+    <h2>APIs – die Sprache der modernen Softwarewelt</h2>
+    <p>Eine API (Application Programming Interface) ist eine definierte Schnittstelle, über die zwei Systeme miteinander kommunizieren. REST (Representational State Transfer) ist der heute dominante Architekturstil für Web-APIs.</p>
+    <div class="info-box blue">
+      <span class="icon">🍽️</span>
+      <span>Die beste Analogie: Du sitzt im Restaurant. Die Speisekarte ist die API-Dokumentation. Du (Client) gibst dem Kellner (API) deine Bestellung. Er bringt sie in die Küche (Server) und liefert das Ergebnis. Du musst nicht wissen, wie die Küche arbeitet.</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="step-icon">💻</span>
+        <div class="step-label">Client</div>
+        <div class="step-sub">Browser, App, Python-Skript</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step teal">
+        <span class="step-icon">📡</span>
+        <div class="step-label">HTTP Request</div>
+        <div class="step-sub">GET / POST / PUT / DELETE</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">
+        <span class="step-icon">⚙️</span>
+        <div class="step-label">API / Server</div>
+        <div class="step-sub">Supabase, GitHub, Gemini</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">
+        <span class="step-icon">📦</span>
+        <div class="step-label">HTTP Response</div>
+        <div class="step-sub">JSON + Status-Code</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>REST-Prinzipien</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">Ressourcen (URLs)</span>
+        <h4>Alles ist eine Ressource</h4>
+        <ul>
+          <li>/kunden – alle Kunden</li>
+          <li>/kunden/42 – Kunde mit ID 42</li>
+          <li>/kunden/42/vertraege – Verträge von Kunde 42</li>
+          <li>Substantive, nicht Verben in URLs</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag teal">Zustandslos (Stateless)</span>
+        <h4>Jeder Request ist unabhängig</h4>
+        <ul>
+          <li>Server speichert keinen Session-State</li>
+          <li>Jeder Request enthält alle nötigen Infos</li>
+          <li>Einfacher zu skalieren und zu cachen</li>
+          <li>Auth-Token muss jedes Mal mitgesendet werden</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <span class="icon">🔗</span>
+      <span>Deine Supabase-Datenbank auf tommy-moeller.de hat eine vollständige REST API – automatisch generiert für jede Tabelle. URL-Muster: <code>https://[projekt].supabase.co/rest/v1/[tabellenname]</code></span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HTTP & JSON ══ -->
+<div id="http" class="section">
+  <h2 class="section-title">HTTP-Methoden &amp; JSON</h2>
+  <p class="section-desc">Die Sprache von REST: Was GET, POST, PUT, DELETE bedeuten – und wie JSON-Daten aussehen.</p>
+
+  <div class="card">
+    <h2>HTTP-Methoden (Verben)</h2>
+    <div class="http-grid">
+      <div class="http-card get">
+        <div class="http-badge">GET</div>
+        <p>Daten abrufen. Keine Änderung am Server. Sicher und wiederholbar.</p>
+      </div>
+      <div class="http-card post">
+        <div class="http-badge">POST</div>
+        <p>Neuen Datensatz erstellen. Body enthält die neuen Daten als JSON.</p>
+      </div>
+      <div class="http-card put">
+        <div class="http-badge">PUT</div>
+        <p>Datensatz vollständig ersetzen. Alle Felder müssen mitgegeben werden.</p>
+      </div>
+      <div class="http-card patch">
+        <div class="http-badge">PATCH</div>
+        <p>Datensatz teilweise aktualisieren. Nur geänderte Felder nötig.</p>
+      </div>
+      <div class="http-card delete">
+        <div class="http-badge">DELETE</div>
+        <p>Datensatz löschen. Vorsicht: oft unwiderruflich!</p>
+      </div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">💡</span>
+      <span>Die Eselsbrücke: <strong>CRUD</strong> (Create/Read/Update/Delete) entspricht POST / GET / PUT+PATCH / DELETE. Das sind die vier Grundoperationen jeder Datenverwaltung.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>HTTP Status-Codes</h2>
+    <p>Der Server antwortet immer mit einem 3-stelligen Status-Code. Die erste Ziffer zeigt die Kategorie:</p>
+    <div class="status-grid">
+      <div class="status-item s2"><span class="status-code">200</span><span class="status-desc">OK – Anfrage erfolgreich</span></div>
+      <div class="status-item s2"><span class="status-code">201</span><span class="status-desc">Created – Ressource erstellt</span></div>
+      <div class="status-item s2"><span class="status-code">204</span><span class="status-desc">No Content – Erfolgreich, kein Rückgabewert</span></div>
+      <div class="status-item s3"><span class="status-code">301</span><span class="status-desc">Moved Permanently – Weitergeleitet</span></div>
+      <div class="status-item s4"><span class="status-code">400</span><span class="status-desc">Bad Request – Fehlerhafte Anfrage</span></div>
+      <div class="status-item s4"><span class="status-code">401</span><span class="status-desc">Unauthorized – Nicht authentifiziert</span></div>
+      <div class="status-item s4"><span class="status-code">403</span><span class="status-desc">Forbidden – Keine Berechtigung</span></div>
+      <div class="status-item s4"><span class="status-code">404</span><span class="status-desc">Not Found – Ressource nicht gefunden</span></div>
+      <div class="status-item s4"><span class="status-code">429</span><span class="status-desc">Too Many Requests – Rate Limit erreicht</span></div>
+      <div class="status-item s5"><span class="status-code">500</span><span class="status-desc">Internal Server Error – Serverfehler</span></div>
+      <div class="status-item s5"><span class="status-code">503</span><span class="status-desc">Service Unavailable – Server überlastet</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>JSON – das Datenformat von REST</h2>
+    <p>JSON (JavaScript Object Notation) ist das universelle Datenaustauschformat. Leicht lesbar für Menschen und Maschinen.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON – Beispiel Kreditportfolio</span><button class="code-copy" onclick="copyCode(this)">Kopieren</button></div>
+      <div class="code-body">{
+  <span class="key">"kunden_id"</span>: <span class="val">42</span>,
+  <span class="key">"name"</span>:      <span class="str">"Müller GmbH"</span>,
+  <span class="key">"segment"</span>:   <span class="str">"KMU"</span>,
+  <span class="key">"rating"</span>:    <span class="str">"B+"</span>,
+  <span class="key">"aktiv"</span>:     <span class="val">true</span>,
+  <span class="key">"vertraege"</span>: [
+    {
+      <span class="key">"vertrag_id"</span>: <span class="val">101</span>,
+      <span class="key">"volumen"</span>:    <span class="val">250000.00</span>,
+      <span class="key">"zinssatz"</span>:   <span class="val">4.8</span>,
+      <span class="key">"status"</span>:     <span class="str">"aktiv"</span>
+    },
+    {
+      <span class="key">"vertrag_id"</span>: <span class="val">102</span>,
+      <span class="key">"volumen"</span>:    <span class="val">75000.00</span>,
+      <span class="key">"zinssatz"</span>:   <span class="val">5.1</span>,
+      <span class="key">"status"</span>:     <span class="str">"beendet"</span>
+    }
+  ],
+  <span class="key">"adresse"</span>: {
+    <span class="key">"strasse"</span>: <span class="str">"Musterstr. 12"</span>,
+    <span class="key">"plz"</span>:     <span class="str">"10115"</span>,
+    <span class="key">"stadt"</span>:   <span class="str">"Berlin"</span>
+  },
+  <span class="key">"notizen"</span>: <span class="val">null</span>
+}</div>
+    </div>
+    <h3>JSON-Datentypen</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>Einfache Typen</h4>
+        <ul>
+          <li><code>"text"</code> → String (in Anführungszeichen)</li>
+          <li><code>42</code> oder <code>4.8</code> → Number</li>
+          <li><code>true</code> / <code>false</code> → Boolean</li>
+          <li><code>null</code> → kein Wert / leer</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <h4>Strukturierte Typen</h4>
+        <ul>
+          <li><code>{}</code> → Object (Schlüssel-Wert-Paare)</li>
+          <li><code>[]</code> → Array (Liste von Werten)</li>
+          <li>Arrays können Objects enthalten</li>
+          <li>Beliebig tief verschachtelbar</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Interaktiver Request-Builder</h2>
+    <p style="color:var(--gray-500);font-size:13px;margin-bottom:18px">Baue einen vollständigen HTTP-Request zusammen und sieh, wie er aussieht.</p>
+    <div class="req-builder">
+      <label>HTTP-Methode</label>
+      <select id="rb-method" onchange="buildRequest()">
+        <option value="GET">GET – Daten abrufen</option>
+        <option value="POST">POST – Neuen Datensatz erstellen</option>
+        <option value="PUT">PUT – Datensatz ersetzen</option>
+        <option value="PATCH">PATCH – Datensatz aktualisieren</option>
+        <option value="DELETE">DELETE – Datensatz löschen</option>
+      </select>
+      <label>Endpunkt (URL)</label>
+      <select id="rb-endpoint" onchange="buildRequest()">
+        <option value="https://xyz.supabase.co/rest/v1/kunden">Supabase – alle Kunden abrufen</option>
+        <option value="https://xyz.supabase.co/rest/v1/kunden?segment=eq.KMU">Supabase – Kunden filtern</option>
+        <option value="https://xyz.supabase.co/rest/v1/kunden?id=eq.42">Supabase – ein Kunde</option>
+        <option value="https://api.anthropic.com/v1/messages">Anthropic Claude API</option>
+        <option value="https://generativelanguage.googleapis.com/v1beta/models">Google Gemini API</option>
+      </select>
+      <label>Generierter Request (JavaScript fetch)</label>
+      <div class="req-output" id="rb-output"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUTH ══ -->
+<div id="auth" class="section">
+  <h2 class="section-title">API-Authentifizierung</h2>
+  <p class="section-desc">Wie APIs prüfen, wer du bist – und warum Sicherheit dabei so wichtig ist.</p>
+
+  <div class="card">
+    <h2>Die wichtigsten Auth-Methoden</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">API-Key</span>
+        <h4>Einfachste Methode</h4>
+        <ul>
+          <li>Ein geheimer Schlüssel im Header</li>
+          <li>Kein Login nötig, immer gültig</li>
+          <li>Gut für Server-zu-Server</li>
+          <li>Risiko: Key geleakt = alles offen</li>
+          <li>Beispiel: Supabase, Anthropic, Google</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag teal">Bearer Token (JWT)</span>
+        <h4>Standard für User-Auth</h4>
+        <ul>
+          <li>Zeitlich begrenzt (z.B. 1 Stunde)</li>
+          <li>Enthält User-Infos (Name, Rolle)</li>
+          <li>Signiert – kann nicht gefälscht werden</li>
+          <li>Standard bei Supabase Auth</li>
+          <li>Refresh Token verlängert Session</li>
+        </ul>
+      </div>
+    </div>
+    <div class="compare-grid" style="margin-top:14px">
+      <div class="compare-card">
+        <span class="tag purple">OAuth 2.0</span>
+        <h4>"Login mit Google/GitHub"</h4>
+        <ul>
+          <li>Nutzer autorisiert deine App</li>
+          <li>Kein Passwort an dich weitergegeben</li>
+          <li>Standard für Drittanbieter-Login</li>
+          <li>Supabase Auth unterstützt OAuth</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag amber">Basic Auth</span>
+        <h4>Username + Passwort</h4>
+        <ul>
+          <li>Base64-kodiert im Header</li>
+          <li>Nur über HTTPS sicher!</li>
+          <li>Veraltet – möglichst vermeiden</li>
+          <li>Noch in alten Systemen vorhanden</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">🔒</span>
+      <span><strong>Goldene Regel:</strong> API-Keys und Tokens niemals im Frontend-Code oder in Git-Repositories speichern. Nutze Umgebungsvariablen (.env-Dateien) oder Secrets-Manager. Dein Supabase anon-key im HTML ist eine Ausnahme – er ist für öffentlichen Zugriff konzipiert und durch Row Level Security abgesichert.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Auth in der Praxis (JavaScript &amp; Python)</h2>
+    <h3>API-Key im Header</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript (fetch)</span><button class="code-copy" onclick="copyCode(this)">Kopieren</button></div>
+      <div class="code-body"><span class="cm">// Supabase REST API mit API-Key</span>
+<span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(
+  <span class="str">'https://xyz.supabase.co/rest/v1/kunden'</span>,
+  {
+    <span class="key">method</span>: <span class="str">'GET'</span>,
+    <span class="key">headers</span>: {
+      <span class="str">'apikey'</span>:        <span class="str">'dein-anon-key'</span>,
+      <span class="str">'Authorization'</span>: <span class="str">'Bearer dein-anon-key'</span>,
+      <span class="str">'Content-Type'</span>:  <span class="str">'application/json'</span>
+    }
+  }
+);
+<span class="kw">const</span> daten = <span class="kw">await</span> response.<span class="fn">json</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(daten);</div>
+    </div>
+
+    <h3>JWT Bearer Token nach Login</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript (Supabase SDK)</span><button class="code-copy" onclick="copyCode(this)">Kopieren</button></div>
+      <div class="code-body"><span class="kw">import</span> { createClient } <span class="kw">from</span> <span class="str">'@supabase/supabase-js'</span>;
+
+<span class="kw">const</span> supabase = <span class="fn">createClient</span>(url, anonKey);
+
+<span class="cm">// Login → gibt JWT Token zurück</span>
+<span class="kw">const</span> { data, error } = <span class="kw">await</span> supabase.auth.<span class="fn">signInWithPassword</span>({
+  email: <span class="str">'user@example.de'</span>,
+  password: <span class="str">'sicheres-passwort'</span>,
+});
+
+<span class="cm">// Token automatisch in folgenden Requests mitgesendet</span>
+<span class="kw">const</span> { data: kunden } = <span class="kw">await</span> supabase
+  .<span class="fn">from</span>(<span class="str">'kunden'</span>)
+  .<span class="fn">select</span>(<span class="str">'*'</span>)
+  .<span class="fn">eq</span>(<span class="str">'status'</span>, <span class="str">'aktiv'</span>);</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WEBHOOKS ══ -->
+<div id="webhooks" class="section">
+  <h2 class="section-title">Webhooks – Push statt Pull</h2>
+  <p class="section-desc">Statt regelmäßig zu fragen "Gibt es Neues?" – einfach benachrichtigt werden wenn etwas passiert.</p>
+
+  <div class="card">
+    <h2>API (Pull) vs. Webhook (Push)</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">Klassische API (Pull)</span>
+        <h4>Du fragst aktiv nach</h4>
+        <ul>
+          <li>Dein Code fragt alle X Minuten an</li>
+          <li>Meist unnötige Anfragen (nichts Neues)</li>
+          <li>Gut wenn du Kontrolle über Timing brauchst</li>
+          <li>Gut für einmalige Abfragen</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag teal">Webhook (Push)</span>
+        <h4>Du wirst benachrichtigt</h4>
+        <ul>
+          <li>Service sendet HTTP-Request an dich</li>
+          <li>Nur wenn wirklich etwas passiert</li>
+          <li>Viel effizienter (keine Polling-Loops)</li>
+          <li>Gut für Events: Zahlung, Formulareingabe</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box blue">
+      <span class="icon">📞</span>
+      <span>Analogie: API-Pull ist wie alle 5 Minuten die Postfach zu checken. Webhook ist wie eine Klingel an der Haustür – die Post klingelt, wenn das Paket da ist.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wie ein Webhook funktioniert</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="step-icon">⚡</span>
+        <div class="step-label">Event passiert</div>
+        <div class="step-sub">Zahlung, Formular, Commit</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step teal">
+        <span class="step-icon">📡</span>
+        <div class="step-label">Source sendet POST</div>
+        <div class="step-sub">JSON an deine URL</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">
+        <span class="step-icon">🖥️</span>
+        <div class="step-label">Dein Endpoint</div>
+        <div class="step-sub">Supabase Edge Function</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">
+        <span class="step-icon">✅</span>
+        <div class="step-label">Aktion ausführen</div>
+        <div class="step-sub">DB schreiben, E-Mail senden</div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Supabase Edge Function – Webhook-Handler</span><button class="code-copy" onclick="copyCode(this)">Kopieren</button></div>
+      <div class="code-body"><span class="cm">// supabase/functions/webhook-handler/index.ts</span>
+<span class="kw">import</span> { serve } <span class="kw">from</span> <span class="str">"https://deno.land/std/http/server.ts"</span>;
+
+serve(<span class="kw">async</span> (req: Request) => {
+  <span class="cm">// Nur POST-Requests erlauben</span>
+  <span class="kw">if</span> (req.method !== <span class="str">"POST"</span>) {
+    <span class="kw">return new</span> <span class="fn">Response</span>(<span class="str">"Method Not Allowed"</span>, { status: <span class="num">405</span> });
+  }
+
+  <span class="cm">// Signature prüfen (Sicherheit!)</span>
+  <span class="kw">const</span> signature = req.headers.<span class="fn">get</span>(<span class="str">"x-webhook-signature"</span>);
+  <span class="kw">if</span> (!<span class="fn">isValidSignature</span>(signature)) {
+    <span class="kw">return new</span> <span class="fn">Response</span>(<span class="str">"Unauthorized"</span>, { status: <span class="num">401</span> });
+  }
+
+  <span class="cm">// Body parsen</span>
+  <span class="kw">const</span> event = <span class="kw">await</span> req.<span class="fn">json</span>();
+
+  <span class="cm">// Event verarbeiten</span>
+  <span class="kw">if</span> (event.type === <span class="str">"zahlung.eingegangen"</span>) {
+    <span class="kw">await</span> <span class="fn">aktualisierePortfolio</span>(event.data);
+    <span class="kw">await</span> <span class="fn">sendeBestaetigung</span>(event.data.email);
+  }
+
+  <span class="kw">return new</span> <span class="fn">Response</span>(<span class="str">"OK"</span>, { status: <span class="num">200</span> });
+});</div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">🔒</span>
+      <span><strong>Webhook-Sicherheit:</strong> Immer die Signatur des Senders prüfen! Sonst könnte jeder beliebige POST-Requests an deinen Endpoint schicken. Dienste wie Stripe, GitHub und Supabase signieren Webhooks mit HMAC-SHA256.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Webhook-Anwendungsfälle</h2>
+    <ul class="checklist">
+      <li>Formular auf tommy-moeller.de ausgefüllt → automatische Bestätigungs-E-Mail + Eintrag in Datenbank</li>
+      <li>GitHub-Commit in main → automatischer Deploy auf GitHub Pages</li>
+      <li>Stripe-Zahlung bestätigt → Freischaltung von Lernmodulen in Supabase</li>
+      <li>Supabase-Datenbankänderung → Benachrichtigung via E-Mail oder Slack</li>
+      <li>Power Automate: neuer SharePoint-Eintrag → Teams-Benachrichtigung + Excel-Update</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ PRAXIS ══ -->
+<div id="praxis" class="section">
+  <h2 class="section-title">Praxisfälle aus deinen Projekten</h2>
+  <p class="section-desc">Konkrete API-Integrationen für tommy-moeller.de und den Arbeitsalltag.</p>
+
+  <div class="card">
+    <h2>Gemini API – KI in deine Website integrieren</h2>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript (fetch an Supabase Edge Function)</span><button class="code-copy" onclick="copyCode(this)">Kopieren</button></div>
+      <div class="code-body"><span class="cm">// Frontend sendet Nutzer-Nachricht an Edge Function</span>
+<span class="kw">async function</span> <span class="fn">sendeAnKI</span>(nachricht) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(
+    <span class="str">'/functions/v1/gemini-chat'</span>,
+    {
+      <span class="key">method</span>: <span class="str">'POST'</span>,
+      <span class="key">headers</span>: {
+        <span class="str">'Content-Type'</span>:  <span class="str">'application/json'</span>,
+        <span class="str">'Authorization'</span>: <span class="str">`Bearer ${userToken}`</span>,
+      },
+      <span class="key">body</span>: <span class="fn">JSON.stringify</span>({ nachricht }),
+    }
+  );
+
+  <span class="kw">const</span> { antwort, fehler } = <span class="kw">await</span> response.<span class="fn">json</span>();
+  <span class="kw">if</span> (fehler) <span class="kw">throw new</span> <span class="fn">Error</span>(fehler);
+  <span class="kw">return</span> antwort;
+}
+
+<span class="cm">// Edge Function (Supabase) leitet an Gemini weiter</span>
+<span class="cm">// → API-Key bleibt serverseitig – nie im Frontend!</span></div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">🛡️</span>
+      <span>Das ist das richtige Pattern: Der API-Key für Gemini/Anthropic liegt in der Edge Function (Serverseite). Das Frontend hat keinen Zugriff darauf. So schützt du deinen Key vor Missbrauch.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Nützliche öffentliche APIs für Controller</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+      <thead>
+        <tr style="background:var(--blue-900);color:white;">
+          <th style="padding:9px 14px;text-align:left;border-radius:8px 0 0 0;font-size:12.5px;">API</th>
+          <th style="padding:9px 14px;text-align:left;font-size:12.5px;">Zweck</th>
+          <th style="padding:9px 14px;text-align:left;border-radius:0 8px 0 0;font-size:12.5px;">Auth</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--gray-100);">
+          <td style="padding:9px 14px;font-weight:600;">Bundesbank (buba.de)</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">EZB-Zinssätze, Makrodaten, Bankstatistiken</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">Teils offen</td>
+        </tr>
+        <tr style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);">
+          <td style="padding:9px 14px;font-weight:600;">ECB Data Portal</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">EURIBOR, EZB-Leitzinsen, Inflation</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">Offen (kein Key)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--gray-100);">
+          <td style="padding:9px 14px;font-weight:600;">Destatis (Statistisches Bundesamt)</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">Wirtschaftsdaten, BIP, Verbraucherpreise</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">API-Key (kostenlos)</td>
+        </tr>
+        <tr style="background:var(--gray-50);border-bottom:1px solid var(--gray-100);">
+          <td style="padding:9px 14px;font-weight:600;">Alpha Vantage</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">Aktienkurse, FX-Kurse, Kryptodaten</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">API-Key (free tier)</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;font-weight:600;">Anthropic / Gemini</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">KI-Textgenerierung, Analyse, Chat</td>
+          <td style="padding:9px 14px;color:var(--gray-600);">API-Key (kostenpflichtig)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck REST APIs</h2>
+  <p class="section-desc">8 Fragen zu HTTP, JSON, Auth und Webhooks.</p>
+
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was bedeutet HTTP-Statuscode 404?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Der Server ist überlastet</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Authentifizierung fehlgeschlagen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">Die angeforderte Ressource wurde nicht gefunden</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Die Anfrage hat ein falsches Format</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">404 Not Found bedeutet, dass die URL zwar erreichbar ist, aber die spezifische Ressource nicht existiert – z.B. /kunden/999 wenn Kunde 999 nicht in der Datenbank ist.</div>
+  </div>
+
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Welche HTTP-Methode ist für das Erstellen eines neuen Datensatzes gedacht?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">GET</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">POST</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">PUT</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">PATCH</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">POST erstellt neue Ressourcen. GET liest, PUT ersetzt vollständig, PATCH aktualisiert teilweise, DELETE löscht. Das CRUD-Modell: Create=POST, Read=GET, Update=PUT/PATCH, Delete=DELETE.</div>
+  </div>
+
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was ist der Hauptunterschied zwischen PUT und PATCH?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">PUT ist schneller als PATCH</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">PUT ersetzt den gesamten Datensatz, PATCH aktualisiert nur angegebene Felder</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">PATCH kann nur Text ändern, PUT kann alle Typen ändern</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Es gibt keinen Unterschied</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">PUT: Du sendest den kompletten Datensatz – alle Felder. PATCH: Du sendest nur die zu ändernden Felder. Für partielles Update (z.B. nur Status ändern) ist PATCH effizienter und sicherer.</div>
+  </div>
+
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist der Hauptvorteil von Webhooks gegenüber regelmäßigem API-Polling?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Webhooks sind immer sicherer als APIs</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Webhooks können mehr Daten übertragen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">Webhooks senden Daten nur wenn ein Event passiert – kein unnötiges Polling</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Webhooks funktionieren ohne Internet</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">Polling (regelmäßiges Abfragen) verbraucht Ressourcen auch wenn nichts passiert. Webhooks (Push) reagieren nur auf echte Events – effizienter und reaktiver.</div>
+  </div>
+
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Warum sollte ein API-Key für Gemini/Anthropic nie im Frontend-Code stehen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Weil das API so nicht funktioniert</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Der Browser-Code ist öffentlich sichtbar – jeder könnte den Key stehlen und auf deine Kosten nutzen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Weil Frontend keine HTTP-Requests machen kann</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Das ist nur eine Empfehlung, kein echtes Risiko</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">JavaScript-Code im Browser ist für jeden einsehbar (F12 → Quelltext). Ein eingebetteter API-Key kann sofort missbraucht werden. Lösung: Key serverseitig in Edge Functions / Backend halten.</div>
+  </div>
+
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Was ist JSON?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Eine Programmiersprache</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Ein Datenbankformat</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Ein textbasiertes Datenaustauschformat mit Schlüssel-Wert-Paaren und Arrays</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Ein Verschlüsselungsstandard</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">JSON (JavaScript Object Notation) ist das universelle Format für Datenübertragung im Web. Es besteht aus Objekten {} mit Schlüssel-Wert-Paaren und Arrays []. Lesbar für Menschen und Maschinen.</div>
+  </div>
+
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Was passiert bei einem 401-Fehler?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Die Ressource existiert nicht</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Der Request ist nicht authentifiziert – Token fehlt oder ist ungültig</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Der Server hat einen internen Fehler</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Zu viele Anfragen wurden gestellt</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">401 Unauthorized bedeutet: kein gültiger Auth-Token. 403 Forbidden bedeutet: Token ist gültig, aber du hast keine Berechtigung. 429 Too Many Requests ist das Rate-Limit.</div>
+  </div>
+
+  <div class="quiz-question" id="q8">
+    <div class="quiz-q">8. Was ist der Zweck einer Webhook-Signatur?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Den Webhook schneller zu machen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Daten zu komprimieren</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q8')">Zu verifizieren, dass der Webhook wirklich vom erwarteten Absender kommt</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Den Webhook zu verschlüsseln</button>
+    </div>
+    <div class="quiz-feedback" id="fb8">Ohne Signaturprüfung könnte jeder an deine Webhook-URL POST-Requests schicken und so Events fälschen. HMAC-SHA256-Signaturen stellen sicher, dass der Sender den geheimen Key kennt.</div>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3><p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <p>© 2026 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Alle Beispiele basieren auf dem Stack: Supabase, JavaScript (fetch), Python (requests).</p>
+</footer>
+
+<script>
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.currentTarget.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function copyCode(btn){const code=btn.closest('.code-block').querySelector('.code-body').innerText;navigator.clipboard.writeText(code).then(()=>{const o=btn.textContent;btn.textContent='✓ Kopiert';setTimeout(()=>btn.textContent=o,1500);});}
+
+const methodColors={GET:'#16A34A',POST:'#2563EB',PUT:'#D97706',PATCH:'#7C3AED',DELETE:'#DC2626'};
+const methodComments={
+  GET:'// Daten abrufen – kein Body nötig',
+  POST:'// Neuen Datensatz erstellen',
+  PUT:'// Datensatz vollständig ersetzen',
+  PATCH:'// Datensatz teilweise aktualisieren',
+  DELETE:'// Datensatz löschen'
+};
+const bodyExamples={
+  GET:'// GET hat keinen Body',
+  DELETE:'// DELETE hat keinen Body',
+  POST:'{\n  "name": "Neuer Kunde GmbH",\n  "segment": "KMU",\n  "rating": "B+",\n  "aktiv": true\n}',
+  PUT:'{\n  "name": "Geänderter Kunde GmbH",\n  "segment": "Corporate",\n  "rating": "A",\n  "aktiv": true,\n  "notizen": "Upgrade vom KMU-Segment"\n}',
+  PATCH:'{\n  "rating": "A",\n  "notizen": "Rating verbessert"\n}'
+};
+function buildRequest(){
+  const m=document.getElementById('rb-method').value;
+  const u=document.getElementById('rb-endpoint').value;
+  const hasBody=!['GET','DELETE'].includes(m);
+  let out=`${methodComments[m]}\nfetch('${u}', {\n  method: '${m}',\n  headers: {\n    'apikey': 'dein-supabase-anon-key',\n    'Authorization': 'Bearer dein-jwt-token',\n    'Content-Type': 'application/json'\n  }`;
+  if(hasBody) out+=`,\n  body: JSON.stringify(${bodyExamples[m]})`;
+  out+=`\n})\n.then(r => r.json())\n.then(data => console.log(data))\n.catch(err => console.error(err));`;
+  document.getElementById('rb-output').textContent=out;
+}
+buildRequest();
+
+let quizAnswers={};const TOTAL=8;
+function answer(btn,type,qId){const qEl=document.getElementById(qId);if(qEl.dataset.answered)return;qEl.dataset.answered='1';qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});btn.classList.add(type);document.getElementById('fb'+qId.replace('q','')).classList.add('show',type);quizAnswers[qId]=type==='correct';}
+function showScore(){const correct=Object.values(quizAnswers).filter(Boolean).length;const pct=Math.round(correct/TOTAL*100);document.getElementById('score-text').textContent=correct+' von '+TOTAL+' richtig ('+pct+'%)';document.getElementById('score-msg').textContent=pct>=87?'Exzellent! APIs und Webhooks hast du verstanden.':pct>=62?'Gute Basis! Die Auth- und Webhook-Abschnitte nochmals anschauen.':'Geh die Grundlagen nochmal durch – besonders HTTP-Methoden und Auth.';document.getElementById('score-bar').style.width=pct+'%';const el=document.getElementById('quiz-score');el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function resetQuiz(){quizAnswers={};document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));document.getElementById('quiz-score').style.display='none';}
+</script>
+</body>
+</html>
