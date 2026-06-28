@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL & Datenbanken | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-200:#BFDBFE;--blue-300:#93C5FD;
+    --blue-400:#60A5FA;--blue-600:#2563EB;--blue-700:#1D4ED8;--blue-800:#1E40AF;--blue-900:#1E3A8A;
+    --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+    --gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-900:#111827;
+    --amber-50:#FFFBEB;--amber-100:#FEF3C7;--amber-600:#D97706;--amber-700:#B45309;
+    --green-50:#F0FDF4;--green-100:#DCFCE7;--green-600:#16A34A;--green-700:#15803D;
+    --purple-50:#FAF5FF;--purple-100:#F3E8FF;--purple-600:#9333EA;--purple-700:#7E22CE;
+    --red-50:#FFF1F2;--red-100:#FFE4E6;--red-600:#DC2626;
+    --teal-50:#F0FDFA;--teal-100:#CCFBF1;--teal-700:#0F766E;
+    --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+  .site-header{background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 60%,#1D4ED8 100%);color:white;padding:0;}
+  .header-inner{max-width:900px;margin:0 auto;padding:48px 24px 56px;}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);}
+  .header-badge::before{content:'';width:6px;height:6px;background:#34D399;border-radius:50%;display:inline-block;}
+  .site-header h1{font-family:var(--font-serif);font-size:clamp(28px,5vw,40px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+  .site-header p.subtitle{font-size:16px;color:rgba(255,255,255,.75);max-width:600px;line-height:1.6;}
+  .nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .nav-inner{max-width:900px;margin:0 auto;padding:0 24px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+  .nav-inner::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:14px 18px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+  .nav-tab:hover{color:var(--blue-700);}
+  .nav-tab.active{color:var(--blue-700);border-bottom-color:var(--blue-600);}
+  main{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section{display:none;}.section.active{display:block;}
+  .card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:28px 32px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h2{font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--blue-900);margin-bottom:12px;line-height:1.3;}
+  .card h3{font-size:15px;font-weight:600;color:var(--gray-700);margin:20px 0 8px;}
+  .card h3:first-of-type{margin-top:12px;}
+  .card p{color:var(--gray-600);margin-bottom:12px;}
+  .card p:last-child{margin-bottom:0;}
+  .info-box{border-radius:8px;padding:14px 18px;margin:14px 0;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.6;}
+  .info-box .icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .info-box.blue{background:var(--blue-50);color:var(--blue-800);border-left:3px solid var(--blue-400);}
+  .info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid #F59E0B;}
+  .info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #22C55E;}
+  .info-box.teal{background:var(--teal-50);color:var(--teal-700);border-left:3px solid #14B8A6;}
+  .section-title{font-family:var(--font-serif);font-size:24px;font-weight:600;color:var(--blue-900);margin-bottom:6px;letter-spacing:-.01em;}
+  .section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+
+  /* SQL Code blocks */
+  .sql-block{background:#0F172A;border-radius:10px;overflow:hidden;margin:14px 0;}
+  .sql-header{background:#1E293B;padding:8px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .sql-lang{font-size:11px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.06em;}
+  .sql-copy{background:none;border:1px solid #334155;color:#94A3B8;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:inherit;}
+  .sql-copy:hover{background:#1E293B;color:white;}
+  .sql-body{padding:18px;font-family:'Courier New',monospace;font-size:13px;line-height:1.7;color:#E2E8F0;white-space:pre;overflow-x:auto;}
+  .kw{color:#93C5FD;font-weight:600;}
+  .fn{color:#A78BFA;}
+  .str{color:#6EE7B7;}
+  .cm{color:#475569;font-style:italic;}
+  .num{color:#FCD34D;}
+
+  /* Table */
+  .data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+  .data-table th{background:var(--blue-900);color:white;font-weight:600;text-align:left;padding:9px 14px;font-size:12.5px;}
+  .data-table th:first-child{border-radius:8px 0 0 0;}
+  .data-table th:last-child{border-radius:0 8px 0 0;}
+  .data-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr:nth-child(even) td{background:var(--gray-50);}
+
+  /* Concept cards */
+  .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0;}
+  .concept-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;border-top:3px solid var(--blue-400);}
+  .concept-card.green{border-top-color:#22C55E;}
+  .concept-card.amber{border-top-color:#F59E0B;}
+  .concept-card.purple{border-top-color:#A855F7;}
+  .concept-card.teal{border-top-color:#14B8A6;}
+  .concept-card h4{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:6px;}
+  .concept-card p{font-size:13px;color:var(--gray-600);line-height:1.5;margin:0;}
+
+  /* Interactive query builder */
+  .qbuilder{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:24px 28px;margin-bottom:20px;}
+  .qbuilder label{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px;}
+  .qbuilder select,.qbuilder input{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;margin-bottom:14px;outline:none;transition:border-color .12s;}
+  .qbuilder select:focus,.qbuilder input:focus{border-color:var(--blue-400);}
+  .cb-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .cb-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-700);cursor:pointer;}
+  .cb-label input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue-600);}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--blue-600);color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+  .btn:hover{background:var(--blue-700);}
+  .btn.secondary{background:white;color:var(--blue-700);border:1.5px solid var(--blue-200);}
+  .btn.secondary:hover{background:var(--blue-50);}
+
+  /* Quiz */
+  .quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:24px 28px;margin-bottom:16px;}
+  .quiz-q{font-size:15px;font-weight:600;color:var(--gray-800);margin-bottom:16px;}
+  .quiz-options{display:flex;flex-direction:column;gap:10px;}
+  .quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 16px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+  .quiz-opt:hover{background:var(--blue-50);border-color:var(--blue-300);color:var(--blue-800);}
+  .quiz-opt.correct{background:var(--green-50);border-color:#22C55E;color:var(--green-700);}
+  .quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+  .quiz-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:6px;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+  .quiz-feedback.wrong{background:var(--red-50);color:var(--red-600);}
+  .quiz-score{background:var(--blue-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:20px;}
+  .quiz-score h3{font-size:22px;font-weight:600;margin-bottom:4px;}
+  .quiz-score p{color:rgba(255,255,255,.75);font-size:14px;}
+  .progress-bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin-top:16px;overflow:hidden;}
+  .progress-fill{height:100%;background:#60A5FA;border-radius:4px;transition:width .3s;}
+
+  .checklist{list-style:none;}
+  .checklist li{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:14px;color:var(--gray-700);line-height:1.5;}
+  .checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+
+  .tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;margin-bottom:8px;}
+  .tag.blue{background:var(--blue-100);color:var(--blue-800);}
+  .tag.green{background:var(--green-100);color:var(--green-700);}
+  .tag.amber{background:var(--amber-100);color:var(--amber-700);}
+
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+  @media(max-width:600px){.compare-grid{grid-template-columns:1fr;}.concept-grid{grid-template-columns:1fr;}}
+  .compare-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px 20px;background:white;}
+  .compare-card h4{font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:8px;}
+  .compare-card ul{list-style:none;}
+  .compare-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;}
+  .compare-card ul li::before{content:'→';color:var(--blue-400);flex-shrink:0;font-size:12px;margin-top:2px;}
+
+  .site-footer{background:var(--gray-900);color:rgba(255,255,255,.55);text-align:center;padding:28px 24px;font-size:13px;}
+  .site-footer a{color:rgba(255,255,255,.75);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">Lernmodul · Datenbanken</div>
+    <h1>SQL &amp; Datenbankgrundlagen</h1>
+    <p class="subtitle">Von der ersten SELECT-Abfrage bis zu komplexen JOINs und Aggregationen – SQL als Kernwerkzeug für Controller und Datenanalysten.</p>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('abfragen')">Abfragen</button>
+    <button class="nav-tab" onclick="showSection('joins')">JOINs</button>
+    <button class="nav-tab" onclick="showSection('aggregation')">Aggregation</button>
+    <button class="nav-tab" onclick="showSection('praxis')">Praxisfälle</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══ GRUNDLAGEN ══ -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Was sind Datenbanken?</h2>
+  <p class="section-desc">Grundkonzepte, Datenbanktypen und warum SQL für Analysten unverzichtbar ist.</p>
+
+  <div class="card">
+    <h2>Relationale Datenbanken – das Fundament</h2>
+    <p>Eine relationale Datenbank speichert Daten in <strong>Tabellen</strong> (Relationen) – ähnlich wie Excel-Tabellenblätter, aber mit strikter Struktur, Beziehungen zwischen Tabellen und optimierter Abfrageperformance für Millionen von Datensätzen.</p>
+    <div class="info-box blue">
+      <span class="icon">💡</span>
+      <span>SQL (Structured Query Language) ist die Sprache, um mit relationalen Datenbanken zu kommunizieren. Einmal gelernt, läuft SQL auf allen gängigen Systemen: PostgreSQL, MySQL, SQLite, SQL Server, Snowflake, BigQuery.</span>
+    </div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>Tabelle (Relation)</h4>
+        <p>Daten in Zeilen (Records) und Spalten (Felder). Jede Tabelle beschreibt eine Entität: Kunden, Verträge, Transaktionen.</p>
+      </div>
+      <div class="concept-card green">
+        <h4>Primärschlüssel (PK)</h4>
+        <p>Eindeutige ID pro Zeile – kein Duplikat möglich. Meist eine auto-incrementierte Zahl oder UUID.</p>
+      </div>
+      <div class="concept-card amber">
+        <h4>Fremdschlüssel (FK)</h4>
+        <p>Verknüpft zwei Tabellen. Ein Kreditvertrag hat eine Kunden-ID, die auf die Kundentabelle zeigt.</p>
+      </div>
+      <div class="concept-card purple">
+        <h4>Index</h4>
+        <p>Wie ein Register im Buch – macht Abfragen auf großen Tabellen drastisch schneller.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Datenbanktypen im Überblick</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag blue">Relational (SQL)</span>
+        <h4>PostgreSQL, MySQL, SQL Server</h4>
+        <ul>
+          <li>Strukturierte Daten mit festen Schemas</li>
+          <li>Starke Konsistenzgarantien (ACID)</li>
+          <li>Standard in Banken, ERP, Finanzsystemen</li>
+          <li>Ideal für transaktionale Daten</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag amber">NoSQL / Document</span>
+        <h4>MongoDB, Supabase (PostgreSQL+)</h4>
+        <ul>
+          <li>Flexible Datenstrukturen (JSON)</li>
+          <li>Gut für unstrukturierte / variable Daten</li>
+          <li>Schnell bei einfachen Lesevorgängen</li>
+          <li>Supabase kombiniert SQL + Flexibilität</li>
+        </ul>
+      </div>
+    </div>
+
+  <div class="card">
+    <h2>Die Beispiel-Datenbank für dieses Modul</h2>
+    <p>Alle Beispiele nutzen eine vereinfachte Kreditportfolio-Datenbank:</p>
+    <table class="data-table">
+      <thead><tr><th>Tabelle</th><th>Beschreibung</th><th>Wichtige Spalten</th></tr></thead>
+      <tbody>
+        <tr><td><strong>kunden</strong></td><td>Kreditnehmer</td><td>kunden_id, name, segment, rating</td></tr>
+        <tr><td><strong>vertraege</strong></td><td>Kreditverträge</td><td>vertrag_id, kunden_id, volumen, zinssatz, status</td></tr>
+        <tr><td><strong>zahlungen</strong></td><td>Zahlungseingänge</td><td>zahlung_id, vertrag_id, betrag, datum, typ</td></tr>
+        <tr><td><strong>produkte</strong></td><td>Kreditprodukte</td><td>produkt_id, name, kategorie, laufzeit_max</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ ABFRAGEN ══ -->
+<div id="abfragen" class="section">
+  <h2 class="section-title">SELECT – Daten abfragen</h2>
+  <p class="section-desc">Die wichtigsten SQL-Befehle: von einfachen Abfragen bis zu gefilterten, sortierten Resultaten.</p>
+
+  <div class="card">
+    <h2>Die SELECT-Grundstruktur</h2>
+    <p>Jede SQL-Abfrage folgt dieser logischen Reihenfolge:</p>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="kw">SELECT</span>   <span class="cm">-- Was willst du sehen? (Spalten)</span>
+<span class="kw">FROM</span>     <span class="cm">-- Woher? (Tabelle)</span>
+<span class="kw">WHERE</span>    <span class="cm">-- Welche Zeilen? (Filter)</span>
+<span class="kw">GROUP BY</span> <span class="cm">-- Gruppieren nach</span>
+<span class="kw">HAVING</span>   <span class="cm">-- Filter auf Gruppen</span>
+<span class="kw">ORDER BY</span> <span class="cm">-- Sortierung</span>
+<span class="kw">LIMIT</span>    <span class="cm">-- Maximale Anzahl Zeilen</span></div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span>Die Schreibreihenfolge (oben) ≠ Ausführungsreihenfolge! SQL verarbeitet intern: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Erste Abfragen</h2>
+    <h3>Alle Daten einer Tabelle</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="kw">SELECT</span> * <span class="kw">FROM</span> kunden;
+
+<span class="cm">-- Nur bestimmte Spalten:</span>
+<span class="kw">SELECT</span> kunden_id, name, rating <span class="kw">FROM</span> kunden;</div>
+    </div>
+
+    <h3>Filtern mit WHERE</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Verträge über 500.000 €</span>
+<span class="kw">SELECT</span> vertrag_id, volumen, zinssatz
+<span class="kw">FROM</span> vertraege
+<span class="kw">WHERE</span> volumen > <span class="num">500000</span>;
+
+<span class="cm">-- Mehrere Bedingungen (AND / OR)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> vertraege
+<span class="kw">WHERE</span> volumen > <span class="num">500000</span>
+  <span class="kw">AND</span> status = <span class="str">'aktiv'</span>;
+
+<span class="cm">-- IN-Liste: mehrere Werte prüfen</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> kunden
+<span class="kw">WHERE</span> rating <span class="kw">IN</span> (<span class="str">'A'</span>, <span class="str">'AA'</span>, <span class="str">'AAA'</span>);
+
+<span class="cm">-- BETWEEN: Wertebereich</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> zahlungen
+<span class="kw">WHERE</span> datum <span class="kw">BETWEEN</span> <span class="str">'2024-01-01'</span> <span class="kw">AND</span> <span class="str">'2024-12-31'</span>;
+
+<span class="cm">-- LIKE: Textsuche (% = beliebige Zeichen)</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> kunden
+<span class="kw">WHERE</span> name <span class="kw">LIKE</span> <span class="str">'Müller%'</span>;</div>
+    </div>
+
+    <h3>Sortieren und begrenzen</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Top 10 größte Verträge</span>
+<span class="kw">SELECT</span> vertrag_id, volumen, zinssatz
+<span class="kw">FROM</span> vertraege
+<span class="kw">ORDER BY</span> volumen <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Nützliche Funktionen</h2>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Textfunktionen</span>
+<span class="kw">SELECT</span>
+  <span class="fn">UPPER</span>(name)         <span class="kw">AS</span> name_gross,
+  <span class="fn">LOWER</span>(name)         <span class="kw">AS</span> name_klein,
+  <span class="fn">LENGTH</span>(name)        <span class="kw">AS</span> zeichenanzahl,
+  <span class="fn">TRIM</span>(name)          <span class="kw">AS</span> ohne_leerzeichen
+<span class="kw">FROM</span> kunden;
+
+<span class="cm">-- Datumsfunktionen (PostgreSQL / Supabase)</span>
+<span class="kw">SELECT</span>
+  datum,
+  <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> datum)  <span class="kw">AS</span> jahr,
+  <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> datum) <span class="kw">AS</span> monat,
+  <span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, datum) <span class="kw">AS</span> monatsbeginn
+<span class="kw">FROM</span> zahlungen;
+
+<span class="cm">-- CASE WHEN: bedingte Logik (wie IF in Excel)</span>
+<span class="kw">SELECT</span>
+  vertrag_id,
+  volumen,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> volumen >= <span class="num">1000000</span> <span class="kw">THEN</span> <span class="str">'Großkredit'</span>
+    <span class="kw">WHEN</span> volumen >= <span class="num">100000</span>  <span class="kw">THEN</span> <span class="str">'Mittelgroß'</span>
+    <span class="kw">ELSE</span> <span class="str">'Kleinkredit'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> groessenklasse
+<span class="kw">FROM</span> vertraege;</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JOINS ══ -->
+<div id="joins" class="section">
+  <h2 class="section-title">JOINs – Tabellen verknüpfen</h2>
+  <p class="section-desc">Der mächtigste Aspekt von SQL: Daten aus mehreren Tabellen sinnvoll zusammenführen.</p>
+
+  <div class="card">
+    <h2>JOIN-Typen erklärt</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>INNER JOIN</h4>
+        <p>Nur Zeilen, die in <em>beiden</em> Tabellen übereinstimmen. Nicht gematchte Zeilen werden weggelassen.</p>
+      </div>
+      <div class="concept-card green">
+        <h4>LEFT JOIN</h4>
+        <p>Alle Zeilen der linken Tabelle + passende aus der rechten. Kein Match → NULL-Werte rechts.</p>
+      </div>
+      <div class="concept-card amber">
+        <h4>RIGHT JOIN</h4>
+        <p>Wie LEFT JOIN, aber umgekehrt. Selten verwendet – meist schreibt man stattdessen einen LEFT JOIN.</p>
+      </div>
+      <div class="concept-card purple">
+        <h4>FULL OUTER JOIN</h4>
+        <p>Alle Zeilen beider Tabellen, unabhängig ob ein Match existiert. NULLs wo kein Partner.</p>
+      </div>
+    </div>
+    <div class="info-box blue">
+      <span class="icon">💡</span>
+      <span>Für 90% aller Analysen brauchst du nur INNER JOIN und LEFT JOIN. LEFT JOIN ist besonders nützlich, wenn du prüfen willst, ob Datensätze in einer anderen Tabelle <em>fehlen</em>.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>JOINs in der Praxis</h2>
+    <h3>INNER JOIN – Kunden mit Verträgen</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Nur Kunden MIT Vertrag erscheinen</span>
+<span class="kw">SELECT</span>
+  k.name,
+  k.rating,
+  v.vertrag_id,
+  v.volumen,
+  v.zinssatz
+<span class="kw">FROM</span> kunden k
+<span class="kw">INNER JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id
+<span class="kw">WHERE</span> v.status = <span class="str">'aktiv'</span>
+<span class="kw">ORDER BY</span> v.volumen <span class="kw">DESC</span>;</div>
+    </div>
+
+    <h3>LEFT JOIN – Kunden ohne Vertrag finden</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Alle Kunden, auch ohne Vertrag (NULL = kein Vertrag)</span>
+<span class="kw">SELECT</span>
+  k.name,
+  k.segment,
+  v.vertrag_id,    <span class="cm">-- NULL wenn kein Vertrag</span>
+  v.volumen
+<span class="kw">FROM</span> kunden k
+<span class="kw">LEFT JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id;
+
+<span class="cm">-- Nur Kunden OHNE Vertrag:</span>
+<span class="kw">SELECT</span> k.name, k.segment
+<span class="kw">FROM</span> kunden k
+<span class="kw">LEFT JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id
+<span class="kw">WHERE</span> v.vertrag_id <span class="kw">IS NULL</span>;</div>
+    </div>
+
+    <h3>3-Tabellen-JOIN – vollständiger Zahlungsbericht</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="kw">SELECT</span>
+  k.name              <span class="kw">AS</span> kunde,
+  v.vertrag_id,
+  v.volumen,
+  z.datum,
+  z.betrag            <span class="kw">AS</span> zahlung_betrag,
+  z.typ               <span class="kw">AS</span> zahlungstyp
+<span class="kw">FROM</span> kunden k
+<span class="kw">INNER JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id  = v.kunden_id
+<span class="kw">INNER JOIN</span> zahlungen z <span class="kw">ON</span> v.vertrag_id = z.vertrag_id
+<span class="kw">WHERE</span> z.datum >= <span class="str">'2024-01-01'</span>
+<span class="kw">ORDER BY</span> k.name, z.datum;</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AGGREGATION ══ -->
+<div id="aggregation" class="section">
+  <h2 class="section-title">Aggregation &amp; Analyse</h2>
+  <p class="section-desc">GROUP BY, Fensterfunktionen und CTEs – die Kernwerkzeuge für Reporting und Controlling.</p>
+
+  <div class="card">
+    <h2>GROUP BY – Daten zusammenfassen</h2>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Aggregationsfunktionen</span>
+<span class="kw">SELECT</span>
+  segment,
+  <span class="fn">COUNT</span>(*)           <span class="kw">AS</span> anzahl_kunden,
+  <span class="fn">COUNT</span>(v.vertrag_id) <span class="kw">AS</span> anzahl_vertraege,
+  <span class="fn">SUM</span>(v.volumen)      <span class="kw">AS</span> gesamtvolumen,
+  <span class="fn">AVG</span>(v.zinssatz)     <span class="kw">AS</span> durchschnittszins,
+  <span class="fn">MIN</span>(v.volumen)      <span class="kw">AS</span> kleinstes_volumen,
+  <span class="fn">MAX</span>(v.volumen)      <span class="kw">AS</span> groesstes_volumen
+<span class="kw">FROM</span> kunden k
+<span class="kw">LEFT JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id
+<span class="kw">GROUP BY</span> segment
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(v.volumen) > <span class="num">1000000</span>  <span class="cm">-- Filter auf Gruppen!</span>
+<span class="kw">ORDER BY</span> gesamtvolumen <span class="kw">DESC</span>;</div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span><strong>WHERE vs. HAVING:</strong> WHERE filtert einzelne Zeilen vor der Gruppierung. HAVING filtert Gruppen nach der Aggregation. Du kannst nicht <code>WHERE SUM(...) > ...</code> schreiben – das ist ein häufiger Fehler.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Fensterfunktionen (Window Functions)</h2>
+    <p>Fensterfunktionen berechnen Werte über eine Gruppe von Zeilen, ohne diese zusammenzufassen – wie eine laufende Summe in Excel.</p>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Rang nach Volumen pro Segment</span>
+<span class="kw">SELECT</span>
+  k.name,
+  k.segment,
+  v.volumen,
+  <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> k.segment
+    <span class="kw">ORDER BY</span> v.volumen <span class="kw">DESC</span>
+  ) <span class="kw">AS</span> rang_im_segment
+<span class="kw">FROM</span> kunden k
+<span class="kw">JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id;
+
+<span class="cm">-- Laufende Summe der Zahlungen (YTD)</span>
+<span class="kw">SELECT</span>
+  datum,
+  betrag,
+  <span class="fn">SUM</span>(betrag) <span class="kw">OVER</span> (
+    <span class="kw">ORDER BY</span> datum
+    <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+  ) <span class="kw">AS</span> kumulierte_zahlungen
+<span class="kw">FROM</span> zahlungen
+<span class="kw">WHERE</span> <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> datum) = <span class="num">2024</span>;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>CTEs – lesbare komplexe Abfragen</h2>
+    <p>Common Table Expressions (WITH-Klauseln) machen lange Abfragen übersichtlich. Wie benannte Zwischentabellen.</p>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Portfolio-Risikobericht mit CTE</span>
+<span class="kw">WITH</span> portfolio_summary <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    k.segment,
+    k.rating,
+    <span class="fn">COUNT</span>(*) <span class="kw">AS</span> anzahl,
+    <span class="fn">SUM</span>(v.volumen) <span class="kw">AS</span> volumen_gesamt
+  <span class="kw">FROM</span> kunden k
+  <span class="kw">JOIN</span> vertraege v <span class="kw">ON</span> k.kunden_id = v.kunden_id
+  <span class="kw">WHERE</span> v.status = <span class="str">'aktiv'</span>
+  <span class="kw">GROUP BY</span> k.segment, k.rating
+),
+gesamtvolumen <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">SUM</span>(volumen_gesamt) <span class="kw">AS</span> total
+  <span class="kw">FROM</span> portfolio_summary
+)
+<span class="kw">SELECT</span>
+  ps.segment,
+  ps.rating,
+  ps.anzahl,
+  ps.volumen_gesamt,
+  <span class="fn">ROUND</span>(ps.volumen_gesamt * <span class="num">100.0</span> / gv.total, <span class="num">2</span>) <span class="kw">AS</span> anteil_pct
+<span class="kw">FROM</span> portfolio_summary ps
+<span class="kw">CROSS JOIN</span> gesamtvolumen gv
+<span class="kw">ORDER BY</span> ps.volumen_gesamt <span class="kw">DESC</span>;</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRAXIS ══ -->
+<div id="praxis" class="section">
+  <h2 class="section-title">Praxisfälle für Controller</h2>
+  <p class="section-desc">Typische SQL-Aufgaben im Controlling und Finanzwesen – direkt anwendbar.</p>
+
+  <div class="card">
+    <h2>Monatliches Reporting</h2>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Monatliche Zahlungseingänge nach Jahr/Monat</span>
+<span class="kw">SELECT</span>
+  <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> datum)  <span class="kw">AS</span> jahr,
+  <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> datum) <span class="kw">AS</span> monat,
+  <span class="fn">COUNT</span>(*)                    <span class="kw">AS</span> anzahl_zahlungen,
+  <span class="fn">SUM</span>(betrag)                 <span class="kw">AS</span> summe_eingang,
+  <span class="fn">AVG</span>(betrag)                 <span class="kw">AS</span> durchschnitt
+<span class="kw">FROM</span> zahlungen
+<span class="kw">WHERE</span> typ = <span class="str">'Tilgung'</span>
+<span class="kw">GROUP BY</span> jahr, monat
+<span class="kw">ORDER BY</span> jahr, monat;</div>
+    </div>
+
+    <h3>Vorjahresvergleich</h3>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="kw">WITH</span> monatsdaten <span class="kw">AS</span> (
+  <span class="kw">SELECT</span>
+    <span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, datum) <span class="kw">AS</span> monat,
+    <span class="fn">SUM</span>(betrag) <span class="kw">AS</span> volumen
+  <span class="kw">FROM</span> zahlungen
+  <span class="kw">GROUP BY</span> <span class="num">1</span>
+)
+<span class="kw">SELECT</span>
+  akt.monat,
+  akt.volumen <span class="kw">AS</span> aktuell,
+  vor.volumen <span class="kw">AS</span> vorjahr,
+  akt.volumen - vor.volumen <span class="kw">AS</span> differenz,
+  <span class="fn">ROUND</span>((akt.volumen - vor.volumen) * <span class="num">100.0</span> / vor.volumen, <span class="num">1</span>) <span class="kw">AS</span> veraenderung_pct
+<span class="kw">FROM</span> monatsdaten akt
+<span class="kw">LEFT JOIN</span> monatsdaten vor
+  <span class="kw">ON</span> akt.monat = vor.monat + <span class="kw">INTERVAL</span> <span class="str">'1 year'</span>
+<span class="kw">ORDER BY</span> akt.monat <span class="kw">DESC</span>;</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>SQL &amp; Supabase – dein Stack</h2>
+    <div class="info-box teal">
+      <span class="icon">⚡</span>
+      <span>Supabase nutzt PostgreSQL – alle Abfragen hier laufen 1:1 in deiner Supabase-Datenbank (tommy-moeller.de). Du kannst Abfragen direkt im Supabase SQL-Editor testen.</span>
+    </div>
+    <div class="sql-block">
+      <div class="sql-header"><span class="sql-lang">SQL (Supabase / PostgreSQL)</span><button class="sql-copy" onclick="copySQL(this)">Kopieren</button></div>
+      <div class="sql-body"><span class="cm">-- Supabase: User-Lernfortschritt abfragen</span>
+<span class="kw">SELECT</span>
+  u.email,
+  <span class="fn">COUNT</span>(p.modul_id)       <span class="kw">AS</span> abgeschlossene_module,
+  <span class="fn">MAX</span>(p.abgeschlossen_am) <span class="kw">AS</span> letzter_abschluss,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(p.score), <span class="num">1</span>)  <span class="kw">AS</span> durchschnittsscore
+<span class="kw">FROM</span> auth.users u
+<span class="kw">LEFT JOIN</span> lernfortschritt p <span class="kw">ON</span> u.id = p.user_id
+<span class="kw">GROUP BY</span> u.email
+<span class="kw">ORDER BY</span> abgeschlossene_module <span class="kw">DESC</span>;</div>
+    </div>
+    <h3>SQL in Power BI</h3>
+    <p>Du kannst SQL-Abfragen direkt als Power BI-Datenquelle nutzen (DirectQuery oder Import). Das ersetzt komplexe Power Query-Schritte und ist oft schneller.</p>
+    <ul class="checklist">
+      <li>Aggregationen in SQL statt in Power BI = schnellere Reports</li>
+      <li>JOINs in SQL statt Beziehungen in Power BI = einfacheres Datenmodell</li>
+      <li>CTEs als Grundlage für Measures = sauberere Architektur</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck SQL</h2>
+  <p class="section-desc">7 Fragen – teste dein SQL-Verständnis.</p>
+
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was ist der Unterschied zwischen WHERE und HAVING?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Es gibt keinen Unterschied, beide filtern Zeilen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">WHERE filtert Zeilen vor der Gruppierung, HAVING filtert Gruppen nach der Aggregation</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">HAVING ist nur für numerische Werte, WHERE für Text</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">WHERE kommt immer nach GROUP BY</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">WHERE filtert einzelne Datensätze vor der Gruppierung. HAVING filtert Gruppen nach der Aggregation – du kannst z.B. HAVING SUM(volumen) > 1000000 schreiben, aber nicht WHERE SUM(volumen) > 1000000.</div>
+  </div>
+
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Du willst alle Kunden sehen, auch solche OHNE Vertrag. Welcher JOIN ist richtig?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">INNER JOIN</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">LEFT JOIN (Kunden links)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">RIGHT JOIN</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">CROSS JOIN</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">LEFT JOIN gibt alle Zeilen der linken Tabelle zurück (hier: Kunden), auch wenn kein passender Eintrag rechts (Verträge) existiert. Kunden ohne Vertrag erscheinen mit NULL-Werten in den Vertragsspalten.</div>
+  </div>
+
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was macht DATE_TRUNC('month', datum)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Gibt den letzten Tag des Monats zurück</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Schneidet das Datum auf den ersten Tag des Monats ab (z.B. 2024-03-15 → 2024-03-01)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Extrahiert nur die Monatsnummer</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Berechnet die Anzahl Tage im Monat</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">DATE_TRUNC('month', datum) gibt den Monatsbeginn zurück. Damit kannst du Daten nach Monat gruppieren, ohne EXTRACT verwenden zu müssen – sehr praktisch für monatliche Berichte.</div>
+  </div>
+
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist ein CTE (Common Table Expression)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Ein dauerhaft gespeicherter View in der Datenbank</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Eine spezielle Art von Index</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">Eine benannte temporäre Zwischentabelle innerhalb einer Abfrage (WITH-Klausel)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Eine Funktion zur Texttransformation</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">CTEs (WITH klausel_name AS (...)) sind temporäre, benannte Abfrageergebnisse, die nur für die Dauer der übergeordneten Abfrage existieren. Sie machen komplexe Abfragen lesbar und wartbar.</div>
+  </div>
+
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Wofür steht das * in SELECT * FROM kunden?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Alle Spalten der Tabelle</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Alle Zeilen der Tabelle</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Multiplikation</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Primärschlüssel-Spalte</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">SELECT * bedeutet "wähle alle Spalten". In der Produktion sollte man konkrete Spaltennamen angeben statt * – das verbessert Performance und Wartbarkeit.</div>
+  </div>
+
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Du willst die Top-3-Kunden nach Kreditvolumen je Segment. Welche Funktion hilft?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">GROUP BY mit LIMIT 3</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">MAX() pro Segment</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">RANK() OVER (PARTITION BY segment ORDER BY volumen DESC)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">HAVING COUNT(*) <= 3</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Fensterfunktionen wie RANK() OVER (PARTITION BY ...) erstellen einen Rang innerhalb jeder Gruppe (Partition), ohne die Zeilen zusammenzufassen. Danach filterst du WHERE rang <= 3.</div>
+  </div>
+
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Was ist der Primärschlüssel (Primary Key)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Der erste Spaltenname einer Tabelle</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Der wichtigste numerische Wert in der Tabelle</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Ein eindeutiger Bezeichner für jede Zeile – darf nicht doppelt vorkommen und nicht NULL sein</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Ein verschlüsseltes Passwort für die Datenbank</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">Der Primärschlüssel (PK) identifiziert jede Zeile eindeutig. Andere Tabellen verweisen über Fremdschlüssel (FK) darauf. Typisch: id SERIAL PRIMARY KEY in PostgreSQL.</div>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3>
+    <p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Lernmodul zur Weiterbildung. Alle SQL-Beispiele basieren auf PostgreSQL / Supabase-Syntax.</p>
+</footer>
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function copySQL(btn){
+  const code=btn.closest('.sql-block').querySelector('.sql-body').innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    const o=btn.textContent;btn.textContent='✓ Kopiert';
+    setTimeout(()=>btn.textContent=o,1500);
+  });
+}
+let quizAnswers={};
+const TOTAL=7;
+function answer(btn,type,qId){
+  const qEl=document.getElementById(qId);
+  if(qEl.dataset.answered)return;
+  qEl.dataset.answered='1';
+  qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});
+  btn.classList.add(type);
+  const num=qId.replace('q','');
+  const fb=document.getElementById('fb'+num);
+  fb.classList.add('show',type);
+  quizAnswers[qId]=type==='correct';
+}
+function showScore(){
+  const correct=Object.values(quizAnswers).filter(Boolean).length;
+  const pct=Math.round(correct/TOTAL*100);
+  document.getElementById('score-text').textContent=correct+' von '+TOTAL+' richtig ('+pct+'%)';
+  document.getElementById('score-msg').textContent=pct>=85?'Ausgezeichnet! Du beherrschst SQL-Grundlagen sehr gut.':pct>=57?'Solide Basis! Wiederhole die Abschnitte zu deinen Fehlerquellen.':'Geh die Grundlagen und JOIN-Abschnitte nochmal durch.';
+  document.getElementById('score-bar').style.width=pct+'%';
+  const el=document.getElementById('quiz-score');
+  el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function resetQuiz(){
+  quizAnswers={};
+  document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);
+  document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});
+  document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));
+  document.getElementById('quiz-score').style.display='none';
+}
+</script>
+</body>
+</html>
