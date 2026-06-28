@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technologien im Controlling | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Palette – Slate + Amber + Off-white */
+  --slate-950: #0B1120;
+  --slate-900: #0F172A;
+  --slate-800: #1E293B;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748B;
+  --slate-400: #94A3B8;
+  --slate-200: #E2E8F0;
+  --slate-100: #F1F5F9;
+  --slate-50:  #F8FAFC;
+  --amber-500: #F59E0B;
+  --amber-400: #FBBF24;
+  --amber-100: #FEF3C7;
+  --amber-50:  #FFFBEB;
+  --amber-700: #B45309;
+  --blue-600:  #2563EB;
+  --blue-100:  #DBEAFE;
+  --blue-800:  #1E40AF;
+  --blue-50:   #EFF6FF;
+  --green-600: #16A34A;
+  --green-100: #DCFCE7;
+  --green-50:  #F0FDF4;
+  --green-700: #15803D;
+  --purple-600:#7C3AED;
+  --purple-100:#EDE9FE;
+  --purple-50: #F5F3FF;
+  --purple-700:#6D28D9;
+  --red-600:   #DC2626;
+  --red-50:    #FFF1F2;
+  --red-100:   #FFE4E6;
+  --teal-600:  #0D9488;
+  --teal-100:  #CCFBF1;
+  --teal-50:   #F0FDFA;
+  --teal-700:  #0F766E;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif:'Lora', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--slate-50);color:var(--slate-900);line-height:1.7;font-size:15px;}
+
+/* ── HEADER ── */
+.site-header{
+  background:var(--slate-900);
+  color:white;
+  position:relative;
+  overflow:hidden;
+}
+.header-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(245,158,11,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,.06) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+.header-inner{max-width:900px;margin:0 auto;padding:52px 24px 60px;position:relative;}
+.header-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:11px;font-weight:500;
+  color:var(--amber-400);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:18px;
+}
+.header-eyebrow::before{content:'//';opacity:.5;}
+.site-header h1{
+  font-family:var(--font-serif);
+  font-size:clamp(26px,4.5vw,38px);
+  font-weight:600;line-height:1.2;
+  margin-bottom:16px;letter-spacing:-.02em;
+  color:white;
+}
+.site-header h1 em{font-style:normal;color:var(--amber-400);}
+.site-header p.subtitle{
+  font-size:15.5px;color:rgba(255,255,255,.65);
+  max-width:580px;line-height:1.65;
+}
+.header-kpis{
+  display:flex;gap:32px;margin-top:32px;
+  flex-wrap:wrap;
+}
+.header-kpi{border-left:2px solid var(--amber-500);padding-left:14px;}
+.header-kpi .kpi-val{font-family:var(--font-mono);font-size:22px;font-weight:500;color:white;line-height:1;}
+.header-kpi .kpi-label{font-size:11.5px;color:var(--slate-400);margin-top:4px;}
+
+/* ── NAV ── */
+.nav-strip{background:white;border-bottom:1px solid var(--slate-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.nav-inner{max-width:900px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:13px 17px;font-size:13.5px;font-weight:500;color:var(--slate-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:var(--slate-800);}
+.nav-tab.active{color:var(--slate-900);border-bottom-color:var(--amber-500);}
+
+/* ── MAIN ── */
+main{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-serif);font-size:23px;font-weight:600;color:var(--slate-900);margin-bottom:5px;letter-spacing:-.015em;}
+.section-desc{font-size:14px;color:var(--slate-500);margin-bottom:28px;}
+
+/* ── CARDS ── */
+.card{background:white;border:1px solid var(--slate-200);border-radius:12px;padding:26px 30px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--slate-900);margin-bottom:10px;line-height:1.3;}
+.card h3{font-size:14.5px;font-weight:600;color:var(--slate-700);margin:18px 0 7px;}
+.card h3:first-of-type{margin-top:8px;}
+.card p{color:var(--slate-600);margin-bottom:11px;font-size:14.5px;}
+.card p:last-child{margin-bottom:0;}
+
+/* ── INFO BOXES ── */
+.info-box{border-radius:8px;padding:13px 16px;margin:13px 0;display:flex;gap:11px;align-items:flex-start;font-size:13.5px;line-height:1.6;}
+.info-box .icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid var(--amber-400);}
+.info-box.blue{background:var(--blue-50);color:var(--blue-800);border-left:3px solid #60A5FA;}
+.info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #22C55E;}
+.info-box.purple{background:var(--purple-50);color:var(--purple-700);border-left:3px solid #A78BFA;}
+.info-box.teal{background:var(--teal-50);color:var(--teal-700);border-left:3px solid #2DD4BF;}
+.info-box.slate{background:var(--slate-100);color:var(--slate-700);border-left:3px solid var(--slate-400);}
+
+/* ── TOOL CARDS ── */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:14px 0;}
+.tool-card{
+  border:1px solid var(--slate-200);border-radius:10px;padding:20px;
+  background:white;transition:border-color .15s,box-shadow .15s;
+  display:flex;flex-direction:column;gap:10px;
+}
+.tool-card:hover{border-color:var(--amber-400);box-shadow:0 2px 8px rgba(245,158,11,.12);}
+.tool-card-top{display:flex;align-items:center;gap:11px;}
+.tool-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.tool-icon.amber{background:var(--amber-100);}
+.tool-icon.blue{background:var(--blue-100);}
+.tool-icon.green{background:var(--green-100);}
+.tool-icon.purple{background:var(--purple-100);}
+.tool-icon.teal{background:var(--teal-100);}
+.tool-icon.slate{background:var(--slate-100);}
+.tool-name{font-size:14px;font-weight:600;color:var(--slate-900);}
+.tool-vendor{font-size:11.5px;color:var(--slate-500);font-family:var(--font-mono);}
+.tool-desc{font-size:13px;color:var(--slate-600);line-height:1.55;flex:1;}
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.pill{font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:10px;}
+.pill.amber{background:var(--amber-100);color:var(--amber-700);}
+.pill.blue{background:var(--blue-100);color:var(--blue-800);}
+.pill.green{background:var(--green-100);color:var(--green-700);}
+.pill.purple{background:var(--purple-100);color:var(--purple-700);}
+.pill.slate{background:var(--slate-100);color:var(--slate-600);}
+
+/* ── COMPARISON GRID ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px;}
+@media(max-width:580px){.compare-grid,.tool-grid{grid-template-columns:1fr;}}
+.compare-card{border:1px solid var(--slate-200);border-radius:10px;padding:18px;background:white;}
+.compare-card h4{font-size:13.5px;font-weight:600;color:var(--slate-800);margin-bottom:7px;}
+.compare-card ul{list-style:none;}
+.compare-card ul li{font-size:13px;color:var(--slate-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.compare-card ul li::before{content:'→';color:var(--amber-500);flex-shrink:0;font-size:12px;margin-top:2px;}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:4px;margin-bottom:7px;font-family:var(--font-mono);}
+.tag.amber{background:var(--amber-100);color:var(--amber-700);}
+.tag.blue{background:var(--blue-100);color:var(--blue-800);}
+.tag.green{background:var(--green-100);color:var(--green-700);}
+.tag.purple{background:var(--purple-100);color:var(--purple-700);}
+.tag.teal{background:var(--teal-100);color:var(--teal-700);}
+.tag.slate{background:var(--slate-100);color:var(--slate-600);}
+
+/* ── PROCESS STEPS ── */
+.process-steps{display:flex;flex-direction:column;gap:0;margin:14px 0;}
+.proc-step{display:flex;gap:16px;position:relative;padding-bottom:20px;}
+.proc-step:last-child{padding-bottom:0;}
+.proc-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.proc-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--slate-900);color:white;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:12px;font-weight:500;
+  flex-shrink:0;z-index:1;
+}
+.proc-line{width:2px;background:var(--slate-200);flex:1;margin-top:4px;}
+.proc-step:last-child .proc-line{display:none;}
+.proc-content{padding-top:4px;padding-bottom:0;}
+.proc-title{font-size:14.5px;font-weight:600;color:var(--slate-800);margin-bottom:4px;}
+.proc-desc{font-size:13.5px;color:var(--slate-600);line-height:1.55;}
+.proc-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.proc-tool{
+  background:var(--slate-900);color:var(--amber-400);
+  font-family:var(--font-mono);font-size:11px;
+  padding:2px 9px;border-radius:4px;
+}
+
+/* ── TECH STACK MATCHER (signature feature) ── */
+.matcher-wrap{background:white;border:1px solid var(--slate-200);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.matcher-header{background:var(--slate-900);padding:18px 24px;}
+.matcher-header h3{font-family:var(--font-mono);font-size:13px;color:var(--amber-400);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.matcher-header p{font-size:13px;color:var(--slate-400);}
+.matcher-body{padding:24px;}
+.matcher-question{margin-bottom:18px;}
+.matcher-question label{display:block;font-size:13px;font-weight:600;color:var(--slate-700);margin-bottom:8px;}
+.matcher-opts{display:flex;flex-wrap:wrap;gap:8px;}
+.matcher-opt{
+  border:1.5px solid var(--slate-200);border-radius:7px;
+  padding:7px 14px;font-size:13px;cursor:pointer;
+  background:white;color:var(--slate-700);font-family:inherit;
+  transition:all .12s;
+}
+.matcher-opt:hover{border-color:var(--amber-400);color:var(--slate-900);}
+.matcher-opt.selected{border-color:var(--amber-500);background:var(--amber-50);color:var(--amber-800);font-weight:500;}
+.matcher-result{
+  background:var(--slate-900);border-radius:10px;padding:20px 24px;
+  margin-top:4px;display:none;
+}
+.matcher-result.show{display:block;}
+.matcher-result-title{font-family:var(--font-mono);font-size:11px;color:var(--slate-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.match-tool{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:12px 0;border-bottom:1px solid var(--slate-800);
+}
+.match-tool:last-child{border-bottom:none;padding-bottom:0;}
+.match-rank{
+  font-family:var(--font-mono);font-size:13px;color:var(--amber-400);
+  font-weight:500;width:24px;flex-shrink:0;padding-top:1px;
+}
+.match-info .match-name{font-size:14px;font-weight:600;color:white;}
+.match-info .match-why{font-size:12.5px;color:var(--slate-400);margin-top:3px;line-height:1.5;}
+.match-info .match-caveat{font-size:12px;color:var(--amber-500);margin-top:4px;}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--slate-900);color:white;padding:10px 20px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+.btn:hover{background:var(--slate-700);}
+.btn.amber{background:var(--amber-500);color:var(--slate-900);}
+.btn.amber:hover{background:var(--amber-400);}
+.btn.secondary{background:white;color:var(--slate-700);border:1.5px solid var(--slate-200);}
+.btn.secondary:hover{background:var(--slate-50);}
+
+/* ── CASE STUDY ── */
+.case-study{
+  border:1px solid var(--slate-200);border-radius:12px;
+  overflow:hidden;margin-bottom:16px;
+}
+.case-header{
+  background:var(--slate-800);padding:16px 22px;
+  display:flex;align-items:center;gap:12px;
+}
+.case-header .case-icon{font-size:22px;}
+.case-header .case-title{font-size:14.5px;font-weight:600;color:white;}
+.case-header .case-sub{font-size:12px;color:var(--slate-400);margin-top:2px;}
+.case-body{padding:20px 22px;background:white;}
+.case-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;}
+@media(max-width:560px){.case-row{grid-template-columns:1fr;}}
+.case-col h5{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-500);font-family:var(--font-mono);margin-bottom:8px;}
+.case-col ul{list-style:none;}
+.case-col ul li{font-size:13px;color:var(--slate-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.case-col ul li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;}
+.case-col ul.problems li::before{content:'✗';color:var(--red-600);}
+.case-result{
+  background:var(--amber-50);border:1px solid var(--amber-200);
+  border-radius:8px;padding:12px 16px;margin-top:14px;
+  font-size:13.5px;color:var(--amber-800);
+}
+.case-result strong{color:var(--amber-700);}
+
+/* ── LANDSCAPE TABLE ── */
+.landscape-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+.landscape-table thead tr{background:var(--slate-900);}
+.landscape-table th{color:white;font-weight:600;text-align:left;padding:9px 13px;font-size:11.5px;font-family:var(--font-mono);letter-spacing:.03em;}
+.landscape-table th:first-child{border-radius:8px 0 0 0;}
+.landscape-table th:last-child{border-radius:0 8px 0 0;}
+.landscape-table td{padding:9px 13px;border-bottom:1px solid var(--slate-100);color:var(--slate-700);vertical-align:top;}
+.landscape-table tr:last-child td{border-bottom:none;}
+.landscape-table tr:nth-child(even) td{background:var(--slate-50);}
+.landscape-table .cat-badge{
+  display:inline-block;font-size:10px;font-weight:600;
+  font-family:var(--font-mono);padding:2px 6px;border-radius:4px;
+  white-space:nowrap;
+}
+
+/* ── MATURITY SCALE ── */
+.maturity-scale{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+.maturity-item{
+  display:flex;align-items:center;gap:14px;
+  background:white;border:1px solid var(--slate-200);
+  border-radius:9px;padding:14px 18px;
+}
+.maturity-level{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;
+  color:var(--amber-700);background:var(--amber-100);
+  padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;min-width:60px;text-align:center;
+}
+.maturity-content .mat-title{font-size:14px;font-weight:600;color:var(--slate-800);}
+.maturity-content .mat-desc{font-size:13px;color:var(--slate-500);margin-top:2px;}
+.maturity-bar-wrap{margin-left:auto;flex-shrink:0;}
+.maturity-bar-bg{width:80px;height:6px;background:var(--slate-100);border-radius:3px;overflow:hidden;}
+.maturity-bar-fill{height:100%;background:var(--amber-400);border-radius:3px;}
+
+/* ── QUIZ ── */
+.quiz-question{background:white;border:1px solid var(--slate-200);border-radius:10px;padding:22px 26px;margin-bottom:14px;}
+.quiz-q{font-size:14.5px;font-weight:600;color:var(--slate-800);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;}
+.quiz-opt{background:var(--slate-50);border:1.5px solid var(--slate-200);border-radius:8px;padding:9px 15px;cursor:pointer;font-size:13.5px;color:var(--slate-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+.quiz-opt:hover{background:var(--amber-50);border-color:var(--amber-400);color:var(--slate-900);}
+.quiz-opt.correct{background:var(--green-50);border-color:#22C55E;color:var(--green-700);}
+.quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+.quiz-feedback{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:6px;display:none;line-height:1.6;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+.quiz-feedback.wrong{background:var(--red-50);color:var(--red-600);}
+.quiz-score{background:var(--slate-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:18px;}
+.quiz-score h3{font-size:21px;font-weight:600;margin-bottom:4px;font-family:var(--font-serif);}
+.quiz-score p{color:rgba(255,255,255,.65);font-size:13.5px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:14px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--amber-400);border-radius:3px;transition:width .4s;}
+
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:4px 0;font-size:14px;color:var(--slate-700);line-height:1.55;}
+.checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+.checklist.cross li::before{content:'✗';color:var(--red-600);}
+
+.site-footer{background:var(--slate-900);color:rgba(255,255,255,.45);text-align:center;padding:26px 24px;font-size:13px;}
+.site-footer a{color:rgba(255,255,255,.65);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-grid"></div>
+  <div class="header-inner">
+    <div class="header-eyebrow">Lernmodul · Controlling-Technologie</div>
+    <h1>Technologien &amp; Software<br>im <em>modernen Controlling</em></h1>
+    <p class="subtitle">Von ERP über BI bis zu CPM-Plattformen: welche Tools den Controlling-Alltag prägen, wann was sinnvoll ist – und wie du als Controller die richtigen Entscheidungen triffst.</p>
+    <div class="header-kpis">
+      <div class="header-kpi">
+        <div class="kpi-val">7</div>
+        <div class="kpi-label">Technologie-Kategorien</div>
+      </div>
+      <div class="header-kpi">
+        <div class="kpi-val">5</div>
+        <div class="kpi-label">Praxisbeispiele</div>
+      </div>
+      <div class="header-kpi">
+        <div class="kpi-val">30+</div>
+        <div class="kpi-label">Tools im Überblick</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('landschaft')">Tool-Landschaft</button>
+    <button class="nav-tab" onclick="showSection('erp')">ERP &amp; Kernsysteme</button>
+    <button class="nav-tab" onclick="showSection('bi')">BI &amp; Analytics</button>
+    <button class="nav-tab" onclick="showSection('cpm')">Planung &amp; CPM</button>
+    <button class="nav-tab" onclick="showSection('matcher')">Stack-Matcher</button>
+    <button class="nav-tab" onclick="showSection('praxis')">Praxisfälle</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════
+     SECTION 1: TOOL-LANDSCHAFT
+════════════════════════════════════════ -->
+<div id="landschaft" class="section active">
+  <h2 class="section-title">Die Controlling-Tool-Landschaft</h2>
+  <p class="section-desc">Sieben Technologie-Kategorien, die zusammen den modernen Controlling-Werkzeugkasten bilden.</p>
+
+  <div class="card">
+    <h2>Kategorien im Überblick</h2>
+    <p>Controlling-Software ist kein einzelnes Produkt – sondern ein Ökosystem aus spezialisierten Systemen, die zusammenarbeiten. Jede Kategorie hat klare Stärken und typische Einsatzbereiche.</p>
+    <table class="landscape-table">
+      <thead>
+        <tr>
+          <th>Kategorie</th>
+          <th>Hauptaufgabe</th>
+          <th>Typische Systeme</th>
+          <th>Controlling-Relevanz</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="cat-badge" style="background:#FEF3C7;color:#92400E;">ERP</span></td>
+          <td>Geschäftsprozesse, Buchführung, Stammdaten</td>
+          <td>SAP S/4HANA, Microsoft Dynamics, Oracle</td>
+          <td>Datenquelle №1 – alle Ist-Zahlen</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#DBEAFE;color:#1E40AF;">BI / Analytics</span></td>
+          <td>Berichte, Dashboards, Datenvisualisierung</td>
+          <td>Power BI, Tableau, Qlik</td>
+          <td>Reporting, KPI-Monitoring</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#DCFCE7;color:#15803D;">CPM / FP&amp;A</span></td>
+          <td>Planung, Budgetierung, Forecasting</td>
+          <td>Jedox, Anaplan, IBM Planning Analytics</td>
+          <td>Jahresplanung, Szenarien, Rollforecast</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#EDE9FE;color:#6D28D9;">DWH / Data</span></td>
+          <td>Datenspeicherung, -integration, -qualität</td>
+          <td>Snowflake, Azure Synapse, BigQuery</td>
+          <td>Einheitliche Datenbasis, Single Source of Truth</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#CCFBF1;color:#0F766E;">GRC / Compliance</span></td>
+          <td>Governance, Risk, Compliance, Audit</td>
+          <td>SAP GRC, MetricStream, ServiceNow</td>
+          <td>IKS, regulatorische Berichte</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#FFE4E6;color:#9F1239;">Automatisierung</span></td>
+          <td>Workflow-Automatisierung, RPA, ETL</td>
+          <td>Power Automate, UiPath, Alteryx</td>
+          <td>Monatsabschluss, Konsolidierung</td>
+        </tr>
+        <tr>
+          <td><span class="cat-badge" style="background:#F1F5F9;color:#475569;">KI / ML</span></td>
+          <td>Prognosen, Anomalieerkennung, NLP</td>
+          <td>Azure ML, Copilot, Python</td>
+          <td>Forecastverbesserung, Ausreißererkennung</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box amber">
+      <span class="icon">💡</span>
+      <span>Kein Unternehmen setzt alle Kategorien ein. Typisch: ERP + BI ist Pflicht, CPM kommt ab ~200 Mio. € Umsatz, DWH ab mittlerem Mittelstand. Kleine Unternehmen lösen CPM noch mit Excel + Power BI.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Reifegradmodell Controlling-Technologie</h2>
+    <p>Wo steht ein Unternehmen technologisch? Das Reifegradmodell zeigt den typischen Entwicklungspfad:</p>
+    <div class="maturity-scale">
+      <div class="maturity-item">
+        <span class="maturity-level">Stufe 1</span>
+        <div class="maturity-content">
+          <div class="mat-title">Manuell / Excel-dominiert</div>
+          <div class="mat-desc">Alle Reports in Excel, Buchführung im Steuer-Tool, keine Automatisierung</div>
+        </div>
+        <div class="maturity-bar-wrap"><div class="maturity-bar-bg"><div class="maturity-bar-fill" style="width:20%"></div></div></div>
+      </div>
+      <div class="maturity-item">
+        <span class="maturity-level">Stufe 2</span>
+        <div class="maturity-content">
+          <div class="mat-title">ERP + Standard-BI</div>
+          <div class="mat-desc">ERP-System im Einsatz, erste Power BI / Tableau Dashboards, Excel als Ergänzung</div>
+        </div>
+        <div class="maturity-bar-wrap"><div class="maturity-bar-bg"><div class="maturity-bar-fill" style="width:40%"></div></div></div>
+      </div>
+      <div class="maturity-item" style="border-color:var(--amber-300);background:var(--amber-50);">
+        <span class="maturity-level">Stufe 3</span>
+        <div class="maturity-content">
+          <div class="mat-title">Integriertes Reporting-Ökosystem ← Standard Mittelstand</div>
+          <div class="mat-desc">ERP + DWH + BI, teilautomatisierter Abschluss, erste Planung in CPM</div>
+        </div>
+        <div class="maturity-bar-wrap"><div class="maturity-bar-bg"><div class="maturity-bar-fill" style="width:60%"></div></div></div>
+      </div>
+      <div class="maturity-item">
+        <span class="maturity-level">Stufe 4</span>
+        <div class="maturity-content">
+          <div class="mat-title">Datengetriebenes Controlling</div>
+          <div class="mat-desc">Vollintegrierter Stack, Echtzeitdaten, Rollforecast, weitgehend automatisiert</div>
+        </div>
+        <div class="maturity-bar-wrap"><div class="maturity-bar-bg"><div class="maturity-bar-fill" style="width:80%"></div></div></div>
+      </div>
+      <div class="maturity-item">
+        <span class="maturity-level">Stufe 5</span>
+        <div class="maturity-content">
+          <div class="mat-title">Predictive &amp; Autonomous Controlling</div>
+          <div class="mat-desc">KI-gestützte Prognosen, Self-Service Analytics, Anomalie-Alerts, AI-Assistenten</div>
+        </div>
+        <div class="maturity-bar-wrap"><div class="maturity-bar-bg"><div class="maturity-bar-fill" style="width:100%"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 2: ERP
+════════════════════════════════════════ -->
+<div id="erp" class="section">
+  <h2 class="section-title">ERP &amp; Kernsysteme</h2>
+  <p class="section-desc">Das Rückgrat jedes Controllings: Buchführung, Kostenrechnung und Stammdaten als Quelle aller Zahlen.</p>
+
+  <div class="card">
+    <h2>Was ist ein ERP-System?</h2>
+    <p>Enterprise Resource Planning (ERP) integriert alle Unternehmensprozesse in einer gemeinsamen Datenbasis: Buchhaltung, Einkauf, Produktion, Vertrieb, HR. Für das Controlling ist das ERP die wichtigste Datenquelle – alle Ist-Zahlen kommen von hier.</p>
+    <div class="info-box blue">
+      <span class="icon">🏗️</span>
+      <span>Im Bankumfeld (S-Kreditpartner) ist das Kernsystem oft ein spezialisiertes Bankensystem (z.B. agree21, OSPlus, B2 der Fiducia) statt eines klassischen ERP. Die Controlling-Logik bleibt aber dieselbe: Ist-Daten aus dem Kernsystem → Auswertung im BI-Layer.</span>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon amber">🟦</div>
+          <div><div class="tool-name">SAP S/4HANA</div><div class="tool-vendor">SAP SE</div></div>
+        </div>
+        <div class="tool-desc">Marktführer bei Großunternehmen. In-Memory-Datenbank für Echtzeitauswertungen. CO-Modul für Kostenrechnung, FI für Buchhaltung. Sehr mächtig, aber komplex und teuer.</div>
+        <div class="pill-row"><span class="pill amber">Enterprise</span><span class="pill blue">CO/FI</span><span class="pill slate">teuer</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon blue">🔷</div>
+          <div><div class="tool-name">Microsoft Dynamics 365</div><div class="tool-vendor">Microsoft</div></div>
+        </div>
+        <div class="tool-desc">Starke Integration mit Office 365 und Power BI. Gut für mittelständische Unternehmen. Finance & Operations (F&O) für Controlling-Aufgaben. Azure-Cloud-nativ.</div>
+        <div class="pill-row"><span class="pill blue">Mittelstand</span><span class="pill green">M365-Integration</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon green">📗</div>
+          <div><div class="tool-name">DATEV</div><div class="tool-vendor">DATEV eG</div></div>
+        </div>
+        <div class="tool-desc">Deutscher Standard für KMU und Steuerberater. Buchhaltung, Lohn, Jahresabschluss. Weniger Controller-Features, aber Schnittstellen zu BI-Tools vorhanden.</div>
+        <div class="pill-row"><span class="pill green">KMU</span><span class="pill amber">Deutschland</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon purple">⚡</div>
+          <div><div class="tool-name">Lexware / Sage</div><div class="tool-vendor">Haufe / Sage Group</div></div>
+        </div>
+        <div class="tool-desc">Einstiegslösungen für kleine Unternehmen. Buchhaltung, Rechnungswesen. Begrenzte Controlling-Features – als Datenquelle für BI nutzbar.</div>
+        <div class="pill-row"><span class="pill purple">Klein-KMU</span><span class="pill slate">Einstieg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ERP-Daten für das Controlling nutzen</h2>
+    <h3>Typischer Datenfluss</h3>
+    <div class="process-steps">
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">1</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Buchungen im ERP</div>
+          <div class="proc-desc">Alle Geschäftsvorfälle werden gebucht: Eingangsrechnungen, Lohnlauf, Abschreibungen, Abgrenzungen. Das ERP ist die buchhalterische Wahrheit.</div>
+          <div class="proc-tools"><span class="proc-tool">SAP FI/CO</span><span class="proc-tool">Dynamics 365</span><span class="proc-tool">DATEV</span></div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">2</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Extraktion &amp; Transformation</div>
+          <div class="proc-desc">Daten werden per ETL-Prozess (Extract-Transform-Load) aus dem ERP extrahiert, bereinigt und für Analysen aufbereitet. Häufig nächtliche Batch-Jobs.</div>
+          <div class="proc-tools"><span class="proc-tool">Power Query</span><span class="proc-tool">SSIS</span><span class="proc-tool">Alteryx</span></div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">3</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Data Warehouse / Datenbasis</div>
+          <div class="proc-desc">Historische Daten werden in einem DWH gehalten. Controlling-Dimensionen (Kostenstelle, Kostenart, Periode) werden modelliert. Einheitliche Kennzahlendefinitionen.</div>
+          <div class="proc-tools"><span class="proc-tool">Azure Synapse</span><span class="proc-tool">Snowflake</span><span class="proc-tool">SQL Server</span></div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">4</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">BI &amp; Reporting</div>
+          <div class="proc-desc">Dashboards, Berichte und Self-Service-Analysen auf Basis der aufbereiteten Daten. Abweichungsanalysen, KPI-Monitoring, Vorstandsberichte.</div>
+          <div class="proc-tools"><span class="proc-tool">Power BI</span><span class="proc-tool">Tableau</span><span class="proc-tool">Qlik</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span><strong>Häufiges Problem:</strong> Daten werden direkt aus dem ERP in Excel exportiert und manuell aufbereitet. Das ist fehleranfällig, nicht skalierbar und erzeugt mehrere "Wahrheiten". Der Königsweg: einheitlicher ETL-Prozess in ein DWH.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 3: BI & ANALYTICS
+════════════════════════════════════════ -->
+<div id="bi" class="section">
+  <h2 class="section-title">BI &amp; Analytics-Plattformen</h2>
+  <p class="section-desc">Dashboards, Self-Service-Reports und Datenvisualisierung – das Gesicht des modernen Controllings.</p>
+
+  <div class="card">
+    <h2>Die BI-Plattformen im Vergleich</h2>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon amber">📊</div>
+          <div><div class="tool-name">Microsoft Power BI</div><div class="tool-vendor">Microsoft</div></div>
+        </div>
+        <div class="tool-desc">Marktführer im Mittelstand. Tief in M365 integriert, starke DAX-Formelsprache, gute Datenmodellierung. Power BI Service für kollaborative Reports. Günstigstes Preis-Leistungs-Verhältnis.</div>
+        <div class="pill-row"><span class="pill amber">Marktführer</span><span class="pill blue">M365</span><span class="pill green">günstig</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon blue">🔵</div>
+          <div><div class="tool-name">Tableau</div><div class="tool-vendor">Salesforce</div></div>
+        </div>
+        <div class="tool-desc">Stärkstes Visualisierungs-Tool auf dem Markt. Beste UX für explorative Analysen. Salesforce-Integration. Teurer als Power BI, aber bei komplexen Visualisierungen überlegen.</div>
+        <div class="pill-row"><span class="pill blue">Visualisierung</span><span class="pill slate">Enterprise</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon green">🟢</div>
+          <div><div class="tool-name">Qlik Sense</div><div class="tool-vendor">Qlik</div></div>
+        </div>
+        <div class="tool-desc">Starkes assoziatives Datenmodell – Beziehungen werden automatisch erkannt. Gut für komplexe Datenstrukturen. NPrinting für automatischen Report-Versand.</div>
+        <div class="pill-row"><span class="pill green">Assoziativ</span><span class="pill amber">Datenmodell</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon purple">📈</div>
+          <div><div class="tool-name">Looker / Google BI</div><div class="tool-vendor">Google</div></div>
+        </div>
+        <div class="tool-desc">Code-first Ansatz (LookML). Stark bei großen Datenmengen in BigQuery. Gut für tech-affine Teams. Google Workspace Integration.</div>
+        <div class="pill-row"><span class="pill purple">Code-first</span><span class="pill blue">BigQuery</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Power BI im Controlling-Alltag</h2>
+    <p>Power BI ist das de-facto-Standard-Tool für Controller in deutschen Mittelstandsunternehmen. Was es kann – und wo es Grenzen hat:</p>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag green">Stärken</span>
+        <h4>Power BI glänzt bei...</h4>
+        <ul>
+          <li>Monatliche Berichte und Dashboards</li>
+          <li>KPI-Monitoring mit Ampelfunktionen</li>
+          <li>Abweichungsanalysen (Plan/Ist/Vorjahr)</li>
+          <li>Datenpunkt-Drill-Down und -Through</li>
+          <li>Automatischer Refresh aus ERP / DWH</li>
+          <li>Verteilung an viele Nutzer (Service)</li>
+          <li>DAX für komplexe Berechnungen</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag slate">Grenzen</span>
+        <h4>Vorsicht bei...</h4>
+        <ul>
+          <li>Schreiben zurück in Datenquellen (kein Write-back)</li>
+          <li>Komplexe Budgetierungsprozesse</li>
+          <li>Simulationen und What-if-Szenarien (begrenzt)</li>
+          <li>Sehr große Datenmengen ohne Premium</li>
+          <li>Governance und Datenschutz in Teams</li>
+          <li>Anpassbare Genehmigungsworkflows</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <span class="icon">🎯</span>
+      <span>Für deinen Einsatz bei SKP: Power BI Copilot (in Premium P1/P2-Lizenz) kann automatisch Berichts-Zusammenfassungen generieren und natürlichsprachige Abfragen ("Was war der höchste Zinsertragsmonat?") direkt in Dashboards beantworten.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Self-Service vs. Governed BI</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag amber">Self-Service BI</span>
+        <h4>Jeder macht seine Reports</h4>
+        <ul>
+          <li>Schnell und flexibel</li>
+          <li>Controller erstellt selbst</li>
+          <li>Kein IT-Bottleneck</li>
+          <li>Risiko: "Kennzahlen-Wildwuchs"</li>
+          <li>Verschiedene Wahrheiten in verschiedenen Reports</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag blue">Governed BI</span>
+        <h4>Zentral verwaltete Berichte</h4>
+        <ul>
+          <li>Eine einzige Wahrheit (single source)</li>
+          <li>Qualitätsgesicherte Kennzahlen</li>
+          <li>IT verwaltet, Controlling nutzt</li>
+          <li>Langsamer bei Änderungen</li>
+          <li>Skaliert gut in großen Organisationen</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box blue">
+      <span class="icon">💡</span>
+      <span>Best Practice: <strong>Governed Self-Service</strong>. IT/Controlling definiert die zentralen Kennzahlen und Datenmodelle (governed layer). Fachbereiche bauen darauf eigene Reports auf (self-service layer). Das Beste aus beiden Welten.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 4: CPM / FP&A
+════════════════════════════════════════ -->
+<div id="cpm" class="section">
+  <h2 class="section-title">Planung, Budgetierung &amp; CPM</h2>
+  <p class="section-desc">Corporate Performance Management-Systeme ersetzen Excel in der Planung – was sie können und wann sie sich lohnen.</p>
+
+  <div class="card">
+    <h2>Was ist CPM / FP&amp;A-Software?</h2>
+    <p>CPM-Systeme (Corporate Performance Management) sind speziell für Planung, Budgetierung, Forecasting und Konsolidierung gebaut. Sie schließen die Lücke zwischen ERP (Ist-Daten) und BI (Reporting): Sie ermöglichen das <em>Schreiben von Plandaten</em> und Simulationen.</p>
+    <div class="info-box amber">
+      <span class="icon">✍️</span>
+      <span><strong>Der entscheidende Unterschied zu Power BI:</strong> BI-Tools sind read-only – sie zeigen Daten. CPM-Tools erlauben Write-back: Controller können Plandaten direkt eingeben, Szenarien simulieren und Genehmigungsworkflows abbilden.</span>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon amber">🟡</div>
+          <div><div class="tool-name">Jedox</div><div class="tool-vendor">Jedox GmbH (Freiburg)</div></div>
+        </div>
+        <div class="tool-desc">Deutsches CPM-System, stark im Mittelstand. Excel-ähnliche Oberfläche erleichtert Adoption. In-Memory-OLAP-Datenbank. Gute SAP-Integration. KI-gestützte Forecasts inklusive.</div>
+        <div class="pill-row"><span class="pill amber">Deutsch</span><span class="pill blue">Mittelstand</span><span class="pill green">Excel-ähnlich</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon blue">🔵</div>
+          <div><div class="tool-name">Anaplan</div><div class="tool-vendor">Anaplan Inc.</div></div>
+        </div>
+        <div class="tool-desc">Führendes Connected-Planning-Tool für Großunternehmen. Sehr flexibel, hochskalierbar. Gut für unternehmensweite Planungsvernetzung (Vertrieb ↔ Produktion ↔ Finance). Teuer.</div>
+        <div class="pill-row"><span class="pill blue">Enterprise</span><span class="pill purple">Connected</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon purple">🔷</div>
+          <div><div class="tool-name">IBM Planning Analytics</div><div class="tool-vendor">IBM (TM1)</div></div>
+        </div>
+        <div class="tool-desc">Altbewährtes TM1 als Basis, jetzt in IBM Cloud. Sehr leistungsfähige OLAP-Engine. Stark in komplexen Planungsmodellen. IBM-Ökosystem-Abhängigkeit.</div>
+        <div class="pill-row"><span class="pill purple">OLAP</span><span class="pill slate">Enterprise</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon teal">🟢</div>
+          <div><div class="tool-name">Lucanet</div><div class="tool-vendor">Lucanet AG (Berlin)</div></div>
+        </div>
+        <div class="tool-desc">Deutsches Tool mit starkem Fokus auf Konsolidierung und IFRS/HGB-Abschluss. Sehr gut für Konzernabschlüsse und regulatorische Berichte. Mittelstand bis Konzern.</div>
+        <div class="pill-row"><span class="pill teal">Konsolidierung</span><span class="pill amber">IFRS/HGB</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wann lohnt sich CPM-Software?</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag green">CPM sinnvoll wenn...</span>
+        <h4>Diese Signale zeigen Bedarf:</h4>
+        <ul>
+          <li>Planungsprozess dauert &gt;6 Wochen</li>
+          <li>Mehr als 3 Excel-Versionen im Umlauf</li>
+          <li>Konsolidierung von &gt;5 Gesellschaften</li>
+          <li>Rollforecast gewünscht (monatlich)</li>
+          <li>&gt;10 Personen im Planungsprozess</li>
+          <li>Regulatorische Konsolidierungspflicht</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag amber">Excel reicht wenn...</span>
+        <h4>Excel/Power BI genügt bei:</h4>
+        <ul>
+          <li>Einfacher Jahresbudgetierung</li>
+          <li>Einzelgesellschaft ohne Konzernstruktur</li>
+          <li>Wenige Beteiligte im Prozess</li>
+          <li>Kein Genehmigungsworkflow nötig</li>
+          <li>Budget &lt;50 Tsd. € p.a. für Software</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">🏦</span>
+      <span>Im Bankcontrolling (SKP-Kontext) sind spezifische Bankplanungssysteme wie <strong>VR-Control</strong> (für Volksbanken), <strong>agree21 Controlling</strong> oder <strong>Atruvia CPM</strong> typisch – sie kennen die Bankbilanz, Zinsbindungsbilanzen und regulatorische Anforderungen nativ.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Rollforecast vs. Jahresplanung</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <span class="tag slate">Klassisch: Jahresplanung</span>
+        <h4>Budget für 12 Monate</h4>
+        <ul>
+          <li>Einmal jährlich (Herbst)</li>
+          <li>Sehr aufwendig (6–12 Wochen)</li>
+          <li>Starr – veraltet schnell</li>
+          <li>Hohes politisches Gewicht</li>
+          <li>Gut für Ressourcenallokation</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <span class="tag teal">Modern: Rollforecast</span>
+        <h4>Immer 12 Monate voraus</h4>
+        <ul>
+          <li>Monatlich oder quartalsweise</li>
+          <li>Schlanker – fokussiert auf Wesentliches</li>
+          <li>Immer aktuell und relevant</li>
+          <li>Trennt Budget von Prognose</li>
+          <li>Braucht gute Toolunterstützung (CPM)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 5: STACK-MATCHER (Signature)
+════════════════════════════════════════ -->
+<div id="matcher" class="section">
+  <h2 class="section-title">Tech-Stack-Matcher</h2>
+  <p class="section-desc">Beantworte drei Fragen – und erhalte eine Tool-Empfehlung für deine konkrete Situation.</p>
+
+  <div class="matcher-wrap">
+    <div class="matcher-header">
+      <h3>// Stack-Empfehlung</h3>
+      <p>Wähle je eine Option pro Frage – der Matcher zeigt passende Tools.</p>
+    </div>
+    <div class="matcher-body">
+
+      <div class="matcher-question">
+        <label>1. Unternehmensgröße / Kontext</label>
+        <div class="matcher-opts" id="mq1">
+          <button class="matcher-opt" data-q="1" data-v="kmu" onclick="matchSelect(this)">KMU (&lt;50 Mio. € Umsatz)</button>
+          <button class="matcher-opt" data-q="1" data-v="mittel" onclick="matchSelect(this)">Mittelstand (50–500 Mio.)</button>
+          <button class="matcher-opt" data-q="1" data-v="bank" onclick="matchSelect(this)">Bank / Finanzdienstleister</button>
+          <button class="matcher-opt" data-q="1" data-v="konzern" onclick="matchSelect(this)">Konzern (&gt;500 Mio.)</button>
+        </div>
+      </div>
+
+      <div class="matcher-question">
+        <label>2. Hauptproblem / Bedarf</label>
+        <div class="matcher-opts" id="mq2">
+          <button class="matcher-opt" data-q="2" data-v="reporting" onclick="matchSelect(this)">Besseres Reporting / Dashboards</button>
+          <button class="matcher-opt" data-q="2" data-v="planung" onclick="matchSelect(this)">Schnellere Planung / Forecasting</button>
+          <button class="matcher-opt" data-q="2" data-v="daten" onclick="matchSelect(this)">Datenchaos / viele Quellen</button>
+          <button class="matcher-opt" data-q="2" data-v="auto" onclick="matchSelect(this)">Automatisierung von Routinen</button>
+        </div>
+      </div>
+
+      <div class="matcher-question">
+        <label>3. IT-Budget &amp; Ressourcen</label>
+        <div class="matcher-opts" id="mq3">
+          <button class="matcher-opt" data-q="3" data-v="klein" onclick="matchSelect(this)">Klein – möglichst günstig / kostenlos</button>
+          <button class="matcher-opt" data-q="3" data-v="mittel" onclick="matchSelect(this)">Mittel – Standardlizenz OK</button>
+          <button class="matcher-opt" data-q="3" data-v="gross" onclick="matchSelect(this)">Groß – Enterprise-Budget vorhanden</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button class="btn amber" onclick="runMatcher()">Empfehlung anzeigen</button>
+        <button class="btn secondary" onclick="resetMatcher()">Zurücksetzen</button>
+      </div>
+
+      <div class="matcher-result" id="matcher-result">
+        <div class="matcher-result-title">// Empfohlener Stack</div>
+        <div id="matcher-output"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Warum Tool-Auswahl schwer ist</h2>
+    <p>Technologie-Entscheidungen im Controlling sind langfristig – ein ERP-Wechsel dauert 2–5 Jahre und kostet Millionen. Häufige Fallstricke:</p>
+    <ul class="checklist cross">
+      <li>Tool-Auswahl ohne Prozessanalyse ("wir kaufen SAP und dann wird alles besser")</li>
+      <li>Zu viel Software für zu wenig genutzte Features</li>
+      <li>Schnittstellen-Probleme zwischen Systemen ignoriert</li>
+      <li>Change Management vernachlässigt – Nutzer boykottieren neues Tool</li>
+      <li>Lizenzkosten unterschätzt (Skalierung, User-Anzahl)</li>
+    </ul>
+    <ul class="checklist" style="margin-top:12px">
+      <li>Erst Prozess optimieren, dann digitalisieren</li>
+      <li>Pilotprojekt mit einem Bereich starten</li>
+      <li>Schnittstellen-Konzept vor Tool-Auswahl</li>
+      <li>Superuser aus dem Controlling einbeziehen</li>
+      <li>Total Cost of Ownership (Lizenzen + Implementierung + Betrieb) kalkulieren</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 6: PRAXISFÄLLE
+════════════════════════════════════════ -->
+<div id="praxis" class="section">
+  <h2 class="section-title">Praxisfälle aus dem Controlling</h2>
+  <p class="section-desc">Fünf reale Szenarien – welches Problem, welches Tool, was hat's gebracht.</p>
+
+  <div class="case-study">
+    <div class="case-header">
+      <span class="case-icon">🏦</span>
+      <div>
+        <div class="case-title">Monatsabschluss-Automatisierung bei einer Sparkasse</div>
+        <div class="case-sub">Kategorie: ERP → BI + Automatisierung · Unternehmensgröße: Regional-Bank, ~400 Mio. € Bilanzsumme</div>
+      </div>
+    </div>
+    <div class="case-body">
+      <p style="font-size:14px;color:var(--slate-600)">Das Controlling-Team verbrachte jeden Monat 3–4 Tage damit, Daten aus agree21 manuell in Excel zu exportieren, zu konsolidieren und in PowerPoint-Berichte zu übertragen.</p>
+      <div class="case-row">
+        <div class="case-col">
+          <h5>Ausgangsproblem</h5>
+          <ul class="problems">
+            <li>Manueller Excel-Export aus Kernbankensystem</li>
+            <li>12 verschiedene Excel-Dateien je Monat</li>
+            <li>Fehlerquellen durch Copy-Paste</li>
+            <li>Report-Erstellung dauerte 4 Tage</li>
+          </ul>
+        </div>
+        <div class="case-col">
+          <h5>Lösung</h5>
+          <ul>
+            <li>Power Automate liest CSV-Exporte automatisch</li>
+            <li>Power Query konsolidiert alle Quellen</li>
+            <li>Power BI Dashboard mit Drillfunktion</li>
+            <li>Automatischer E-Mail-Versand des Reports</li>
+          </ul>
+        </div>
+      </div>
+      <div class="case-result">
+        <strong>Ergebnis:</strong> Abschlussbericht in 4 Stunden statt 4 Tagen. Fehlerquote auf nahezu null gesunken. Controller haben Zeit für Analyse statt Datenpflege.
+      </div>
+    </div>
+  </div>
+
+  <div class="case-study">
+    <div class="case-header">
+      <span class="case-icon">🏭</span>
+      <div>
+        <div class="case-title">Rollforecast-Einführung bei einem Maschinenbauer</div>
+        <div class="case-sub">Kategorie: CPM-System · Unternehmensgröße: Mittelstand, ~180 Mio. € Umsatz</div>
+      </div>
+    </div>
+    <div class="case-body">
+      <p style="font-size:14px;color:var(--slate-600)">Die jährliche Budgetplanung dauerte 10 Wochen, band 15 Personen und war bereits im Januar wieder veraltet. Ein neues Planungstool sollte das ändern.</p>
+      <div class="case-row">
+        <div class="case-col">
+          <h5>Ausgangsproblem</h5>
+          <ul class="problems">
+            <li>Jahresbudget veraltet nach 2 Monaten</li>
+            <li>Planung in 35 verschiedenen Excel-Files</li>
+            <li>Keine Szenarien möglich ("Was-wäre-wenn")</li>
+            <li>Versionschaos bei der Konsolidierung</li>
+          </ul>
+        </div>
+        <div class="case-col">
+          <h5>Lösung</h5>
+          <ul>
+            <li>Jedox als CPM-Plattform eingeführt</li>
+            <li>Rollforecast (immer 12 Monate voraus)</li>
+            <li>Szenario-Planung: Base/Bull/Bear</li>
+            <li>Automatische SAP-Datenübernahme</li>
+          </ul>
+        </div>
+      </div>
+      <div class="case-result">
+        <strong>Ergebnis:</strong> Planungszyklus von 10 auf 3 Wochen verkürzt. Vorstand erhält monatlich aktuellen 12-Monats-Forecast. ROI des Tools nach 18 Monaten erreicht.
+      </div>
+    </div>
+  </div>
+
+  <div class="case-study">
+    <div class="case-header">
+      <span class="case-icon">🛒</span>
+      <div>
+        <div class="case-title">Single Source of Truth im Retail-Konzern</div>
+        <div class="case-sub">Kategorie: Data Warehouse + BI · Unternehmensgröße: Konzern, 12 Gesellschaften</div>
+      </div>
+    </div>
+    <div class="case-body">
+      <p style="font-size:14px;color:var(--slate-600)">Jede Tochtergesellschaft hatte eigene KPI-Definitionen. "Umsatz" bedeutete in der Muttergesellschaft etwas anderes als in drei Töchtern. Der CFO bekam monatlich widersprüchliche Zahlen.</p>
+      <div class="case-row">
+        <div class="case-col">
+          <h5>Ausgangsproblem</h5>
+          <ul class="problems">
+            <li>5 verschiedene "Umsatz"-Definitionen im Konzern</li>
+            <li>Widersprüchliche Berichte in Board-Meetings</li>
+            <li>Konsolidierung dauerte 2 Wochen</li>
+            <li>Keine einheitliche Kostenstellen-Logik</li>
+          </ul>
+        </div>
+        <div class="case-col">
+          <h5>Lösung</h5>
+          <ul>
+            <li>Azure Synapse als zentrales DWH</li>
+            <li>Einheitliches Datenmodell (gemeinsam erarbeitet)</li>
+            <li>Power BI Premium als Reporting-Layer</li>
+            <li>Lucanet für Konzernabschluss-Konsolidierung</li>
+          </ul>
+        </div>
+      </div>
+      <div class="case-result">
+        <strong>Ergebnis:</strong> Eine Zahlenwahrheit für alle Gesellschaften. Konsolidierung von 2 Wochen auf 2 Tage. Board-Reporting vollständig automatisiert und täglich aktuell.
+      </div>
+    </div>
+  </div>
+
+  <div class="case-study">
+    <div class="case-header">
+      <span class="case-icon">⚡</span>
+      <div>
+        <div class="case-title">Anomalie-Erkennung in Kreditportfolio-Daten</div>
+        <div class="case-sub">Kategorie: KI / ML im Controlling · Kontext: Kreditinstitut</div>
+      </div>
+    </div>
+    <div class="case-body">
+      <p style="font-size:14px;color:var(--slate-600)">Das Risikocontrolling wollte unerwartete Veränderungen im Kreditportfolio früher erkennen – bevor sie im monatlichen Bericht sichtbar werden.</p>
+      <div class="case-row">
+        <div class="case-col">
+          <h5>Ausgangsproblem</h5>
+          <ul class="problems">
+            <li>Ausreißer im Portfolio erst im Monatsbericht sichtbar</li>
+            <li>Manuelle Prüfung von 5.000+ Verträgen nicht skalierbar</li>
+            <li>Frühwarnsystem fehlte komplett</li>
+          </ul>
+        </div>
+        <div class="case-col">
+          <h5>Lösung</h5>
+          <ul>
+            <li>Azure ML für Anomalie-Erkennung (Isolation Forest)</li>
+            <li>Täglicher Daten-Feed aus Kernsystem</li>
+            <li>Power BI Alert bei Schwellenwert-Überschreitung</li>
+            <li>Teams-Benachrichtigung an Risiko-Controller</li>
+          </ul>
+        </div>
+      </div>
+      <div class="case-result">
+        <strong>Ergebnis:</strong> Auffälligkeiten werden täglich erkannt statt monatlich. Ein Early-Warning-Fall wurde 6 Wochen früher identifiziert als unter dem alten System – erhebliche Risikoreduzierung.
+      </div>
+    </div>
+  </div>
+
+  <div class="case-study">
+    <div class="case-header">
+      <span class="case-icon">💻</span>
+      <div>
+        <div class="case-title">Finanzberatungs-Website mit KI-gestützter Analyse</div>
+        <div class="case-sub">Kategorie: Self-built Stack · Kontext: tommy-moeller.de</div>
+      </div>
+    </div>
+    <div class="case-body">
+      <p style="font-size:14px;color:var(--slate-600)">Ein modernes Finanzberatungs-Tool für Privatpersonen – gebaut auf einem günstigen, skalierbaren Tech-Stack ohne Enterprise-Budget.</p>
+      <div class="case-row">
+        <div class="case-col">
+          <h5>Ziele</h5>
+          <ul>
+            <li>Lernplattform mit Fortschrittsspeicherung</li>
+            <li>Finanzanalyse-Tool mit Excel-Export</li>
+            <li>KI-Chat für Finanzfragen</li>
+            <li>Sicheres Login-System</li>
+          </ul>
+        </div>
+        <div class="case-col">
+          <h5>Gewählter Stack</h5>
+          <ul>
+            <li>GitHub Pages (Hosting, kostenlos)</li>
+            <li>Supabase (DB + Auth + Edge Functions)</li>
+            <li>Google Gemini API (KI-Chat)</li>
+            <li>Vanilla HTML/JS + SheetJS (Excel)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="case-result">
+        <strong>Kosten vs. Nutzen:</strong> &lt;20 € / Monat laufende Kosten für einen Stack, der Enterprise-Features liefert. Zeigt: Mit der richtigen Technologiewahl ist viel ohne großes Budget möglich.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SECTION 7: QUIZ
+════════════════════════════════════════ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck</h2>
+  <p class="section-desc">8 Fragen zu Controlling-Technologie – von ERP bis CPM.</p>
+
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was ist der Hauptunterschied zwischen einem BI-Tool (Power BI) und einem CPM-System (Jedox)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">BI-Tools sind teurer als CPM-Systeme</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">BI-Tools sind read-only (Berichte), CPM-Systeme erlauben Write-back (Plandateneingabe)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">CPM-Systeme können keine Dashboards erstellen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">BI-Tools sind nur für Finanzdaten geeignet</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">BI-Tools visualisieren und analysieren bestehende Daten (read-only). CPM-Systeme ermöglichen zusätzlich das Eingeben von Plandaten, Genehmigungsworkflows und Simulationen – entscheidend für Budgetierung und Forecasting.</div>
+  </div>
+
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Was bedeutet "Single Source of Truth" im Controlling-Kontext?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Nur eine Person darf Berichte erstellen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Alle Daten werden in einer einzigen Excel-Datei gespeichert</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">Alle Berichte und Kennzahlen stammen aus einer einzigen, konsistenten Datenquelle – kein Widerspruch zwischen Reports</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Der CFO entscheidet, welche Zahlen korrekt sind</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">Single Source of Truth bedeutet, dass alle Berichte auf derselben Datenbasis aufbauen. Unterschiedliche "Umsatz"-Definitionen in verschiedenen Abteilungen führen zu Verwirrung in Board-Meetings – ein DWH mit einheitlichem Datenmodell löst das.</div>
+  </div>
+
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was ist der Hauptvorteil des Rollforecasts gegenüber der klassischen Jahresplanung?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Der Rollforecast ist einmaliger Aufwand und dann fertig</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Der Forecast ist immer aktuell (12 Monate voraus), nicht veraltet wie ein Jahresbudget</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Der Rollforecast benötigt kein spezielles Tool</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Die Jahresplanung ist aufwendiger als der Rollforecast</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">Ein Jahresbudget vom Oktober ist im April bereits 6 Monate alt und häufig von der Realität überholt. Der Rollforecast aktualisiert monatlich oder quartalsweise die nächsten 12 Monate – immer relevant, immer aktuell.</div>
+  </div>
+
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist ETL in der Controlling-Architektur?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Ein ERP-System der Firma SAP</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">Extract-Transform-Load: Daten aus Quellsystemen extrahieren, aufbereiten und in ein Zielsystem laden</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Eine spezielle Excel-Funktion</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Ein Berichtsformat für Aufsichtsbehörden</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">ETL (Extract-Transform-Load) ist der Prozess, mit dem Daten aus Quellsystemen (ERP, Kernsystem) extrahiert, bereinigt/transformiert und in ein Data Warehouse oder BI-Tool geladen werden. Ohne ETL kein sauberes Reporting.</div>
+  </div>
+
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Ab wann lohnt sich ein CPM-System typischerweise?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ab dem ersten Tag – Excel sollte immer ersetzt werden</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Erst ab einem Umsatz von 1 Milliarde Euro</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Wenn Planungsprozess &gt;6 Wochen dauert, viele Excel-Versionen kursieren oder &gt;5 Gesellschaften konsolidiert werden</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Nur wenn das ERP-System kein Planungsmodul hat</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">CPM-Systeme lohnen sich wenn der Schmerzpunkt groß genug ist: langer Planungsprozess, Versionschaos, Konsolidierungsbedarf oder Rollforecast-Wunsch. Darunter ist Power BI + strukturiertes Excel oft ausreichend und günstiger.</div>
+  </div>
+
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Was bedeutet "Governed Self-Service BI"?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Nur IT darf Berichte erstellen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Jeder erstellt komplett frei eigene Berichte ohne Einschränkungen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Zentrales Datenmodell und Kennzahlen durch IT/Controlling, Fachbereiche bauen darauf eigene Berichte</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Ein spezielles Lizenzmodell von Microsoft</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Governed Self-Service kombiniert das Beste beider Welten: IT/Controlling definiert und pflegt die zentralen Kennzahlen, Datenmodelle und Datenqualität (governed). Fachbereiche können darauf eigenständig Analysen erstellen (self-service). Eine Wahrheit, flexible Nutzung.</div>
+  </div>
+
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Welche Technologie ist für die Früherkennung von Ausreißern in Kreditportfolios am besten geeignet?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Power BI alleine</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Excel mit Pivot-Tabellen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Machine Learning (Anomalie-Erkennung) kombiniert mit BI-Alerting</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Ein spezielles Banken-ERP</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">ML-Algorithmen wie Isolation Forest erkennen automatisch statistische Ausreißer in großen Datensätzen – ohne manuelle Prüfung jedes Vertrags. Die Kombination mit Power BI-Alerting sorgt für sofortige Benachrichtigung. Tages- statt Monatsfrequenz ist möglich.</div>
+  </div>
+
+  <div class="quiz-question" id="q8">
+    <div class="quiz-q">8. Was ist der typische erste Schritt bei einem Reporting-Projekt?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Sofort das beste BI-Tool kaufen und installieren</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Alle alten Excel-Dateien löschen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q8')">Prozessanalyse: Welche Kennzahlen werden wirklich gebraucht? Woher kommen die Daten? Wer nutzt die Reports?</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Ein SAP-System einführen</button>
+    </div>
+    <div class="quiz-feedback" id="fb8">"Erst Prozess, dann Technologie" ist die wichtigste Regel. Ohne klare Anforderungen (Was wird entschieden? Welche KPIs? Wer nutzt es?) wird jedes Tool-Projekt scheitern – egal wie gut das Tool ist. Anforderungsanalyse und Stakeholder-Interviews kommen vor der Tool-Auswahl.</div>
+  </div>
+
+  <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn amber" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3>
+    <p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Lernmodul zur Weiterbildung. Tool-Nennung ist nicht gesponsert oder partnerschaftlich.</p>
+</footer>
+
+<script>
+/* ── Navigation ── */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── Stack Matcher ── */
+const matchSelections = {};
+
+function matchSelect(btn) {
+  const q = btn.dataset.q;
+  document.querySelectorAll(`.matcher-opt[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  matchSelections[q] = btn.dataset.v;
+  document.getElementById('matcher-result').classList.remove('show');
+}
+
+const matchDB = {
+  // Format: "size-problem-budget": [{name, why, caveat}]
+  "kmu-reporting-klein":    [{n:"Power BI Free / Desktop",w:"Kostenlos, direkt nutzbar, gute Ergebnisse für kleine Teams",c:"Kein zentrales Sharing ohne Power BI Pro"},{n:"Google Looker Studio",w:"Komplett kostenlos, gut für einfache Dashboards, Google-Integration",c:"Weniger mächtig als Power BI für komplexe Modelle"}],
+  "kmu-reporting-mittel":   [{n:"Power BI Pro",w:"~10 €/User/Monat – beste Preis-Leistung, Sharing via Teams",c:"Datenmodell muss sauber gepflegt werden"},{n:"Qlik Sense SaaS",w:"Gut wenn assoziatives Datenmodell wichtig ist",c:"Teurer als Power BI"}],
+  "kmu-planung-klein":      [{n:"Power BI + strukturiertes Excel",w:"Kein neues System nötig – Planung in Excel, Reporting in Power BI",c:"Skaliert nicht bei vielen Nutzern oder Gesellschaften"},{n:"Lucanet Starter",w:"Günstige Einstiegsoption, solide Planungsfeatures",c:"Implementierungsaufwand nicht unterschätzen"}],
+  "kmu-planung-mittel":     [{n:"Jedox",w:"Beste Wahl für mittelständische Planung, Excel-ähnlich, gute Akzeptanz",c:"Implementierung braucht ~3-6 Monate"},{n:"Lucanet",w:"Stark bei Konsolidierung, wenn mehrere GmbHs geplant werden",c:"Fokus auf Konsolidierung, weniger auf operativer Planung"}],
+  "kmu-daten-klein":        [{n:"Power Query + Power BI",w:"Datenkonsolidierung aus vielen Quellen ohne Datenbankwissen",c:"Skaliert nicht bei sehr großen Datenmengen"},{n:"Alteryx Designer Cloud",w:"No-Code ETL, sehr intuitiv",c:"Teurer – prüfen ob kostenlose Tier reicht"}],
+  "kmu-auto-klein":         [{n:"Power Automate (Free)",w:"Microsoft-Tool für Workflows, kostenloser Einstieg",c:"Premium-Konnektoren kosten extra"},{n:"Make.com",w:"Sehr flexibel für Web-Automatisierungen, günstiger als Zapier",c:"Lernkurve bei komplexen Flows"}],
+  "mittel-reporting-mittel":[{n:"Power BI Pro / Premium Per User",w:"Standard für Mittelstand – beste M365-Integration, starke DAX-Engine",c:"Premium nötig für große Datenmengen und Copilot"},{n:"Qlik Sense",w:"Wenn assoziatives Modell und starke Self-Service-Nutzung gewünscht",c:"Höhere Lizenzkosten"}],
+  "mittel-planung-mittel":  [{n:"Jedox",w:"Marktführer im Mittelstand, gute SAP-Integration, KI-Forecasts",c:"Implementierung: 6-9 Monate, 100-300k € je nach Umfang"},{n:"CCH Tagetik",w:"Stark bei Konsolidierung + Planung kombiniert",c:"Eher Enterprise-Fokus, preislich anspruchsvoll"}],
+  "mittel-daten-mittel":    [{n:"Azure Synapse Analytics",w:"Microsoft-natives DWH, gut mit Power BI und M365",c:"Azure-Kenntnisse in IT nötig"},{n:"Snowflake",w:"Cloud-agnostisch, sehr einfach zu skalieren",c:"Laufende Kosten variabel – Kostenmonitoring wichtig"}],
+  "mittel-auto-mittel":     [{n:"Power Automate + RPA",w:"Robotic Process Automation für repetitive UI-Aufgaben ohne API",c:"RPA ist wartungsintensiv bei UI-Änderungen"},{n:"Alteryx",w:"Starke Datenautomatisierung und ETL ohne Programmierung",c:"Lizenzkosten ~5-15k € p.a."}],
+  "bank-reporting-mittel":  [{n:"Power BI Premium",w:"Standard auch in Banken, gute SSKP/OSPlus-Anbindung über CSV/API",c:"Regulatorische Reports (COREP etc.) brauchen Spezial-Add-ons"},{n:"SAP Analytics Cloud",w:"Gut wenn SAP-Kernsystem vorhanden (Bankensysteme mit SAP-Anbindung)",c:"Teuer, starke SAP-Abhängigkeit"}],
+  "bank-planung-gross":     [{n:"VR-Control / Atruvia CPM",w:"Speziell für Volksbanken/Sparkassen, kennt Bankbilanz und Zinsrechnung nativ",c:"Nur für Kreditinstitute im Verbund verfügbar"},{n:"IBM Planning Analytics (TM1)",w:"Sehr flexibel für komplexe Bankplanungsmodelle",c:"Hoher Implementierungsaufwand, IBM-Abhängigkeit"}],
+  "bank-daten-gross":       [{n:"Azure Synapse + Power BI",w:"Microsoft-Stack passt gut zu bestehenden M365-Lizenzen in Banken",c:"Datenschutz/Cloud-Hosting muss mit Compliance abgestimmt sein"},{n:"SAP HANA Data Warehouse",w:"Wenn SAP-ERP vorhanden – nahtlose Integration",c:"Sehr teuer, lange Implementierungszeiten"}],
+  "bank-auto-mittel":       [{n:"Power Automate + Python",w:"Ideal für Monatsabschluss-Automatisierung, gut integrierbar in bestehende Infrastruktur",c:"Python-Kenntnisse in IT nötig"},{n:"UiPath RPA",w:"Für Legacy-Systeme ohne API – liest UI-Elemente automatisch",c:"Wartungsintensiv, teuer bei großem Rollout"}],
+  "konzern-reporting-gross":[{n:"SAP Analytics Cloud",w:"Beste Integration mit SAP S/4HANA, stark für Konzernberichte",c:"Nur sinnvoll bei SAP-ERP-Landschaft"},{n:"Tableau + Snowflake",w:"Best-of-breed für komplexe Daten und starke Visualisierung",c:"Aufwendige Integration verschiedener Systeme"}],
+  "konzern-planung-gross":  [{n:"Anaplan",w:"Führend für vernetzte Konzernplanung (Vertrieb, Finance, HR, Supply Chain)",c:"Sehr teuer, lange Implementierung"},{n:"OneStream XF",w:"Stärkstes All-in-One CPM für Konzerne: Planung + Konsolidierung + Reporting",c:"Komplexe Implementierung, 12-24 Monate"}],
+  "konzern-daten-gross":    [{n:"Snowflake + dbt",w:"Moderner Cloud-DWH-Stack, sehr skalierbar, aktive Community",c:"Stark technisches Team in IT nötig"},{n:"Azure Synapse + Azure Purview",w:"Microsoft-Enterprise-Stack für Governance und DWH",c:"Vendor-Lock-in bei Microsoft"}],
+};
+
+function runMatcher() {
+  const s1 = matchSelections['1'];
+  const s2 = matchSelections['2'];
+  const s3 = matchSelections['3'];
+
+  if (!s1 || !s2 || !s3) {
+    alert('Bitte alle drei Fragen beantworten.');
+    return;
+  }
+
+  const key = `${s1}-${s2}-${s3}`;
+  let results = matchDB[key];
+
+  // Fallback: try without budget
+  if (!results) {
+    const key2 = `${s1}-${s2}-mittel`;
+    results = matchDB[key2];
+  }
+  // Broader fallback
+  if (!results) {
+    results = [
+      {n:"Power BI Pro", w:"Universeller Einstieg für fast alle Controlling-Anforderungen", c:"Für speziellere Anforderungen individuelle Beratung empfohlen"},
+      {n:"Jedox (Mittelstand) / Anaplan (Konzern)", w:"Für Planungsanforderungen die am häufigsten gewählte Lösung", c:"Implementierungsaufwand und -kosten vorher genau kalkulieren"}
+    ];
+  }
+
+  const icons = ['#1','#2','#3'];
+  const html = results.map((r,i) =>
+    `<div class="match-tool">
+      <div class="match-rank">${icons[i]||'→'}</div>
+      <div class="match-info">
+        <div class="match-name">${r.n}</div>
+        <div class="match-why">✓ ${r.w}</div>
+        ${r.c ? `<div class="match-caveat">⚠ ${r.c}</div>` : ''}
+      </div>
+    </div>`
+  ).join('');
+
+  document.getElementById('matcher-output').innerHTML = html;
+  const res = document.getElementById('matcher-result');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function resetMatcher() {
+  Object.keys(matchSelections).forEach(k => delete matchSelections[k]);
+  document.querySelectorAll('.matcher-opt').forEach(b => b.classList.remove('selected'));
+  document.getElementById('matcher-result').classList.remove('show');
+}
+
+/* ── Quiz ── */
+let quizAnswers = {};
+const TOTAL = 8;
+
+function answer(btn, type, qId) {
+  const qEl = document.getElementById(qId);
+  if (qEl.dataset.answered) return;
+  qEl.dataset.answered = '1';
+  qEl.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = true; o.style.cursor = 'default'; });
+  btn.classList.add(type);
+  const num = qId.replace('q','');
+  document.getElementById('fb'+num).classList.add('show', type);
+  quizAnswers[qId] = type === 'correct';
+}
+
+function showScore() {
+  const correct = Object.values(quizAnswers).filter(Boolean).length;
+  const pct = Math.round(correct / TOTAL * 100);
+  document.getElementById('score-text').textContent = correct + ' von ' + TOTAL + ' richtig (' + pct + '%)';
+  document.getElementById('score-msg').textContent =
+    pct >= 87 ? 'Ausgezeichnet – du kennst den Controlling-Tech-Stack sehr gut.' :
+    pct >= 62 ? 'Solide Basis! Die CPM- und BI-Abschnitte nochmals vertiefen.' :
+    'Geh die Kategorien und Praxisfälle nochmals durch – besonders ERP vs. BI vs. CPM.';
+  document.getElementById('score-bar').style.width = pct + '%';
+  const el = document.getElementById('quiz-score');
+  el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function resetQuiz() {
+  quizAnswers = {};
+  document.querySelectorAll('.quiz-question').forEach(q => delete q.dataset.answered);
+  document.querySelectorAll('.quiz-opt').forEach(b => { b.disabled = false; b.style.cursor = 'pointer'; b.classList.remove('correct','wrong'); });
+  document.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show','correct','wrong'));
+  document.getElementById('quiz-score').style.display = 'none';
+}
+</script>
+</body>
+</html>
