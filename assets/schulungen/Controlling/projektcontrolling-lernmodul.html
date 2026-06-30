@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projekt-Controlling | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-950:#042F2E;--teal-900:#134E4A;--teal-800:#115E59;--teal-700:#0F766E;
+  --orange-500:#F97316;--orange-400:#FB923C;--orange-100:#FFEDD5;--orange-50:#FFF7ED;--orange-700:#C2410C;
+  --gray-900:#111827;--gray-800:#1F2937;--gray-700:#374151;--gray-600:#4B5563;
+  --gray-500:#6B7280;--gray-200:#E5E7EB;--gray-100:#F3F4F6;--gray-50:#F9FAFB;
+  --amber-700:#B45309;--amber-400:#FBBF24;--amber-100:#FEF3C7;--amber-50:#FFFBEB;
+  --green-700:#15803D;--green-600:#16A34A;--green-100:#DCFCE7;--green-50:#F0FDF4;
+  --red-700:#B91C1C;--red-600:#DC2626;--red-100:#FFE4E6;--red-50:#FFF1F2;
+  --blue-800:#1E40AF;--blue-100:#DBEAFE;--blue-50:#EFF6FF;
+  --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;--font-mono:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+.site-header{background:linear-gradient(135deg,var(--teal-950) 0%,var(--teal-800) 55%,var(--orange-500) 130%);color:white;}
+.header-inner{max-width:920px;margin:0 auto;padding:48px 24px 56px;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);font-family:var(--font-mono);}
+.header-badge::before{content:'';width:6px;height:6px;background:var(--orange-400);border-radius:50%;}
+.site-header h1{font-family:var(--font-serif);font-size:clamp(26px,4.5vw,38px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+.site-header p.subtitle{font-size:15.5px;color:rgba(255,255,255,.7);max-width:580px;line-height:1.65;}
+.nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.nav-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:13px 16px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:var(--teal-700);}
+.nav-tab.active{color:var(--teal-700);border-bottom-color:var(--orange-500);}
+main{max-width:920px;margin:0 auto;padding:40px 24px 80px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-serif);font-size:23px;font-weight:600;color:var(--gray-900);margin-bottom:5px;}
+.section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+.card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:26px 30px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--gray-900);margin-bottom:10px;}
+.card h3{font-size:14.5px;font-weight:600;color:var(--gray-700);margin:18px 0 7px;}
+.card h3:first-of-type{margin-top:8px;}
+.card p{color:var(--gray-600);margin-bottom:11px;font-size:14.5px;}
+.card p:last-child{margin-bottom:0;}
+.info-box{border-radius:8px;padding:13px 16px;margin:13px 0;display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.6;}
+.info-box .icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.info-box.teal{background:var(--teal-900);background:#ECFDF5;color:var(--teal-800);border-left:3px solid var(--teal-700);}
+.info-box.orange{background:var(--orange-50);color:var(--orange-700);border-left:3px solid var(--orange-400);}
+.info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid var(--amber-400);}
+.info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #4ADE80;}
+.info-box.red{background:var(--red-50);color:var(--red-700);border-left:3px solid #FCA5A5;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px;}
+@media(max-width:580px){.two-col{grid-template-columns:1fr;}}
+.col-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;}
+.col-card h4{font-size:13.5px;font-weight:600;color:var(--gray-800);margin-bottom:7px;}
+.col-card ul{list-style:none;}
+.col-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.col-card ul li::before{content:'→';color:var(--teal-700);flex-shrink:0;font-size:12px;margin-top:2px;}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:4px;margin-bottom:7px;font-family:var(--font-mono);}
+.tag.teal{background:#CCFBF1;color:var(--teal-800);}
+.tag.orange{background:var(--orange-100);color:var(--orange-700);}
+.tag.amber{background:var(--amber-100);color:var(--amber-700);}
+.tag.green{background:var(--green-100);color:var(--green-700);}
+.tag.red{background:var(--red-100);color:var(--red-700);}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+.data-table th{background:var(--teal-900);color:white;font-weight:600;text-align:left;padding:9px 14px;font-size:12px;}
+.data-table th:first-child{border-radius:8px 0 0 0;}
+.data-table th:last-child{border-radius:0 8px 0 0;}
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:var(--gray-50);}
+.formula-box{background:var(--teal-950);border-radius:10px;padding:20px 24px;margin:14px 0;}
+.formula-box .formula{font-family:var(--font-mono);font-size:15px;color:var(--orange-400);text-align:center;margin-bottom:8px;}
+.formula-box .formula-desc{font-size:12.5px;color:rgba(255,255,255,.55);text-align:center;}
+/* Gantt-style mini chart */
+.gantt{margin:16px 0;}
+.gantt-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.gantt-label{width:130px;font-size:12.5px;color:var(--gray-700);flex-shrink:0;}
+.gantt-track{flex:1;height:22px;background:var(--gray-100);border-radius:5px;position:relative;overflow:hidden;}
+.gantt-bar{position:absolute;height:100%;border-radius:5px;display:flex;align-items:center;padding-left:8px;font-size:10.5px;color:white;font-weight:500;}
+/* EVM dashboard */
+.evm-dash{background:white;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.evm-header{background:var(--teal-900);padding:18px 24px;}
+.evm-header h3{font-family:var(--font-serif);font-size:17px;color:white;margin-bottom:3px;}
+.evm-header p{font-size:13px;color:rgba(255,255,255,.6);}
+.evm-body{padding:24px;}
+.evm-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:600px){.evm-row{grid-template-columns:1fr 1fr;}}
+.evm-field label{display:block;font-size:11.5px;font-weight:600;color:var(--gray-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.evm-field input{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;outline:none;transition:border-color .12s;}
+.evm-field input:focus{border-color:var(--teal-400);}
+.evm-results{background:#ECFDF5;border:1px solid #99F6E4;border-radius:10px;padding:20px;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
+.result-item .rl{font-size:11px;color:var(--teal-700);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.result-item .rv{font-size:20px;font-weight:600;color:var(--teal-900);}
+.result-item .rv.bad{color:var(--red-600);}
+.result-item .rv.good{color:var(--green-600);}
+.result-item .rs{font-size:11.5px;color:var(--teal-700);margin-top:2px;}
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:4px 0;font-size:14px;color:var(--gray-700);line-height:1.55;}
+.checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+.checklist.cross li::before{content:'✗';color:var(--red-600);}
+.quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px 26px;margin-bottom:14px;}
+.quiz-q{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;}
+.quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 15px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+.quiz-opt:hover{background:#ECFDF5;border-color:var(--teal-400);color:var(--teal-900);}
+.quiz-opt.correct{background:var(--green-50);border-color:#4ADE80;color:var(--green-700);}
+.quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+.quiz-feedback{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:6px;display:none;line-height:1.6;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+.quiz-feedback.wrong{background:var(--red-50);color:var(--red-700);}
+.quiz-score{background:var(--teal-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:18px;}
+.quiz-score h3{font-size:21px;font-weight:600;margin-bottom:4px;font-family:var(--font-serif);}
+.quiz-score p{color:rgba(255,255,255,.7);font-size:13.5px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:14px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--orange-400);border-radius:3px;transition:width .4s;}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--teal-800);color:white;padding:10px 20px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+.btn:hover{background:var(--teal-900);}
+.btn.secondary{background:white;color:var(--teal-700);border:1.5px solid #99F6E4;}
+.btn.secondary:hover{background:#ECFDF5;}
+.site-footer{background:var(--gray-900);color:rgba(255,255,255,.45);text-align:center;padding:26px 24px;font-size:13px;}
+.site-footer a{color:rgba(255,255,255,.65);text-decoration:none;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">// Lernmodul · Projekt-Controlling</div>
+    <h1>Projekt-Controlling</h1>
+    <p class="subtitle">Earned Value Management, Meilensteintrendanalyse und Abweichungsanalyse – wie man Projekte zahlenbasiert steuert statt nur zu hoffen, dass alles klappt.</p>
+  </div>
+</header>
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('evm')">Earned Value</button>
+    <button class="nav-tab" onclick="showSection('mta')">Meilensteintrend</button>
+    <button class="nav-tab" onclick="showSection('budget')">Budget & Abweichung</button>
+    <button class="nav-tab" onclick="showSection('praxis')">Praxisfälle</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+<main>
+
+<!-- GRUNDLAGEN -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Was ist Projekt-Controlling?</h2>
+  <p class="section-desc">Die Steuerungsdisziplin für zeitlich begrenzte Vorhaben – Zeit, Kosten und Leistung im Griff behalten.</p>
+  <div class="card">
+    <h2>Das magische Dreieck des Projektmanagements</h2>
+    <p>Jedes Projekt wird durch drei miteinander verbundene Größen begrenzt: Zeit, Kosten und Leistungsumfang (Scope). Eine Änderung an einer Ecke wirkt sich zwangsläufig auf die anderen aus.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag teal">Zeit</span>
+        <h4>Termine & Meilensteine</h4>
+        <ul>
+          <li>Projektlaufzeit, Deadlines</li>
+          <li>Abhängigkeiten zwischen Aufgaben</li>
+          <li>Kritischer Pfad</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag orange">Kosten</span>
+        <h4>Budget & Ressourcen</h4>
+        <ul>
+          <li>Personalkosten, Material, externe Dienstleister</li>
+          <li>Geplante vs. tatsächliche Ausgaben</li>
+          <li>Cashflow-Planung</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <span class="icon">⚖️</span>
+      <span><strong>Die Grundregel:</strong> "Schneller, billiger, mehr Umfang – wähle zwei." Will man ein Projekt beschleunigen, kostet das meist mehr Geld oder erfordert Scope-Reduktion. Projekt-Controlling macht diese Trade-offs transparent und entscheidbar.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Aufgaben des Projekt-Controllings</h2>
+    <table class="data-table">
+      <thead><tr><th>Phase</th><th>Controlling-Aufgabe</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Planung</strong></td><td>Budget erstellen, Zeitplan, Ressourcenplanung, Risikoanalyse</td></tr>
+        <tr><td><strong>Durchführung</strong></td><td>Fortschrittsmessung, Soll-Ist-Vergleich, Forecasting, Berichtswesen</td></tr>
+        <tr><td><strong>Steuerung</strong></td><td>Abweichungsanalyse, Gegenmaßnahmen, Change-Request-Bewertung</td></tr>
+        <tr><td><strong>Abschluss</strong></td><td>Nachkalkulation, Lessons Learned, Erfolgsmessung (ROI)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EVM -->
+<div id="evm" class="section">
+  <h2 class="section-title">Earned Value Management (EVM)</h2>
+  <p class="section-desc">Die wichtigste Methode zur integrierten Kosten- und Terminkontrolle – verknüpft Fortschritt mit tatsächlichen Kosten.</p>
+  <div class="card">
+    <h2>Die drei Kernkennzahlen</h2>
+    <p>EVM löst ein klassisches Problem: "Wir haben 50 % des Budgets ausgegeben" sagt nichts darüber, ob das Projekt auch zu 50 % fertig ist. EVM verbindet beides.</p>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Abkürzung</th><th>Bedeutung</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Planned Value</strong></td><td>PV</td><td>Was laut Plan bis heute hätte fertig sein sollen (geplante Kosten)</td></tr>
+        <tr><td><strong>Earned Value</strong></td><td>EV</td><td>Wert der tatsächlich erbrachten Leistung (Plankosten × Fertigstellungsgrad)</td></tr>
+        <tr><td><strong>Actual Cost</strong></td><td>AC</td><td>Tatsächlich angefallene Kosten bis heute</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box teal">
+      <span class="icon">💡</span>
+      <span>Merksatz: <strong>PV</strong> = "was sollte fertig sein", <strong>EV</strong> = "was ist wirklich fertig (in Geld ausgedrückt)", <strong>AC</strong> = "was haben wir wirklich ausgegeben". Aus dem Verhältnis dieser drei Werte ergeben sich alle wichtigen Aussagen über Termin- und Kostentreue.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Abgeleitete Kennzahlen</h2>
+    <div class="formula-box">
+      <div class="formula">SV (Schedule Variance) = EV − PV</div>
+      <div class="formula-desc">Negativ = im Verzug · Positiv = vor dem Plan</div>
+    </div>
+    <div class="formula-box">
+      <div class="formula">CV (Cost Variance) = EV − AC</div>
+      <div class="formula-desc">Negativ = über Budget · Positiv = unter Budget</div>
+    </div>
+    <div class="formula-box">
+      <div class="formula">CPI (Cost Performance Index) = EV / AC</div>
+      <div class="formula-desc">CPI &lt; 1 = Kostenüberschreitung · CPI &gt; 1 = unter Budget</div>
+    </div>
+    <div class="formula-box">
+      <div class="formula">SPI (Schedule Performance Index) = EV / PV</div>
+      <div class="formula-desc">SPI &lt; 1 = im Verzug · SPI &gt; 1 = vor dem Zeitplan</div>
+    </div>
+  </div>
+  <!-- INTERACTIVE EVM -->
+  <div class="evm-dash">
+    <div class="evm-header">
+      <h3>📈 Earned-Value-Rechner</h3>
+      <p>Trage die drei Basiswerte ein – alle Kennzahlen werden live berechnet</p>
+    </div>
+    <div class="evm-body">
+      <div class="evm-row">
+        <div class="evm-field"><label>Planned Value (PV) €</label><input type="number" id="evm-pv" value="100000" oninput="calcEVM()"></div>
+        <div class="evm-field"><label>Earned Value (EV) €</label><input type="number" id="evm-ev" value="80000" oninput="calcEVM()"></div>
+        <div class="evm-field"><label>Actual Cost (AC) €</label><input type="number" id="evm-ac" value="95000" oninput="calcEVM()"></div>
+      </div>
+      <div class="evm-results">
+        <div class="result-grid">
+          <div class="result-item"><div class="rl">Schedule Variance</div><div class="rv" id="evm-sv">–</div><div class="rs">EV − PV</div></div>
+          <div class="result-item"><div class="rl">Cost Variance</div><div class="rv" id="evm-cv">–</div><div class="rs">EV − AC</div></div>
+          <div class="result-item"><div class="rl">SPI</div><div class="rv" id="evm-spi">–</div><div class="rs">Termintreue</div></div>
+          <div class="result-item"><div class="rl">CPI</div><div class="rv" id="evm-cpi">–</div><div class="rs">Kosteneffizienz</div></div>
+        </div>
+      </div>
+      <div id="evm-interpretation" style="margin-top:16px;font-size:13.5px;color:var(--gray-600);background:var(--gray-50);border-radius:8px;padding:14px 18px;"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Forecasting mit EVM</h2>
+    <p>Aus den aktuellen Werten lässt sich die voraussichtliche Gesamtkostenüberschreitung schätzen:</p>
+    <div class="formula-box">
+      <div class="formula">EAC (Estimate at Completion) = Budget at Completion / CPI</div>
+      <div class="formula-desc">Realistische Prognose der Gesamtkosten basierend auf aktueller Kosteneffizienz</div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span><strong>Praxisbeispiel:</strong> Budget at Completion = 500.000 €, CPI = 0,85 → EAC = 500.000 / 0,85 = 588.235 €. Das Projekt wird bei gleichbleibender Kosteneffizienz voraussichtlich 88.235 € über Budget enden – frühzeitige Information für Gegensteuerung!</span>
+    </div>
+  </div>
+</div>
+
+<!-- MTA -->
+<div id="mta" class="section">
+  <h2 class="section-title">Meilensteintrendanalyse (MTA)</h2>
+  <p class="section-desc">Die visuelle Methode, um Terminverschiebungen frühzeitig sichtbar zu machen.</p>
+  <div class="card">
+    <h2>Wie die MTA funktioniert</h2>
+    <p>Bei jedem Berichtszeitpunkt wird für jeden Meilenstein erneut geschätzt, wann er voraussichtlich erreicht wird. Trägt man diese Schätzungen über die Zeit auf, erkennt man Trends sofort.</p>
+    <h3>Beispiel: Meilenstein-Zeitverlauf</h3>
+    <div class="gantt">
+      <div class="gantt-row">
+        <div class="gantt-label">Meilenstein A</div>
+        <div class="gantt-track"><div class="gantt-bar" style="background:#0F766E;left:0%;width:30%">Stabil</div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Meilenstein B</div>
+        <div class="gantt-track"><div class="gantt-bar" style="background:#F97316;left:25%;width:35%">Leicht verzögert</div></div>
+      </div>
+      <div class="gantt-row">
+        <div class="gantt-label">Meilenstein C</div>
+        <div class="gantt-track"><div class="gantt-bar" style="background:#DC2626;left:40%;width:50%">Kritisch verzögert</div></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag teal">Diagonale Linie (45°)</span>
+        <h4>Stabiler Termin</h4>
+        <ul>
+          <li>Schätzungen bleiben gleich über die Zeit</li>
+          <li>Meilenstein wird wie geplant erreicht</li>
+          <li>Kein Handlungsbedarf</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag red">Steigende Linie</span>
+        <h4>Terminverschiebung</h4>
+        <ul>
+          <li>Mit jeder Messung verschiebt sich der erwartete Termin weiter nach hinten</li>
+          <li>Klares Frühwarnsignal</li>
+          <li>Sofortiger Handlungsbedarf!</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box teal">
+      <span class="icon">📐</span>
+      <span>Die MTA ist eines der mächtigsten Frühwarnsysteme im Projekt-Controlling, weil sie Trends sichtbar macht, bevor der Meilenstein tatsächlich verpasst wird. Ein einzelner Datenpunkt sagt wenig – der <em>Trend</em> über mehrere Berichtszeitpunkte ist entscheidend.</span>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET -->
+<div id="budget" class="section">
+  <h2 class="section-title">Budgetierung &amp; Abweichungsanalyse</h2>
+  <p class="section-desc">Wie Projektbudgets strukturiert und Abweichungen systematisch analysiert werden.</p>
+  <div class="card">
+    <h2>Budgetstruktur im Projekt</h2>
+    <table class="data-table">
+      <thead><tr><th>Kostenart</th><th>Beispiele</th><th>Typischer Anteil</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Personalkosten</strong></td><td>Interne Mitarbeiter (Tagessätze)</td><td>40–60 %</td></tr>
+        <tr><td><strong>Externe Dienstleister</strong></td><td>Berater, Freelancer, Agenturen</td><td>15–30 %</td></tr>
+        <tr><td><strong>Material/Lizenzen</strong></td><td>Software, Hardware, Tools</td><td>5–15 %</td></tr>
+        <tr><td><strong>Reise & Sonstiges</strong></td><td>Reisekosten, Schulungen</td><td>2–5 %</td></tr>
+        <tr><td><strong>Risikopuffer</strong></td><td>Reserve für Unvorhergesehenes</td><td>5–15 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Abweichungsanalyse – systematisch vorgehen</h2>
+    <p>Eine Abweichung allein sagt wenig – wichtig ist die <strong>Ursachenanalyse</strong>. Häufige Fragestellungen:</p>
+    <ul class="checklist">
+      <li><strong>Preisabweichung:</strong> Wurden externe Leistungen teurer eingekauft als geplant?</li>
+      <li><strong>Mengenabweichung:</strong> Wurde mehr Aufwand benötigt als geschätzt?</li>
+      <li><strong>Scope-Abweichung:</strong> Hat sich der Projektumfang verändert (Change Requests)?</li>
+      <li><strong>Terminabweichung:</strong> Führt Verzögerung zu zusätzlichen Kosten (längere Teamlaufzeit)?</li>
+    </ul>
+    <div class="info-box orange">
+      <span class="icon">🎯</span>
+      <span><strong>80/20-Regel im Abweichungsmanagement:</strong> Konzentriere dich auf die 20 % der Kostenpositionen, die 80 % der Abweichung verursachen. Nicht jede kleine Abweichung braucht eine Tiefenanalyse.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Change Request Management</h2>
+    <p>Jede Änderung am Projektumfang sollte formal bewertet werden, bevor sie umgesetzt wird – sonst verwässert "Scope Creep" das Projekt schleichend.</p>
+    <table class="data-table">
+      <thead><tr><th>Schritt</th><th>Inhalt</th></tr></thead>
+      <tbody>
+        <tr><td>1. Erfassen</td><td>Änderungswunsch dokumentieren (was, warum, von wem)</td></tr>
+        <tr><td>2. Bewerten</td><td>Auswirkung auf Zeit, Kosten, Qualität, Risiko einschätzen</td></tr>
+        <tr><td>3. Entscheiden</td><td>Genehmigung durch Steuerkreis/Lenkungsausschuss</td></tr>
+        <tr><td>4. Umsetzen</td><td>Budget und Zeitplan offiziell anpassen, kommunizieren</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PRAXIS -->
+<div id="praxis" class="section">
+  <h2 class="section-title">Praxisfälle</h2>
+  <p class="section-desc">Reale Situationen aus dem Projekt-Controlling-Alltag.</p>
+  <div class="card">
+    <h2>Fall 1: IT-Projekt mit Terminverzug</h2>
+    <p style="font-size:14px;color:var(--gray-600)">Ein 9-monatiges Software-Einführungsprojekt zeigt nach 4 Monaten: PV = 200.000 €, EV = 150.000 €, AC = 180.000 €.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag teal">Analyse</span>
+        <ul>
+          <li>SPI = 150.000/200.000 = 0,75 → 25 % im Verzug</li>
+          <li>CPI = 150.000/180.000 = 0,83 → 17 % über Budget</li>
+          <li>Beides negativ: Projekt ist sowohl zu langsam als auch zu teuer</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag orange">Maßnahmen</span>
+        <ul>
+          <li>Ursachenanalyse: Unterschätzte Komplexität bei Schnittstellen</li>
+          <li>Zusätzliche Ressourcen für kritischen Pfad</li>
+          <li>Scope-Reduktion bei nicht-kritischen Features (Phase 2 verschieben)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box red">
+      <span class="icon">🚨</span>
+      <span><strong>Lehre:</strong> Bei SPI und CPI beide unter 0,9 sollte sofort eskaliert werden – die Wahrscheinlichkeit, dass sich die Lage von selbst verbessert, ist statistisch gering (laut PMI-Studien unter 10 %).</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Fall 2: Bauprojekt mit Materialkostensteigerung</h2>
+    <p style="font-size:14px;color:var(--gray-600)">Ein Bauträgerprojekt verzeichnet eine Kostensteigerung bei Baumaterial um 18 % gegenüber Planung – außerhalb des Einflussbereichs des Projektteams.</p>
+    <ul class="checklist">
+      <li>Trennung zwischen "hausgemachten" und externen Abweichungen wichtig für faire Bewertung</li>
+      <li>Risikopuffer (im Beispiel: 10 % des Budgets) konnte einen Teil auffangen</li>
+      <li>Restliche Mehrkosten erforderten Nachtragsgenehmigung durch den Auftraggeber</li>
+      <li>Lessons Learned: Zukünftig Material-Preisgleitklauseln in Verträge aufnehmen</li>
+    </ul>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck Projekt-Controlling</h2>
+  <p class="section-desc">7 Fragen zu EVM, Meilensteintrendanalyse und Budgetsteuerung.</p>
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was misst der Earned Value (EV)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Die tatsächlich angefallenen Kosten</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Das ursprünglich geplante Budget</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">Den Wert der tatsächlich erbrachten Leistung, ausgedrückt in Plankosten</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Den Gewinn des Projekts</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">EV (Earned Value) zeigt, wie viel Arbeit tatsächlich fertiggestellt wurde – bewertet zu Plankosten. Es ist die Brücke zwischen Fortschritt und Geld, die klassische Budgetberichte nicht liefern.</div>
+  </div>
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Ein Projekt hat SPI = 0,8 und CPI = 1,1. Was bedeutet das?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Das Projekt ist im Zeitplan und im Budget</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">Das Projekt ist im Verzug, aber unter Budget</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Das Projekt ist vor dem Zeitplan, aber über Budget</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Das Projekt ist sowohl im Verzug als auch über Budget</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">SPI &lt; 1 (0,8) bedeutet Verzug – nur 80 % der geplanten Leistung wurde erbracht. CPI &gt; 1 (1,1) bedeutet, das Projekt ist kosteneffizient – pro ausgegebenem Euro wurde mehr Wert geschaffen als geplant.</div>
+  </div>
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was zeigt eine steigende Linie in der Meilensteintrendanalyse?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Das Projekt liegt im Zeitplan</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Der erwartete Termin verschiebt sich mit jeder Messung weiter nach hinten – Terminverzug</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Das Budget wird überschritten</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Die Qualität verbessert sich</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">Eine steigende Trendlinie in der MTA zeigt, dass der prognostizierte Fertigstellungstermin mit jeder Messung später wird – ein klares Frühwarnsignal für Terminverzug, bevor der Meilenstein tatsächlich verpasst wird.</div>
+  </div>
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Wie berechnet man die Schedule Variance (SV)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">EV − PV</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">EV − AC</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">PV − AC</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">AC / PV</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">Schedule Variance = Earned Value minus Planned Value. Negativ bedeutet Terminverzug (weniger erbracht als geplant), positiv bedeutet das Projekt liegt vor dem Plan.</div>
+  </div>
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Was ist "Scope Creep"?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Eine Methode der Budgetplanung</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Die schleichende, unkontrollierte Ausweitung des Projektumfangs ohne formale Genehmigung</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Eine Kennzahl im Earned Value Management</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Ein Tool zur Terminplanung</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">Scope Creep beschreibt die schleichende Ausweitung des Projektumfangs durch viele kleine, unkontrollierte Änderungen – ohne formales Change-Request-Verfahren. Ein systematisches Change Management verhindert das.</div>
+  </div>
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Wie berechnet man die EAC (Estimate at Completion) im einfachsten Fall?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Budget at Completion × CPI</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Budget at Completion / CPI</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Actual Cost + Planned Value</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Earned Value − Actual Cost</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">EAC = BAC / CPI. Bei einer CPI unter 1 (Kostenüberschreitung) ergibt diese Formel eine höhere geschätzte Gesamtkostenprognose als ursprünglich budgetiert – eine wichtige Frühwarnung für das Management.</div>
+  </div>
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Was sollte vor jeder Scope-Änderung passieren?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Die Änderung wird sofort umgesetzt, um Zeit zu sparen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Ein formaler Change-Request-Prozess mit Bewertung von Zeit-, Kosten- und Risikoauswirkung</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Nur eine mündliche Absprache im Team</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Gar nichts – Änderungen sind immer Teil des Projekts</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">Ein formaler Change-Request-Prozess (Erfassen → Bewerten → Entscheiden → Umsetzen) verhindert Scope Creep und stellt sicher, dass Budget und Zeitplan transparent angepasst werden, bevor Änderungen umgesetzt werden.</div>
+  </div>
+  <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3><p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Lernmodul zur fachlichen Weiterbildung im Projekt-Controlling.</p>
+</footer>
+<script>
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.currentTarget.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function fmt(v){return v.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';}
+function calcEVM(){
+  const pv=parseFloat(document.getElementById('evm-pv').value)||0;
+  const ev=parseFloat(document.getElementById('evm-ev').value)||0;
+  const ac=parseFloat(document.getElementById('evm-ac').value)||1;
+  const sv=ev-pv;const cv=ev-ac;
+  const spi=pv>0?ev/pv:0;const cpi=ac>0?ev/ac:0;
+  document.getElementById('evm-sv').textContent=fmt(sv);
+  document.getElementById('evm-sv').className='rv '+(sv<0?'bad':'good');
+  document.getElementById('evm-cv').textContent=fmt(cv);
+  document.getElementById('evm-cv').className='rv '+(cv<0?'bad':'good');
+  document.getElementById('evm-spi').textContent=spi.toFixed(2);
+  document.getElementById('evm-spi').className='rv '+(spi<1?'bad':'good');
+  document.getElementById('evm-cpi').textContent=cpi.toFixed(2);
+  document.getElementById('evm-cpi').className='rv '+(cpi<1?'bad':'good');
+  let interp='';
+  if(spi<0.95&&cpi<0.95)interp='⚠️ Kritisch: Projekt ist sowohl im Verzug als auch über Budget. Sofortige Ursachenanalyse und Gegenmaßnahmen empfohlen.';
+  else if(spi<0.95)interp='🕐 Das Projekt liegt im Zeitplanverzug, ist aber kosteneffizient. Prüfen, ob zusätzliche Ressourcen den Zeitplan retten können.';
+  else if(cpi<0.95)interp='💰 Das Projekt liegt im Zeitplan, aber über Budget. Kostenanalyse empfohlen – evtl. teurere Ressourcen als geplant.';
+  else interp='✅ Das Projekt läuft termin- und budgettreu oder sogar besser als geplant.';
+  document.getElementById('evm-interpretation').textContent=interp;
+}
+calcEVM();
+let quizAnswers={};const TOTAL=7;
+function answer(btn,type,qId){const qEl=document.getElementById(qId);if(qEl.dataset.answered)return;qEl.dataset.answered='1';qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});btn.classList.add(type);document.getElementById('fb'+qId.replace('q','')).classList.add('show',type);quizAnswers[qId]=type==='correct';}
+function showScore(){const c=Object.values(quizAnswers).filter(Boolean).length;const p=Math.round(c/TOTAL*100);document.getElementById('score-text').textContent=c+' von '+TOTAL+' richtig ('+p+'%)';document.getElementById('score-msg').textContent=p>=85?'Hervorragend – EVM und MTA sitzen!':p>=57?'Solide – die EVM-Formeln nochmals üben.':'Die Grundlagen und EVM-Abschnitte nochmals durchgehen.';document.getElementById('score-bar').style.width=p+'%';const el=document.getElementById('quiz-score');el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function resetQuiz(){quizAnswers={};document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));document.getElementById('quiz-score').style.display='none';}
+</script>
+</body>
+</html>
