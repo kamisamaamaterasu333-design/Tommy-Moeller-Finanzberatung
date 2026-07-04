@@ -47,7 +47,10 @@ body {
   font-family: var(--font-sans);
   line-height: 1.7;
   min-height: 100vh;
+  overflow-x: hidden;
 }
+
+img, svg, video, canvas { max-width: 100%; height: auto; }
 
 /* ── 2. LAYOUT-UTILITIES ─────────────────────────────────── */
 .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
@@ -103,6 +106,7 @@ body {
 .nav-toggle {
   display: none; flex-direction: column; gap: 5px;
   background: none; border: none; cursor: pointer; padding: 4px;
+  z-index: 1100;
 }
 .nav-toggle span {
   display: block; width: 22px; height: 2px;
@@ -131,7 +135,7 @@ body {
 }
 .hero-text { color: var(--text-dim); font-size: 17px; margin-bottom: 32px; max-width: 480px; }
 .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
-.hero-visual { flex: 0 0 300px; }
+.hero-visual { flex: 0 0 300px; max-width: 100%; }
 .hero-card {
   background: var(--card); border: 1px solid var(--border);
   border-radius: var(--r-lg); padding: 32px 24px;
@@ -431,6 +435,10 @@ textarea.form-input { min-height: 130px; resize: vertical; }
 .admin-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
 .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
 
+/* Admin-Tabellen auf Mobil horizontal scrollbar statt gequetscht */
+.admin-content { max-width: 100%; }
+.admin-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
 /* Toast-Notification */
 .toast {
   position: fixed; bottom: 24px; right: 24px;
@@ -451,19 +459,92 @@ textarea.form-input { min-height: 130px; resize: vertical; }
   padding: 110px 0 50px; background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
-.breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; font-family: var(--font-mono); }
+.breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; font-family: var(--font-mono); word-break: break-word; }
 .breadcrumb a { color: var(--gold); text-decoration: none; }
 
-/* ── 14. RESPONSIVE ──────────────────────────────────────── */
+/* ── 14. GENERISCHE 2-SPALTEN-LAYOUTS (Inline-Grids auf Unterseiten) ──
+   Viele Seiten (z.B. Kontakt, Dokumente, Über mich) nutzen Inline-Styles
+   wie style="display:grid;grid-template-columns:1fr 2fr;gap:...". Diese
+   Klasse kann optional zusätzlich gesetzt werden, damit auch Inline-Grids
+   auf Mobilgeräten zuverlässig einspaltig werden (siehe Media Query unten,
+   die zusätzlich auch direkt auf [style*="grid-template-columns"] zielt). */
+.two-col-responsive { display: grid; gap: 40px; }
+
+/* ── 15. RESPONSIVE ──────────────────────────────────────── */
+
+/* Tablet / kleine Laptops */
+@media (max-width: 960px) {
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hero { gap: 40px; }
+}
+
 @media (max-width: 768px) {
-  .nav-links { display: none; flex-direction: column; position: absolute; top: 66px; left: 0; right: 0; background: rgba(11,14,20,0.98); padding: 16px; border-bottom: 1px solid var(--border); }
+  html { font-size: 15px; }
+
+  .container { padding: 0 18px; }
+
+  /* Navbar */
+  .nav-links {
+    display: none; flex-direction: column; position: absolute;
+    top: 66px; left: 0; right: 0; background: rgba(11,14,20,0.98);
+    padding: 16px; border-bottom: 1px solid var(--border);
+    max-height: calc(100vh - 66px); overflow-y: auto;
+  }
   .nav-links.open { display: flex; }
+  .nav-links li { width: 100%; }
+  .nav-links a { display: block; padding: 12px 14px; }
   .nav-toggle { display: flex; }
-  .hero { padding-top: 100px; }
+
+  /* Hero */
+  .hero { padding-top: 90px; padding-left: 18px; padding-right: 18px; }
   .hero-visual { display: none; }
-  .about-grid { grid-template-columns: 1fr; }
+  .hero-buttons { flex-direction: column; align-items: stretch; }
+  .hero-buttons .btn { justify-content: center; }
+
+  /* Grids generell auf eine Spalte */
+  .about-grid,
+  .teaser-grid,
+  .services-grid,
+  .blog-grid,
+  .downloads-grid,
+  .footer-grid,
+  .two-col-responsive {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Admin */
   .admin-sidebar { display: none; }
   .admin-content { padding: 20px; }
+  .admin-layout { flex-direction: column; }
+
+  /* Seitenkopf/Sektionen kompakter */
+  .page-header { padding: 100px 0 36px; }
+  .section { padding: 56px 0; }
+  .section-subtitle { margin-bottom: 32px; }
+
+  /* Tabellen: horizontal scrollbar statt Layout-Bruch */
+  table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Formulare in fester Spaltenzahl (Inline-Styles) auf 1 Spalte zwingen */
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Flex-Layouts mit fixen breiten Spalten (z.B. Kontakt: flex:1) sollen umbrechen */
+  [style*="display:flex"],
+  [style*="display: flex"] {
+    flex-wrap: wrap;
+  }
+
+  .comments-section,
+  .blog-post-body { padding-left: 4px; padding-right: 4px; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: clamp(30px, 9vw, 40px); }
+  .section-title { font-size: clamp(24px, 7vw, 30px); }
+  .btn { width: 100%; justify-content: center; }
+  .hero-buttons .btn { width: 100%; }
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
