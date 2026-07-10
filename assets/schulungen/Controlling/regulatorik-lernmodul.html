@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatorik im Banking | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --burgundy-950:#1F0A12;--burgundy-900:#2D0F1B;--burgundy-800:#4A1928;--burgundy-700:#6B2238;
+  --rose-500:#E11D48;--rose-400:#FB7185;--rose-100:#FFE4E6;--rose-50:#FFF1F2;--rose-700:#BE123C;
+  --gray-900:#111827;--gray-800:#1F2937;--gray-700:#374151;--gray-600:#4B5563;
+  --gray-500:#6B7280;--gray-200:#E5E7EB;--gray-100:#F3F4F6;--gray-50:#F9FAFB;
+  --amber-700:#B45309;--amber-400:#FBBF24;--amber-100:#FEF3C7;--amber-50:#FFFBEB;
+  --green-700:#15803D;--green-600:#16A34A;--green-100:#DCFCE7;--green-50:#F0FDF4;
+  --blue-800:#1E40AF;--blue-100:#DBEAFE;--blue-50:#EFF6FF;
+  --purple-700:#6D28D9;--purple-100:#EDE9FE;--purple-50:#F5F3FF;
+  --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;--font-mono:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+.site-header{background:linear-gradient(135deg,var(--burgundy-950) 0%,var(--burgundy-800) 55%,var(--rose-700) 100%);color:white;}
+.header-inner{max-width:920px;margin:0 auto;padding:48px 24px 56px;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);font-family:var(--font-mono);}
+.header-badge::before{content:'';width:6px;height:6px;background:var(--rose-400);border-radius:50%;}
+.site-header h1{font-family:var(--font-serif);font-size:clamp(26px,4.5vw,38px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+.site-header p.subtitle{font-size:15.5px;color:rgba(255,255,255,.7);max-width:580px;line-height:1.65;}
+.nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.nav-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:13px 16px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:var(--rose-700);}
+.nav-tab.active{color:var(--rose-700);border-bottom-color:var(--rose-500);}
+main{max-width:920px;margin:0 auto;padding:40px 24px 80px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-serif);font-size:23px;font-weight:600;color:var(--gray-900);margin-bottom:5px;}
+.section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+.card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:26px 30px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--gray-900);margin-bottom:10px;}
+.card h3{font-size:14.5px;font-weight:600;color:var(--gray-700);margin:18px 0 7px;}
+.card h3:first-of-type{margin-top:8px;}
+.card p{color:var(--gray-600);margin-bottom:11px;font-size:14.5px;}
+.card p:last-child{margin-bottom:0;}
+.info-box{border-radius:8px;padding:13px 16px;margin:13px 0;display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.6;}
+.info-box .icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.info-box.rose{background:var(--rose-50);color:var(--rose-700);border-left:3px solid var(--rose-400);}
+.info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid var(--amber-400);}
+.info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #4ADE80;}
+.info-box.blue{background:var(--blue-50);color:var(--blue-800);border-left:3px solid #60A5FA;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px;}
+@media(max-width:580px){.two-col{grid-template-columns:1fr;}}
+.col-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;}
+.col-card h4{font-size:13.5px;font-weight:600;color:var(--gray-800);margin-bottom:7px;}
+.col-card ul{list-style:none;}
+.col-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.col-card ul li::before{content:'→';color:var(--rose-500);flex-shrink:0;font-size:12px;margin-top:2px;}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:4px;margin-bottom:7px;font-family:var(--font-mono);}
+.tag.rose{background:var(--rose-100);color:var(--rose-700);}
+.tag.amber{background:var(--amber-100);color:var(--amber-700);}
+.tag.green{background:var(--green-100);color:var(--green-700);}
+.tag.blue{background:var(--blue-100);color:var(--blue-800);}
+.tag.purple{background:var(--purple-100);color:var(--purple-700);}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+.data-table th{background:var(--burgundy-900);color:white;font-weight:600;text-align:left;padding:9px 14px;font-size:12px;}
+.data-table th:first-child{border-radius:8px 0 0 0;}
+.data-table th:last-child{border-radius:0 8px 0 0;}
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:var(--gray-50);}
+/* Regulatory Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.tl-item{display:flex;gap:16px;position:relative;padding-bottom:22px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.tl-dot{width:14px;height:14px;border-radius:50%;background:var(--rose-500);flex-shrink:0;margin-top:4px;border:3px solid var(--rose-100);}
+.tl-line{width:2px;background:var(--gray-200);flex:1;margin-top:4px;}
+.tl-item:last-child .tl-line{display:none;}
+.tl-content{padding-top:0;}
+.tl-year{font-family:var(--font-mono);font-size:12px;color:var(--rose-600);font-weight:600;margin-bottom:2px;}
+.tl-title{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:3px;}
+.tl-desc{font-size:13px;color:var(--gray-600);line-height:1.5;}
+/* Pillar boxes */
+.pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0;}
+@media(max-width:600px){.pillar-grid{grid-template-columns:1fr;}}
+.pillar{background:var(--burgundy-900);border-radius:10px;padding:18px;color:white;}
+.pillar .p-num{font-family:var(--font-mono);font-size:11px;color:var(--rose-400);margin-bottom:8px;}
+.pillar .p-title{font-size:14px;font-weight:600;margin-bottom:8px;}
+.pillar .p-desc{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.5;}
+/* Checklist */
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:4px 0;font-size:14px;color:var(--gray-700);line-height:1.55;}
+.checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+.checklist.cross li::before{content:'✗';color:var(--rose-500);}
+/* Compliance simulator */
+.sim-wrap{background:white;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.sim-header{background:var(--burgundy-900);padding:18px 24px;}
+.sim-header h3{font-family:var(--font-serif);font-size:17px;color:white;margin-bottom:3px;}
+.sim-header p{font-size:13px;color:rgba(255,255,255,.6);}
+.sim-body{padding:24px;}
+.sim-scenario{border:1.5px solid var(--gray-200);border-radius:10px;padding:18px;margin-bottom:14px;}
+.sim-scenario .sc-text{font-size:14px;color:var(--gray-700);margin-bottom:12px;line-height:1.6;}
+.sim-opts{display:flex;flex-direction:column;gap:8px;}
+.sim-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;color:var(--gray-700);text-align:left;font-family:inherit;transition:all .12s;}
+.sim-opt:hover{border-color:var(--rose-400);background:var(--rose-50);}
+.sim-opt.correct{background:var(--green-50);border-color:#4ADE80;color:var(--green-700);}
+.sim-opt.wrong{background:var(--rose-50);border-color:var(--rose-400);color:var(--rose-700);}
+.sim-feedback{font-size:13px;margin-top:10px;padding:10px 14px;border-radius:6px;display:none;line-height:1.6;}
+.sim-feedback.show{display:block;background:var(--blue-50);color:var(--blue-800);}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--burgundy-900);color:white;padding:10px 20px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+.btn:hover{background:var(--burgundy-800);}
+.btn.secondary{background:white;color:var(--rose-700);border:1.5px solid var(--rose-100);}
+.btn.secondary:hover{background:var(--rose-50);}
+/* Quiz */
+.quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px 26px;margin-bottom:14px;}
+.quiz-q{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;}
+.quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 15px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+.quiz-opt:hover{background:var(--rose-50);border-color:var(--rose-400);color:var(--burgundy-900);}
+.quiz-opt.correct{background:var(--green-50);border-color:#4ADE80;color:var(--green-700);}
+.quiz-opt.wrong{background:var(--rose-50);border-color:var(--rose-400);color:var(--rose-700);}
+.quiz-feedback{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:6px;display:none;line-height:1.6;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+.quiz-feedback.wrong{background:var(--rose-50);color:var(--rose-700);}
+.quiz-score{background:var(--burgundy-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:18px;}
+.quiz-score h3{font-size:21px;font-weight:600;margin-bottom:4px;font-family:var(--font-serif);}
+.quiz-score p{color:rgba(255,255,255,.7);font-size:13.5px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:14px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--rose-400);border-radius:3px;transition:width .4s;}
+.site-footer{background:var(--gray-900);color:rgba(255,255,255,.45);text-align:center;padding:26px 24px;font-size:13px;}
+.site-footer a{color:rgba(255,255,255,.65);text-decoration:none;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">// Lernmodul · Bankregulatorik</div>
+    <h1>Regulatorik im Banking</h1>
+    <p class="subtitle">Basel III/IV, SREP, MaRisk und DSGVO im Finanzbereich – die wichtigsten regulatorischen Rahmenwerke kompakt und verständlich erklärt.</p>
+  </div>
+</header>
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('ueberblick')">Überblick</button>
+    <button class="nav-tab" onclick="showSection('basel')">Basel III/IV</button>
+    <button class="nav-tab" onclick="showSection('srep')">SREP &amp; Aufsicht</button>
+    <button class="nav-tab" onclick="showSection('marisk')">MaRisk</button>
+    <button class="nav-tab" onclick="showSection('dsgvo')">DSGVO im Banking</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+<main>
+
+<!-- ÜBERBLICK -->
+<div id="ueberblick" class="section active">
+  <h2 class="section-title">Die regulatorische Architektur</h2>
+  <p class="section-desc">Warum Banken so stark reguliert sind und welche Institutionen die Regeln setzen.</p>
+  <div class="card">
+    <h2>Warum so viel Regulierung?</h2>
+    <p>Banken sind systemrelevant: Ihr Versagen kann die gesamte Wirtschaft destabilisieren (siehe Finanzkrise 2008). Regulierung soll Einleger schützen, Finanzstabilität sichern und Krisen verhindern.</p>
+    <div class="info-box rose">
+      <span class="icon">🏛️</span>
+      <span>Die Finanzkrise 2008 war der Auslöser für die heutige Regulierungsdichte. Basel III, die EU-Bankenunion und der SRM (Single Resolution Mechanism) wurden direkt als Reaktion darauf geschaffen.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Wer reguliert was?</h2>
+    <table class="data-table">
+      <thead><tr><th>Institution</th><th>Ebene</th><th>Zuständigkeit</th></tr></thead>
+      <tbody>
+        <tr><td><strong>EZB (SSM)</strong></td><td>Europäisch</td><td>Direkte Aufsicht über bedeutende Institute (significant institutions)</td></tr>
+        <tr><td><strong>EBA</strong></td><td>Europäisch</td><td>Erarbeitet technische Standards, Leitlinien, Stresstests</td></tr>
+        <tr><td><strong>BaFin</strong></td><td>National (Deutschland)</td><td>Aufsicht über weniger bedeutende Institute, nationale Umsetzung</td></tr>
+        <tr><td><strong>Bundesbank</strong></td><td>National</td><td>Operative Aufsicht in Deutschland, Geldpolitik-Umsetzung</td></tr>
+        <tr><td><strong>Basel-Ausschuss (BCBS)</strong></td><td>International</td><td>Setzt globale Mindeststandards (Basel III/IV)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box blue">
+      <span class="icon">🔗</span>
+      <span>Der Weg einer Regel: Basel-Ausschuss entwickelt globalen Standard → EU setzt um in CRR/CRD (Verordnung/Richtlinie) → BaFin/EZB überwachen die Einhaltung → Banken setzen intern um (MaRisk-konform).</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Die drei Säulen der Bankenregulierung</h2>
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="p-num">SÄULE I</div>
+        <div class="p-title">Mindestkapitalanforderungen</div>
+        <div class="p-desc">Quantitative Vorgaben: CET1-Quote, Leverage Ratio, LCR, NSFR. Mathematisch berechenbare Mindestwerte.</div>
+      </div>
+      <div class="pillar">
+        <div class="p-num">SÄULE II</div>
+        <div class="p-title">Aufsichtlicher Überprüfungsprozess</div>
+        <div class="p-desc">SREP – individuelle Risikobewertung durch die Aufsicht, kann zusätzliches Kapital verlangen (Säule-II-Zuschlag).</div>
+      </div>
+      <div class="pillar">
+        <div class="p-num">SÄULE III</div>
+        <div class="p-title">Marktdisziplin / Offenlegung</div>
+        <div class="p-desc">Banken müssen Risiko- und Kapitalkennzahlen öffentlich offenlegen – Markt soll selbst diszplinierend wirken.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BASEL III/IV -->
+<div id="basel" class="section">
+  <h2 class="section-title">Basel III &amp; Basel IV</h2>
+  <p class="section-desc">Die globalen Mindeststandards für Bankenkapital und -liquidität.</p>
+  <div class="card">
+    <h2>Entwicklung der Basel-Regelwerke</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year">1988</div>
+          <div class="tl-title">Basel I</div>
+          <div class="tl-desc">Erste internationale Eigenkapitalvorschrift – einfache Risikogewichtung, Mindestquote 8 %.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year">2004</div>
+          <div class="tl-title">Basel II</div>
+          <div class="tl-desc">Differenziertere Risikogewichtung, interne Ratingmodelle (IRB-Ansatz) erlaubt, 3-Säulen-Modell eingeführt.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-content">
+          <div class="tl-year">2010–2017</div>
+          <div class="tl-title">Basel III (Reaktion auf Finanzkrise)</div>
+          <div class="tl-desc">Höhere Kapitalqualität (CET1 im Fokus), Einführung LCR und NSFR, Leverage Ratio, Kapitalpuffer (antizyklisch, Erhaltungspuffer).</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div></div>
+        <div class="tl-content">
+          <div class="tl-year">ab 2023/2025</div>
+          <div class="tl-title">Basel IV ("Basel III Endgame")</div>
+          <div class="tl-desc">Output Floor (max. 27,5 % Vorteil interner Modelle ggü. Standardansatz), Begrenzung der Modellvielfalt, höhere Vergleichbarkeit zwischen Banken.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Die wichtigsten Basel III/IV-Kennzahlen</h2>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Mindestwert</th><th>Zweck</th></tr></thead>
+      <tbody>
+        <tr><td>CET1-Quote</td><td>4,5 % (+ Puffer)</td><td>Qualität des Kernkapitals sichern</td></tr>
+        <tr><td>Tier-1-Quote</td><td>6,0 %</td><td>Gesamtes Kernkapital</td></tr>
+        <tr><td>Gesamtkapitalquote</td><td>8,0 %</td><td>Gesamtes regulatorisches Kapital</td></tr>
+        <tr><td>Kapitalerhaltungspuffer</td><td>2,5 %</td><td>Zusätzlicher Puffer in guten Zeiten</td></tr>
+        <tr><td>Antizyklischer Puffer</td><td>0–2,5 % (variabel)</td><td>Dämpft Kreditzyklen</td></tr>
+        <tr><td>Leverage Ratio</td><td>3,0 %</td><td>Begrenzt Verschuldung unabhängig von Risikogewichten</td></tr>
+        <tr><td>LCR</td><td>100 %</td><td>Kurzfristige Liquidität (30 Tage)</td></tr>
+        <tr><td>NSFR</td><td>100 %</td><td>Langfristige strukturelle Refinanzierung</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Was ist neu an Basel IV?</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag rose">Output Floor</span>
+        <h4>Begrenzung interner Modelle</h4>
+        <ul>
+          <li>Banken mit internen Ratingmodellen (IRB) können RWA bisher stark senken</li>
+          <li>Output Floor: max. 27,5 % Vorteil ggü. Standardansatz</li>
+          <li>Mehr Vergleichbarkeit zwischen Banken weltweit</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag amber">Auswirkung</span>
+        <h4>Mehr Eigenkapital nötig</h4>
+        <ul>
+          <li>Banken mit aggressiven internen Modellen brauchen mehr Kapital</li>
+          <li>Besonders betroffen: Banken mit großen Kredit- und Hypothekenportfolios</li>
+          <li>Schrittweise Einführung bis 2030 (EU-Umsetzung CRR III)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SREP -->
+<div id="srep" class="section">
+  <h2 class="section-title">SREP &amp; Aufsichtsprozess</h2>
+  <p class="section-desc">Wie die Aufsicht jede Bank individuell bewertet – der Supervisory Review and Evaluation Process.</p>
+  <div class="card">
+    <h2>Was ist der SREP?</h2>
+    <p>Der <strong>Supervisory Review and Evaluation Process (SREP)</strong> ist der jährliche Prozess, in dem die Aufsicht (EZB für bedeutende Institute, BaFin für weniger bedeutende) jede Bank individuell auf Risiken und Kapitalausstattung prüft.</p>
+    <h3>Die vier SREP-Elemente</h3>
+    <table class="data-table">
+      <thead><tr><th>Element</th><th>Bewertet wird</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Geschäftsmodell</strong></td><td>Ist das Geschäftsmodell nachhaltig profitabel?</td></tr>
+        <tr><td><strong>Governance &amp; Risikomanagement</strong></td><td>Sind interne Kontrollen und Steuerung angemessen?</td></tr>
+        <tr><td><strong>Kapitalrisiken</strong></td><td>Kredit-, Markt-, operationelles Risiko – ausreichend Kapital?</td></tr>
+        <tr><td><strong>Liquiditätsrisiken</strong></td><td>Ist die Liquiditäts- und Refinanzierungssituation solide?</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Der SREP-Zuschlag (Säule-II-Kapital)</h2>
+    <p>Basierend auf der individuellen Risikobewertung kann die Aufsicht einen <strong>zusätzlichen Kapitalzuschlag (P2R – Pillar 2 Requirement)</strong> festlegen – über die regulatorischen Mindestanforderungen aus Basel hinaus.</p>
+    <div class="info-box rose">
+      <span class="icon">⚠️</span>
+      <span>Eine Bank mit höherem Risikoprofil (z.B. konzentriertes Kreditportfolio, schwache Governance) muss mehr Kapital vorhalten als das gesetzliche Minimum. Der SREP-Zuschlag ist individuell und nicht öffentlich einheitlich.</span>
+    </div>
+    <h3>Die SREP-Gesamtkapitalanforderung (TSCR)</h3>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag blue">Säule I (Pflicht)</span>
+        <ul>
+          <li>8 % Mindestkapitalquote</li>
+          <li>Gilt für alle Banken einheitlich</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag rose">Säule II (individuell)</span>
+        <ul>
+          <li>P2R: verpflichtender Zuschlag je nach Risikoprofil</li>
+          <li>P2G: zusätzliche "Guidance" (Empfehlung, nicht hart bindend)</li>
+          <li>Kombinierte Pufferanforderung obendrauf</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARISK -->
+<div id="marisk" class="section">
+  <h2 class="section-title">MaRisk – Mindestanforderungen an das Risikomanagement</h2>
+  <p class="section-desc">Das zentrale deutsche Regelwerk für die Organisation des Risikomanagements in Banken.</p>
+  <div class="card">
+    <h2>Was regelt MaRisk?</h2>
+    <p>Die <strong>MaRisk (Mindestanforderungen an das Risikomanagement)</strong> der BaFin konkretisieren, wie deutsche Institute ihr Risikomanagement organisatorisch aufstellen müssen. Sie sind die nationale Umsetzung der Säule-II-Anforderungen aus Basel.</p>
+    <h3>Die Struktur der MaRisk</h3>
+    <table class="data-table">
+      <thead><tr><th>Modul</th><th>Inhalt</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AT</strong> (Allgemeiner Teil)</td><td>Geschäftsorganisation, Risikokultur, Auslagerung, IKS</td></tr>
+        <tr><td><strong>BT 1</strong> (Risikotragfähigkeit)</td><td>ICAAP – Internal Capital Adequacy Assessment Process</td></tr>
+        <tr><td><strong>BT 2</strong> (Liquiditätsrisiken)</td><td>ILAAP – Internal Liquidity Adequacy Assessment Process</td></tr>
+        <tr><td><strong>BT 3</strong> (Sanierungsplanung)</td><td>Notfall- und Krisenpläne</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Internes Kontrollsystem (IKS) im Banking</h2>
+    <p>Ein zentrales MaRisk-Konzept ist die <strong>Funktionstrennung</strong> – wer Risiken eingeht (Markt), darf nicht auch über deren Steuerung entscheiden (Marktfolge/Risikocontrolling).</p>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag blue">Markt</span>
+        <h4>Vertriebsorientierte Einheiten</h4>
+        <ul>
+          <li>Kundenberatung, Akquise</li>
+          <li>Initiieren Kreditgeschäfte</li>
+          <li>Konditionsverhandlung</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag rose">Marktfolge</span>
+        <h4>Risikosteuernde Einheiten</h4>
+        <ul>
+          <li>Kreditrisikoanalyse, Votierung</li>
+          <li>Überwachung & Reporting</li>
+          <li>Unabhängig vom Vertrieb (organisatorisch getrennt!)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">🛡️</span>
+      <span>Diese strikte Funktionstrennung verhindert Interessenkonflikte: Ein Kundenberater, der Provision für Kreditvergabe bekommt, darf nicht gleichzeitig das Risiko bewerten – das macht die unabhängige Marktfolge.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>ICAAP &amp; ILAAP im Detail</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag rose">ICAAP</span>
+        <h4>Risikotragfähigkeitskonzept</h4>
+        <ul>
+          <li>Bank ermittelt selbst: reicht das Kapital für alle eingegangenen Risiken?</li>
+          <li>Geht über regulatorische Mindestanforderungen hinaus</li>
+          <li>Normativ + ökonomische Perspektive kombiniert</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag blue">ILAAP</span>
+        <h4>Liquiditätsadäquanzkonzept</h4>
+        <ul>
+          <li>Analog zu ICAAP, aber für Liquiditätsrisiken</li>
+          <li>Eigene Stresstests und Liquiditätsplanung</li>
+          <li>Wird jährlich an die Aufsicht berichtet</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DSGVO -->
+<div id="dsgvo" class="section">
+  <h2 class="section-title">DSGVO im Finanzbereich</h2>
+  <p class="section-desc">Datenschutz hat im Banking besondere Brisanz – sensible Finanzdaten erfordern höchste Sorgfalt.</p>
+  <div class="card">
+    <h2>Warum DSGVO im Banking besonders kritisch ist</h2>
+    <p>Banken verarbeiten hochsensible Daten: Vermögensverhältnisse, Kreditwürdigkeit, Zahlungsverhalten, manchmal Gesundheitsdaten (bei BU-Versicherungen). Verstöße bedeuten nicht nur Bußgelder, sondern Reputationsschäden und Vertrauensverlust.</p>
+    <div class="info-box rose">
+      <span class="icon">⚖️</span>
+      <span>DSGVO-Bußgelder können bis zu 4 % des weltweiten Jahresumsatzes oder 20 Mio. € betragen (der höhere Wert gilt). Bei Großbanken sind das potenziell Milliardenbeträge.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Bankspezifische Datenschutz-Herausforderungen</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag rose">Besondere Risikobereiche</span>
+        <ul>
+          <li>Scoring-Modelle (automatisierte Entscheidungen, Art. 22 DSGVO)</li>
+          <li>Profiling für Kreditvergabe und Marketing</li>
+          <li>Datenaustausch mit Auskunfteien (Schufa etc.)</li>
+          <li>Cloud-Nutzung und Auslagerung (Drittlandtransfers)</li>
+          <li>KI-gestützte Betrugserkennung</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag green">Rechtsgrundlagen im Banking</span>
+        <ul>
+          <li>Vertragserfüllung (Art. 6 Abs. 1 lit. b)</li>
+          <li>Rechtliche Verpflichtung – z.B. Geldwäschegesetz (lit. c)</li>
+          <li>Berechtigtes Interesse – z.B. Betrugsprävention (lit. f)</li>
+          <li>Einwilligung – für Marketing (lit. a)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Automatisierte Entscheidungen (Art. 22 DSGVO)</h2>
+    <p>Kreditscoring ist ein klassisches Beispiel für automatisierte Entscheidungsfindung. Art. 22 DSGVO gibt Betroffenen besondere Rechte:</p>
+    <ul class="checklist">
+      <li>Recht auf Erläuterung der Entscheidungslogik</li>
+      <li>Recht auf menschliches Eingreifen bei der Entscheidung</li>
+      <li>Recht, die eigene Sichtweise darzulegen</li>
+      <li>Recht, die Entscheidung anzufechten</li>
+    </ul>
+    <div class="info-box amber">
+      <span class="icon">🤖</span>
+      <span>Wenn eine Bank KI-gestützte Kreditentscheidungen ohne menschliche Beteiligung trifft, müssen diese Betroffenenrechte technisch und organisatorisch gewährleistet sein – ein wichtiger Compliance-Punkt bei KI-Einführung im Banking.</span>
+    </div>
+  </div>
+  <!-- Compliance Simulator -->
+  <div class="sim-wrap">
+    <div class="sim-header">
+      <h3>⚖️ Compliance-Szenarien</h3>
+      <p>Praxisnahe Situationen – wie würdest du entscheiden?</p>
+    </div>
+    <div class="sim-body">
+      <div class="sim-scenario">
+        <div class="sc-text"><strong>Szenario 1:</strong> Ein Kundenberater möchte Kontaktdaten eines Kunden für eine private Geschäftsidee außerhalb der Bank nutzen.</div>
+        <div class="sim-opts">
+          <button class="sim-opt" onclick="simAnswer(this,'wrong','s1','Verstoß gegen Zweckbindung (Art. 5 DSGVO) – Daten dürfen nur für den ursprünglichen Zweck (Bankgeschäft) genutzt werden, nicht für private Zwecke.')">Erlaubt – der Berater kennt den Kunden ja persönlich</button>
+          <button class="sim-opt" onclick="simAnswer(this,'correct','s1','Richtig! Das verstößt gegen die Zweckbindung. Kundendaten dürfen ausschließlich für den vereinbarten Bankzweck verwendet werden – jede private Nutzung ist ein klarer DSGVO-Verstoß und meldepflichtig.')">Verstoß – Zweckbindungsgrundsatz verletzt</button>
+        </div>
+        <div class="sim-feedback" id="sf1"></div>
+      </div>
+      <div class="sim-scenario">
+        <div class="sc-text"><strong>Szenario 2:</strong> Die Bank möchte ein neues KI-Modell zur automatischen Kreditbewilligung ohne jede menschliche Prüfung einführen.</div>
+        <div class="sim-opts">
+          <button class="sim-opt" onclick="simAnswer(this,'wrong','s2','Das verstößt gegen Art. 22 DSGVO – vollautomatisierte Entscheidungen mit rechtlicher Wirkung erfordern besondere Schutzmaßnahmen, inklusive Recht auf menschliches Eingreifen.')">Unproblematisch – Effizienzgewinn durch Automatisierung</button>
+          <button class="sim-opt" onclick="simAnswer(this,'correct','s2','Richtig! Art. 22 DSGVO verlangt bei vollautomatisierten Entscheidungen mit rechtlicher Wirkung besondere Garantien: Recht auf menschliches Eingreifen, Erläuterung und Anfechtung müssen gewährleistet sein.')">Kritisch – Art. 22 DSGVO erfordert besondere Schutzmaßnahmen</button>
+        </div>
+        <div class="sim-feedback" id="sf2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck Regulatorik</h2>
+  <p class="section-desc">8 Fragen zu Basel, SREP, MaRisk und DSGVO im Banking.</p>
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was ist der Output Floor in Basel IV?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Eine Mindestliquiditätsquote</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">Eine Begrenzung, wie stark interne Risikomodelle die Kapitalanforderung gegenüber dem Standardansatz senken dürfen (max. 27,5 % Vorteil)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Der maximale Zinssatz für Kredite</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Eine Untergrenze für die Eigenkapitalrendite</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">Der Output Floor begrenzt den Vorteil, den Banken durch interne Ratingmodelle (IRB-Ansatz) gegenüber dem Standardansatz erzielen können, auf max. 27,5 %. Das schafft mehr Vergleichbarkeit zwischen Banken weltweit.</div>
+  </div>
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Was bedeutet SREP?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Standard Regulatory Equity Process</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">Supervisory Review and Evaluation Process – der aufsichtliche Überprüfungsprozess jeder Bank</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Eine Kennzahl für Solvenz</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Ein EU-Gesetz zur Geldwäscheprävention</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">SREP ist der jährliche aufsichtliche Bewertungsprozess, in dem EZB oder BaFin jede Bank individuell auf Geschäftsmodell, Governance, Kapital- und Liquiditätsrisiken prüfen. Daraus kann ein individueller Kapitalzuschlag (P2R) folgen.</div>
+  </div>
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was regeln die MaRisk?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Die Mindestkapitalquoten nach Basel</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Die organisatorischen Mindestanforderungen an das Risikomanagement deutscher Banken</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Die Datenschutzregeln für Banken</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Die Höhe der Einlagensicherung</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">Die MaRisk (Mindestanforderungen an das Risikomanagement) der BaFin sind die nationale Konkretisierung der Säule-II-Anforderungen – sie regeln, wie das Risikomanagement organisatorisch aufgestellt sein muss (z.B. Funktionstrennung Markt/Marktfolge).</div>
+  </div>
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist die Funktionstrennung zwischen "Markt" und "Marktfolge"?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Eine geografische Aufteilung der Bankfilialen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">Vertrieb (initiiert Geschäfte) und Risikosteuerung (bewertet/überwacht) müssen organisatorisch getrennt sein – wegen Interessenkonflikten</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Die Trennung von Privat- und Firmenkundengeschäft</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Eine Vorschrift nur für Investmentbanken</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">MaRisk verlangt strikte Funktionstrennung: Markt (Vertrieb, initiiert Geschäfte) darf nicht gleichzeitig über Risikobewertung entscheiden. Das verhindert, dass Provisionsanreize die Risikoeinschätzung verzerren.</div>
+  </div>
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Was ist der Unterschied zwischen ICAAP und ILAAP?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">ICAAP ist für kleine, ILAAP für große Banken</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">ICAAP betrifft die Kapitaladäquanz (reicht das Eigenkapital für alle Risiken?), ILAAP die Liquiditätsadäquanz</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Es gibt keinen Unterschied</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">ICAAP ist EU-Recht, ILAAP deutsches Recht</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">ICAAP (Internal Capital Adequacy Assessment Process) prüft, ob genug Kapital für alle eingegangenen Risiken vorhanden ist. ILAAP (Internal Liquidity Adequacy Assessment Process) macht dasselbe für Liquiditätsrisiken.</div>
+  </div>
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Welches Recht haben Betroffene bei vollautomatisierten Kreditentscheidungen nach Art. 22 DSGVO?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Keine besonderen Rechte – Automatisierung ist immer erlaubt</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Recht auf menschliches Eingreifen, Erläuterung der Entscheidungslogik und Anfechtung</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Recht auf eine zweite kostenlose Kreditanfrage</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Recht auf sofortige Kreditgewährung</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Art. 22 DSGVO schützt vor rein automatisierten Entscheidungen mit rechtlicher Wirkung. Betroffene haben das Recht, menschliches Eingreifen zu verlangen, die Logik erklärt zu bekommen und die Entscheidung anzufechten.</div>
+  </div>
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Wie hoch können DSGVO-Bußgelder maximal ausfallen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Maximal 1 Mio. € pro Verstoß</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Bis zu 4 % des weltweiten Jahresumsatzes oder 20 Mio. € – der höhere Wert gilt</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Es gibt keine festen Obergrenzen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">10.000 € pro betroffener Person</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">DSGVO-Bußgelder können bis zu 4 % des weltweiten Jahresumsatzes oder 20 Mio. € betragen – je nachdem, welcher Betrag höher ist. Bei großen Banken sind das potenziell Milliardenbeträge.</div>
+  </div>
+  <div class="quiz-question" id="q8">
+    <div class="quiz-q">8. Was ist der P2R (Pillar 2 Requirement)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Ein freiwilliger Kapitalpuffer</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q8')">Ein verpflichtender, individueller Kapitalzuschlag, den die Aufsicht basierend auf dem SREP festlegt</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Die zweite Säule des Basel-Abkommens insgesamt</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Eine Liquiditätskennzahl</button>
+    </div>
+    <div class="quiz-feedback" id="fb8">P2R ist ein bindender, bankindividueller Kapitalzuschlag aus dem SREP-Prozess – zusätzlich zu den Säule-I-Mindestanforderungen. Er spiegelt das spezifische Risikoprofil jeder einzelnen Bank wider.</div>
+  </div>
+  <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3><p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Lernmodul zur fachlichen Weiterbildung – kein Ersatz für Rechts- oder Compliance-Beratung.</p>
+</footer>
+<script>
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.currentTarget.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function simAnswer(btn,type,sid,msg){
+  const scenario=btn.closest('.sim-scenario');
+  if(scenario.dataset.answered)return;
+  scenario.dataset.answered='1';
+  scenario.querySelectorAll('.sim-opt').forEach(o=>o.style.pointerEvents='none');
+  btn.classList.add(type);
+  const fb=document.getElementById('sf'+sid.replace('s',''));
+  fb.textContent=msg;fb.classList.add('show');
+}
+let quizAnswers={};const TOTAL=8;
+function answer(btn,type,qId){const qEl=document.getElementById(qId);if(qEl.dataset.answered)return;qEl.dataset.answered='1';qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});btn.classList.add(type);document.getElementById('fb'+qId.replace('q','')).classList.add('show',type);quizAnswers[qId]=type==='correct';}
+function showScore(){const c=Object.values(quizAnswers).filter(Boolean).length;const p=Math.round(c/TOTAL*100);document.getElementById('score-text').textContent=c+' von '+TOTAL+' richtig ('+p+'%)';document.getElementById('score-msg').textContent=p>=87?'Hervorragend – Regulatorik-Wissen auf hohem Niveau!':p>=62?'Solide Basis – Basel und SREP nochmals vertiefen.':'Die Grundlagen und Basel-Abschnitte nochmals durchgehen.';document.getElementById('score-bar').style.width=p+'%';const el=document.getElementById('quiz-score');el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function resetQuiz(){quizAnswers={};document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));document.getElementById('quiz-score').style.display='none';}
+</script>
+</body>
+</html>
