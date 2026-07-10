@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datenwerkbank — Excel · Power BI · Python · SQL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EFE6;
+    --paper-dim:#E4E2D3;
+    --panel:#FAF9F3;
+    --ink:#1F2A24;
+    --ink-dim:#5B6259;
+    --rule:#C9C4B3;
+
+    --excel:#2F6F4F;    --excel-soft:#DCE8DF;
+    --pbi:#B87F1C;      --pbi-soft:#F1E3C6;
+    --py:#2C5F8A;        --py-soft:#D9E4EC;
+    --sql:#8A4B3B;        --sql-soft:#EAD9D2;
+
+    --accent: var(--excel);
+    --accent-soft: var(--excel-soft);
+
+    --code-bg:#1B231D;
+    --code-text:#E7E3D3;
+    --code-comment:#8B9A8E;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+
+  /* ---------- Header / Ledger cover ---------- */
+  header.cover{
+    max-width:1040px;
+    margin:0 auto;
+    padding:56px 28px 32px;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:clamp(36px, 6vw, 58px);
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    font-size:17px;
+    color:var(--ink-dim);
+    max-width:640px;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+  }
+  .meta-row strong{color:var(--ink); font-weight:600;}
+
+  /* ---------- Tool tabs (binder index) ---------- */
+  nav.tools{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 28px;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:10;
+    padding-top:18px;
+    padding-bottom:2px;
+  }
+  .tool-tab{
+    flex:1 1 130px;
+    min-width:120px;
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-bottom:none;
+    border-top:4px solid var(--tab-accent, var(--rule));
+    padding:12px 14px 10px;
+    cursor:pointer;
+    font-family:"IBM Plex Mono", monospace;
+    text-align:left;
+    transition:background 0.15s ease;
+  }
+  .tool-tab:hover{background:var(--paper-dim);}
+  .tool-tab .code{
+    font-size:11px;
+    letter-spacing:0.1em;
+    color:var(--ink-dim);
+    display:block;
+  }
+  .tool-tab .name{
+    font-family:"Fraunces", serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--ink);
+    display:block;
+    margin-top:2px;
+  }
+  .tool-tab.active{
+    background:var(--accent-soft);
+  }
+  .tool-tab.active .code{color:var(--accent);}
+
+  /* ---------- Level rail ---------- */
+  .level-rail{
+    max-width:1040px;
+    margin:0 auto;
+    padding:16px 28px 0;
+    border-bottom:1px solid var(--rule);
+    background:var(--panel);
+  }
+  .rail-inner{
+    display:flex;
+    align-items:center;
+    gap:0;
+    padding-bottom:16px;
+  }
+  .level-step{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    padding:6px 16px 6px 0;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13px;
+    color:var(--ink-dim);
+  }
+  .level-step .dot{
+    width:26px; height:26px;
+    border-radius:50%;
+    border:2px solid var(--rule);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:600;
+    background:var(--panel);
+    color:var(--ink-dim);
+    flex-shrink:0;
+  }
+  .level-step.active .dot{
+    border-color:var(--accent);
+    background:var(--accent);
+    color:#fff;
+  }
+  .level-step.active{color:var(--ink); font-weight:600;}
+  .rail-line{
+    flex:0 0 40px;
+    height:2px;
+    background:var(--rule);
+  }
+
+  /* ---------- Lessons ---------- */
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:32px 28px 80px;
+  }
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-left:5px solid var(--accent);
+    border-radius:2px;
+    padding:24px 26px;
+    margin-bottom:22px;
+  }
+  .lesson-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .ledger-code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:0.04em;
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:2px 7px;
+  }
+  .lesson-card h3{
+    font-family:"Fraunces", serif;
+    font-size:22px;
+    font-weight:600;
+    margin:0;
+  }
+  .lesson-card p.explain{
+    margin:8px 0 16px;
+    color:var(--ink);
+    max-width:70ch;
+  }
+  .code-block{
+    position:relative;
+    background:var(--code-bg);
+    color:var(--code-text);
+    border-radius:6px;
+    padding:16px 18px;
+    overflow-x:auto;
+  }
+  .code-block pre{
+    margin:0;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:13.5px;
+    line-height:1.6;
+    white-space:pre;
+  }
+  .code-lang{
+    position:absolute;
+    top:8px; right:52px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--code-comment);
+  }
+  .copy-btn{
+    position:absolute;
+    top:8px; right:10px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    color:var(--code-text);
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    padding:4px 8px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{background:rgba(255,255,255,0.16);}
+
+  .callout{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    padding:11px 14px;
+    border:1px dashed var(--rule);
+    border-radius:4px;
+    font-size:14px;
+    background:var(--paper);
+  }
+  .callout .pin{
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:700;
+    color:var(--accent);
+    flex-shrink:0;
+  }
+  .callout.tip .pin::before{content:"TIPP";}
+  .callout.praxis .pin::before{content:"PRAXIS";}
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px 28px 60px;
+    color:var(--ink-dim);
+    font-size:13px;
+    border-top:1px solid var(--rule);
+  }
+
+  @media (max-width:640px){
+    header.cover{padding:36px 18px 24px;}
+    nav.tools{padding:0 18px; padding-top:14px;}
+    .level-rail{padding:14px 18px 0;}
+    main{padding:24px 18px 60px;}
+    .lesson-card{padding:18px 16px;}
+    .rail-line{flex:0 0 20px;}
+  }
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="eyebrow">Lernmodul · tommy-moeller.de</p>
+  <h1 class="title">Datenwerkbank</h1>
+  <p class="subtitle">Excel, Power BI, Python und SQL als ein durchgehendes Werkzeugsystem — vom ersten Zellbezug bis zur automatisierten Abfrage. Jede Stufe baut auf der vorherigen auf.</p>
+  <div class="meta-row">
+    <span><strong>4</strong> Werkzeuge</span>
+    <span><strong>3</strong> Stufen je Werkzeug</span>
+    <span><strong>48</strong> Lektionen</span>
+    <span><strong>Fokus:</strong> Controlling &amp; Finance, allgemein anwendbar</span>
+  </div>
+</header>
+
+<nav class="tools" id="toolNav"></nav>
+
+<div class="level-rail">
+  <div class="rail-inner" id="levelRail"></div>
+</div>
+
+<main id="lessons"></main>
+
+<footer>
+  Eigenständiges Lernmodul — offline nutzbar, keine externen Abhängigkeiten außer Web-Fonts. Jede Lektion ist über ihren Ledger-Code referenzierbar (z. B. <code>SQL-F-02</code> = SQL, Fortgeschritten, Lektion 2).
+</footer>
+
+<script>
+const TOOLS = [
+  {key:"excel", code:"EX",  name:"Excel",    accent:"--excel",  soft:"--excel-soft"},
+  {key:"powerbi", code:"PBI", name:"Power BI", accent:"--pbi",    soft:"--pbi-soft"},
+  {key:"python", code:"PY",  name:"Python",   accent:"--py",     soft:"--py-soft"},
+  {key:"sql", code:"SQL", name:"SQL",      accent:"--sql",    soft:"--sql-soft"}
+];
+
+const LEVELS = [
+  {key:"a", code:"A", name:"Anfänger", num:"1"},
+  {key:"f", code:"F", name:"Fortgeschritten", num:"2"},
+  {key:"p", code:"P", name:"Profi", num:"3"}
+];
+
+const CONTENT = {
+  excel: {
+    a: [
+      {title:"Zellen und Bezüge", lang:"Excel-Formel",
+       explain:"Jede Zelle hat eine Adresse aus Spalte und Zeile. Ein relativer Bezug wie B2 passt sich beim Kopieren automatisch an; ein absoluter Bezug mit Dollarzeichen ($B$2) bleibt fix. Diese Unterscheidung ist die Grundlage jeder Formel, die man über mehrere Zeilen kopiert.",
+       code:"=B2*C2\n=B2*$C$1",
+       tip:"F4 drücken, um zwischen relativem und absolutem Bezug umzuschalten, ohne das Dollarzeichen manuell zu tippen."},
+      {title:"WENN und XVERWEIS", lang:"Excel-Formel",
+       explain:"WENN prüft eine Bedingung und liefert einen von zwei Werten zurück. XVERWEIS sucht einen Wert in einer Tabelle und ist der moderne Nachfolger von SVERWEIS: Er funktioniert in beide Richtungen und bricht nicht, wenn Spalten eingefügt werden.",
+       code:"=WENN(B2>1000;\"Groß\";\"Klein\")\n=XVERWEIS(A2;Kunden!A:A;Kunden!C:C;\"nicht gefunden\")",
+       praxis:"Beim Abgleich von Kreditnehmerdaten mit einer Stammdatentabelle ersetzt XVERWEIS das fehleranfälligere SVERWEIS zuverlässig."},
+      {title:"SUMMEWENN & ZÄHLENWENNS", lang:"Excel-Formel",
+       explain:"Diese Funktionen summieren oder zählen Werte, die eine oder mehrere Bedingungen erfüllen — schnelle Auswertungen, ohne extra eine Pivot-Tabelle aufzubauen.",
+       code:"=SUMMEWENN(Kostenstelle;\"4711\";Betrag)\n=ZÄHLENWENNS(Status;\"offen\";Monat;\"Juli\")",
+       praxis:"Kostenstellenauswertungen im Controlling lassen sich damit in Sekunden erstellen, ohne die Rohdaten anzufassen."},
+      {title:"Erste Pivot-Tabelle", lang:"Excel · Schritte",
+       explain:"Eine Pivot-Tabelle fasst große Datenmengen per Drag-and-Drop zusammen: Felder werden in Zeilen, Spalten, Werte oder Filter gezogen — ganz ohne eine einzige Formel zu schreiben.",
+       code:"1. Einfügen → PivotTable\n2. Feld in \"Zeilen\" ziehen (z. B. Monat)\n3. Feld in \"Werte\" ziehen (z. B. Betrag → Summe)\n4. Optional: Feld in \"Filter\" ziehen (z. B. Kostenstelle)",
+       tip:"Nach jeder Änderung der Rohdaten per Rechtsklick → „Aktualisieren“ nicht vergessen."}
+    ],
+    f: [
+      {title:"Power Query: Daten importieren & bereinigen", lang:"Power Query M",
+       explain:"Power Query (Daten → Abrufen und transformieren) lädt Daten aus CSV, Datenbanken oder ganzen Ordnern und bereinigt sie in nachvollziehbaren, wiederholbaren Schritten — jede Änderung wird automatisch beim nächsten Import erneut ausgeführt.",
+       code:"let\n    Quelle = Csv.Document(File.Contents(\"C:\\Daten\\vertraege.csv\")),\n    Headers = Table.PromoteHeaders(Quelle),\n    Typen = Table.TransformColumnTypes(Headers,{{\"Betrag\", type number}}),\n    Gefiltert = Table.SelectRows(Typen, each [Status] = \"aktiv\")\nin\n    Gefiltert",
+       praxis:"So lassen sich monatliche Exporte aus dem Kernbankensystem automatisiert bereinigen, statt jedes Mal manuell zu klicken."},
+      {title:"INDEX & VERGLEICH", lang:"Excel-Formel",
+       explain:"INDEX/VERGLEICH ist flexibler als SVERWEIS: Es kann auch links vom Suchkriterium nachschlagen und bleibt stabil, wenn Spalten eingefügt oder verschoben werden.",
+       code:"=INDEX(C:C;VERGLEICH(A2;A:A;0))"},
+      {title:"Verschachtelte WENN & Fehlerbehandlung", lang:"Excel-Formel",
+       explain:"WENNS erlaubt mehrere Bedingungen ohne tiefe Verschachtelung. WENNFEHLER fängt Fehler wie #NV oder #DIV/0! ab, bevor sie einen ganzen Report zerschießen.",
+       code:"=WENNS(B2>=90;\"A\";B2>=75;\"B\";B2>=50;\"C\";WAHR;\"D\")\n=WENNFEHLER(B2/C2;0)"},
+      {title:"Bedingte Formatierung für Dashboards", lang:"Excel · Regel",
+       explain:"Regeln wie Farbskalen oder Datenbalken machen Abweichungen auf einen Blick sichtbar, ohne dass jede Zahl einzeln gelesen werden muss.",
+       code:"Start → Bedingte Formatierung → Farbskalen\n\nFormel-basierte Regel für Ist/Plan-Ampeln:\n=B2<Plan!$B2",
+       tip:"Formel-basierte Regeln sind mächtiger als die Standardvorlagen, weil sie jede beliebige Logik abbilden können."}
+    ],
+    p: [
+      {title:"LAMBDA: eigene Funktionen bauen", lang:"Excel-Formel",
+       explain:"Mit LAMBDA lässt sich eine wiederverwendbare, benannte Formel direkt in Excel definieren — wie eine eigene Funktion, ganz ohne VBA.",
+       code:"MARGE = LAMBDA(umsatz;kosten; (umsatz-kosten)/umsatz)\n=MARGE(A2;B2)",
+       tip:"Über Formeln → Namens-Manager als globalen Namen speichern — danach in jeder Zelle wie eine Standardfunktion nutzbar."},
+      {title:"Dynamische Arrays: FILTER & EINDEUTIG", lang:"Excel-Formel",
+       explain:"FILTER, EINDEUTIG und SORTIEREN geben automatisch „überlaufende“ Ergebnislisten zurück, die sich bei neuen Daten von selbst aktualisieren — ohne Pivot-Refresh.",
+       code:"=SORTIEREN(FILTER(A2:D500;C2:C500=\"offen\");4;-1)\n=EINDEUTIG(B2:B500)"},
+      {title:"Power Pivot & Datenmodell", lang:"DAX (Power Pivot)",
+       explain:"Power Pivot verbindet mehrere Tabellen über Beziehungen statt über SVERWEIS und erlaubt einfache DAX-Measures direkt in Excel — die Brücke zu Power BI.",
+       code:"Marge % := DIVIDE(SUM(Vertraege[Ertrag]); SUM(Vertraege[Volumen]))"},
+      {title:"VBA-Makro Grundlagen", lang:"VBA",
+       explain:"Ein Makro automatisiert wiederkehrende Klicks — zum Beispiel einen Monatsreport formatieren und als PDF exportieren, ausgelöst per Knopfdruck.",
+       code:"Sub MonatsreportExportieren()\n    Sheets(\"Report\").ExportAsFixedFormat _\n        Type:=xlTypePDF, _\n        Filename:=\"C:\\Reports\\Report_\" & Format(Date, \"yyyymm\") & \".pdf\"\n    MsgBox \"Report exportiert.\"\nEnd Sub"}
+    ]
+  },
+  powerbi: {
+    a: [
+      {title:"Was ist Power BI?", lang:"DAX",
+       explain:"Power BI besteht aus drei Schichten: Power Query (Daten laden & bereinigen), Datenmodell (Tabellen & Beziehungen, idealerweise als Sternschema) und Report (Visuals). Wer diese Trennung verstanden hat, versteht das Werkzeug im Kern.",
+       code:"Gesamtvolumen = SUM(Kredite[Volumen])",
+       tip:"Denke in Fakten- und Dimensionstabellen: Zahlen (z. B. Kredite) getrennt von Beschreibungen (z. B. Kunde, Datum)."},
+      {title:"Erste Visuals & Datenimport", lang:"DAX",
+       explain:"Über „Daten abrufen“ lassen sich Excel, CSV, SQL-Datenbanken oder SharePoint anbinden. Ein Balkendiagramm entsteht, indem man ein Feld auf die Achse und ein Feld in die Werte zieht.",
+       code:"Anzahl Vertraege = COUNTROWS(Vertraege)"},
+      {title:"Einfache Measures", lang:"DAX",
+       explain:"Measures sind Berechnungen, die sich dynamisch an den Filterkontext im Report anpassen — anders als eine Excel-Formel, die pro Zeile fest berechnet wird.",
+       code:"Durchschnittszins = AVERAGE(Kredite[Zinssatz])\nSumme Ist = SUM(Buchungen[Betrag])"},
+      {title:"Beziehungen zwischen Tabellen", lang:"DAX",
+       explain:"Beziehungen verbinden Tabellen über gemeinsame Schlüssel, z. B. eine KundenID. Ohne korrekte Beziehung liefern Visuals falsche oder gar keine Ergebnisse.",
+       code:"Kundenname = RELATED(Kunden[Name])",
+       praxis:"Kreditverträge, Sicherheiten und Kundenstammdaten als getrennte Tabellen mit sauberen Beziehungen abzubilden ist die Grundlage jedes Risikoreports."}
+    ],
+    f: [
+      {title:"DAX Grundlagen: CALCULATE", lang:"DAX",
+       explain:"CALCULATE ändert den Filterkontext eines Measures und ist damit die wichtigste und mächtigste Funktion in DAX.",
+       code:"Volumen aktiv = CALCULATE(SUM(Kredite[Volumen]); Kredite[Status]=\"aktiv\")"},
+      {title:"Zeitintelligenz", lang:"DAX",
+       explain:"Mit Zeitintelligenzfunktionen lassen sich Vorjahresvergleiche oder Jahressummen berechnen — vorausgesetzt, es existiert eine echte Datumstabelle im Modell.",
+       code:"Volumen VJ = CALCULATE([Gesamtvolumen]; SAMEPERIODLASTYEAR('Datum'[Datum]))\nVolumen YTD = TOTALYTD([Gesamtvolumen]; 'Datum'[Datum])"},
+      {title:"Eigene Kalendertabelle", lang:"DAX",
+       explain:"Eine dedizierte Datumstabelle statt der automatischen Datumshierarchie ist Voraussetzung für zuverlässige Zeitintelligenz und Mehrsprachigkeit der Monatsnamen.",
+       code:"Datum = CALENDAR(DATE(2023;1;1); DATE(2027;12;31))\nJahr = YEAR('Datum'[Datum])\nMonat = FORMAT('Datum'[Datum]; \"MMM\")"},
+      {title:"Row-Level Security (RLS)", lang:"DAX",
+       explain:"RLS schränkt ein, welche Zeilen ein Nutzer sieht — zum Beispiel nur Daten der eigenen Filiale — ohne für jede Filiale einen eigenen Report zu bauen.",
+       code:"[Filiale] = USERPRINCIPALNAME()"}
+    ],
+    p: [
+      {title:"Variablen in DAX", lang:"DAX",
+       explain:"VAR/RETURN macht komplexe Measures lesbar und schneller, weil Zwischenergebnisse nur einmal berechnet und danach wiederverwendet werden.",
+       code:"Marge % =\nVAR Ertrag = [Summe Ertrag]\nVAR Volumen = [Gesamtvolumen]\nRETURN DIVIDE(Ertrag; Volumen)"},
+      {title:"Komplexe CALCULATE mit mehreren Filtern", lang:"DAX",
+       explain:"CALCULATE kann mehrere Filterbedingungen gleichzeitig setzen und mit ALL bestehende Filter gezielt entfernen, um z. B. einen Anteil am Gesamtportfolio zu berechnen.",
+       code:"Anteil am Gesamt =\nDIVIDE([Gesamtvolumen]; CALCULATE([Gesamtvolumen]; ALL(Kredite)))"},
+      {title:"Power Query M fortgeschritten: eigene Funktionen", lang:"Power Query M",
+       explain:"Eine M-Funktion wird einmal definiert und lässt sich danach auf beliebig viele Dateien anwenden — nützlich bei monatlichen Datenimporten mit identischem Format.",
+       code:"let\n    LadeMonat = (pfad as text) =>\n        let\n            Quelle = Csv.Document(File.Contents(pfad)),\n            Headers = Table.PromoteHeaders(Quelle)\n        in\n            Headers\nin\n    LadeMonat"},
+      {title:"Performance-Tuning & Sternschema", lang:"DAX",
+       explain:"Ein sauberes Sternschema — eine Faktentabelle, mehrere Dimensionstabellen, möglichst wenig Spalten pro Tabelle — ist die wichtigste Stellschraube für schnelle Reports, wichtiger als jedes einzelne DAX-Detail.",
+       code:"// DIVIDE statt \"/\" verwenden: vermeidet Fehler bei Division durch 0\n// und ist von der Engine optimiert\nMarge % = DIVIDE([Ertrag]; [Volumen]; 0)"}
+    ]
+  },
+  python: {
+    a: [
+      {title:"Variablen & Datentypen", lang:"Python",
+       explain:"Python kennt Zahlen, Texte (Strings) und Listen. Variablen brauchen keine Typdeklaration — Python erkennt den Typ automatisch bei der Zuweisung.",
+       code:"zinssatz = 3.75\nkunde = \"Müller GmbH\"\nraten = [250.0, 250.0, 250.0]\n\nprint(f\"{kunde}: {zinssatz}% Zins, {len(raten)} Raten\")"},
+      {title:"Pandas: erste Schritte", lang:"Python (pandas)",
+       explain:"pandas ist die zentrale Bibliothek für Tabellendaten in Python. Ein DataFrame funktioniert wie ein Excel-Blatt, nur dass er programmierbar ist.",
+       code:"import pandas as pd\n\ndf = pd.read_excel(\"kreditvertraege.xlsx\")\nprint(df.head())\nprint(df.describe())"},
+      {title:"Filtern & Gruppieren", lang:"Python (pandas)",
+       explain:"Mit groupby lassen sich Daten wie in einer Pivot-Tabelle zusammenfassen — nur reproduzierbar per Code statt per Klick.",
+       code:"aktive = df[df[\"Status\"] == \"aktiv\"]\nje_kostenstelle = df.groupby(\"Kostenstelle\")[\"Betrag\"].sum()\nprint(je_kostenstelle.sort_values(ascending=False))"},
+      {title:"Einfache Diagramme", lang:"Python (matplotlib)",
+       explain:"matplotlib erzeugt schnell Diagramme direkt aus einem DataFrame — praktisch, um Auffälligkeiten schon vor dem eigentlichen Reporting zu erkennen.",
+       code:"import matplotlib.pyplot as plt\n\nje_kostenstelle.plot(kind=\"bar\")\nplt.title(\"Kosten je Kostenstelle\")\nplt.tight_layout()\nplt.savefig(\"kosten.png\")"}
+    ],
+    f: [
+      {title:"Datenbereinigung", lang:"Python (pandas)",
+       explain:"Reale Daten haben Lücken und falsche Typen. fillna, dropna und astype bringen Ordnung; merge verbindet zwei Tabellen wie ein SQL-JOIN.",
+       code:"df[\"Zinssatz\"] = df[\"Zinssatz\"].fillna(0)\ndf[\"Betrag\"] = df[\"Betrag\"].astype(float)\nkombiniert = df.merge(kunden, on=\"KundenID\", how=\"left\")"},
+      {title:"Pivot-Tabellen in pandas", lang:"Python (pandas)",
+       explain:"pivot_table baut, wie in Excel, mehrdimensionale Auswertungen inklusive Aggregation und mehreren Ebenen.",
+       code:"pivot = df.pivot_table(\n    index=\"Kostenstelle\",\n    columns=\"Monat\",\n    values=\"Betrag\",\n    aggfunc=\"sum\",\n    fill_value=0\n)"},
+      {title:"Excel automatisiert schreiben", lang:"Python (openpyxl)",
+       explain:"openpyxl erzeugt über pandas formatierte Excel-Reports per Code — ideal, wenn derselbe Report jeden Monat neu erstellt werden muss.",
+       code:"with pd.ExcelWriter(\"report.xlsx\", engine=\"openpyxl\") as writer:\n    pivot.to_excel(writer, sheet_name=\"Kostenstellen\")\n    df.to_excel(writer, sheet_name=\"Rohdaten\", index=False)"},
+      {title:"Funktionen & Fehlerbehandlung", lang:"Python",
+       explain:"Eigene Funktionen machen Code wiederverwendbar; try/except verhindert, dass ein einzelner fehlerhafter Datensatz das gesamte Skript abbrechen lässt.",
+       code:"def berechne_marge(ertrag, volumen):\n    try:\n        return ertrag / volumen\n    except ZeroDivisionError:\n        return None\n\ndf[\"Marge\"] = df.apply(\n    lambda r: berechne_marge(r[\"Ertrag\"], r[\"Volumen\"]), axis=1\n)"}
+    ],
+    p: [
+      {title:"APIs abfragen", lang:"Python (requests)",
+       explain:"Mit requests lassen sich externe Daten wie Wechselkurse oder Marktzinsen live abrufen und direkt in die eigene Analyse einbauen.",
+       code:"import requests\n\nantwort = requests.get(\"https://api.frankfurter.app/latest?from=EUR&to=USD\")\nkurs = antwort.json()[\"rates\"][\"USD\"]\nprint(f\"EUR/USD: {kurs}\")"},
+      {title:"Verbindung zu SQL-Datenbanken", lang:"Python (sqlalchemy)",
+       explain:"sqlalchemy verbindet Python direkt mit einer Datenbank — das Ergebnis einer Abfrage landet als DataFrame, bereit für Analyse und Export.",
+       code:"from sqlalchemy import create_engine\nimport pandas as pd\n\nengine = create_engine(\n    \"mssql+pyodbc://server/Datenbank?driver=ODBC+Driver+17+for+SQL+Server\"\n)\ndf = pd.read_sql(\n    \"SELECT * FROM Kreditvertraege WHERE Status = 'aktiv'\", engine\n)"},
+      {title:"Automatisierte Reports", lang:"Python",
+       explain:"Ein Skript kann Daten laden, berechnen und als fertigen Report exportieren — der erste Schritt zur vollständigen Automatisierung eines Monatsabschlusses.",
+       code:"def monatsreport(pfad_quelle, pfad_ziel):\n    df = pd.read_excel(pfad_quelle)\n    zusammenfassung = df.groupby(\"Kostenstelle\")[\"Betrag\"].sum()\n    zusammenfassung.to_excel(pfad_ziel)\n    print(f\"Report gespeichert: {pfad_ziel}\")\n\nmonatsreport(\"daten_juli.xlsx\", \"report_juli.xlsx\")"},
+      {title:"Objektorientierung Grundlagen", lang:"Python",
+       explain:"Eine Klasse bündelt Daten und Funktionen zu einem wiederverwendbaren Werkzeug — nützlich, sobald ein Analyse-Tool mehrfach mit unterschiedlichen Daten laufen soll.",
+       code:"class Portfolio:\n    def __init__(self, df):\n        self.df = df\n\n    def gesamtvolumen(self):\n        return self.df[\"Volumen\"].sum()\n\n    def marge(self):\n        return self.df[\"Ertrag\"].sum() / self.gesamtvolumen()\n\np = Portfolio(df)\nprint(f\"Marge: {p.marge():.2%}\")"}
+    ]
+  },
+  sql: {
+    a: [
+      {title:"SELECT, WHERE, ORDER BY", lang:"SQL",
+       explain:"SELECT wählt Spalten aus, WHERE filtert Zeilen, ORDER BY sortiert das Ergebnis. Das ist der Grundbaustein jeder Abfrage.",
+       code:"SELECT KundenID, Name, Volumen\nFROM Kreditvertraege\nWHERE Status = 'aktiv'\nORDER BY Volumen DESC;"},
+      {title:"Aggregation: GROUP BY & HAVING", lang:"SQL",
+       explain:"GROUP BY fasst Zeilen zu Gruppen zusammen, Aggregatfunktionen wie SUM summieren je Gruppe, HAVING filtert auf Gruppenebene — WHERE kann das nicht.",
+       code:"SELECT Kostenstelle, SUM(Betrag) AS Summe\nFROM Buchungen\nGROUP BY Kostenstelle\nHAVING SUM(Betrag) > 10000;"},
+      {title:"JOINs", lang:"SQL",
+       explain:"JOINs verbinden Tabellen über einen gemeinsamen Schlüssel. INNER JOIN liefert nur Übereinstimmungen, LEFT JOIN behält zusätzlich alle Zeilen der linken Tabelle.",
+       code:"SELECT v.VertragsID, k.Name, v.Volumen\nFROM Kreditvertraege v\nLEFT JOIN Kunden k ON v.KundenID = k.KundenID;"},
+      {title:"Filtern & Sortieren kombiniert", lang:"SQL",
+       explain:"Mehrere Bedingungen mit AND/OR kombinieren, um gezielt Teilportfolios herauszufiltern — ein typischer erster Schritt jeder Risikoauswertung.",
+       code:"SELECT *\nFROM Kreditvertraege\nWHERE Status = 'aktiv' AND Volumen > 50000\nORDER BY Zinssatz DESC;"}
+    ],
+    f: [
+      {title:"Subqueries & CTEs", lang:"SQL",
+       explain:"Eine CTE (WITH ...) macht komplexe Abfragen lesbar, indem sie ein Zwischenergebnis benennt, statt alles in einer verschachtelten Subquery zu verstecken.",
+       code:"WITH AktiveVertraege AS (\n    SELECT * FROM Kreditvertraege WHERE Status = 'aktiv'\n)\nSELECT Kostenstelle, SUM(Volumen) AS Summe\nFROM AktiveVertraege\nGROUP BY Kostenstelle;"},
+      {title:"Window Functions", lang:"SQL",
+       explain:"Window Functions berechnen Werte über eine Gruppe von Zeilen, ohne die Zeilen wie GROUP BY zu verdichten — zum Beispiel ein Ranking je Kunde.",
+       code:"SELECT KundenID, VertragsID, Volumen,\n       RANK() OVER (PARTITION BY KundenID ORDER BY Volumen DESC) AS Rang\nFROM Kreditvertraege;"},
+      {title:"CASE WHEN", lang:"SQL",
+       explain:"CASE WHEN erstellt Kategorien direkt in der Abfrage — zum Beispiel Größenklassen oder Risikoklassen —, ohne die Rohdaten zu verändern.",
+       code:"SELECT VertragsID,\n       CASE\n           WHEN Volumen > 100000 THEN 'Groß'\n           WHEN Volumen > 20000 THEN 'Mittel'\n           ELSE 'Klein'\n       END AS Groessenklasse\nFROM Kreditvertraege;"},
+      {title:"Datumsfunktionen", lang:"SQL",
+       explain:"Datumsfunktionen wie DATEDIFF berechnen Laufzeiten oder Fälligkeiten direkt in SQL — praktisch für Restlaufzeit-Auswertungen ohne Umweg über Excel.",
+       code:"SELECT VertragsID,\n       DATEDIFF(MONTH, Startdatum, Enddatum) AS LaufzeitMonate\nFROM Kreditvertraege\nWHERE Enddatum > GETDATE();"}
+    ],
+    p: [
+      {title:"Rekursive CTEs", lang:"SQL",
+       explain:"Eine rekursive CTE löst hierarchische Strukturen — etwa einen Ratenplan oder eine Organisationshierarchie — in reinem SQL, ohne Schleifen im Anwendungscode.",
+       code:"WITH RECURSIVE Ratenplan AS (\n    SELECT VertragsID, 1 AS Rate, Startdatum AS Faelligkeit\n    FROM Kreditvertraege\n    UNION ALL\n    SELECT VertragsID, Rate + 1, DATEADD(MONTH, 1, Faelligkeit)\n    FROM Ratenplan\n    WHERE Rate < 12\n)\nSELECT * FROM Ratenplan;"},
+      {title:"Indizes & Performance", lang:"SQL",
+       explain:"Ein Index beschleunigt Abfragen auf häufig gefilterten oder verknüpften Spalten drastisch — kostet dafür Schreibgeschwindigkeit und Speicher, also gezielt einsetzen.",
+       code:"CREATE INDEX idx_kreditvertraege_status\nON Kreditvertraege (Status, KundenID);\n\nEXPLAIN SELECT * FROM Kreditvertraege WHERE Status = 'aktiv';"},
+      {title:"Views & Stored Procedures", lang:"SQL",
+       explain:"Eine View kapselt eine komplexe Abfrage unter einem festen Namen; eine Stored Procedure kapselt zusätzlich Logik und Parameter — beides reduziert Wiederholung im Code.",
+       code:"CREATE VIEW AktivesPortfolio AS\nSELECT * FROM Kreditvertraege WHERE Status = 'aktiv';\n\nCREATE PROCEDURE GetPortfolioNachKostenstelle @Kostenstelle INT\nAS\nBEGIN\n    SELECT * FROM AktivesPortfolio WHERE Kostenstelle = @Kostenstelle;\nEND;"},
+      {title:"Sternschema vs. Normalisierung", lang:"SQL",
+       explain:"Für Transaktionssysteme wird normalisiert, damit jede Information nur einmal existiert. Für Reporting wird bewusst zu einem Sternschema denormalisiert — eine Faktentabelle, mehrere Dimensionstabellen — für schnelle, verständliche Auswertungen.",
+       code:"-- Faktentabelle\nCREATE TABLE FaktKredite (\n    VertragsID INT, KundenSchluessel INT, DatumSchluessel INT, Volumen DECIMAL(18,2)\n);\n\n-- Dimensionstabelle\nCREATE TABLE DimKunde (\n    KundenSchluessel INT PRIMARY KEY, Name NVARCHAR(100), Segment NVARCHAR(50)\n);"}
+    ]
+  }
+};
+
+let currentTool = "excel";
+let currentLevel = "a";
+
+function setAccent(tool){
+  const t = TOOLS.find(x => x.key === tool);
+  document.documentElement.style.setProperty("--accent", `var(${t.accent})`);
+  document.documentElement.style.setProperty("--accent-soft", `var(${t.soft})`);
+}
+
+function renderTabs(){
+  const nav = document.getElementById("toolNav");
+  nav.innerHTML = TOOLS.map(t => `
+    <button class="tool-tab ${t.key===currentTool?'active':''}" style="--tab-accent:var(${t.accent})" data-tool="${t.key}">
+      <span class="code">${t.code}</span>
+      <span class="name">${t.name}</span>
+    </button>
+  `).join("");
+  nav.querySelectorAll(".tool-tab").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTool = btn.dataset.tool;
+      setAccent(currentTool);
+      renderTabs();
+      renderLessons();
+    });
+  });
+}
+
+function renderRail(){
+  const rail = document.getElementById("levelRail");
+  let html = "";
+  LEVELS.forEach((lvl, i) => {
+    html += `
+      <div class="level-step ${lvl.key===currentLevel?'active':''}" data-level="${lvl.key}">
+        <span class="dot">${lvl.num}</span>
+        <span>${lvl.name}</span>
+      </div>`;
+    if(i < LEVELS.length-1){ html += `<div class="rail-line"></div>`; }
+  });
+  rail.innerHTML = html;
+  rail.querySelectorAll(".level-step").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      currentLevel = el.dataset.level;
+      renderRail();
+      renderLessons();
+    });
+  });
+}
+
+function escapeHtml(str){
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function renderLessons(){
+  const tool = TOOLS.find(t=>t.key===currentTool);
+  const level = LEVELS.find(l=>l.key===currentLevel);
+  const lessons = CONTENT[currentTool][currentLevel];
+  const container = document.getElementById("lessons");
+
+  container.innerHTML = lessons.map((les, i)=>{
+    const ledgerCode = `${tool.code}-${level.code}-${String(i+1).padStart(2,"0")}`;
+    const codeId = `code-${currentTool}-${currentLevel}-${i}`;
+    let callouts = "";
+    if(les.tip){
+      callouts += `<div class="callout tip"><span class="pin"></span><span>${les.tip}</span></div>`;
+    }
+    if(les.praxis){
+      callouts += `<div class="callout praxis"><span class="pin"></span><span>${les.praxis}</span></div>`;
+    }
+    return `
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="ledger-code">${ledgerCode}</span>
+          <h3>${les.title}</h3>
+        </div>
+        <p class="explain">${les.explain}</p>
+        <div class="code-block">
+          <span class="code-lang">${les.lang}</span>
+          <button class="copy-btn" data-target="${codeId}">Kopieren</button>
+          <pre id="${codeId}">${escapeHtml(les.code)}</pre>
+        </div>
+        ${callouts}
+      </article>
+    `;
+  }).join("");
+
+  container.querySelectorAll(".copy-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const pre = document.getElementById(btn.dataset.target);
+      navigator.clipboard.writeText(pre.textContent).then(()=>{
+        const old = btn.textContent;
+        btn.textContent = "Kopiert!";
+        setTimeout(()=>{ btn.textContent = old; }, 1400);
+      });
+    });
+  });
+}
+
+setAccent(currentTool);
+renderTabs();
+renderRail();
+renderLessons();
+</script>
+</body>
+</html>
