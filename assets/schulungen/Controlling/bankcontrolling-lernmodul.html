@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bankcontrolling Grundlagen | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink-950:#0C1222;--ink-900:#111A2E;--ink-800:#1B2A4A;--ink-700:#27406F;
+  --cyan-500:#06B6D4;--cyan-400:#22D3EE;--cyan-100:#CFFAFE;--cyan-50:#ECFEFF;--cyan-700:#0E7490;
+  --gray-900:#111827;--gray-800:#1F2937;--gray-700:#374151;--gray-600:#4B5563;
+  --gray-500:#6B7280;--gray-200:#E5E7EB;--gray-100:#F3F4F6;--gray-50:#F9FAFB;
+  --amber-700:#B45309;--amber-400:#FBBF24;--amber-100:#FEF3C7;--amber-50:#FFFBEB;
+  --green-700:#15803D;--green-600:#16A34A;--green-100:#DCFCE7;--green-50:#F0FDF4;
+  --red-700:#B91C1C;--red-600:#DC2626;--red-100:#FFE4E6;--red-50:#FFF1F2;
+  --purple-700:#6D28D9;--purple-100:#EDE9FE;--purple-50:#F5F3FF;
+  --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;--font-mono:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+.site-header{background:linear-gradient(135deg,var(--ink-950) 0%,var(--ink-800) 55%,var(--cyan-700) 100%);color:white;position:relative;overflow:hidden;}
+.header-inner{max-width:920px;margin:0 auto;padding:48px 24px 56px;position:relative;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);font-family:var(--font-mono);}
+.header-badge::before{content:'';width:6px;height:6px;background:var(--cyan-400);border-radius:50%;}
+.site-header h1{font-family:var(--font-serif);font-size:clamp(26px,4.5vw,38px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+.site-header p.subtitle{font-size:15.5px;color:rgba(255,255,255,.7);max-width:580px;line-height:1.65;}
+.nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.nav-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:13px 16px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:var(--cyan-700);}
+.nav-tab.active{color:var(--cyan-700);border-bottom-color:var(--cyan-500);}
+main{max-width:920px;margin:0 auto;padding:40px 24px 80px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-serif);font-size:23px;font-weight:600;color:var(--gray-900);margin-bottom:5px;}
+.section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+.card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:26px 30px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--gray-900);margin-bottom:10px;}
+.card h3{font-size:14.5px;font-weight:600;color:var(--gray-700);margin:18px 0 7px;}
+.card h3:first-of-type{margin-top:8px;}
+.card p{color:var(--gray-600);margin-bottom:11px;font-size:14.5px;}
+.card p:last-child{margin-bottom:0;}
+.info-box{border-radius:8px;padding:13px 16px;margin:13px 0;display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.6;}
+.info-box .icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.info-box.cyan{background:var(--cyan-50);color:var(--cyan-700);border-left:3px solid var(--cyan-400);}
+.info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid var(--amber-400);}
+.info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #4ADE80;}
+.info-box.red{background:var(--red-50);color:var(--red-700);border-left:3px solid #FCA5A5;}
+.info-box.purple{background:var(--purple-50);color:var(--purple-700);border-left:3px solid #A78BFA;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px;}
+@media(max-width:580px){.two-col{grid-template-columns:1fr;}}
+.col-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;}
+.col-card h4{font-size:13.5px;font-weight:600;color:var(--gray-800);margin-bottom:7px;}
+.col-card ul{list-style:none;}
+.col-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.col-card ul li::before{content:'→';color:var(--cyan-600);flex-shrink:0;font-size:12px;margin-top:2px;}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:4px;margin-bottom:7px;font-family:var(--font-mono);}
+.tag.cyan{background:var(--cyan-100);color:var(--cyan-700);}
+.tag.amber{background:var(--amber-100);color:var(--amber-700);}
+.tag.green{background:var(--green-100);color:var(--green-700);}
+.tag.purple{background:var(--purple-100);color:var(--purple-700);}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+.data-table th{background:var(--ink-900);color:white;font-weight:600;text-align:left;padding:9px 14px;font-size:12px;font-family:var(--font-mono);}
+.data-table th:first-child{border-radius:8px 0 0 0;}
+.data-table th:last-child{border-radius:0 8px 0 0;}
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:var(--gray-50);}
+/* formula box */
+.formula-box{background:var(--ink-950);border-radius:10px;padding:20px 24px;margin:14px 0;}
+.formula-box .formula{font-family:var(--font-mono);font-size:15px;color:var(--cyan-400);text-align:center;margin-bottom:8px;}
+.formula-box .formula-desc{font-size:12.5px;color:rgba(255,255,255,.55);text-align:center;}
+/* zinsbindungsbilanz */
+.zb-visual{display:flex;gap:2px;margin:16px 0;border-radius:8px;overflow:hidden;height:48px;}
+.zb-bar{display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:600;font-family:var(--font-mono);}
+.zb-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--gray-600);}
+.zb-legend-item{display:flex;align-items:center;gap:6px;}
+.zb-dot{width:10px;height:10px;border-radius:2px;}
+/* KPI calculator */
+.calculator{background:white;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.calc-header{background:var(--ink-900);padding:18px 24px;}
+.calc-header h3{font-family:var(--font-serif);font-size:17px;color:white;margin-bottom:3px;}
+.calc-header p{font-size:13px;color:rgba(255,255,255,.6);}
+.calc-body{padding:24px;}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:560px){.calc-row{grid-template-columns:1fr;}}
+.calc-field label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.calc-field input{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;outline:none;transition:border-color .12s;}
+.calc-field input:focus{border-color:var(--cyan-400);}
+.calc-results{background:var(--cyan-50);border:1px solid var(--cyan-100);border-radius:10px;padding:20px;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+.result-item .rl{font-size:11px;color:var(--cyan-700);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.result-item .rv{font-size:21px;font-weight:600;color:var(--ink-900);}
+.result-item .rs{font-size:11.5px;color:var(--cyan-700);margin-top:2px;}
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:4px 0;font-size:14px;color:var(--gray-700);line-height:1.55;}
+.checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+.checklist.cross li::before{content:'✗';color:var(--red-600);}
+/* Quiz */
+.quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px 26px;margin-bottom:14px;}
+.quiz-q{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;}
+.quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 15px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+.quiz-opt:hover{background:var(--cyan-50);border-color:var(--cyan-400);color:var(--ink-900);}
+.quiz-opt.correct{background:var(--green-50);border-color:#4ADE80;color:var(--green-700);}
+.quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+.quiz-feedback{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:6px;display:none;line-height:1.6;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+.quiz-feedback.wrong{background:var(--red-50);color:var(--red-700);}
+.quiz-score{background:var(--ink-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:18px;}
+.quiz-score h3{font-size:21px;font-weight:600;margin-bottom:4px;font-family:var(--font-serif);}
+.quiz-score p{color:rgba(255,255,255,.7);font-size:13.5px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:14px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--cyan-400);border-radius:3px;transition:width .4s;}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--ink-900);color:white;padding:10px 20px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+.btn:hover{background:var(--ink-800);}
+.btn.secondary{background:white;color:var(--cyan-700);border:1.5px solid var(--cyan-100);}
+.btn.secondary:hover{background:var(--cyan-50);}
+.site-footer{background:var(--gray-900);color:rgba(255,255,255,.45);text-align:center;padding:26px 24px;font-size:13px;}
+.site-footer a{color:rgba(255,255,255,.65);text-decoration:none;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">// Lernmodul · Bankcontrolling</div>
+    <h1>Bankcontrolling Grundlagen</h1>
+    <p class="subtitle">Marktzinsmethode, Zinsbindungsbilanz, Liquiditätskennzahlen und die wichtigsten Bank-KPIs – das fachliche Fundament für den Einstieg ins Bankcontrolling.</p>
+  </div>
+</header>
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('marktzins')">Marktzinsmethode</button>
+    <button class="nav-tab" onclick="showSection('zinsrisiko')">Zinsrisiko</button>
+    <button class="nav-tab" onclick="showSection('liquiditaet')">Liquidität</button>
+    <button class="nav-tab" onclick="showSection('kpis')">Bank-KPIs</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+<main>
+
+<!-- GRUNDLAGEN -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Was macht Bankcontrolling besonders?</h2>
+  <p class="section-desc">Warum Banksteuerung anders funktioniert als klassisches Industrie-Controlling.</p>
+  <div class="card">
+    <h2>Die Besonderheit der Bankbilanz</h2>
+    <p>Banken verkaufen kein physisches Produkt – ihr "Rohstoff" ist Geld, ihr "Produkt" sind Finanzdienstleistungen. Die Bilanz ist gleichzeitig das wichtigste Steuerungsobjekt: Aktiva (Kredite) und Passiva (Einlagen) müssen laufend gegeneinander gesteuert werden.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag cyan">Industrie-Controlling</span>
+        <h4>Fokus auf Produktion & Absatz</h4>
+        <ul>
+          <li>Kostenrechnung pro Stück/Auftrag</li>
+          <li>Deckungsbeitragsrechnung</li>
+          <li>Materialkosten, Personalkosten dominieren</li>
+          <li>Lagerbestände als Risikofaktor</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag purple">Bankcontrolling</span>
+        <h4>Fokus auf Zins- & Risikosteuerung</h4>
+        <ul>
+          <li>Zinsspanne als Haupterfolgsquelle</li>
+          <li>Bilanzstruktur ist Risikofaktor (Fristentransformation)</li>
+          <li>Regulatorik prägt jede Entscheidung (Basel, MaRisk)</li>
+          <li>Eigenkapital ist limitierender Faktor (nicht Maschinen)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box cyan">
+      <span class="icon">🏦</span>
+      <span>Banken verdienen vor allem über die <strong>Fristentransformation</strong>: kurzfristige Einlagen (Tagesgeld) refinanzieren langfristige Kredite (Hypotheken). Das bringt Zinsmarge, aber auch Zinsänderungsrisiko – Kernaufgabe des Bankcontrollings.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Die drei Steuerungsdimensionen</h2>
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Kernfrage</th><th>Wichtigste Werkzeuge</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Erfolg / Rentabilität</strong></td><td>Verdienen wir genug Marge?</td><td>Marktzinsmethode, ROE, Cost-Income-Ratio</td></tr>
+        <tr><td><strong>Risiko</strong></td><td>Welche Risiken tragen wir und sind sie gedeckt?</td><td>IRRBB, Kreditrisikomodelle, VaR</td></tr>
+        <tr><td><strong>Liquidität</strong></td><td>Können wir jederzeit zahlen?</td><td>LCR, NSFR, Liquiditätsablaufbilanz</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MARKTZINSMETHODE -->
+<div id="marktzins" class="section">
+  <h2 class="section-title">Die Marktzinsmethode</h2>
+  <p class="section-desc">Das zentrale Instrument zur Erfolgsspaltung im Bankcontrolling – wer verdient was im Zinsgeschäft?</p>
+  <div class="card">
+    <h2>Das Grundprinzip</h2>
+    <p>Die Marktzinsmethode (MZM) spaltet die Zinsspanne einer Bank auf in: <strong>Konditionsbeitrag</strong> (Verdienst aus dem Kundengeschäft) und <strong>Strukturbeitrag</strong> (Verdienst aus der Fristentransformation am Geld- und Kapitalmarkt).</p>
+    <div class="formula-box">
+      <div class="formula">Zinsspanne = Konditionsbeitrag + Strukturbeitrag</div>
+      <div class="formula-desc">Konditionsbeitrag: Kundenkonditon vs. Marktzins gleicher Laufzeit</div>
+    </div>
+    <h3>Konditionsbeitrag</h3>
+    <p>Der Konditionsbeitrag zeigt, ob ein Geschäft zu guten Konditionen abgeschlossen wurde – unabhängig vom allgemeinen Zinsniveau. Er wird durch Vergleich mit dem <strong>fristenkongruenten Marktzins</strong> (Opportunitätszins / GKM-Satz) ermittelt.</p>
+    <div class="formula-box">
+      <div class="formula">Konditionsbeitrag Aktiv = Kundenzins − Opportunitätszins (gleiche Laufzeit)</div>
+      <div class="formula-desc">Beispiel: 5-Jahres-Kredit zu 4,5 % vergeben, GKM-Satz für 5 Jahre = 3,2 % → Konditionsbeitrag = 1,3 %</div>
+    </div>
+    <h3>Strukturbeitrag</h3>
+    <p>Der Strukturbeitrag entsteht durch die Fristentransformation – die Bank refinanziert sich kurzfristig günstiger als sie langfristig verleiht (normale Zinsstrukturkurve). Dieser Beitrag ist nicht dem einzelnen Berater zurechenbar, sondern dem zentralen Bilanzstrukturmanagement.</p>
+  </div>
+  <div class="card">
+    <h2>Praxisbeispiel: Erfolgsspaltung eines Kredits</h2>
+    <table class="data-table">
+      <thead><tr><th>Position</th><th>Wert</th><th>Bedeutung</th></tr></thead>
+      <tbody>
+        <tr><td>Kreditzins (Kunde)</td><td>4,50 %</td><td>Tatsächlich vereinbarter Zins</td></tr>
+        <tr><td>Opportunitätszins (5J GKM-Satz)</td><td>3,20 %</td><td>Was die Bank am Markt für 5 Jahre zahlen müsste</td></tr>
+        <tr><td style="color:var(--green-700);font-weight:600">→ Konditionsbeitrag</td><td style="color:var(--green-700);font-weight:600">1,30 %</td><td>Leistung des Vertriebs / Beraters</td></tr>
+        <tr><td>Opportunitätszins (5J) − Refinanzierungszins (Tagesgeld)</td><td>3,20 % − 2,10 %</td><td>Strukturbeitrag aus Fristentransformation</td></tr>
+        <tr><td style="color:var(--purple-700);font-weight:600">→ Strukturbeitrag</td><td style="color:var(--purple-700);font-weight:600">1,10 %</td><td>Leistung des Treasury / ALM</td></tr>
+        <tr><td style="font-weight:700">Gesamte Zinsmarge</td><td style="font-weight:700">2,40 %</td><td>Summe beider Beiträge</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box cyan">
+      <span class="icon">💡</span>
+      <span>Diese Aufspaltung ist entscheidend für faire Vertriebssteuerung: Der Berater wird nur am Konditionsbeitrag gemessen – nicht am Strukturbeitrag, den er nicht beeinflussen kann (der hängt von der Zinsstrukturkurve ab).</span>
+    </div>
+  </div>
+</div>
+
+<!-- ZINSRISIKO -->
+<div id="zinsrisiko" class="section">
+  <h2 class="section-title">Zinsänderungsrisiko (IRRBB)</h2>
+  <p class="section-desc">Wie Banken das Risiko steigender oder fallender Zinsen messen und steuern.</p>
+  <div class="card">
+    <h2>Was ist IRRBB?</h2>
+    <p><strong>Interest Rate Risk in the Banking Book (IRRBB)</strong> bezeichnet das Risiko, dass sich Zinsänderungen negativ auf Erträge oder den Barwert der Bank auswirken. Entsteht durch unterschiedliche Zinsbindungsfristen von Aktiva und Passiva.</p>
+    <h3>Zinsbindungsbilanz – Beispiel</h3>
+    <p>Eine vereinfachte Darstellung, wie Aktiva (Kredite) und Passiva (Einlagen) nach Zinsbindung verteilt sind:</p>
+    <div class="zb-visual">
+      <div class="zb-bar" style="background:#06B6D4;width:15%">0-1J</div>
+      <div class="zb-bar" style="background:#0E7490;width:20%">1-3J</div>
+      <div class="zb-bar" style="background:#1B2A4A;width:30%">3-5J</div>
+      <div class="zb-bar" style="background:#27406F;width:35%">&gt;5J</div>
+    </div>
+    <div class="zb-legend">
+      <div class="zb-legend-item"><span class="zb-dot" style="background:#06B6D4"></span>0–1 Jahr: 15 %</div>
+      <div class="zb-legend-item"><span class="zb-dot" style="background:#0E7490"></span>1–3 Jahre: 20 %</div>
+      <div class="zb-legend-item"><span class="zb-dot" style="background:#1B2A4A"></span>3–5 Jahre: 30 %</div>
+      <div class="zb-legend-item"><span class="zb-dot" style="background:#27406F"></span>&gt;5 Jahre: 35 %</div>
+    </div>
+    <p style="margin-top:14px">Wenn die Aktivseite (Kredite) deutlich länger gebunden ist als die Passivseite (Einlagen), spricht man von <strong>positiver Fristentransformation</strong> – typisch für Banken, aber riskant bei steigenden Zinsen.</p>
+  </div>
+  <div class="card">
+    <h2>Die zwei Perspektiven im Zinsrisiko</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag cyan">Barwertperspektive (EVE)</span>
+        <h4>Economic Value of Equity</h4>
+        <ul>
+          <li>Wie verändert sich der Barwert aller Zinspositionen bei Zinsschock?</li>
+          <li>Aufsichtlicher Standardschock: +/- 200 Basispunkte</li>
+          <li>Frühwarnindikator: Barwertverlust &gt;20 % des Eigenkapitals</li>
+          <li>Langfristige, strategische Perspektive</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag purple">Ertragsperspektive (NII)</span>
+        <h4>Net Interest Income</h4>
+        <ul>
+          <li>Wie verändert sich der Zinsüberschuss in den nächsten 1-3 Jahren?</li>
+          <li>Kurzfristig orientiert, näher an der GuV</li>
+          <li>Wichtig für die operative Ertragsplanung</li>
+          <li>Reagiert auf Neugeschäfts- und Prolongationsannahmen</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span><strong>Regulatorischer Kontext:</strong> Die EBA-Leitlinien zu IRRBB verlangen von Banken regelmäßige Stresstests mit 6 vorgeschriebenen Zinsschock-Szenarien (parallel up/down, steepener, flattener, short rate up/down). Überschreitet der Barwertverlust 15 % des harten Kernkapitals, gilt die Bank als "Ausreißer" (Outlier Bank) und muss zusätzliches Kapital vorhalten.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Steuerungsinstrumente gegen Zinsrisiko</h2>
+    <ul class="checklist">
+      <li><strong>Zinsswaps:</strong> Tausch von festen gegen variable Zahlungsströme zur Absicherung</li>
+      <li><strong>Bilanzstrukturmanagement:</strong> Aktiv-Passiv-Steuerung der Laufzeiten (Treasury/ALM)</li>
+      <li><strong>Durationssteuerung:</strong> Angleichen der Zinsbindungsdauer auf Aktiv- und Passivseite</li>
+      <li><strong>Replikationsportfolios:</strong> Modellierung variabler Einlagen mit fiktiver Laufzeitstruktur</li>
+    </ul>
+  </div>
+</div>
+
+<!-- LIQUIDITÄT -->
+<div id="liquiditaet" class="section">
+  <h2 class="section-title">Liquiditätsmanagement</h2>
+  <p class="section-desc">LCR, NSFR und die regulatorischen Kennzahlen zur Sicherstellung der Zahlungsfähigkeit.</p>
+  <div class="card">
+    <h2>LCR – Liquidity Coverage Ratio</h2>
+    <p>Die LCR stellt sicher, dass eine Bank auch in einem 30-tägigen Stressszenario ausreichend liquide Mittel hat, um Verpflichtungen zu erfüllen.</p>
+    <div class="formula-box">
+      <div class="formula">LCR = Liquiditätspuffer (HQLA) / Netto-Liquiditätsabfluss (30 Tage) ≥ 100 %</div>
+      <div class="formula-desc">HQLA = High Quality Liquid Assets (Staatsanleihen, Zentralbankguthaben etc.)</div>
+    </div>
+    <div class="info-box cyan">
+      <span class="icon">📊</span>
+      <span>Eine LCR von 130 % bedeutet: Die Bank hat 30 % mehr liquide Mittel als im Stress-Szenario für 30 Tage benötigt würde. Mindestanforderung seit 2018: 100 %. Viele Institute halten freiwillig deutlich mehr als Sicherheitspuffer.</span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>NSFR – Net Stable Funding Ratio</h2>
+    <p>Während die LCR kurzfristige Liquidität (30 Tage) absichert, stellt die NSFR sicher, dass langfristige Aktiva auch langfristig (1 Jahr+) stabil finanziert sind – verhindert übermäßige Fristentransformation.</p>
+    <div class="formula-box">
+      <div class="formula">NSFR = Verfügbare stabile Refinanzierung / Erforderliche stabile Refinanzierung ≥ 100 %</div>
+      <div class="formula-desc">Verhindert, dass langfristige Kredite zu stark mit kurzfristigen Einlagen finanziert werden</div>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Zeithorizont</th><th>Fragestellung</th><th>Mindestwert</th></tr></thead>
+      <tbody>
+        <tr><td>LCR</td><td>30 Tage (kurzfristig)</td><td>Überleben wir einen Liquiditätsschock?</td><td>≥ 100 %</td></tr>
+        <tr><td>NSFR</td><td>1 Jahr (strukturell)</td><td>Ist unsere Refinanzierung strukturell stabil?</td><td>≥ 100 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Liquiditätsablaufbilanz</h2>
+    <p>Die Liquiditätsablaufbilanz zeigt, wann Zahlungsmittelzu- und -abflüsse erwartet werden – über alle Laufzeitbänder. Sie ist das zentrale Steuerungsinstrument für das tägliche Liquiditätsmanagement und Teil der MaRisk-Anforderungen.</p>
+    <ul class="checklist">
+      <li>Tägliche Überwachung der Zahlungsströme</li>
+      <li>Stresstests für unterschiedliche Szenarien (idiosynkratisch, marktweit, kombiniert)</li>
+      <li>Notfallplan (Liquiditätsnotfallplan) für Krisensituationen</li>
+      <li>Survival Period: Wie lange überlebt die Bank ohne externe Refinanzierung?</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BANK-KPIs -->
+<div id="kpis" class="section">
+  <h2 class="section-title">Die wichtigsten Bank-KPIs</h2>
+  <p class="section-desc">Kennzahlen, die jeder Bankcontroller kennen muss – mit interaktivem Rechner.</p>
+  <div class="card">
+    <h2>Rentabilitätskennzahlen</h2>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Formel</th><th>Aussage</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ROE</strong> (Eigenkapitalrendite)</td><td>Jahresüberschuss / Eigenkapital</td><td>Verzinsung des eingesetzten Kapitals</td></tr>
+        <tr><td><strong>ROA</strong> (Gesamtkapitalrendite)</td><td>Jahresüberschuss / Bilanzsumme</td><td>Effizienz der gesamten Bilanz</td></tr>
+        <tr><td><strong>CIR</strong> (Cost-Income-Ratio)</td><td>Verwaltungsaufwand / Erträge</td><td>Kosteneffizienz – niedriger ist besser</td></tr>
+        <tr><td><strong>Zinsspanne</strong></td><td>Zinsüberschuss / Bilanzsumme</td><td>Kernertragskraft im Zinsgeschäft</td></tr>
+        <tr><td><strong>NIM</strong> (Net Interest Margin)</td><td>Zinsüberschuss / zinstragende Aktiva</td><td>Margenstärke im Kerngeschäft</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Kapital- & Risikokennzahlen</h2>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Bedeutung</th><th>Regulatorisches Minimum</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CET1-Quote</strong></td><td>Hartes Kernkapital / RWA</td><td>4,5 % (+ Puffer meist 7-10,5 %)</td></tr>
+        <tr><td><strong>Gesamtkapitalquote</strong></td><td>Gesamtes Eigenkapital / RWA</td><td>8 % (+ Puffer)</td></tr>
+        <tr><td><strong>Leverage Ratio</strong></td><td>Kernkapital / ungewichtete Bilanzsumme</td><td>3 %</td></tr>
+        <tr><td><strong>NPL-Quote</strong></td><td>Notleidende Kredite / Gesamtkredite</td><td>Kein hartes Minimum, Aufsichtsfokus &lt;5 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- INTERACTIVE -->
+  <div class="calculator">
+    <div class="calc-header">
+      <h3>🧮 Bank-KPI-Rechner</h3>
+      <p>Berechne ROE, CIR und Zinsspanne aus Basisdaten</p>
+    </div>
+    <div class="calc-body">
+      <div class="calc-row">
+        <div class="calc-field"><label>Jahresüberschuss (Mio. €)</label><input type="number" id="bk-gewinn" value="12" oninput="calcBankKPI()"></div>
+        <div class="calc-field"><label>Eigenkapital (Mio. €)</label><input type="number" id="bk-ek" value="150" oninput="calcBankKPI()"></div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-field"><label>Bilanzsumme (Mio. €)</label><input type="number" id="bk-bs" value="3500" oninput="calcBankKPI()"></div>
+        <div class="calc-field"><label>Verwaltungsaufwand (Mio. €)</label><input type="number" id="bk-vw" value="35" oninput="calcBankKPI()"></div>
+      </div>
+      <div class="calc-row">
+        <div class="calc-field"><label>Zinsüberschuss (Mio. €)</label><input type="number" id="bk-zu" value="55" oninput="calcBankKPI()"></div>
+        <div class="calc-field"><label>Provisionsüberschuss (Mio. €)</label><input type="number" id="bk-pu" value="12" oninput="calcBankKPI()"></div>
+      </div>
+      <div class="calc-results">
+        <div class="result-grid">
+          <div class="result-item"><div class="rl">ROE</div><div class="rv" id="bk-roe">–</div><div class="rs">Jahresüberschuss / EK</div></div>
+          <div class="result-item"><div class="rl">ROA</div><div class="rv" id="bk-roa">–</div><div class="rs">Jahresüberschuss / Bilanzsumme</div></div>
+          <div class="result-item"><div class="rl">CIR</div><div class="rv" id="bk-cir">–</div><div class="rs">Verwaltungsaufwand / Erträge</div></div>
+          <div class="result-item"><div class="rl">Zinsspanne</div><div class="rv" id="bk-zspanne">–</div><div class="rs">Zinsüberschuss / Bilanzsumme</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Benchmark-Einordnung deutscher Banken</h2>
+    <table class="data-table">
+      <thead><tr><th>Kennzahl</th><th>Schwach</th><th>Durchschnitt</th><th>Gut</th></tr></thead>
+      <tbody>
+        <tr><td>ROE</td><td>&lt;4 %</td><td>4–8 %</td><td>&gt;8 %</td></tr>
+        <tr><td>CIR</td><td>&gt;75 %</td><td>60–75 %</td><td>&lt;60 %</td></tr>
+        <tr><td>CET1-Quote</td><td>&lt;12 %</td><td>12–16 %</td><td>&gt;16 %</td></tr>
+        <tr><td>NPL-Quote</td><td>&gt;3 %</td><td>1–3 %</td><td>&lt;1 %</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span>Diese Werte variieren stark je Bankentyp: Sparkassen/Genossenschaftsbanken haben tendenziell niedrigere ROE aber auch niedrigeres Risiko als Investmentbanken. Immer im Kontext des Geschäftsmodells interpretieren.</span>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck Bankcontrolling</h2>
+  <p class="section-desc">8 Fragen zu Marktzinsmethode, Zinsrisiko, Liquidität und Bank-KPIs.</p>
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Was misst der Konditionsbeitrag in der Marktzinsmethode?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Das allgemeine Zinsniveau am Markt</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">Den Erfolg aus den konkreten Konditionen im Kundengeschäft, verglichen mit dem fristenkongruenten Marktzins</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Das gesamte Zinsergebnis der Bank</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">Die Kosten der Refinanzierung</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">Der Konditionsbeitrag isoliert die Leistung des Vertriebs: Kundenzins minus Opportunitätszins gleicher Laufzeit. Er zeigt, ob das Geschäft "gut verkauft" wurde – unabhängig vom allgemeinen Zinsniveau.</div>
+  </div>
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Wer ist für den Strukturbeitrag verantwortlich?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Der einzelne Kundenberater</div>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">Das zentrale Bilanzstrukturmanagement (Treasury/ALM)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Die Aufsichtsbehörde</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">Der einzelne Kunde</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">Der Strukturbeitrag entsteht durch die Fristentransformation (kurzfristige Refinanzierung vs. langfristige Anlage) – eine Entscheidung des zentralen Treasury/ALM, nicht des einzelnen Beraters.</div>
+  </div>
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Was bedeutet IRRBB?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">International Regulatory Reporting for Banks</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Interest Rate Risk in the Banking Book – das Zinsänderungsrisiko im Bankbuch</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Eine Kennzahl für Kreditrisiko</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Eine EU-Verordnung zur Geldwäscheprävention</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">IRRBB (Interest Rate Risk in the Banking Book) misst das Risiko aus Zinsänderungen für nicht-handelsbuchrelevante Positionen. EBA-Leitlinien verlangen regelmäßige Stresstests mit standardisierten Zinsschock-Szenarien.</div>
+  </div>
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Was ist der Unterschied zwischen LCR und NSFR?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">Es gibt keinen Unterschied, beide messen dasselbe</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">LCR sichert kurzfristige Liquidität (30 Tage), NSFR die langfristige strukturelle Refinanzierung (1 Jahr+)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">LCR ist für Privatkunden, NSFR für Firmenkunden</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">NSFR gilt nur für Großbanken</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">LCR (Liquidity Coverage Ratio) testet das Überleben in einem 30-Tage-Stressszenario. NSFR (Net Stable Funding Ratio) stellt sicher, dass langfristige Aktiva strukturell stabil über mindestens 1 Jahr finanziert sind.</div>
+  </div>
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Was zeigt die Cost-Income-Ratio (CIR)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">Wie effizient die Bank arbeitet – Verwaltungsaufwand im Verhältnis zu den Erträgen, niedriger ist besser</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Die Eigenkapitalrendite der Bank</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Das Verhältnis von Krediten zu Einlagen</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Die regulatorische Kapitalquote</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">CIR = Verwaltungsaufwand / Erträge. Eine CIR von 60 % bedeutet: 60 Cent von jedem verdienten Euro werden für Kosten ausgegeben. Niedrigere CIR = effizientere Bank. Gute Werte liegen unter 60 %.</div>
+  </div>
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Was bedeutet "positive Fristentransformation"?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Die Bank macht nur kurzfristige Geschäfte</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Aktiva (Kredite) sind länger gebunden als Passiva (Einlagen) – typisch für Banken, bringt Marge aber auch Zinsrisiko</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Die Bank hat positive Eigenkapitalrendite</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Alle Zinsen sind positiv (keine Negativzinsen)</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Positive Fristentransformation = kurzfristige Refinanzierung (z.B. Tagesgeld) finanziert langfristige Kredite (z.B. Hypotheken). Bringt Zinsmarge bei normaler Zinsstrukturkurve, aber Risiko bei Zinsänderungen.</div>
+  </div>
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Wie hoch muss die CET1-Quote (hartes Kernkapital) mindestens sein (ohne Puffer)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">8 %</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">4,5 %</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">10,5 %</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">2 %</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">Das regulatorische Minimum für CET1 (Common Equity Tier 1) liegt bei 4,5 %. In der Praxis verlangen zusätzliche Kapitalpuffer (Kapitalerhaltungspuffer, antizyklischer Puffer etc.) meist 7-10,5 % effektive Mindestquote.</div>
+  </div>
+  <div class="quiz-question" id="q8">
+    <div class="quiz-q">8. Welche Perspektive im Zinsrisiko betrachtet den Barwert aller Zinspositionen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Net Interest Income (NII)</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q8')">Economic Value of Equity (EVE)</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Cost-Income-Ratio</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">Return on Assets</button>
+    </div>
+    <div class="quiz-feedback" id="fb8">EVE (Economic Value of Equity) ist die Barwertperspektive – sie zeigt, wie sich der Wert aller Zinspositionen bei einem Zinsschock verändert. NII (Net Interest Income) ist die kurzfristige Ertragsperspektive (1-3 Jahre).</div>
+  </div>
+  <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3><p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+</main>
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Lernmodul zur fachlichen Weiterbildung im Bankcontrolling.</p>
+</footer>
+<script>
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.currentTarget.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function calcBankKPI(){
+  const gewinn=parseFloat(document.getElementById('bk-gewinn').value)||0;
+  const ek=parseFloat(document.getElementById('bk-ek').value)||1;
+  const bs=parseFloat(document.getElementById('bk-bs').value)||1;
+  const vw=parseFloat(document.getElementById('bk-vw').value)||0;
+  const zu=parseFloat(document.getElementById('bk-zu').value)||0;
+  const pu=parseFloat(document.getElementById('bk-pu').value)||0;
+  const roe=(gewinn/ek*100);
+  const roa=(gewinn/bs*100);
+  const cir=(vw/(zu+pu)*100);
+  const zspanne=(zu/bs*100);
+  document.getElementById('bk-roe').textContent=roe.toFixed(2)+' %';
+  document.getElementById('bk-roa').textContent=roa.toFixed(2)+' %';
+  document.getElementById('bk-cir').textContent=cir.toFixed(1)+' %';
+  document.getElementById('bk-zspanne').textContent=zspanne.toFixed(2)+' %';
+}
+calcBankKPI();
+let quizAnswers={};const TOTAL=8;
+function answer(btn,type,qId){const qEl=document.getElementById(qId);if(qEl.dataset.answered)return;qEl.dataset.answered='1';qEl.querySelectorAll('.quiz-opt').forEach(o=>{o.disabled=true;o.style.cursor='default';});btn.classList.add(type);document.getElementById('fb'+qId.replace('q','')).classList.add('show',type);quizAnswers[qId]=type==='correct';}
+function showScore(){const c=Object.values(quizAnswers).filter(Boolean).length;const p=Math.round(c/TOTAL*100);document.getElementById('score-text').textContent=c+' von '+TOTAL+' richtig ('+p+'%)';document.getElementById('score-msg').textContent=p>=87?'Hervorragend – Bankcontrolling-Wissen auf Profi-Niveau!':p>=62?'Solide Basis – Marktzinsmethode und Zinsrisiko nochmals vertiefen.':'Die Grundlagen und Marktzinsmethode nochmals durchgehen.';document.getElementById('score-bar').style.width=p+'%';const el=document.getElementById('quiz-score');el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function resetQuiz(){quizAnswers={};document.querySelectorAll('.quiz-question').forEach(q=>delete q.dataset.answered);document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.style.cursor='pointer';b.classList.remove('correct','wrong');});document.querySelectorAll('.quiz-feedback').forEach(f=>f.classList.remove('show','correct','wrong'));document.getElementById('quiz-score').style.display='none';}
+</script>
+</body>
+</html>
