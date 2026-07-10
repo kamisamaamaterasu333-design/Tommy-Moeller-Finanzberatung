@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAföG verstehen | Tommy Möller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-950:#082030;--sky-900:#0C2D48;--sky-800:#1A4A72;--sky-700:#1D6FA4;
+  --sky-500:#0EA5E9;--sky-400:#38BDF8;--sky-100:#E0F2FE;--sky-50:#F0F9FF;--sky-600:#0284C7;
+  --gray-900:#111827;--gray-800:#1F2937;--gray-700:#374151;--gray-600:#4B5563;
+  --gray-500:#6B7280;--gray-200:#E5E7EB;--gray-100:#F3F4F6;--gray-50:#F9FAFB;
+  --amber-700:#B45309;--amber-500:#F59E0B;--amber-400:#FBBF24;--amber-100:#FEF3C7;--amber-50:#FFFBEB;
+  --green-700:#15803D;--green-600:#16A34A;--green-100:#DCFCE7;--green-50:#F0FDF4;
+  --red-700:#B91C1C;--red-600:#DC2626;--red-100:#FFE4E6;--red-50:#FFF1F2;
+  --purple-700:#6D28D9;--purple-100:#EDE9FE;--purple-50:#F5F3FF;
+  --font-sans:'Inter',system-ui,sans-serif;--font-serif:'Lora',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--gray-50);color:var(--gray-900);line-height:1.7;font-size:15px;}
+
+/* ── HEADER ── */
+.site-header{background:linear-gradient(135deg,var(--sky-950) 0%,var(--sky-800) 55%,var(--sky-600) 100%);color:white;position:relative;overflow:hidden;}
+.header-wave{position:absolute;bottom:0;left:0;right:0;height:40px;background:var(--gray-50);clip-path:ellipse(55% 100% at 50% 100%);}
+.header-inner{max-width:920px;margin:0 auto;padding:48px 24px 64px;position:relative;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;color:rgba(255,255,255,.9);}
+.header-badge::before{content:'';width:6px;height:6px;background:var(--sky-400);border-radius:50%;}
+.site-header h1{font-family:var(--font-serif);font-size:clamp(26px,4.5vw,40px);font-weight:600;line-height:1.2;margin-bottom:14px;letter-spacing:-.02em;}
+.site-header p.subtitle{font-size:15.5px;color:rgba(255,255,255,.72);max-width:600px;line-height:1.65;}
+.header-stats{display:flex;gap:28px;margin-top:28px;flex-wrap:wrap;}
+.hstat{border-left:2px solid var(--sky-400);padding-left:12px;}
+.hstat .sv{font-size:22px;font-weight:600;line-height:1;}
+.hstat .sl{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:4px;}
+
+/* ── NAV ── */
+.nav-strip{background:white;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.nav-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:13px 16px;font-size:13.5px;font-weight:500;color:var(--gray-500);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.nav-tab:hover{color:var(--sky-700);}
+.nav-tab.active{color:var(--sky-700);border-bottom-color:var(--sky-500);}
+
+main{max-width:920px;margin:0 auto;padding:40px 24px 80px;}
+.section{display:none;}.section.active{display:block;}
+.section-title{font-family:var(--font-serif);font-size:23px;font-weight:600;color:var(--gray-900);margin-bottom:5px;}
+.section-desc{font-size:14px;color:var(--gray-500);margin-bottom:28px;}
+
+/* ── CARDS ── */
+.card{background:white;border:1px solid var(--gray-200);border-radius:12px;padding:26px 30px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--gray-900);margin-bottom:10px;}
+.card h3{font-size:14.5px;font-weight:600;color:var(--gray-700);margin:18px 0 7px;}
+.card h3:first-of-type{margin-top:8px;}
+.card p{color:var(--gray-600);margin-bottom:11px;font-size:14.5px;}
+.card p:last-child{margin-bottom:0;}
+
+/* ── INFO BOXES ── */
+.info-box{border-radius:8px;padding:13px 16px;margin:13px 0;display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.6;}
+.info-box .icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.info-box.sky{background:var(--sky-50);color:var(--sky-800);border-left:3px solid var(--sky-400);}
+.info-box.amber{background:var(--amber-50);color:var(--amber-700);border-left:3px solid var(--amber-400);}
+.info-box.green{background:var(--green-50);color:var(--green-700);border-left:3px solid #4ADE80;}
+.info-box.red{background:var(--red-50);color:var(--red-700);border-left:3px solid #FCA5A5;}
+.info-box.purple{background:var(--purple-50);color:var(--purple-700);border-left:3px solid #A78BFA;}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:13px;}
+@media(max-width:600px){.two-col,.three-col{grid-template-columns:1fr;}}
+.col-card{border:1px solid var(--gray-200);border-radius:10px;padding:18px;background:white;}
+.col-card h4{font-size:13.5px;font-weight:600;color:var(--gray-800);margin-bottom:7px;}
+.col-card ul{list-style:none;}
+.col-card ul li{font-size:13px;color:var(--gray-600);padding:3px 0;display:flex;gap:8px;line-height:1.5;}
+.col-card ul li::before{content:'→';color:var(--sky-600);flex-shrink:0;font-size:12px;margin-top:2px;}
+
+/* ── TAGS ── */
+.tag{display:inline-block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:4px;margin-bottom:8px;}
+.tag.sky{background:var(--sky-100);color:var(--sky-800);}
+.tag.amber{background:var(--amber-100);color:var(--amber-700);}
+.tag.green{background:var(--green-100);color:var(--green-700);}
+.tag.red{background:var(--red-100);color:var(--red-700);}
+.tag.purple{background:var(--purple-100);color:var(--purple-700);}
+
+/* ── TABLE ── */
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+.data-table th{background:var(--sky-900);color:white;font-weight:600;text-align:left;padding:9px 14px;font-size:12px;}
+.data-table th:first-child{border-radius:8px 0 0 0;}
+.data-table th:last-child{border-radius:0 8px 0 0;}
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:var(--gray-50);}
+
+/* ── BETRAG HIGHLIGHTS ── */
+.amount-highlight{
+  display:inline-block;
+  background:var(--sky-50);
+  color:var(--sky-800);
+  border:1px solid var(--sky-200);
+  border-radius:6px;
+  padding:2px 8px;
+  font-weight:600;
+  font-size:0.95em;
+}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:4px 0;font-size:14px;color:var(--gray-700);line-height:1.55;}
+.checklist li::before{content:'✓';color:var(--green-600);font-weight:700;flex-shrink:0;margin-top:1px;}
+.checklist.cross li::before{content:'✗';color:var(--red-600);}
+.checklist.warn li::before{content:'!';color:var(--amber-600);font-weight:700;}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:var(--amber-50);border:1px solid var(--amber-200);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--amber-700);margin-bottom:22px;line-height:1.6;display:flex;gap:10px;}
+.disclaimer .icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+/* ── CALCULATOR ── */
+.calculator{background:white;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.calc-header{background:var(--sky-900);padding:18px 24px;}
+.calc-header h3{font-family:var(--font-serif);font-size:17px;color:white;margin-bottom:3px;}
+.calc-header p{font-size:13px;color:rgba(255,255,255,.6);}
+.calc-body{padding:24px;}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:560px){.calc-grid{grid-template-columns:1fr;}}
+.calc-field label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.calc-field input,.calc-field select{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--gray-900);background:white;outline:none;transition:border-color .12s;}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--sky-400);}
+.calc-results{background:var(--sky-50);border:1px solid var(--sky-100);border-radius:10px;padding:20px;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+.result-item .rl{font-size:11px;color:var(--sky-700);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.result-item .rv{font-size:22px;font-weight:600;color:var(--sky-900);}
+.result-item .rs{font-size:12px;color:var(--sky-600);margin-top:2px;}
+.result-divider{height:1px;background:var(--sky-100);margin:14px 0;}
+.calc-note{font-size:12.5px;color:var(--gray-500);margin-top:12px;font-style:italic;}
+
+/* ── PROCESS STEPS ── */
+.process-steps{display:flex;flex-direction:column;gap:0;margin:14px 0;}
+.proc-step{display:flex;gap:16px;position:relative;padding-bottom:20px;}
+.proc-step:last-child{padding-bottom:0;}
+.proc-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.proc-num{width:32px;height:32px;border-radius:50%;background:var(--sky-800);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.proc-line{width:2px;background:var(--gray-200);flex:1;margin-top:4px;}
+.proc-step:last-child .proc-line{display:none;}
+.proc-content{padding-top:4px;}
+.proc-title{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:4px;}
+.proc-desc{font-size:13.5px;color:var(--gray-600);line-height:1.55;}
+.proc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.proc-tag{background:var(--sky-100);color:var(--sky-800);font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;}
+
+/* ── QUIZ ── */
+.quiz-question{background:white;border:1px solid var(--gray-200);border-radius:10px;padding:22px 26px;margin-bottom:14px;}
+.quiz-q{font-size:14.5px;font-weight:600;color:var(--gray-800);margin-bottom:14px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;}
+.quiz-opt{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:8px;padding:9px 15px;cursor:pointer;font-size:13.5px;color:var(--gray-700);transition:background .12s,border-color .12s;text-align:left;font-family:inherit;width:100%;}
+.quiz-opt:hover{background:var(--sky-50);border-color:var(--sky-400);color:var(--sky-900);}
+.quiz-opt.correct{background:var(--green-50);border-color:#4ADE80;color:var(--green-700);}
+.quiz-opt.wrong{background:var(--red-50);border-color:#FCA5A5;color:var(--red-600);}
+.quiz-feedback{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:6px;display:none;line-height:1.6;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:var(--green-50);color:var(--green-700);}
+.quiz-feedback.wrong{background:var(--red-50);color:var(--red-700);}
+.quiz-score{background:var(--sky-900);color:white;border-radius:12px;padding:24px;text-align:center;display:none;margin-top:18px;}
+.quiz-score h3{font-size:22px;font-weight:600;margin-bottom:4px;font-family:var(--font-serif);}
+.quiz-score p{color:rgba(255,255,255,.7);font-size:13.5px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:14px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--sky-400);border-radius:3px;transition:width .4s;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--sky-700);color:white;padding:10px 20px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:background .12s;}
+.btn:hover{background:var(--sky-800);}
+.btn.secondary{background:white;color:var(--sky-700);border:1.5px solid var(--sky-200);}
+.btn.secondary:hover{background:var(--sky-50);}
+
+.site-footer{background:var(--gray-900);color:rgba(255,255,255,.45);text-align:center;padding:26px 24px;font-size:13px;}
+.site-footer a{color:rgba(255,255,255,.65);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-wave"></div>
+  <div class="header-inner">
+    <div class="header-badge">Lernmodul · Privatfinanzen</div>
+    <h1>BAföG verstehen &amp; richtig beantragen</h1>
+    <p class="subtitle">Wer hat Anspruch, wie viel gibt es, wie wird das Einkommen angerechnet, was gilt beim Rückzahlen – und welche Tipps sparen dir bares Geld.</p>
+    <div class="header-stats">
+      <div class="hstat"><div class="sv">992 €</div><div class="sl">Höchstsatz 2024/25</div></div>
+      <div class="hstat"><div class="sv">50 %</div><div class="sl">Zuschuss (kein Darlehen)</div></div>
+      <div class="hstat"><div class="sv">~820.000</div><div class="sl">Empfänger/Jahr</div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-strip">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('grundlagen')">Grundlagen</button>
+    <button class="nav-tab" onclick="showSection('anspruch')">Anspruch &amp; Grenzen</button>
+    <button class="nav-tab" onclick="showSection('berechnung')">Berechnung</button>
+    <button class="nav-tab" onclick="showSection('rechner')">BAföG-Rechner</button>
+    <button class="nav-tab" onclick="showSection('rueckzahlung')">Rückzahlung</button>
+    <button class="nav-tab" onclick="showSection('antrag')">Antrag</button>
+    <button class="nav-tab" onclick="showSection('quiz')">Wissenscheck</button>
+  </div>
+</nav>
+
+<main>
+
+<div class="disclaimer">
+  <span class="icon">⚠️</span>
+  <span><strong>Hinweis:</strong> Dieses Modul gibt einen allgemeinen Überblick (Stand 2024/25). Die genaue Berechnung hängt von deiner individuellen Situation ab. Nutze den offiziellen BAföG-Rechner auf <strong>bafoeg-rechner.de</strong> oder wende dich an dein Studierendenwerk für eine verbindliche Auskunft. Beträge und Grenzen werden regelmäßig angepasst.</span>
+</div>
+
+<!-- ════ GRUNDLAGEN ════ -->
+<div id="grundlagen" class="section active">
+  <h2 class="section-title">Was ist BAföG?</h2>
+  <p class="section-desc">Das Bundesausbildungsförderungsgesetz – staatliche Unterstützung für Studierende und Schüler.</p>
+
+  <div class="card">
+    <h2>BAföG in 60 Sekunden</h2>
+    <p>BAföG (Bundesausbildungsförderungsgesetz) ist eine staatliche Förderung für Studierende und Schüler, die sich ihre Ausbildung sonst nicht leisten könnten. Der entscheidende Punkt: Ein Teil ist ein <strong>zinsloses Darlehen</strong>, der andere Teil ein <strong>nicht rückzahlbarer Zuschuss</strong>.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag green">50 % – Zuschuss</span>
+        <h4>Geschenk vom Staat</h4>
+        <ul>
+          <li>Muss nie zurückgezahlt werden</li>
+          <li>Kommt direkt als nicht rückzahlbarer Anteil</li>
+          <li>Kein Einfluss auf Steuern oder Schufa</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag sky">50 % – Darlehen</span>
+        <h4>Zinsloses Staatsdarlehen</h4>
+        <ul>
+          <li>Muss nach dem Studium zurückgezahlt werden</li>
+          <li>Kein Zins – Inflation arbeitet für dich</li>
+          <li>Rückzahlungsbeginn: 5 Jahre nach Förderungsende</li>
+          <li>Gedeckelt: maximal 10.010 € zurückzahlen</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box sky">
+      <span class="icon">💡</span>
+      <span><strong>Wichtig:</strong> Selbst wenn du dir nicht sicher bist, ob du Anspruch hast – stell den Antrag! Der Antrag ist kostenlos, und viele Studierende unterschätzen ihre Chancen. Schon ein Euro Förderung pro Monat ist besser als nichts.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wer kann BAföG erhalten?</h2>
+    <div class="three-col">
+      <div class="col-card">
+        <span class="tag sky">Studierende</span>
+        <h4>Hochschule / FH / BA</h4>
+        <ul>
+          <li>Staatliche Hochschulen</li>
+          <li>Private anerkannte Hochschulen</li>
+          <li>Duale Hochschulen</li>
+          <li>Auslandsstudium (Auslands-BAföG)</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag amber">Schüler</span>
+        <h4>Weiterführende Schulen</h4>
+        <ul>
+          <li>Gymnasien (wenn auswärts wohnend)</li>
+          <li>Berufsaufbauschulen</li>
+          <li>Fachschulen, Fachoberschulen</li>
+          <li>Zweiter Bildungsweg</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag green">Sonderfälle</span>
+        <h4>Besondere Situationen</h4>
+        <ul>
+          <li>Über-30-Jährige (begrenzt)</li>
+          <li>EU-Bürger (unter Bedingungen)</li>
+          <li>Verheiratete / Alleinerziehende</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Altersgrenze</h2>
+    <p>BAföG für Studierende kann grundsätzlich nur bis zum vollendeten <strong>45. Lebensjahr</strong> beantragt werden – allerdings gelten strenge Bedingungen bei einem Erststudium nach dem 30. Lebensjahr.</p>
+    <div class="info-box amber">
+      <span class="icon">⏰</span>
+      <span>Die Förderung gilt in der Regel für die Regelstudienzeit + 1–2 Semester. Ein Überschreiten der Förderungshöchstdauer führt zum Anspruchsverlust – außer bei besonderen persönlichen Umständen (Krankheit, Schwangerschaft, Behinderung etc.).</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ANSPRUCH ════ -->
+<div id="anspruch" class="section">
+  <h2 class="section-title">Anspruchsvoraussetzungen &amp; Einkommensgrenzen</h2>
+  <p class="section-desc">Wann gibt es BAföG – und ab wann fällt der Anspruch ganz oder teilweise weg?</p>
+
+  <div class="card">
+    <h2>Die fünf Kernvoraussetzungen</h2>
+    <div class="process-steps">
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">1</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Geeignete Ausbildungsstätte</div>
+          <div class="proc-desc">Staatlich anerkannte Hochschule oder Schule in Deutschland oder im Ausland (Auslands-BAföG).</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">2</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Eigenes Einkommen &amp; Vermögen unter der Grenze</div>
+          <div class="proc-desc">Dein eigenes Einkommen (anrechnungsfreier Betrag: <span class="amount-highlight">555 €/Monat</span>) und Vermögen (Freibetrag: <span class="amount-highlight">15.000 €</span>) dürfen bestimmte Grenzen nicht überschreiten.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">3</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Elterneinkommen unter der Grenze</div>
+          <div class="proc-desc">Das Nettoeinkommen der Eltern wird angerechnet. Freibeträge: je Elternteil <span class="amount-highlight">2.415 €/Monat</span> (verheiratet: <span class="amount-highlight">4.830 €</span>) zzgl. Geschwisterzuschläge.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">4</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Staatsangehörigkeit / Aufenthaltsstatus</div>
+          <div class="proc-desc">Deutsche Staatsangehörige haben Anspruch. EU-Bürger und bestimmte Nicht-EU-Ausländer können unter Voraussetzungen gefördert werden.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">5</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Noch keine andere förderbare Ausbildung abgeschlossen</div>
+          <div class="proc-desc">BAföG gibt es in der Regel nur für eine Ausbildung. Ein Masterstudium nach einem Bachelor ist förderbar, ein Zweitstudium nach abgeschlossenem Studium meist nicht.</div>
+          <div class="proc-tags"><span class="proc-tag">Ausnahmen möglich</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Eigenes Einkommen anrechnen</h2>
+    <p>Nebenjob während des Studiums? Der Staat lässt dir etwas Luft:</p>
+    <table class="data-table">
+      <thead><tr><th>Situation</th><th>Anrechnungsfreier Betrag / Monat</th></tr></thead>
+      <tbody>
+        <tr><td>Ledig, kein Kind</td><td><strong>555 €</strong></td></tr>
+        <tr><td>Verheiratet oder eingetragene Lebenspartnerschaft</td><td><strong>805 €</strong></td></tr>
+        <tr><td>Je eigenes Kind</td><td><strong>+ 730 €</strong> zusätzlich</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box amber">
+      <span class="icon">⚠️</span>
+      <span>Das eigene Einkommen wird auf das gesamte Bewilligungsjahr hochgerechnet – auch Einmalzahlungen (Weihnachtsgeld, Boni) zählen dazu. Wer <em>manchmal</em> viel verdient, kann seinen Anspruch für das ganze Jahr verlieren!</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Elterneinkommen – die wichtigste Variable</h2>
+    <p>Das Nettoeinkommen beider Elternteile (aus dem vorletzten Kalenderjahr!) wird zusammengerechnet. Vom Gesamteinkommen werden Freibeträge abgezogen – der verbleibende Betrag verringert den BAföG-Satz.</p>
+    <div class="info-box sky">
+      <span class="icon">📅</span>
+      <span><strong>Vorletztes Jahr!</strong> Für den Bewilligungszeitraum 2024/25 wird das Einkommen aus dem Jahr 2022 herangezogen. Haben deine Eltern in 2022 weniger verdient als üblich (z.B. Kurzarbeit, Jobwechsel), kann das zu mehr BAföG führen – das ist gesetzlich so vorgesehen.</span>
+    </div>
+    <h3>Besonderer Härtefall: Aktuelles Einkommen niedriger</h3>
+    <p>Hat sich das Einkommen der Eltern dauerhaft (mindestens 4 Monate) um mehr als 10 % verringert, kann man beim Amt beantragen, das <em>aktuelle</em> Einkommen statt dem vergangenen zu verwenden (§ 24 Abs. 2 BAföG).</p>
+  </div>
+
+  <div class="card">
+    <h2>Eigenes Vermögen – der Freibetrag</h2>
+    <table class="data-table">
+      <thead><tr><th>Wer</th><th>Vermögensfreibetrag</th></tr></thead>
+      <tbody>
+        <tr><td>Antragsteller selbst</td><td><strong>15.000 €</strong></td></tr>
+        <tr><td>Ehegatte / Lebenspartner</td><td><strong>+ 2.300 €</strong></td></tr>
+        <tr><td>Je eigenes Kind</td><td><strong>+ 2.300 €</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="info-box amber">
+      <span class="icon">💰</span>
+      <span>Als Vermögen zählen: Bankguthaben, Depot-Wertpapiere, Krypto, Bausparverträge, Kapitallebensversicherungen. <strong>Nicht</strong> angerechnet: selbst bewohntes Eigenheim, Altersvorsorge (Riester/Rürup unter Bedingungen), das Auto (i.d.R.).</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ BERECHNUNG ════ -->
+<div id="berechnung" class="section">
+  <h2 class="section-title">Wie wird BAföG berechnet?</h2>
+  <p class="section-desc">Der Weg vom Bedarfssatz zum tatsächlichen Förderbetrag – Schritt für Schritt.</p>
+
+  <div class="card">
+    <h2>Die BAföG-Bedarfssätze 2024/25</h2>
+    <p>Der Bedarfssatz ist der Maximalbetrag, den du theoretisch bekommen kannst. Er richtet sich nach deiner Wohnsituation:</p>
+    <table class="data-table">
+      <thead><tr><th>Situation</th><th>Grundbedarf</th><th>Krankenversicherung</th><th>Pflegeversicherung</th><th>Gesamt max.</th></tr></thead>
+      <tbody>
+        <tr><td>Wohnst bei den Eltern</td><td>675 €</td><td>109 €</td><td>25 €</td><td><strong>812 €</strong></td></tr>
+        <tr><td>Wohnst nicht bei Eltern</td><td>812 €</td><td>109 €</td><td>25 €</td><td><strong>992 €</strong></td></tr>
+        <tr><td>Eigene Krankenversicherung (GKV)</td><td>812 €</td><td>109 €</td><td>25 €</td><td><strong>992 €</strong></td></tr>
+        <tr><td>Nicht versicherungspflichtig (z.B. familienversichert)</td><td>812 €</td><td>entfällt</td><td>entfällt</td><td><strong>812 €</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="info-box green">
+      <span class="icon">📈</span>
+      <span><strong>BAföG-Erhöhung 2024:</strong> Zum Wintersemester 2024/25 wurde der Grundbedarf auf <strong>812 €</strong> angehoben (vorher 452 €, dann 548 €). Mit KV- und PV-Zuschlag ergibt sich der Höchstsatz von <strong>992 €</strong> monatlich.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Schritt-für-Schritt-Berechnung</h2>
+    <div class="process-steps">
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">1</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Bedarfssatz bestimmen</div>
+          <div class="proc-desc">Je nach Wohnsituation und Versicherungsstatus: max. 992 €/Monat.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">2</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Elterneinkommen anrechnen</div>
+          <div class="proc-desc">Nettoeinkommen (vorletztes Jahr) − Freibeträge = anrechenbarer Einkommensüberhang. Aus diesem Überhang wird ein Einkommensbetrag berechnet, der vom Bedarfssatz abgezogen wird.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">3</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Eigenes Einkommen anrechnen</div>
+          <div class="proc-desc">Verdienst du mehr als 555 €/Monat netto (Jahresschnitt), wird der übersteigende Betrag angerechnet und dein BAföG gekürzt.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">4</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Eigenes Vermögen anrechnen</div>
+          <div class="proc-desc">Vermögen über 15.000 € wird vollständig als verfügbares Kapital gewertet und reduziert den Anspruch entsprechend.</div>
+        </div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-left"><div class="proc-num">5</div><div class="proc-line"></div></div>
+        <div class="proc-content">
+          <div class="proc-title">Ergebnis: monatlicher Förderbetrag</div>
+          <div class="proc-desc">Was nach allen Abzügen übrig bleibt, ist dein monatlicher BAföG-Anspruch – davon 50 % als Zuschuss, 50 % als zinsloses Darlehen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Wichtige Zusätze &amp; Zuschläge</h2>
+    <table class="data-table">
+      <thead><tr><th>Zuschlag</th><th>Betrag</th><th>Bedingung</th></tr></thead>
+      <tbody>
+        <tr><td>Kranken- &amp; Pflegeversicherungszuschlag</td><td>bis 134 €/Monat</td><td>Eigene gesetzliche KV-Pflichtversicherung</td></tr>
+        <tr><td>Kinderbetreuungszuschlag</td><td>160 €/Kind</td><td>Eigene Kinder unter 14 Jahren</td></tr>
+        <tr><td>Auslands-BAföG-Erhöhung</td><td>Individuell</td><td>Studium/Praktikum im Ausland</td></tr>
+        <tr><td>Behinderungszuschlag</td><td>Individuell</td><td>Behinderung mit nachgewiesenem Mehrbedarf</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════ RECHNER ════ -->
+<div id="rechner" class="section">
+  <h2 class="section-title">BAföG-Schätzrechner</h2>
+  <p class="section-desc">Grobe Orientierung – für eine genaue Berechnung nutze bafoeg-rechner.de oder das Studierendenwerk.</p>
+
+  <div class="calculator">
+    <div class="calc-header">
+      <h3>🎓 BAföG-Schnellschätzer</h3>
+      <p>Vereinfachte Berechnung · Nur zur Orientierung · Stand 2024/25</p>
+    </div>
+    <div class="calc-body">
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Wohnsituation</label>
+          <select id="bw-wohn" onchange="calcBAfoeg()">
+            <option value="992">Eigene Wohnung (KV-pflichtig)</option>
+            <option value="946">Eigene Wohnung (familienversichert)</option>
+            <option value="812">Bei den Eltern (KV-pflichtig)</option>
+            <option value="675">Bei den Eltern (familienversichert)</option>
+          </select>
+        </div>
+        <div class="calc-field">
+          <label>Elternkonstellation</label>
+          <select id="bw-eltern" onchange="calcBAfoeg()">
+            <option value="zusammen">Verheiratet / zusammenlebend</option>
+            <option value="getrennt">Getrennt / geschieden</option>
+            <option value="alleinerziehend">Alleinerziehend (ein Elternteil)</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Nettoeinkommen Eltern gesamt (€/Monat)</label>
+          <input type="number" id="bw-einkommen" value="4000" oninput="calcBAfoeg()">
+        </div>
+        <div class="calc-field">
+          <label>Anzahl Geschwister (in Ausbildung)</label>
+          <input type="number" id="bw-geschwister" value="0" min="0" max="5" oninput="calcBAfoeg()">
+        </div>
+      </div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>Eigenes monatliches Nettoeinkommen (€)</label>
+          <input type="number" id="bw-eigenes" value="0" oninput="calcBAfoeg()">
+        </div>
+        <div class="calc-field">
+          <label>Eigenes Vermögen (€)</label>
+          <input type="number" id="bw-vermoegen" value="0" oninput="calcBAfoeg()">
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="result-grid">
+          <div class="result-item">
+            <div class="rl">Geschätzter Förderbetrag</div>
+            <div class="rv" id="bw-gesamt">–</div>
+            <div class="rs">Monatlich</div>
+          </div>
+          <div class="result-item">
+            <div class="rl">Davon Zuschuss</div>
+            <div class="rv" id="bw-zuschuss">–</div>
+            <div class="rs">Nicht rückzahlbar</div>
+          </div>
+          <div class="result-item">
+            <div class="rl">Davon Darlehen</div>
+            <div class="rv" id="bw-darlehen">–</div>
+            <div class="rs">Zinsloses Staatsdarlehen</div>
+          </div>
+          <div class="result-item">
+            <div class="rl">Im Jahr</div>
+            <div class="rv" id="bw-jahr">–</div>
+            <div class="rs">Gesamtförderung p.a.</div>
+          </div>
+        </div>
+        <div class="result-divider"></div>
+        <div id="bw-status" style="font-size:13.5px;color:var(--sky-800);"></div>
+      </div>
+      <p class="calc-note">⚠️ Vereinfachte Berechnung ohne alle Sonderfälle. Abweichungen vom tatsächlichen Bescheid sind möglich. Nutze bafoeg-rechner.de für eine genauere Schätzung.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ RÜCKZAHLUNG ════ -->
+<div id="rueckzahlung" class="section">
+  <h2 class="section-title">BAföG zurückzahlen</h2>
+  <p class="section-desc">Was zurückgezahlt werden muss, ab wann – und welche Vergünstigungen es gibt.</p>
+
+  <div class="card">
+    <h2>Was gilt zur Rückzahlung?</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag sky">Das Darlehen</span>
+        <h4>50 % des Förderbetrags</h4>
+        <ul>
+          <li>Zinsloses Staatsdarlehen</li>
+          <li>Rückzahlungsbeginn: 5 Jahre nach Ende der Förderungshöchstdauer</li>
+          <li>Rate: mindestens 130 €/Monat</li>
+          <li>Gedeckelt: max. 10.010 € Rückzahlungspflicht</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag green">Der Zuschuss</span>
+        <h4>50 % – kein Rückzahlung!</h4>
+        <ul>
+          <li>Muss nie zurückgezahlt werden</li>
+          <li>Kein Einfluss auf Steuern oder Schufa</li>
+          <li>Staatliche Förderung ohne Gegenleistung</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box green">
+      <span class="icon">🎯</span>
+      <span><strong>Die 10.010-€-Deckelung</strong> ist ein riesiger Vorteil: Egal wie lange du förderst und wie viel du bekommst – du zahlst maximal 10.010 € zurück. Wer 4 Jahre lang den Höchstsatz erhält, bekommt rund 24.000 € Darlehen, zahlt aber nur max. 10.010 € zurück.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Fristverzicht &amp; Vorauszahlungsrabatt</h2>
+    <ul class="checklist">
+      <li><strong>Fristverzicht (§ 18 Abs. 5b):</strong> Zahlst du innerhalb von 5 Jahren nach Förderungsende alles zurück, erlässt der Staat einen Teil der Schulden – bis zu 2.050 € Erlass möglich.</li>
+      <li><strong>Vorzeitige Rückzahlung mit Rabatt:</strong> Wer früh zahlt und kann, spart. Der Erlass hängt von der Restschuld und dem Zeitpunkt ab.</li>
+      <li><strong>Verdienstgrenze:</strong> Wer nach dem Studium weniger als ca. 1.370 € netto/Monat verdient, kann Ratenstundung beantragen (§ 18a BAföG).</li>
+      <li><strong>Erlass bei Kindererziehung:</strong> Für jedes Kind während der Rückzahlungsphase wird 1 Jahr ausgesetzt und teilweise erlassen.</li>
+    </ul>
+    <div class="info-box sky">
+      <span class="icon">📋</span>
+      <span>Die Rückzahlung läuft über das <strong>Bundesverwaltungsamt (BVA)</strong>, nicht über das Studierendenwerk. Du bekommst rechtzeitig vor Rückzahlungsbeginn einen Bescheid mit deiner genauen Schuldsumme.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>BAföG vs. Studentenkredit – ein Vergleich</h2>
+    <table class="data-table">
+      <thead><tr><th>Kriterium</th><th>BAföG-Darlehen</th><th>KfW-Studentenkredit</th><th>Bankkredit</th></tr></thead>
+      <tbody>
+        <tr><td>Zinsen</td><td style="color:var(--green-600);font-weight:600">0 %</td><td>~4–6 % p.a.</td><td>6–15 % p.a.</td></tr>
+        <tr><td>Rückzahlungsdeckel</td><td style="color:var(--green-600);font-weight:600">10.010 €</td><td>Keiner</td><td>Keiner</td></tr>
+        <tr><td>Rückzahlungsbeginn</td><td>5 Jahre nach Förderungsende</td><td>nach Studium</td><td>sofort/monatlich</td></tr>
+        <tr><td>Bonitätsprüfung</td><td>Keine</td><td>Gering</td><td>Ja</td></tr>
+        <tr><td>Erlassmöglichkeiten</td><td style="color:var(--green-600);font-weight:600">Ja (Rabatte, Kinder)</td><td>Nein</td><td>Nein</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box green">
+      <span class="icon">✅</span>
+      <span>Fazit: Das BAföG-Darlehen ist das <strong>günstigste Darlehen überhaupt</strong>. Selbst wenn du es nicht "brauchst" – das zinslosen Staatsdarlehen mit Deckelung und Erlassmöglichkeit schlägt jeden Bankkredit haushoch.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ANTRAG ════ -->
+<div id="antrag" class="section">
+  <h2 class="section-title">BAföG beantragen</h2>
+  <p class="section-desc">Wer zuständig ist, welche Unterlagen du brauchst und worauf du achten musst.</p>
+
+  <div class="card">
+    <h2>Wer ist zuständig?</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag sky">Studierende</span>
+        <h4>Studierendenwerk</h4>
+        <ul>
+          <li>Das Studierendenwerk der jeweiligen Hochschule</li>
+          <li>Oft mit Außenstellen direkt auf dem Campus</li>
+          <li>Online-Antrag via BAföG-Digital (Bund.de)</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag amber">Schüler</span>
+        <h4>Schulamt / Landesschulbehörde</h4>
+        <ul>
+          <li>Je nach Bundesland unterschiedliche Ämter</li>
+          <li>Oft das zuständige Schulverwaltungsamt</li>
+          <li>Infos beim zuständigen Landesministerium</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Welche Unterlagen brauchst du?</h2>
+    <div class="two-col">
+      <div class="col-card">
+        <span class="tag green">Immer erforderlich</span>
+        <ul>
+          <li>Ausgefüllte BAföG-Antragsformulare (online oder Papier)</li>
+          <li>Immatrikulationsbescheinigung</li>
+          <li>Personalausweis / Reisepass</li>
+          <li>Eigene Kontoverbindung (IBAN)</li>
+          <li>Steuerbescheide / Einkommensnachweis der Eltern (vorletztes Jahr)</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <span class="tag amber">Je nach Situation</span>
+        <ul>
+          <li>Mietvertrag / Wohnkostennachweis</li>
+          <li>KV-Nachweis (Versicherungskarte)</li>
+          <li>Angaben über Geschwister in Ausbildung</li>
+          <li>Bei Heirat: Heiratsurkunde, Einkommen Partner</li>
+          <li>Bei eigenen Kindern: Geburtsurkunden</li>
+          <li>Bei Behinderung: Schwerbehindertenausweis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Antragstiming – worauf unbedingt achten!</h2>
+    <ul class="checklist warn">
+      <li><strong>BAföG wird nicht rückwirkend gezahlt!</strong> Ab dem Monat der Antragstellung. Wer im Oktober beginnt und den Antrag erst im Januar stellt, verliert 3 Monate Förderung unwiederbringlich.</li>
+      <li><strong>Antrag so früh wie möglich stellen</strong> – auch wenn noch nicht alle Unterlagen vollständig sind. Ein unvollständiger Antrag wahrt den Beginn. Fehlende Unterlagen können nachgereicht werden.</li>
+      <li><strong>Erneut beantragen!</strong> BAföG läuft immer nur für einen Bewilligungszeitraum (12 Monate). Danach muss ein Folgeantrag gestellt werden.</li>
+      <li><strong>Änderungen melden:</strong> Heiraten, Jobwechsel, Wohnungswechsel, Einkommensänderungen der Eltern – alles unverzüglich melden, sonst drohen Rückforderungen!</li>
+    </ul>
+    <div class="info-box sky">
+      <span class="icon">💻</span>
+      <span><strong>BAföG-Digital:</strong> Seit 2021 kann der BAföG-Antrag vollständig online auf <strong>bund.de</strong> gestellt werden – mit digitalem Unterschreiben und Upload aller Unterlagen. Spart Wege und Zeit erheblich.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Widerspruch gegen den Bescheid</h2>
+    <p>Bist du mit dem Bescheid nicht einverstanden, hast du das Recht, Widerspruch einzulegen:</p>
+    <ul class="checklist">
+      <li>Widerspruchsfrist: <strong>1 Monat</strong> nach Bescheiderhalt</li>
+      <li>Formlos schriftlich beim zuständigen Amt einreichen</li>
+      <li>Begründung: Fehler in der Einkommensanrechnung, falsche Daten, übersehene Freibeträge</li>
+      <li>Wird der Widerspruch abgelehnt: Klage beim Verwaltungsgericht möglich</li>
+    </ul>
+    <div class="info-box purple">
+      <span class="icon">🏛️</span>
+      <span>Studentische Rechtsberatungen (oft kostenlos an der Hochschule), Studentenwerke und VdSW (Verband der Studierendenwerke) bieten Hilfe beim Widerspruch. Widerspruchsverfahren sind häufig erfolgreich, wenn Einkommensnachweise der Eltern korrekt bewertet werden.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════ QUIZ ════ -->
+<div id="quiz" class="section">
+  <h2 class="section-title">Wissenscheck BAföG</h2>
+  <p class="section-desc">8 Fragen – teste dein BAföG-Wissen.</p>
+
+  <div class="quiz-question" id="q1">
+    <div class="quiz-q">1. Wie viel Prozent des BAföGs muss zurückgezahlt werden?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">100 % – BAföG ist ein vollständiges Darlehen</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q1')">50 % – die andere Hälfte ist ein nicht rückzahlbarer Zuschuss</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">25 %</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q1')">0 % – BAföG ist ein reiner Zuschuss</button>
+    </div>
+    <div class="quiz-feedback" id="fb1">BAföG teilt sich in 50 % Zuschuss (muss nie zurückgezahlt werden) und 50 % zinsloses Staatsdarlehen. Zusätzlich gibt es eine absolute Rückzahlungsobergrenze von 10.010 €.</div>
+  </div>
+
+  <div class="quiz-question" id="q2">
+    <div class="quiz-q">2. Wie hoch ist der monatliche BAföG-Höchstsatz 2024/25 für Studierende außerhalb des Elternhauses (mit KV)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">735 €</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">861 €</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q2')">992 €</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q2')">1.200 €</button>
+    </div>
+    <div class="quiz-feedback" id="fb2">Der Höchstsatz 2024/25 beträgt 992 € monatlich: 812 € Grundbedarf + 109 € KV-Zuschlag + 25 € PV-Zuschlag. Er gilt für Studierende, die nicht bei den Eltern wohnen und eigene KV zahlen.</div>
+  </div>
+
+  <div class="quiz-question" id="q3">
+    <div class="quiz-q">3. Welches Einkommen wird für die Berechnung herangezogen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Das aktuelle Monatseinkommen der Eltern</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q3')">Das Nettoeinkommen der Eltern aus dem vorletzten Kalenderjahr</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Das Bruttoeinkommen aus dem letzten Jahr</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q3')">Der Durchschnitt der letzten 5 Jahre</button>
+    </div>
+    <div class="quiz-feedback" id="fb3">Es wird das Nettoeinkommen aus dem vorletzten Kalenderjahr genutzt. Für 2024/25 also das Einkommen aus 2022. Bei dauerhafter Einkommensminderung um über 10 % kann aktuelles Einkommen beantragt werden.</div>
+  </div>
+
+  <div class="quiz-question" id="q4">
+    <div class="quiz-q">4. Wie hoch ist der Vermögensfreibetrag für den Antragsteller?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">5.200 €</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">8.000 €</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q4')">15.000 €</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q4')">25.000 €</button>
+    </div>
+    <div class="quiz-feedback" id="fb4">Der Vermögensfreibetrag für den Antragsteller beträgt 15.000 €. Alles darüber wird auf den BAföG-Anspruch angerechnet. Für Ehepartner und Kinder gibt es zusätzliche Freibeträge von je 2.300 €.</div>
+  </div>
+
+  <div class="quiz-question" id="q5">
+    <div class="quiz-q">5. Wann beginnt die Rückzahlung des BAföG-Darlehens?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Sofort nach Studienabschluss</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">2 Jahre nach Förderungsende</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q5')">5 Jahre nach Ende der Förderungshöchstdauer</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q5')">Erst ab einem Einkommen von 2.000 € netto</button>
+    </div>
+    <div class="quiz-feedback" id="fb5">Die Rückzahlung beginnt 5 Jahre nach dem Ende der Förderungshöchstdauer beim Bundesverwaltungsamt (BVA). Wer weniger als ca. 1.370 € netto verdient, kann Ratenstundung beantragen.</div>
+  </div>
+
+  <div class="quiz-question" id="q6">
+    <div class="quiz-q">6. Was ist die maximale Rückzahlungspflicht beim BAföG-Darlehen?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Die Hälfte der gesamten Förderung</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Es gibt keine Obergrenze</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q6')">Maximal 10.010 €</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q6')">Maximal 20.000 €</button>
+    </div>
+    <div class="quiz-feedback" id="fb6">Das BAföG-Darlehen ist auf maximal 10.010 € Rückzahlungspflicht gedeckelt – egal wie viel du tatsächlich erhalten hast. Wer 4+ Jahre den Höchstsatz bekommt, zahlt trotzdem nur max. 10.010 € zurück.</div>
+  </div>
+
+  <div class="quiz-question" id="q7">
+    <div class="quiz-q">7. Was passiert, wenn man den Antrag erst 3 Monate nach Studienbeginn stellt?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Die 3 Monate werden rückwirkend ausgezahlt</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q7')">Die 3 Monate gehen verloren – BAföG wird nicht rückwirkend gezahlt</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Es gibt eine einmalige Nachzahlung im ersten Jahr</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q7')">Man bekommt einen Antragsverspätungsbonus</button>
+    </div>
+    <div class="quiz-feedback" id="fb7">BAföG wird ausschließlich ab dem Monat der Antragstellung gezahlt – niemals rückwirkend. Wer 3 Monate zu spät stellt, verliert bis zu 3 × 992 € = fast 3.000 € unwiederbringlich. Deshalb: so früh wie möglich beantragen!</div>
+  </div>
+
+  <div class="quiz-question" id="q8">
+    <div class="quiz-q">8. Wie hoch ist der anrechnungsfreie Betrag beim eigenen Einkommen (ledig, kein Kind)?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">450 €/Monat</button>
+      <button class="quiz-opt" onclick="answer(this,'correct','q8')">555 €/Monat</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">800 €/Monat</button>
+      <button class="quiz-opt" onclick="answer(this,'wrong','q8')">1.000 €/Monat</button>
+    </div>
+    <div class="quiz-feedback" id="fb8">Der anrechnungsfreie Betrag beim eigenen Einkommen beträgt 555 €/Monat netto (Jahresschnitt). Verdienst du mehr, wird der übersteigende Betrag vom BAföG abgezogen. Mit Ehe- oder Lebenspartner steigt der Freibetrag auf 805 €, plus 730 € je Kind.</div>
+  </div>
+
+  <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">
+    <button class="btn" onclick="showScore()">Ergebnis anzeigen</button>
+    <button class="btn secondary" onclick="resetQuiz()">Zurücksetzen</button>
+  </div>
+  <div class="quiz-score" id="quiz-score">
+    <h3 id="score-text"></h3>
+    <p id="score-msg"></p>
+    <div class="progress-bar"><div class="progress-fill" id="score-bar"></div></div>
+  </div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 Tommy Möller · Finanzberatung &amp; Controlling · <a href="#">tommy-moeller.de</a></p>
+  <p style="margin-top:6px;font-size:12px;">Alle Angaben ohne Gewähr · Stand 2024/25 · Kein Ersatz für individuelle Beratung beim Studierendenwerk.</p>
+</footer>
+
+<script>
+/* ── Navigation ── */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── BAföG-Rechner ── */
+function calcBAfoeg(){
+  const bedarfssatz = parseInt(document.getElementById('bw-wohn').value);
+  const elternKonst = document.getElementById('bw-eltern').value;
+  const elternEinkommen = parseFloat(document.getElementById('bw-einkommen').value)||0;
+  const geschwister = parseInt(document.getElementById('bw-geschwister').value)||0;
+  const eigenesEinkommen = parseFloat(document.getElementById('bw-eigenes').value)||0;
+  const vermoegen = parseFloat(document.getElementById('bw-vermoegen').value)||0;
+
+  // Eltern-Freibetrag
+  let elternFreibetrag;
+  if(elternKonst === 'zusammen') elternFreibetrag = 4830;
+  else if(elternKonst === 'getrennt') elternFreibetrag = 2415 * 2;
+  else elternFreibetrag = 2415; // alleinerziehend
+
+  // Geschwisterzuschlag (grob: ~715 € je Geschwister in Ausbildung)
+  elternFreibetrag += geschwister * 715;
+
+  // Elterneinkommen-Überhang → Anrechnung (vereinfachte Tabelle)
+  const elternUeberhang = Math.max(0, elternEinkommen - elternFreibetrag);
+  // Grobe Anrechnungsquote: bei 100 € Überhang ca. 50 € Abzug (vereinfacht)
+  const elternAbzug = Math.min(bedarfssatz, Math.round(elternUeberhang * 0.5));
+
+  // Eigenes Einkommen
+  const einkommenFreibetrag = 555;
+  const eigenerUeberhang = Math.max(0, eigenesEinkommen - einkommenFreibetrag);
+  const eigenerAbzug = Math.min(bedarfssatz - elternAbzug, eigenerUeberhang);
+
+  // Vermögen
+  const vermoegFreibetrag = 15000;
+  const vermoegUeberhang = Math.max(0, vermoegen - vermoegFreibetrag);
+  // Vermögen wird auf Bewilligungszeitraum umgelegt (12 Monate)
+  const vermoegAbzug = Math.min(bedarfssatz - elternAbzug - eigenerAbzug, Math.round(vermoegUeberhang / 12));
+
+  const foerderung = Math.max(0, bedarfssatz - elternAbzug - eigenerAbzug - vermoegAbzug);
+  const zuschuss = Math.round(foerderung / 2);
+  const darlehen = foerderung - zuschuss;
+
+  const fmt = v => v.toLocaleString('de-DE') + ' €';
+  document.getElementById('bw-gesamt').textContent = fmt(foerderung);
+  document.getElementById('bw-zuschuss').textContent = fmt(zuschuss);
+  document.getElementById('bw-darlehen').textContent = fmt(darlehen);
+  document.getElementById('bw-jahr').textContent = fmt(foerderung * 12);
+
+  let status = '';
+  if(foerderung <= 0){
+    status = '❌ Bei diesen Werten besteht nach dieser vereinfachten Berechnung kein BAföG-Anspruch. Trotzdem lohnt sich ein formeller Antrag – die echte Berechnung kann abweichen.';
+  } else if(foerderung < 300){
+    status = '⚠️ Geringer Anspruch – trotzdem lohnt sich der Antrag, da auch kleiner Beträge helfen und du vollen Anspruch auf Wohngeld, Sozialhilfe-Ausschluss etc. behältst.';
+  } else if(foerderung >= 800){
+    status = '✅ Starker Anspruch – unbedingt beantragen! Du bekommst nahe am Höchstsatz.';
+  } else {
+    status = '✅ Guter Anspruch – Antrag lohnt sich deutlich.';
+  }
+  document.getElementById('bw-status').textContent = status;
+}
+calcBAfoeg();
+
+/* ── Quiz ── */
+let quizAnswers = {};
+const TOTAL = 8;
+
+function answer(btn, type, qId){
+  const qEl = document.getElementById(qId);
+  if(qEl.dataset.answered) return;
+  qEl.dataset.answered = '1';
+  qEl.querySelectorAll('.quiz-opt').forEach(o => { o.disabled = true; o.style.cursor = 'default'; });
+  btn.classList.add(type);
+  const num = qId.replace('q','');
+  document.getElementById('fb'+num).classList.add('show', type);
+  quizAnswers[qId] = type === 'correct';
+}
+
+function showScore(){
+  const correct = Object.values(quizAnswers).filter(Boolean).length;
+  const pct = Math.round(correct / TOTAL * 100);
+  document.getElementById('score-text').textContent = correct + ' von ' + TOTAL + ' richtig (' + pct + '%)';
+  document.getElementById('score-msg').textContent =
+    pct >= 87 ? 'Hervorragend – du kennst dich mit BAföG bestens aus!' :
+    pct >= 62 ? 'Solide Basis! Lies nochmals die Abschnitte zu Rückzahlung und Antragsfristen.' :
+    'Geh die Grundlagen und die Berechnung nochmals durch – besonders Fristen und Grenzen.';
+  document.getElementById('score-bar').style.width = pct + '%';
+  const el = document.getElementById('quiz-score');
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetQuiz(){
+  quizAnswers = {};
+  document.querySelectorAll('.quiz-question').forEach(q => delete q.dataset.answered);
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = false; b.style.cursor = 'pointer';
+    b.classList.remove('correct','wrong');
+  });
+  document.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show','correct','wrong'));
+  document.getElementById('quiz-score').style.display = 'none';
+}
+</script>
+</body>
+</html>
