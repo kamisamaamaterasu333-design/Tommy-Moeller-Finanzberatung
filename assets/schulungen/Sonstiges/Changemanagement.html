@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change Management — Lewin &amp; Kotter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EFE6;
+    --paper-dim:#E4E2D3;
+    --panel:#FAF9F3;
+    --ink:#1F2A24;
+    --ink-dim:#5B6259;
+    --rule:#C9C4B3;
+
+    --lewin:#2C6E8A;      --lewin-soft:#D8E6EA;
+    --kotter:#95681E;     --kotter-soft:#EFE1C6;
+    --scheitern:#9B3A34;  --scheitern-soft:#EDD9D5;
+    --erfolg:#3C7A5A;     --erfolg-soft:#DCEAE1;
+
+    --accent: var(--lewin);
+    --accent-soft: var(--lewin-soft);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  header.cover{
+    max-width:1040px;
+    margin:0 auto;
+    padding:56px 28px 32px;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:clamp(34px, 6vw, 56px);
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    font-size:17px;
+    color:var(--ink-dim);
+    max-width:660px;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+  }
+  .meta-row strong{color:var(--ink); font-weight:600;}
+
+  /* ---------- Comparison band ---------- */
+  section.compare{
+    max-width:1040px;
+    margin:0 auto;
+    padding:26px 28px 8px;
+  }
+  .compare h2{
+    font-family:"Fraunces", serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .compare p.lead{
+    color:var(--ink-dim);
+    font-size:14px;
+    margin:0 0 16px;
+    max-width:70ch;
+  }
+  .compare-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+  }
+  .compare-cell{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:14px 16px;
+  }
+  .compare-cell .phase-label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--lewin);
+    display:block;
+    margin-bottom:6px;
+  }
+  .compare-cell .phase-name{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:17px;
+    display:block;
+    margin-bottom:8px;
+  }
+  .compare-cell .kotter-steps{
+    font-size:13px;
+    color:var(--ink-dim);
+  }
+  .compare-cell .kotter-steps b{color:var(--ink); font-weight:600;}
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{
+    max-width:1040px;
+    margin:0 auto;
+    padding:22px 28px 0;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:10;
+    padding-bottom:2px;
+  }
+  .tab-btn{
+    flex:1 1 200px;
+    min-width:160px;
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-bottom:none;
+    border-top:4px solid var(--tab-accent, var(--rule));
+    padding:12px 14px 10px;
+    cursor:pointer;
+    text-align:left;
+    transition:background 0.15s ease;
+  }
+  .tab-btn:hover{background:var(--paper-dim);}
+  .tab-btn .code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    color:var(--ink-dim);
+    display:block;
+    text-transform:uppercase;
+  }
+  .tab-btn .name{
+    font-family:"Fraunces", serif;
+    font-size:17px;
+    font-weight:600;
+    color:var(--ink);
+    display:block;
+    margin-top:2px;
+  }
+  .tab-btn.active{background:var(--accent-soft);}
+  .tab-btn.active .code{color:var(--accent);}
+
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:30px 28px 80px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .tab-intro{
+    font-size:15px;
+    color:var(--ink-dim);
+    max-width:75ch;
+    margin:0 0 24px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--rule);
+  }
+  .tab-intro strong{color:var(--ink);}
+
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-left:5px solid var(--accent);
+    border-radius:2px;
+    padding:24px 26px;
+    margin-bottom:22px;
+  }
+  .lesson-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .ledger-code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:0.04em;
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:2px 7px;
+    white-space:nowrap;
+  }
+  .lesson-card h3{
+    font-family:"Fraunces", serif;
+    font-size:22px;
+    font-weight:600;
+    margin:0;
+  }
+  .lesson-card p.explain{
+    margin:8px 0 14px;
+    color:var(--ink);
+    max-width:75ch;
+  }
+
+  .box{
+    margin-top:12px;
+    padding:13px 16px;
+    border-radius:4px;
+    font-size:14px;
+  }
+  .box .label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    display:block;
+    margin-bottom:6px;
+  }
+  .box.beispiel{
+    background:var(--paper);
+    border:1px dashed var(--rule);
+  }
+  .box.beispiel .label{color:var(--ink-dim);}
+
+  .box.instrumente{
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+  }
+  .box.instrumente .label{color:var(--accent);}
+  .box.instrumente ul{
+    margin:4px 0 0;
+    padding-left:18px;
+  }
+  .box.instrumente li{margin-bottom:4px;}
+
+  .note{
+    max-width:1040px;
+    margin:0 auto 40px;
+    padding:0 28px;
+  }
+  .note-inner{
+    border-left:3px solid var(--ink-dim);
+    padding:4px 16px;
+    font-size:13.5px;
+    color:var(--ink-dim);
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px 28px 60px;
+    color:var(--ink-dim);
+    font-size:13px;
+  }
+
+  @media (max-width:640px){
+    header.cover{padding:36px 18px 24px;}
+    section.compare{padding:20px 18px 4px;}
+    .compare-grid{grid-template-columns:1fr;}
+    nav.tabs{padding:16px 18px 0;}
+    main{padding:22px 18px 60px;}
+    .lesson-card{padding:18px 16px;}
+  }
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="eyebrow">Lernmodul · tommy-moeller.de</p>
+  <h1 class="title">Change Management</h1>
+  <p class="subtitle">Zwei Modelle, eine Logik: Kurt Lewins drei Phasen geben die Grobstruktur vor, John Kotters acht Schritte füllen sie mit konkreten Handlungen. Dazu: woran Change in der Praxis scheitert und mit welchen Instrumenten er gelingt.</p>
+  <div class="meta-row">
+    <span><strong>2</strong> Modelle</span>
+    <span><strong>3</strong> Lewin-Phasen</span>
+    <span><strong>8</strong> Kotter-Schritte</span>
+    <span><strong>Fokus:</strong> Praxisbeispiele &amp; konkrete Instrumente</span>
+  </div>
+</header>
+
+<section class="compare">
+  <h2>Wie die beiden Modelle zusammenhängen</h2>
+  <p class="lead">Kotters acht Schritte lassen sich den drei Lewin-Phasen zuordnen — Lewin liefert die Landkarte, Kotter das Drehbuch für jede Etappe.</p>
+  <div class="compare-grid">
+    <div class="compare-cell">
+      <span class="phase-label">Phase 1</span>
+      <span class="phase-name">Auftauen</span>
+      <span class="kotter-steps">Kotter <b>1–4</b>: Dringlichkeit, Koalition, Vision, Kommunikation</span>
+    </div>
+    <div class="compare-cell">
+      <span class="phase-label">Phase 2</span>
+      <span class="phase-name">Bewegen</span>
+      <span class="kotter-steps">Kotter <b>5–7</b>: Hindernisse räumen, Quick Wins, Konsolidieren</span>
+    </div>
+    <div class="compare-cell">
+      <span class="phase-label">Phase 3</span>
+      <span class="phase-name">Einfrieren</span>
+      <span class="kotter-steps">Kotter <b>8</b>: Neue Ansätze in der Kultur verankern</span>
+    </div>
+  </div>
+</section>
+
+<nav class="tabs" id="tabNav"></nav>
+<main id="content"></main>
+
+<footer>
+  Eigenständiges Lernmodul — offline nutzbar, keine externen Abhängigkeiten außer Web-Fonts. Jede Lektion ist über ihren Ledger-Code referenzierbar (z. B. <code>KOT-05</code> = Kotter, Schritt 5).
+</footer>
+
+<script>
+const TABS = [
+  {key:"lewin", code:"LEW", name:"Kurt Lewin — 3 Phasen", accent:"--lewin", soft:"--lewin-soft",
+   intro:"Kurt Lewin (1947) beschreibt Veränderung als Übergang zwischen drei Zuständen: Ein bestehendes Gleichgewicht wird bewusst aufgelöst, ein neuer Zustand wird erprobt, und dieser wird anschließend stabilisiert. Das Modell ist bewusst einfach — genau das macht es bis heute zur gemeinsamen Sprache für komplexere Modelle wie das von Kotter."},
+  {key:"kotter", code:"KOT", name:"John Kotter — 8 Schritte", accent:"--kotter", soft:"--kotter-soft",
+   intro:"John Kotter entwickelte sein 8-Stufen-Modell (1996) aus der Beobachtung von über 100 gescheiterten Veränderungsprojekten. Jeder Schritt adressiert einen typischen Fehler — die Reihenfolge ist kein Zufall: Wird ein Schritt übersprungen, wirkt sich das in der Praxis fast immer in einem der späteren Schritte als Problem aus."},
+  {key:"scheitern", code:"SCH", name:"Warum Change scheitert", accent:"--scheitern", soft:"--scheitern-soft",
+   intro:"Die häufigsten Ursachen für gescheiterten Wandel sind seit Jahrzehnten erstaunlich konstant — die meisten spiegeln direkt einen übersprungenen oder zu früh abgebrochenen Kotter-Schritt."},
+  {key:"erfolg", code:"ERF", name:"Erfolgsfaktoren & Instrumente", accent:"--erfolg", soft:"--erfolg-soft",
+   intro:"Ein Werkzeugkasten konkreter Methoden, die sich in beiden Modellen und in der Praxis wiederholt bewähren — unabhängig davon, welchem Rahmenmodell man folgt."}
+];
+
+const CONTENT = {
+  lewin: [
+    {badge:"Phase 1 von 3", title:"Auftauen (Unfreezing)",
+     explain:"Der Ist-Zustand wird bewusst instabil gemacht. Menschen ändern ihr Verhalten erst, wenn sie einen echten Grund dafür sehen — Leidensdruck oder eine attraktive Vision. Ohne diese Phase trifft jede Maßnahme auf stille Ablehnung, weil niemand versteht, warum Bewährtes aufgegeben werden soll.",
+     beispiel:"Eine Bank stellt fest, dass Kreditanträge doppelt so lange dauern wie beim Wettbewerb. Statt „wir müssen digitaler werden“ zu verkünden, zeigt die Geschäftsführung im Town Hall die konkrete Zahl zum Marktanteilsverlust.",
+     tools:["Kraftfeldanalyse (Force Field Analysis) — treibende vs. bremsende Kräfte visualisieren","Stakeholderanalyse: wer trägt, wer bremst den Wandel","Ist-Soll-Vergleich mit harten Kennzahlen statt Meinungen","Town Halls und Kick-off-Workshops zur Erstkommunikation"]},
+    {badge:"Phase 2 von 3", title:"Bewegen (Changing / Moving)",
+     explain:"Die eigentliche Veränderung findet statt: neue Prozesse, Rollen oder Systeme werden eingeführt und ausprobiert. Diese Phase ist unbequem, weil alte Routinen noch nicht ersetzt und neue noch nicht gefestigt sind — Produktivität sinkt oft vorübergehend, bevor sie wieder steigt.",
+     beispiel:"Bei der Einführung eines neuen Kernbankensystems arbeiten Mitarbeitende einige Wochen parallel im alten und neuen System, begleitet von Schulungen und einem Support-Team („Hypercare“).",
+     tools:["Pilotprojekte in einzelnen Einheiten vor dem Vollrollout","Schulungsprogramme mit Übungsphase, nicht nur Präsentation","Change-Agents / Multiplikatoren-Netzwerk in den Teams","Regelmäßige Feedback-Schleifen, z. B. Retrospektiven","Fester Kommunikationsplan statt Ad-hoc-Updates"]},
+    {badge:"Phase 3 von 3", title:"Einfrieren (Refreezing)",
+     explain:"Das neue Verhalten wird stabilisiert, damit es nicht in alte Muster zurückfällt. Ohne diese Phase verpufft jede Veränderung, sobald der äußere Druck nachlässt — Menschen kehren nachweislich zum bequemeren, alten Verhalten zurück, wenn es weiterhin möglich ist.",
+     beispiel:"Nach der Systemumstellung werden neue Prozesse in Arbeitsanweisungen und Zielvereinbarungen verankert; alte Vorlagen und Systemzugänge werden bewusst und endgültig abgeschaltet.",
+     tools:["Standardarbeitsanweisungen (SOPs) aktualisieren","KPIs und Zielvereinbarungen an neues Verhalten anpassen","Alte Systeme/Prozesse konsequent abschalten — kein Fallback offenlassen","Erfolge sichtbar anerkennen und feiern"]}
+  ],
+  kotter: [
+    {badge:"Schritt 1 von 8", title:"Ein Gefühl der Dringlichkeit erzeugen",
+     explain:"Ohne echte Dringlichkeit bleibt Wandel eine Pflichtübung. Kotter fordert, dass ein Großteil des Managements ehrlich von der Notwendigkeit überzeugt ist, bevor überhaupt gestartet wird — sonst zerfällt die Initiative bei der ersten Krise woanders im Unternehmen.",
+     beispiel:"Eine Analyse zeigt: Ein Wettbewerber trifft Kreditentscheidungen in 24 Stunden statt in zwei Wochen. Diese eine Zahl wird zum zentralen Weckruf in jeder Kommunikation.",
+     tools:["Markt- und Wettbewerbsbenchmarking","SWOT-Analyse als gemeinsame Diskussionsgrundlage","„Burning Platform“-Kommunikation mit konkreten Zahlen","Externe Impulsvorträge oder Kundenstimmen einbinden"]},
+    {badge:"Schritt 2 von 8", title:"Eine Führungskoalition aufbauen",
+     explain:"Eine einzelne Führungskraft reicht nicht aus. Es braucht ein Team mit Macht, Glaubwürdigkeit und Fachwissen aus verschiedenen Bereichen, das den Wandel gemeinsam trägt und sich gegenseitig deckt, wenn Widerstand aufkommt.",
+     beispiel:"Eine Steuerungsgruppe aus IT-Leitung, Vertriebsleitung, Betriebsrat und einer externen Beratung trifft sich wöchentlich und tritt geschlossen nach außen auf.",
+     tools:["Kernteam / Steering Committee mit klarem Mandat","Stakeholder-Mapping (Macht-Interesse-Matrix)","Sponsorship-Modell mit klarer Top-Management-Patenschaft"]},
+    {badge:"Schritt 3 von 8", title:"Eine Vision und Strategie entwickeln",
+     explain:"Eine klare, einprägsame Vision gibt der Veränderung eine Richtung und macht tägliche Entscheidungen konsistent — Mitarbeitende sollen jederzeit erklären können, wohin die Reise geht und warum.",
+     beispiel:"„Kreditentscheidung in 24 Stunden, ohne Medienbruch“ als Vision — statt der vagen Formulierung „wir digitalisieren den Kreditprozess“.",
+     tools:["Visionsworkshops mit der Führungskoalition","Eine North-Star-Metrik definieren, an der sich alles ausrichtet","Strategy Map oder OKRs zur Übersetzung in Teilziele"]},
+    {badge:"Schritt 4 von 8", title:"Die Vision kommunizieren",
+     explain:"Die Vision muss deutlich öfter kommuniziert werden, als man für nötig hält — über alle Kanäle, und vor allem durch das Vorbildverhalten der Führung. Eine Ankündigung reicht nicht; Wiederholung und Konsistenz zwischen Wort und Handeln zählen.",
+     beispiel:"Die Vision erscheint im Intranet, in jedem Team-Meeting und wird von Führungskräften aktiv vorgelebt, nicht nur einmalig verkündet.",
+     tools:["Kommunikationsplan mit bewusstem Kanal-Mix","Storytelling statt reiner Foliensätze","Frage-Antwort-Formate wie Town Halls oder AMAs","Führungskräfte als sichtbare Vorbilder (\"walk the talk\")"]},
+    {badge:"Schritt 5 von 8", title:"Hindernisse aus dem Weg räumen",
+     explain:"Strukturen, Prozesse oder Personen, die den Wandel aktiv blockieren, müssen beseitigt werden — sonst verpufft alle Motivation an der ersten bürokratischen Hürde.",
+     beispiel:"Eine Genehmigungsschleife mit fünf erforderlichen Unterschriften wird für das Pilotprojekt testweise auf eine einzige reduziert.",
+     tools:["Prozessanalyse bzw. Wertstromanalyse zur Identifikation von Bremsen","Klare Eskalationswege definieren","Gezielte Ressourcenfreigabe für die Umsetzung","Widerstandsanalyse: aktive Blockierer identifizieren und ansprechen"]},
+    {badge:"Schritt 6 von 8", title:"Kurzfristige Erfolge sichtbar machen",
+     explain:"Sichtbare, schnelle Erfolge liefern den Beweis, dass der Wandel funktioniert, und entziehen Kritikern ihre Argumente. Ohne Quick Wins bleibt Veränderung abstrakt und verliert an Rückhalt.",
+     beispiel:"Nach sechs Wochen wird die erste Filiale mit dem neuen Prozess vorgestellt — mit der konkreten Zahl „30 % schnellere Bearbeitung“.",
+     tools:["Pilotauswertungen mit klar definierten KPIs vorab","Interne Erfolgsgeschichten aktiv kommunizieren","Meilensteinplanung mit bewusst früh erreichbaren Zielen"]},
+    {badge:"Schritt 7 von 8", title:"Erfolge konsolidieren, weitere Veränderungen einleiten",
+     explain:"Nach ersten Erfolgen darf der Druck nicht nachlassen. Kotter warnt ausdrücklich davor, den Sieg zu früh zu erklären — die meisten Projekte scheitern nicht am Start, sondern am vorzeitigen Ausruhen nach dem ersten Erfolg.",
+     beispiel:"Nach dem erfolgreichen Pilot in einer Filiale wird der Rollout sofort auf alle Filialen ausgeweitet, statt das Projekt für „abgeschlossen“ zu erklären.",
+     tools:["Rollout-Roadmap mit klaren Etappen","Kontinuierliches Monitoring der Zielkennzahlen","Die Guiding Coalition um neue Change-Agents erweitern"]},
+    {badge:"Schritt 8 von 8", title:"Neue Ansätze in der Kultur verankern",
+     explain:"Veränderung ist erst nachhaltig, wenn sie Teil der Unternehmenskultur, der Einstellungskriterien und der Führungsprinzipien wird — und nicht mehr als „das Projekt von letztem Jahr“ gilt.",
+     beispiel:"„Kundenzentrierte Schnelligkeit“ wird Teil der Führungsleitlinien und fester Bestandteil der jährlichen Zielvereinbarungsgespräche.",
+     tools:["Kultur- bzw. Leitprinzipien aktualisieren","Onboarding-Programme an neue Standards anpassen","Anerkennungs- und Beförderungskriterien an neues Verhalten koppeln"]}
+  ],
+  scheitern: [
+    {badge:"Ursache", title:"Fehlende Dringlichkeit",
+     explain:"Wenn Betroffene den Handlungsdruck nicht spüren, bleibt jede Maßnahme eine lästige Zusatzaufgabe neben dem Tagesgeschäft.",
+     beispiel:"Ein Digitalisierungsprojekt startet mit der Begründung „das machen andere Banken auch“ — ohne eigene Zahlen, ohne spürbaren Anlass.",
+     toolsLabel:"Gegenmittel",
+     tools:["Konkrete, unternehmenseigene Kennzahlen statt allgemeiner Trends nutzen","Dringlichkeit an echten Konsequenzen festmachen, nicht an Buzzwords"]},
+    {badge:"Ursache", title:"Zu schwache Führungskoalition",
+     explain:"Ein einzelner engagierter Projektleiter ohne Rückendeckung des Managements verliert jeden ernsthaften Konflikt gegen die Linienorganisation.",
+     beispiel:"Der Change wird an einen Projektleiter ohne Weisungsbefugnis delegiert; Bereichsleiter ignorieren die Initiative faktisch.",
+     toolsLabel:"Gegenmittel",
+     tools:["Sichtbares, aktives Sponsoring durch die oberste Führungsebene","Steering Committee mit echter Entscheidungsmacht"]},
+    {badge:"Ursache", title:"Fehlende oder unklare Vision",
+     explain:"Ohne eine gemeinsame Richtung entsteht „Projektitis“: viele Einzelmaßnahmen ohne erkennbaren Zusammenhang, die sich gegenseitig blockieren.",
+     beispiel:"Drei parallele Digitalisierungsprojekte in unterschiedlichen Abteilungen verfolgen widersprüchliche Ziele, weil keine übergeordnete Vision existiert.",
+     toolsLabel:"Gegenmittel",
+     tools:["Eine einzige, einprägsame Vision formulieren, an der alle Maßnahmen gespiegelt werden","Vision in einem Satz testbar machen: Kann jeder Mitarbeitende sie wiedergeben?"]},
+    {badge:"Ursache", title:"Unterkommunikation der Vision",
+     explain:"Eine einmalige Ankündigung reicht nicht. Ohne Wiederholung verblasst selbst eine gute Vision im Alltagsgeschäft innerhalb weniger Wochen.",
+     beispiel:"Die Vision wird in einer Kick-off-Präsentation gezeigt und danach nie wieder erwähnt — nach drei Monaten kennt sie kaum noch jemand.",
+     toolsLabel:"Gegenmittel",
+     tools:["Feste Kommunikationsformate über die gesamte Projektlaufzeit einplanen","Führungskräfte verpflichten, die Vision aktiv im eigenen Team aufzugreifen"]},
+    {badge:"Ursache", title:"Blockierende Strukturen nicht beseitigt",
+     explain:"Alte Prozesse, Genehmigungswege oder Anreizsysteme, die dem neuen Verhalten widersprechen, sabotieren den Wandel leiser, aber wirksamer als offener Widerstand.",
+     beispiel:"Ein neues, agiles Arbeitsmodell wird eingeführt, während die Boni weiterhin ausschließlich an Einzelzielvereinbarungen hängen.",
+     toolsLabel:"Gegenmittel",
+     tools:["Anreiz- und Kennzahlensysteme parallel zum Prozess anpassen","Regelmäßig aktiv nach Blockaden fragen, statt sie zu vermuten"]},
+    {badge:"Ursache", title:"Fehlende kurzfristige Erfolge",
+     explain:"Ohne sichtbare Zwischenerfolge verliert selbst eine anfangs überzeugte Belegschaft nach einigen Monaten den Glauben an das Projekt.",
+     beispiel:"Ein zweijähriges Transformationsprogramm liefert erst nach 18 Monaten den ersten messbaren Effekt — die Unterstützung ist da längst erodiert.",
+     toolsLabel:"Gegenmittel",
+     tools:["Bewusst früh erreichbare Meilensteine einplanen","Zwischenerfolge aktiv sichtbar machen, auch kleine"]},
+    {badge:"Ursache", title:"Sieg zu früh verkündet",
+     explain:"Nach dem ersten Erfolg lässt der Druck nach, Ressourcen werden abgezogen — und Teams fallen in alte Muster zurück, bevor der Wandel wirklich verankert ist.",
+     beispiel:"Nach einem erfolgreichen Pilotprojekt wird das Projektteam aufgelöst, bevor der Rollout auf die restliche Organisation beginnt.",
+     toolsLabel:"Gegenmittel",
+     tools:["Rollout explizit als eigene Phase mit eigenem Budget planen","Erst nach vollständiger Verankerung von „Erfolg“ sprechen"]},
+    {badge:"Ursache", title:"Wandel nicht in der Kultur verankert",
+     explain:"Wenn neues Verhalten nach Projektende nicht in Führungsprinzipien, Onboarding und Beurteilungskriterien einfließt, bleibt es eine Ausnahme statt neuer Normalität.",
+     beispiel:"Neue Mitarbeitende werden weiterhin nach dem alten Prozess eingearbeitet, weil das Onboarding-Material nie aktualisiert wurde.",
+     toolsLabel:"Gegenmittel",
+     tools:["Onboarding, Leitbild und Beurteilungskriterien konsequent aktualisieren","Verantwortlichkeit für die Kulturverankerung explizit zuweisen"]}
+  ],
+  erfolg: [
+    {badge:"Instrument", title:"Kraftfeldanalyse (Force Field Analysis)",
+     explain:"Von Lewin selbst entwickelt: Treibende und bremsende Kräfte eines Vorhabens werden gegenübergestellt und gewichtet. Das macht sichtbar, wo ein Ansatzpunkt wirklich wirkt — oft ist es effektiver, eine Bremse zu lösen, als noch mehr Antrieb aufzubauen.",
+     beispiel:"Treibende Kraft: Wettbewerbsdruck. Bremsende Kraft: Angst vor Arbeitsplatzverlust durch Automatisierung. Die zweite Kraft wird gezielt durch Kommunikation zu Weiterbildung statt Stellenabbau adressiert."},
+    {badge:"Instrument", title:"Stakeholder- / Macht-Interesse-Matrix",
+     explain:"Betroffene werden nach Einfluss und Interesse am Vorhaben eingeordnet. Daraus ergibt sich, wer eng eingebunden, wer informiert und wer nur beobachtet werden muss — Kommunikationsaufwand wird gezielt statt gleichmäßig verteilt.",
+     beispiel:"Der Betriebsrat (hoher Einfluss, hohes Interesse) wird von Anfang an ins Steering Committee eingebunden; einzelne Sachbearbeiter (geringer Einfluss) erhalten reine Informationsupdates."},
+    {badge:"Instrument", title:"ADKAR-Modell",
+     explain:"Ergänzt Kotter auf individueller Ebene: Awareness, Desire, Knowledge, Ability, Reinforcement. Es prüft, ob eine einzelne Person überhaupt bereit und in der Lage ist, sich zu verändern — nicht nur, ob die Organisation als Ganzes einen Plan hat.",
+     beispiel:"Ein Mitarbeiter versteht die Notwendigkeit (Awareness) und will mitziehen (Desire), hat aber schlicht keine Schulung erhalten (Knowledge fehlt) — die Lösung ist gezieltes Training, nicht mehr Kommunikation."},
+    {badge:"Instrument", title:"Kommunikationsplan (Wer/Was/Wann/Wie/Warum)",
+     explain:"Systematisiert Kommunikation statt sie dem Zufall zu überlassen: für jede Zielgruppe wird festgelegt, welche Botschaft über welchen Kanal zu welchem Zeitpunkt gesendet wird.",
+     beispiel:"Führungskräfte erhalten wöchentliche Kurz-Updates für ihre Teammeetings, während die Gesamtbelegschaft monatlich per Newsletter informiert wird."},
+    {badge:"Instrument", title:"Change-Agent-Netzwerk",
+     explain:"Multiplikatoren in den Teams, die nicht Teil der Kernprojektorganisation sind, aber Vertrauen genießen und Fragen aus erster Hand beantworten können. Sie verankern den Wandel dezentral, wo eine zentrale Projektkommunikation nicht hinreicht.",
+     beispiel:"In jeder Filiale übernimmt eine erfahrene Kollegin die Rolle der Ansprechpartnerin für Fragen zum neuen Prozess, statt alles über die zentrale Projektleitung zu klären."},
+    {badge:"Instrument", title:"Widerstandsanalyse & Umgang mit Widerstand",
+     explain:"Widerstand ist ein Signal, kein Störfaktor — er zeigt oft berechtigte Bedenken oder unbeantwortete Fragen. Aktives Zuhören und gezielte Gespräche mit erkennbaren Kritikern verhindern verdeckte Sabotage.",
+     beispiel:"Statt eine kritische Führungskraft zu übergehen, wird sie gezielt in die Pilotphase eingebunden — aus Kritikerin wird eine der stärksten Fürsprecherinnen."},
+    {badge:"Instrument", title:"Quick-Win-Planung mit KPI-Tracking",
+     explain:"Frühe, messbare Erfolge werden von Anfang an gezielt eingeplant, nicht dem Zufall überlassen — inklusive vorab definierter Kennzahl, an der der Erfolg later unbestreitbar sichtbar wird.",
+     beispiel:"Vor dem Pilotstart wird festgelegt: „Erfolg = Bearbeitungszeit sinkt in vier Wochen um mindestens 20 %“ — messbar und im Vorfeld kommuniziert."},
+    {badge:"Instrument", title:"Retrospektiven & Feedbackschleifen",
+     explain:"Regelmäßige, strukturierte Rückblicke während der Umsetzung — nicht erst am Projektende — erlauben es, Kurskorrekturen frühzeitig vorzunehmen, statt Fehler über Monate mitzuschleppen.",
+     beispiel:"Alle zwei Wochen hält das Projektteam eine 30-minütige Retrospektive ab: Was lief gut, was bremst, was ändern wir sofort?"}
+  ]
+};
+
+let currentTab = "lewin";
+
+function setAccent(tab){
+  const t = TABS.find(x => x.key === tab);
+  document.documentElement.style.setProperty("--accent", `var(${t.accent})`);
+  document.documentElement.style.setProperty("--accent-soft", `var(${t.soft})`);
+}
+
+function renderTabs(){
+  const nav = document.getElementById("tabNav");
+  nav.innerHTML = TABS.map(t => `
+    <button class="tab-btn ${t.key===currentTab?'active':''}" style="--tab-accent:var(${t.accent})" data-tab="${t.key}">
+      <span class="code">${t.code}</span>
+      <span class="name">${t.name}</span>
+    </button>
+  `).join("");
+  nav.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTab = btn.dataset.tab;
+      setAccent(currentTab);
+      renderTabs();
+      renderContent();
+      document.getElementById("content").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+}
+
+function renderContent(){
+  const tab = TABS.find(t=>t.key===currentTab);
+  const items = CONTENT[currentTab];
+  const container = document.getElementById("content");
+
+  const cards = items.map((it, i)=>{
+    const code = `${tab.code}-${String(i+1).padStart(2,"0")}`;
+    const beispielLabel = it.beispielLabel || "Praxisbeispiel";
+    const toolsLabel = it.toolsLabel || "Instrumente & Methoden";
+    const toolsHtml = it.tools
+      ? `<ul>${it.tools.map(x=>`<li>${x}</li>`).join("")}</ul>`
+      : "";
+    return `
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="ledger-code">${code}</span>
+          <h3>${it.title}</h3>
+        </div>
+        ${it.badge ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);letter-spacing:0.06em;margin-bottom:8px;text-transform:uppercase;">${it.badge}</div>` : ""}
+        <p class="explain">${it.explain}</p>
+        ${it.beispiel ? `<div class="box beispiel"><span class="label">${beispielLabel}</span>${it.beispiel}</div>` : ""}
+        ${toolsHtml ? `<div class="box instrumente"><span class="label">${toolsLabel}</span>${toolsHtml}</div>` : ""}
+      </article>
+    `;
+  }).join("");
+
+  container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+}
+
+setAccent(currentTab);
+renderTabs();
+renderContent();
+</script>
+</body>
+</html>
