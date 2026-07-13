@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKS &amp; Schriftlich Fixierte Ordnung — MaRisk/KWG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EFE6;
+    --paper-dim:#E4E2D3;
+    --panel:#FAF9F3;
+    --ink:#1F2A24;
+    --ink-dim:#5B6259;
+    --rule:#C9C4B3;
+
+    --rahmen:#2E3F5C;  --rahmen-soft:#DCE1EA;
+    --aufbau:#2E6B6E;  --aufbau-soft:#D9E7E7;
+    --weiter:#6E5C2E;  --weiter-soft:#EAE4D0;
+    --sfo:#6E2E45;     --sfo-soft:#EAD9DF;
+    --stolper:#9B3A34; --stolper-soft:#EDD9D5;
+
+    --accent: var(--rahmen);
+    --accent-soft: var(--rahmen-soft);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  header.cover{
+    max-width:1040px;
+    margin:0 auto;
+    padding:56px 28px 32px;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:clamp(28px, 5.2vw, 48px);
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    font-size:17px;
+    color:var(--ink-dim);
+    max-width:680px;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+  }
+  .meta-row strong{color:var(--ink); font-weight:600;}
+
+  .legal-note{
+    max-width:1040px;
+    margin:18px auto 0;
+    padding:0 28px;
+  }
+  .legal-note-inner{
+    border-left:3px solid var(--ink-dim);
+    padding:8px 16px;
+    font-size:13px;
+    color:var(--ink-dim);
+  }
+
+  nav.tabs{
+    max-width:1040px;
+    margin:0 auto;
+    padding:22px 28px 0;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:10;
+    padding-bottom:2px;
+  }
+  .tab-btn{
+    flex:1 1 170px;
+    min-width:150px;
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-bottom:none;
+    border-top:4px solid var(--tab-accent, var(--rule));
+    padding:11px 12px 9px;
+    cursor:pointer;
+    text-align:left;
+    transition:background 0.15s ease;
+  }
+  .tab-btn:hover{background:var(--paper-dim);}
+  .tab-btn .code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10px;
+    letter-spacing:0.09em;
+    color:var(--ink-dim);
+    display:block;
+    text-transform:uppercase;
+  }
+  .tab-btn .name{
+    font-family:"Fraunces", serif;
+    font-size:15.5px;
+    font-weight:600;
+    color:var(--ink);
+    display:block;
+    margin-top:2px;
+    line-height:1.25;
+  }
+  .tab-btn.active{background:var(--accent-soft);}
+  .tab-btn.active .code{color:var(--accent);}
+
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:30px 28px 80px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .tab-intro{
+    font-size:15px;
+    color:var(--ink-dim);
+    max-width:75ch;
+    margin:0 0 24px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--rule);
+  }
+
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-left:5px solid var(--accent);
+    border-radius:2px;
+    padding:24px 26px;
+    margin-bottom:22px;
+  }
+  .lesson-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .ledger-code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:0.04em;
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:2px 7px;
+    white-space:nowrap;
+  }
+  .lesson-card h3{
+    font-family:"Fraunces", serif;
+    font-size:20.5px;
+    font-weight:600;
+    margin:0;
+  }
+  .lesson-card p.explain{
+    margin:8px 0 14px;
+    color:var(--ink);
+    max-width:75ch;
+  }
+
+  .steps-label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--accent);
+    display:block;
+    margin:16px 0 8px;
+  }
+  ol.steps{
+    margin:0 0 4px;
+    padding-left:22px;
+  }
+  ol.steps li{margin-bottom:6px; font-size:14.5px;}
+
+  .box{
+    margin-top:14px;
+    padding:13px 16px;
+    border-radius:4px;
+    font-size:14px;
+  }
+  .box .label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    display:block;
+    margin-bottom:6px;
+  }
+  .box.praxis{
+    background:var(--paper);
+    border:1px dashed var(--rule);
+  }
+  .box.praxis .label{color:var(--ink-dim);}
+
+  .box.gegenmittel{
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+  }
+  .box.gegenmittel .label{color:var(--accent);}
+
+  .box.tools{
+    background:var(--panel);
+    border:1px solid var(--rule);
+  }
+  .box.tools .label{color:var(--ink-dim);}
+  .tool-pills{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:2px;
+  }
+  .tool-pills .pill{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px 28px 60px;
+    color:var(--ink-dim);
+    font-size:13px;
+  }
+
+  @media (max-width:640px){
+    header.cover{padding:36px 18px 24px;}
+    .legal-note{padding:0 18px;}
+    nav.tabs{padding:16px 18px 0;}
+    main{padding:22px 18px 60px;}
+    .lesson-card{padding:18px 16px;}
+  }
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="eyebrow">Lernmodul · tommy-moeller.de</p>
+  <h1 class="title">IKS &amp; Schriftlich Fixierte Ordnung</h1>
+  <p class="subtitle">Umsetzung und Weiterentwicklung des Internen Kontrollsystems sowie Konzeption und Einführung einer bankweiten SFO-Vorgabe gemäß MaRisk und KWG — regulatorischer Rahmen, konkretes Vorgehen, unterstützende Instrumente und typische Stolpersteine.</p>
+  <div class="meta-row">
+    <span><strong>5</strong> Themenfelder</span>
+    <span><strong>22</strong> Lektionen</span>
+    <span><strong>Basis:</strong> MaRisk (BA 06/2024, 29.05.2024) &amp; Paragraph 25a KWG</span>
+  </div>
+</header>
+
+<div class="legal-note">
+  <div class="legal-note-inner">
+    Hinweis: Dieses Modul ordnet die aktuell gültige MaRisk-Struktur praxisnah ein, ersetzt aber keine Rechts- oder Prüfungsberatung. Die BaFin konsultiert aktuell eine neue MaRisk-Novelle — vor einer verbindlichen SFO-Einführung lohnt sich ein Blick auf den jeweils aktuellen Stand auf bafin.de.
+  </div>
+</div>
+
+<nav class="tabs" id="tabNav"></nav>
+<main id="content"></main>
+
+<footer>
+  Eigenständiges Lernmodul — offline nutzbar, keine externen Abhängigkeiten außer Web-Fonts. Jede Lektion ist über ihren Ledger-Code referenzierbar (z. B. <code>SFO-03</code> = SFO-Einführung, Schritt 3).
+</footer>
+
+<script>
+const TABS = [
+  {key:"rahmen", code:"RAH", name:"Regulatorischer Rahmen", accent:"--rahmen", soft:"--rahmen-soft",
+   intro:"Bevor ein IKS weiterentwickelt oder eine SFO eingeführt wird, muss die rechtliche Verankerung klar sein — sonst fehlt jeder internen Vorgabe die Rückbindung an eine tatsächliche Pflicht."},
+  {key:"aufbau", code:"AUF", name:"IKS: Aufbau & Elemente", accent:"--aufbau", soft:"--aufbau-soft",
+   intro:"Die Bausteine, aus denen sich ein Internes Kontrollsystem nach MaRisk AT 4.3 zusammensetzt — die Grundlage, um Lücken oder Schwachstellen im eigenen IKS überhaupt erkennen zu können."},
+  {key:"weiter", code:"WEI", name:"IKS weiterentwickeln", accent:"--weiter", soft:"--weiter-soft",
+   intro:"Ein konkreter Ablauf in fünf Schritten, um ein bestehendes IKS systematisch zu überprüfen und weiterzuentwickeln — von der Ist-Aufnahme bis zum Bericht an die Geschäftsleitung."},
+  {key:"sfo", code:"SFO", name:"SFO konzipieren & einführen", accent:"--sfo", soft:"--sfo-soft",
+   intro:"Der Weg von einer gewachsenen, unübersichtlichen Regelungslandschaft zu einer bankweit geltenden, gepflegten Schriftlich Fixierten Ordnung — ebenfalls in fünf konkreten Schritten."},
+  {key:"stolper", code:"STO", name:"Typische Stolpersteine", accent:"--stolper", soft:"--stolper-soft",
+   intro:"Die Muster, an denen IKS-Weiterentwicklung und SFO-Einführung in der Praxis am häufigsten scheitern — und was jeweils konkret dagegenhilft."}
+];
+
+const CONTENT = {
+  rahmen: [
+    {title:"Paragraph 25a KWG: ordnungsgemäße Geschäftsorganisation",
+     explain:"Paragraph 25a Absatz 1 KWG verpflichtet jedes Institut zu einer ordnungsgemäßen Geschäftsorganisation, die ein angemessenes und wirksames Risikomanagement gewährleistet. Die MaRisk konkretisieren diese gesetzliche Generalklausel als norminterpretierende Verwaltungsvorschrift der BaFin — sie sind also kein eigenständiges Gesetz, sondern die verbindliche Auslegung der gesetzlichen Pflicht.",
+     praxis:"Für die praktische Arbeit bedeutet das: Jede interne Vorgabe, auch eine neue SFO-Regelung, sollte gedanklich bis auf Paragraph 25a KWG rückführbar sein — die MaRisk-Textziffer liefert die Konkretisierung, nicht die eigentliche Rechtsgrundlage."},
+    {title:"AT 4.3 Internes Kontrollsystem: die vier Bausteine",
+     explain:"Die aktuelle MaRisk-Fassung (Rundschreiben 06/2024, Stand 29.05.2024) gliedert das IKS in AT 4.3.1 Aufbau- und Ablauforganisation, AT 4.3.2 Risikosteuerungs- und -controllingprozesse, AT 4.3.3 Stresstests sowie AT 4.3.4 Datenmanagement, Datenqualität und Aggregation von Risikodaten. Alle vier Bausteine zusammen bilden das, was in der Praxis kurz als IKS bezeichnet wird.",
+     praxis:"Bei einer Weiterentwicklung des IKS lohnt es sich, diese vier Bausteine als Prüfraster zu nutzen — viele Institute konzentrieren sich unbewusst nur auf AT 4.3.1 und vernachlässigen die Datenqualität nach AT 4.3.4."},
+    {title:"AT 4.4 Besondere Funktionen & Drei-Linien-Modell",
+     explain:"AT 4.4 fasst Risikocontrolling-Funktion, Compliance-Funktion und Interne Revision als besondere Funktionen zusammen. In der Praxis entspricht das dem Drei-Linien-Modell: die Fachbereiche mit prozessintegrierten Kontrollen als erste Linie, Risikocontrolling und Compliance als prozessunabhängige, aber nicht vollständig unabhängige zweite Linie, und die Interne Revision als vollständig unabhängige Prüfung als dritte Linie.",
+     praxis:"Bei der Konzeption einer neuen SFO-Vorgabe sollte immer klar sein, welche Linie eine bestimmte Kontrolle ausführt — eine Vermischung von erster und zweiter Linie zählt zu den häufigsten Feststellungen der Internen Revision."},
+    {title:"AT 5 & AT 6: die Rechtsgrundlage der SFO",
+     explain:"AT 5 verlangt, dass Geschäftsaktivitäten auf Grundlage von Organisationsrichtlinien betrieben werden — etwa Handbüchern, Arbeitsanweisungen oder Arbeitsablaufbeschreibungen —, die schriftlich fixiert und den betroffenen Mitarbeitenden in geeigneter Weise bekanntgemacht werden müssen. AT 6 ergänzt Anforderungen an die Dokumentation risikorelevanter Tätigkeiten. Zusammen bilden beide Module die eigentliche Rechtsgrundlage dessen, was in der Praxis als Schriftlich Fixierte Ordnung bezeichnet wird — ein feststehender Praxisbegriff, aber kein eigenes MaRisk-Modul dieses Namens.",
+     praxis:"Der Detaillierungsgrad der Organisationsrichtlinien richtet sich laut AT 5 nach Art, Umfang, Komplexität und Risikogehalt der jeweiligen Aktivität — für ein kleineres oder mittleres Institut heißt das: proportional gestalten, nicht maximal detailliert."}
+  ],
+  aufbau: [
+    {title:"Aufbauorganisation: Funktionstrennung",
+     explain:"Die Aufbauorganisation legt fest, welche Organisationseinheiten welche Aufgaben, Kompetenzen und Verantwortlichkeiten tragen. Zentrales Prinzip ist die Funktionstrennung: Miteinander unvereinbare Tätigkeiten — etwa Votierung und Kontrolle im Kreditgeschäft — dürfen bis auf eine angemessene Führungsebene nicht in einer Person zusammenfallen.",
+     praxis:"In der Kreditanalyse wird deshalb konsequent zwischen Markt (Erstvotum) und Marktfolge (Zweitvotum, Überwachung) getrennt — eine der ältesten und am strengsten geprüften IKS-Anforderungen überhaupt."},
+    {title:"Ablauforganisation: Prozesse und Schnittstellen",
+     explain:"Die Ablauforganisation beschreibt, wie Prozesse tatsächlich ablaufen — welche Schritte, in welcher Reihenfolge, mit welchen Übergaben zwischen Einheiten. Sauber dokumentierte Schnittstellen verhindern, dass Verantwortung zwischen zwei Abteilungen unbemerkt durchfällt.",
+     praxis:"Eine Prozesslandkarte mit klar benannten Schnittstellen, etwa zwischen Kreditsachbearbeitung und Auszahlung, ist die Grundlage jeder späteren Risiko-Kontroll-Matrix."},
+    {title:"Kontrollaktivitäten: präventiv und detektivisch",
+     explain:"Präventive Kontrollen verhindern Fehler, bevor sie entstehen, etwa durch das Vier-Augen-Prinzip oder Systemberechtigungen. Detektivische Kontrollen entdecken Fehler nachträglich, etwa durch Abstimmungen oder Stichprobenprüfungen. Ein ausgewogenes IKS braucht beide Kontrollarten — rein detektivische Kontrollen kommen strukturell immer zu spät.",
+     praxis:"Beim Neu-Produkt-Prozess nach AT 8.1 lohnt sich die bewusste Frage, ob eine geplante Kontrolle präventiv oder nur detektivisch wirkt — und ob das für das Risiko des neuen Produkts ausreicht."},
+    {title:"Risikosteuerungs- und -controllingprozesse",
+     explain:"AT 4.3.2 verlangt Prozesse zur Identifizierung, Beurteilung, Steuerung, Überwachung und Kommunikation von Risiken — sowohl für Einzelrisiken als auch für Risikokonzentrationen. Quantitative Instrumente wie Limit- und Ampelsysteme werden dabei durch qualitative Instrumente wie regelmäßige Risikoanalysen ergänzt.",
+     praxis:"Ein Frühwarnindikator, der frühzeitig auf steigende Ausfallquoten in einem Teilportfolio hinweist, ist wirksamer als eine Limitüberschreitung, die erst im Nachhinein festgestellt wird."}
+  ],
+  weiter: [
+    {title:"Schritt 1: Ist-Aufnahme & Prozesslandkarte",
+     explain:"Vor jeder Weiterentwicklung steht die ehrliche Bestandsaufnahme: welche Prozesse tatsächlich existieren, welche Kontrollen darin eingebaut sind, und wo die gelebte Praxis von der dokumentierten Vorgabe abweicht.",
+     steps:["Bestehende Prozessdokumentation sichten und mit den Fachbereichen abgleichen","Prozesslandkarte auf Ebene der wesentlichen Geschäftsprozesse erstellen","Abweichungen zwischen Soll (Dokumentation) und Ist (gelebte Praxis) explizit festhalten","Wesentlichkeit der Prozesse anhand des Risikogehalts priorisieren"],
+     praxis:"Häufigster Befund in dieser Phase: Die Dokumentation beschreibt einen älteren Prozessstand, weil eine Systemumstellung nie in der Dokumentation nachgezogen wurde.",
+     tools:["Prozessmodellierungstools wie Signavio oder ARIS","Miro für Workshops zur Prozessaufnahme","MaRisk-Compliance-Software wie Perago oder ORCA"]},
+    {title:"Schritt 2: Risiko-Kontroll-Matrix (RCM) aufbauen",
+     explain:"Die Risiko-Kontroll-Matrix verknüpft jedes wesentliche Risiko eines Prozesses mit der oder den Kontrollen, die es adressieren — inklusive Kontrollart, Verantwortlichkeit und Prüfturnus. Sie ist das zentrale Steuerungsinstrument eines IKS.",
+     steps:["Wesentliche Risiken je Prozessschritt identifizieren","Vorhandene Kontrollen den jeweiligen Risiken zuordnen","Lücken identifizieren — Risiken ohne zugeordnete Kontrolle","Kontrollverantwortliche und Prüfturnus je Kontrolle festlegen","Matrix gemeinsam mit den betroffenen Fachbereichen validieren"],
+     praxis:"Eine Risiko-Kontroll-Matrix, die niemand außer der Controlling-Abteilung kennt, bleibt wirkungslos — sie muss Teil des Alltagswerkzeugs der Fachbereiche selbst werden.",
+     tools:["Excel oder Power BI für kleinere Institute","GRC-Software wie SAP GRC oder Perago","Strukturierte Bewertungstools bei komplexeren Kontrolllandschaften"]},
+    {title:"Schritt 3: Kontrollen testen",
+     explain:"Ein Designtest prüft, ob eine Kontrolle theoretisch geeignet ist, das jeweilige Risiko zu adressieren. Ein Wirksamkeitstest prüft, ob sie in der Praxis tatsächlich funktioniert hat — meist per Stichprobe über einen definierten Zeitraum.",
+     steps:["Stichprobenumfang risikoorientiert festlegen, nicht pauschal","Designangemessenheit der Kontrolle bewerten","Wirksamkeit anhand von Stichproben aus dem Prüfzeitraum testen","Abweichungen dokumentieren und die Ursache analysieren, nicht nur das Symptom beheben"],
+     praxis:"Eine Kontrolle, die auf dem Papier korrekt beschrieben ist, aber aus Zeitdruck nur formal abgezeichnet wird, gilt als nicht wirksam — nicht nur als schwach dokumentiert.",
+     tools:["ACL/Galvanize für automatisierte Stichprobenziehung","Excel für kleinere Prüfungen","Process-Mining-Tools wie Celonis bei hohem Datenvolumen"]},
+    {title:"Schritt 4: Mängelmanagement & Follow-up",
+     explain:"Festgestellte Schwächen müssen mit Verantwortlichkeit, Termin und Maßnahme erfasst und bis zur nachweislichen Behebung verfolgt werden. Ohne belastbares Follow-up bleibt jede Kontrolltestung wirkungslos.",
+     steps:["Mängel nach Schweregrad klassifizieren","Verantwortliche Person und realistischen Termin je Mängel festlegen","Umsetzung der Maßnahme aktiv nachverfolgen","Bei schwerwiegenden Mängeln eine Nachschauprüfung einplanen","Status regelmäßig an die Geschäftsleitung berichten"],
+     praxis:"Je nach Schweregrad reicht bei kleineren Mängeln eine Plausibilisierung der Umsetzung, bei schwerwiegenden Feststellungen sollte eine echte Nachschauprüfung statt einer reinen Selbstauskunft des Fachbereichs erfolgen.",
+     tools:["Ticketing- oder GRC-Tools wie Jira oder ServiceNow","Excel-basierte Mängel-Tracker bei kleineren Instituten","Compliance-Suiten wie Perago"]},
+    {title:"Schritt 5: Berichtswesen an die Geschäftsleitung",
+     explain:"Die Ergebnisse der IKS-Weiterentwicklung — Testergebnisse, offene Mängel, Risikotrends — müssen verdichtet und regelmäßig an Geschäftsleitung und gegebenenfalls Aufsichtsorgan berichtet werden, damit diese ihrer Verantwortung für die Geschäftsorganisation tatsächlich nachkommen können.",
+     steps:["Kennzahlen und Ampelsysteme für die Managementebene verdichten","Bericht auf wesentliche Entwicklungen statt auf Vollständigkeit ausrichten","Berichtsturnus an Risikogehalt und Institutsgröße anpassen","Eskalationswege für kritische Befunde vorab klar definieren"],
+     praxis:"Ein guter IKS-Bericht beantwortet der Geschäftsleitung vor allem eine Frage: Wo besteht aktuell das größte unadressierte Risiko — nicht nur, wie viele Kontrollen insgesamt durchgeführt wurden.",
+     tools:["Power BI oder Tableau für Berichtsdashboards","Standardvorlagen der Verbands- bzw. Sparkassenorganisation","Balanced Scorecard als Rahmen für die Verdichtung"]}
+  ],
+  sfo: [
+    {title:"Schritt 1: Zielbild & Vorgabenhierarchie",
+     explain:"Vor der inhaltlichen Arbeit steht die Struktur: Eine bankweite SFO braucht eine klare Hierarchie von Vorgabendokumenten — üblich ist eine Abstufung von Rahmenrichtlinie über Richtlinie bis zur Arbeitsanweisung.",
+     steps:["Vorgabentypen und deren jeweiligen Geltungsbereich definieren","Verhältnis der Dokumententypen zueinander klären — welches Dokument welches andere konkretisiert","Namenskonventionen und Dokumentenstruktur festlegen","Zielbild mit Geschäftsleitung und betroffenen Bereichen abstimmen"],
+     praxis:"Ohne diese Hierarchie entstehen erfahrungsgemäß Dutzende gleichrangige, sich teilweise widersprechende Einzeldokumente ohne erkennbare Struktur — genau das, was eine SFO eigentlich verhindern soll.",
+     tools:["Dokumentenmanagementsysteme wie SharePoint oder Nextcloud","Spezialisierte SFO-Software wie Doxis4 oder DHC VISION","Visio oder draw.io für Strukturdiagramme"]},
+    {title:"Schritt 2: Bestandsaufnahme & Gap-Analyse",
+     explain:"Bestehende Regelungen — oft über Jahre gewachsen, in unterschiedlichen Formaten und Ablagen — werden systematisch erfasst und dem neuen Zielbild gegenübergestellt.",
+     steps:["Vollständiges Inventar aller bestehenden Regelungsdokumente erstellen","Aktualität, Eigentümerschaft und Gültigkeitsbereich je Dokument prüfen","Lücken zwischen bestehendem Bestand und neuem Zielbild identifizieren","Redundante oder widersprüchliche Regelungen kennzeichnen"],
+     praxis:"In gewachsenen Strukturen findet sich fast immer mindestens eine Regelung, deren ursprünglicher Ersteller das Institut bereits verlassen hat und die niemand mehr aktiv pflegt.",
+     tools:["Excel für das Dokumenteninventar","SharePoint oder Confluence zur zentralen Erfassung","Gap-Analyse-Vorlagen der Verbandsorganisation"]},
+    {title:"Schritt 3: Rollen, Verantwortlichkeiten & Freigabeprozess",
+     explain:"Für jedes Vorgabendokument muss klar sein, wer es fachlich verantwortet, wer es prüft, wer es freigibt und wer die formale Inkraftsetzung veranlasst. Ohne diesen Prozess bleibt jede SFO ein einmaliges Projekt statt eines lebenden Systems.",
+     steps:["RACI je Dokumententyp festlegen — Owner, Prüfende, Freigebende Instanz, Informierte","Freigabeprozess inklusive Eskalationsweg bei Uneinigkeit definieren","Vertretungsregelungen für Owner-Rollen festlegen","Prozess in einem Workflow- oder Dokumentenmanagementsystem abbilden"],
+     praxis:"Die Compliance-Funktion sollte bei bankweiten Kernrichtlinien grundsätzlich im Freigabeprozess eingebunden sein, um Widersprüche zu regulatorischen Pflichten frühzeitig zu erkennen.",
+     tools:["Workflow-Tools wie SharePoint-Workflows oder Camunda","GRC-Suiten mit integriertem Freigabe-Workflow","Signaturlösungen wie DocuSign für die formale Freigabe"]},
+    {title:"Schritt 4: Kommunikation, Schulung & Bekanntmachung",
+     explain:"AT 5 verlangt ausdrücklich, dass Organisationsrichtlinien den betroffenen Mitarbeitenden in geeigneter Weise bekanntgemacht werden — eine reine Ablage im Intranet reicht dafür in der Praxis häufig nicht aus.",
+     steps:["Zielgruppengerechte Kommunikationskanäle festlegen","Verpflichtende Kenntnisnahme mit Nachweis einführen, etwa per Lesebestätigung","Schulungen für wesentliche neue oder geänderte Regelungen einplanen","Ansprechpartner für Rückfragen benennen"],
+     praxis:"Eine protokollierte Lesebestätigungspflicht schützt im Ernstfall auch das Institut selbst — im Prüfungsfall muss nachweisbar sein, dass eine Regelung tatsächlich kommuniziert wurde.",
+     tools:["Lernmanagementsysteme für Schulungsnachweise","Intranet- bzw. Newsletter-Tools","E-Learning-Plattformen mit Wissensüberprüfung"]},
+    {title:"Schritt 5: Pflegezyklus & Aktualitätsprüfung",
+     explain:"Eine SFO ist kein einmaliges Projekt, sondern ein laufender Prozess. Ohne festen Pflegezyklus veraltet sie unweigerlich und verliert an Aussagekraft und Prüfungssicherheit.",
+     steps:["Turnusmäßige Überprüfungsfristen je Dokumententyp festlegen","Anlassbezogene Überprüfung bei Prozess- oder Organisationsänderungen sicherstellen","Versionierung und Änderungshistorie lückenlos dokumentieren","Verantwortung für die Fristenüberwachung eindeutig zuweisen"],
+     praxis:"Ein einfacher, aber wirksamer Kniff: Jede Regelung erhält bereits bei Erstellung ein festes Überprüfungsdatum, das automatisch eine Erinnerung an den Owner auslöst.",
+     tools:["Dokumentenmanagementsysteme mit automatischer Fristenüberwachung","Kalender- oder Ticketsysteme für Wiedervorlagen","Versionsverwaltung, etwa über SharePoint"]}
+  ],
+  stolper: [
+    {title:"SFO als Papiertiger",
+     explain:"Regelungen werden erstellt, um eine Prüfung zu bestehen, aber im Arbeitsalltag nicht tatsächlich gelebt. Die Kluft zwischen dokumentiertem und tatsächlichem Prozess wächst mit jedem Monat ohne Pflege weiter.",
+     gegenmittel:"Fachbereiche aktiv in die Erstellung einbinden, statt Regelungen zentral über sie zu verhängen — nur gelebte Regelungen überstehen die erste echte Prüfung."},
+    {title:"Fehlende Funktionstrennung trotz Dokumentation",
+     explain:"Auf dem Papier ist die Trennung von Votum und Kontrolle sauber beschrieben, in der Praxis übernimmt aus Personalmangel dieselbe Person faktisch beide Rollen.",
+     gegenmittel:"Stichprobenartige Wirksamkeitstests statt reiner Dokumentenprüfung durchführen — nur so werden faktische Vermischungen überhaupt sichtbar."},
+    {title:"Kein funktionierender Pflegeprozess",
+     explain:"Ohne klare Owner-Zuweisung und Fristenüberwachung veralten Regelungsdokumente schleichend, oft unbemerkt bis zur nächsten Prüfung durch die Interne Revision oder externe Prüfer.",
+     gegenmittel:"Jede Regelung erhält von Anfang an einen namentlich benannten Owner und ein festes Überprüfungsdatum — keine Regelung ohne verantwortliche Person."},
+    {title:"Isolierte Einzelprojekte statt Gesamtbild",
+     explain:"IKS-Weiterentwicklung und SFO-Einführung werden häufig als getrennte, unabhängige Projekte behandelt, obwohl beide auf denselben Prozessen und Kontrollen aufbauen — mit der Folge doppelter Arbeit und widersprüchlicher Ergebnisse.",
+     gegenmittel:"Prozesslandkarte, Risiko-Kontroll-Matrix und SFO-Dokumentenstruktur von Beginn an auf dieselbe Prozessgliederung stützen, statt sie getrennt voneinander zu entwickeln."}
+  ]
+};
+
+let currentTab = "rahmen";
+
+function setAccent(tab){
+  const t = TABS.find(x => x.key === tab);
+  document.documentElement.style.setProperty("--accent", `var(${t.accent})`);
+  document.documentElement.style.setProperty("--accent-soft", `var(${t.soft})`);
+}
+
+function renderTabs(){
+  const nav = document.getElementById("tabNav");
+  nav.innerHTML = TABS.map(t => `
+    <button class="tab-btn ${t.key===currentTab?'active':''}" style="--tab-accent:var(${t.accent})" data-tab="${t.key}">
+      <span class="code">${t.code}</span>
+      <span class="name">${t.name}</span>
+    </button>
+  `).join("");
+  nav.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTab = btn.dataset.tab;
+      setAccent(currentTab);
+      renderTabs();
+      renderContent();
+      document.getElementById("content").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+}
+
+function renderContent(){
+  const tab = TABS.find(t=>t.key===currentTab);
+  const items = CONTENT[currentTab];
+  const container = document.getElementById("content");
+
+  const cards = items.map((it, i)=>{
+    const code = `${tab.code}-${String(i+1).padStart(2,"0")}`;
+    const stepsHtml = it.steps ? `<span class="steps-label">Vorgehen</span><ol class="steps">${it.steps.map(s=>`<li>${s}</li>`).join("")}</ol>` : "";
+    const praxisHtml = it.praxis ? `<div class="box praxis"><span class="label">Praxishinweis</span>${it.praxis}</div>` : "";
+    const gegenmittelHtml = it.gegenmittel ? `<div class="box gegenmittel"><span class="label">Gegenmittel</span>${it.gegenmittel}</div>` : "";
+    const toolsHtml = it.tools ? `<div class="box tools"><span class="label">Unterstützende Tools</span><div class="tool-pills">${it.tools.map(x=>`<span class="pill">${x}</span>`).join("")}</div></div>` : "";
+    return `
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="ledger-code">${code}</span>
+          <h3>${it.title}</h3>
+        </div>
+        <p class="explain">${it.explain}</p>
+        ${stepsHtml}
+        ${praxisHtml}
+        ${gegenmittelHtml}
+        ${toolsHtml}
+      </article>
+    `;
+  }).join("");
+
+  container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+}
+
+setAccent(currentTab);
+renderTabs();
+renderContent();
+</script>
+</body>
+</html>
