@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forschungsmethoden BWL — 10 Methoden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EFE6;
+    --paper-dim:#E4E2D3;
+    --panel:#FAF9F3;
+    --ink:#1F2A24;
+    --ink-dim:#5B6259;
+    --rule:#C9C4B3;
+
+    --qualitativ:#4A5D8A;  --qualitativ-soft:#DEE2ED;
+    --quantitativ:#2E7D6B; --quantitativ-soft:#D9EAE5;
+    --mixed:#8A4A6D;       --mixed-soft:#EDDCE5;
+    --kombi:#B98A2E;       --kombi-soft:#F1E6C9;
+
+    --accent: var(--qualitativ);
+    --accent-soft: var(--qualitativ-soft);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  header.cover{
+    max-width:1040px;
+    margin:0 auto;
+    padding:56px 28px 32px;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:clamp(32px, 6vw, 54px);
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    font-size:17px;
+    color:var(--ink-dim);
+    max-width:660px;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+  }
+  .meta-row strong{color:var(--ink); font-weight:600;}
+
+  nav.tabs{
+    max-width:1040px;
+    margin:0 auto;
+    padding:22px 28px 0;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:10;
+    padding-bottom:2px;
+  }
+  .tab-btn{
+    flex:1 1 160px;
+    min-width:150px;
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-bottom:none;
+    border-top:4px solid var(--tab-accent, var(--rule));
+    padding:11px 12px 9px;
+    cursor:pointer;
+    text-align:left;
+    transition:background 0.15s ease;
+  }
+  .tab-btn:hover{background:var(--paper-dim);}
+  .tab-btn .code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10px;
+    letter-spacing:0.09em;
+    color:var(--ink-dim);
+    display:block;
+    text-transform:uppercase;
+  }
+  .tab-btn .name{
+    font-family:"Fraunces", serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    display:block;
+    margin-top:2px;
+    line-height:1.25;
+  }
+  .tab-btn.active{background:var(--accent-soft);}
+  .tab-btn.active .code{color:var(--accent);}
+
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:30px 28px 80px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .tab-intro{
+    font-size:15px;
+    color:var(--ink-dim);
+    max-width:75ch;
+    margin:0 0 24px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--rule);
+  }
+
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-left:5px solid var(--accent);
+    border-radius:2px;
+    padding:24px 26px;
+    margin-bottom:22px;
+  }
+  .lesson-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .ledger-code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:0.04em;
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:2px 7px;
+    white-space:nowrap;
+  }
+  .lesson-card h3{
+    font-family:"Fraunces", serif;
+    font-size:21px;
+    font-weight:600;
+    margin:0;
+  }
+  .lesson-card p.explain{
+    margin:8px 0 14px;
+    color:var(--ink);
+    max-width:75ch;
+  }
+
+  .steps-label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--accent);
+    display:block;
+    margin:16px 0 8px;
+  }
+  ol.steps{
+    margin:0 0 4px;
+    padding-left:22px;
+  }
+  ol.steps li{margin-bottom:6px; font-size:14.5px;}
+
+  .box{
+    margin-top:14px;
+    padding:13px 16px;
+    border-radius:4px;
+    font-size:14px;
+  }
+  .box .label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    display:block;
+    margin-bottom:6px;
+  }
+  .box.wann{
+    background:var(--paper);
+    border:1px dashed var(--rule);
+  }
+  .box.wann .label{color:var(--ink-dim);}
+
+  .box.kombi{
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+  }
+  .box.kombi .label{color:var(--accent);}
+
+  .box.tools{
+    background:var(--panel);
+    border:1px solid var(--rule);
+  }
+  .box.tools .label{color:var(--ink-dim);}
+  .tool-pills{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:2px;
+  }
+  .tool-pills .pill{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+
+  /* ---------- Kombinationen ---------- */
+  .chain{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin:6px 0 16px;
+  }
+  .chain .pill{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    color:var(--ink);
+    padding:5px 11px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .chain .arrow{
+    color:var(--accent);
+    font-weight:600;
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px 28px 60px;
+    color:var(--ink-dim);
+    font-size:13px;
+  }
+
+  @media (max-width:640px){
+    header.cover{padding:36px 18px 24px;}
+    nav.tabs{padding:16px 18px 0;}
+    main{padding:22px 18px 60px;}
+    .lesson-card{padding:18px 16px;}
+  }
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="eyebrow">Lernmodul · tommy-moeller.de</p>
+  <h1 class="title">Forschungsmethoden der BWL</h1>
+  <p class="subtitle">Zehn empirische Methoden, mit denen betriebswirtschaftliche Fragestellungen untersucht werden — vom offenen Experteninterview bis zum kontrollierten Experiment. Jede mit konkretem Vorgehen, Einsatzkriterien, Kombinationsmöglichkeiten und bis zu drei unterstützenden Tools.</p>
+  <div class="meta-row">
+    <span><strong>10</strong> Methoden</span>
+    <span><strong>3</strong> Methodenfamilien</span>
+    <span><strong>4</strong> Kombinationsdesigns</span>
+    <span><strong>Fokus:</strong> Vorgehen statt nur Definition</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabNav"></nav>
+<main id="content"></main>
+
+<footer>
+  Eigenständiges Lernmodul — offline nutzbar, keine externen Abhängigkeiten außer Web-Fonts. Jede Methode ist über ihren Ledger-Code referenzierbar (z. B. <code>QUAL-02</code> = Qualitativ, Methode 2).
+</footer>
+
+<script>
+const TABS = [
+  {key:"qualitativ", code:"QUAL", name:"Qualitative Methoden", accent:"--qualitativ", soft:"--qualitativ-soft",
+   intro:"Methoden, die verstehen wollen, wie und warum etwas geschieht — meist mit wenigen Fällen, dafür in großer Tiefe. Ergebnisse sind nicht repräsentativ, aber liefern reichhaltige Erklärungen und neue Hypothesen."},
+  {key:"quantitativ", code:"QUANT", name:"Quantitative Methoden", accent:"--quantitativ", soft:"--quantitativ-soft",
+   intro:"Methoden, die Zusammenhänge zahlenbasiert und an größeren Stichproben prüfen — mit dem Ziel, verallgemeinerbare oder kausale Aussagen statistisch abzusichern."},
+  {key:"mixed", code:"KONS", name:"Konsens & Prognose", accent:"--mixed", soft:"--mixed-soft",
+   intro:"Ein Sonderfall zwischen qualitativ und quantitativ: strukturierte Verfahren, die Expertenwissen systematisch bündeln, wenn belastbare Daten fehlen."},
+  {key:"kombi", code:"KOMB", name:"Kombinationen", accent:"--kombi", soft:"--kombi-soft",
+   intro:"Keine einzelne Methode beantwortet eine Forschungsfrage vollständig. Diese vier Designs zeigen typische Abfolgen, mit denen mehrere Methoden zu einem stimmigen Forschungsdesign kombiniert werden."}
+];
+
+const CONTENT = {
+  qualitativ: [
+    {title:"Experteninterview (leitfadengestützt)",
+     explain:"Ein teilstrukturiertes Gespräch mit einer Person, die über besonderes Fachwissen zu einem Thema verfügt. Ein Leitfaden gibt Struktur vor, lässt aber Raum, einzelne Antworten vertieft nachzufragen.",
+     steps:["Forschungsfrage präzisieren und passenden Expertenkreis definieren","Leitfaden mit offenen Fragen entwickeln — meist 8 bis 12 Kernfragen","Leitfaden mit einer Testperson vorab prüfen (Pretest)","Interviews durchführen (45–60 Minuten), mit Einverständnis aufzeichnen","Aufnahmen transkribieren","Material mittels qualitativer Inhaltsanalyse kodieren und auswerten","Ergebnisse zusammenfassen und mit der Forschungsfrage rückverknüpfen"],
+     wann:"Wenn Wissen über komplexe, wenig erforschte Zusammenhänge gesammelt werden soll oder Prozesse und Motive verstanden statt nur gemessen werden sollen. Ungeeignet für verallgemeinerbare, repräsentative Aussagen.",
+     kombination:"Häufig zu Beginn einer Studie zur Exploration eingesetzt, gefolgt von einer standardisierten Umfrage, um gefundene Muster an einer größeren Stichprobe zu prüfen.",
+     tools:["MAXQDA","ATLAS.ti","Otter.ai (Transkription)"]},
+    {title:"Fokusgruppe",
+     explain:"Eine moderierte Gruppendiskussion mit typischerweise sechs bis acht Teilnehmenden, die Meinungen und Reaktionen zu einem Thema gerade durch die Interaktion untereinander sichtbar macht.",
+     steps:["Zielgruppe und Rekrutierungskriterien festlegen","Diskussionsleitfaden mit Impulsfragen bzw. Stimuli (z. B. Produktprototyp) entwickeln","Moderation und eine Person für das Protokoll einplanen","Sitzung durchführen (60–90 Minuten), Ton- oder Videoaufnahme","Transkription und Auswertung der Gruppendynamik, nicht nur einzelner Aussagen","Kernaussagen und Widersprüche zwischen Teilnehmenden herausarbeiten"],
+     wann:"Wenn soziale Dynamik und Meinungsbildung im Gruppenkontext relevant sind, etwa bei Produkttests oder Markenimage. Weniger geeignet bei sensiblen, persönlichen Themen wegen möglichen Gruppendrucks.",
+     kombination:"Ergänzt Experteninterviews um die Nutzer- oder Konsumentenperspektive und liefert oft Hypothesen für eine anschließende Umfrage.",
+     tools:["Zoom oder Teams (Aufzeichnung)","MAXQDA","Miro (visuelle Auswertung)"]},
+    {title:"Teilnehmende Beobachtung",
+     explain:"Systematische Beobachtung von Verhalten in seiner natürlichen Umgebung, wobei die forschende Person selbst am Geschehen teilnimmt oder es passiv dokumentiert.",
+     steps:["Beobachtungsfeld und -zeitraum festlegen","Beobachtungskategorien vorab definieren (strukturiert) oder bewusst offenlassen (unstrukturiert)","Feldzugang zur Organisation organisieren und absichern","Feldnotizen laufend während oder direkt nach der Beobachtung führen","Eigene Rolle und mögliche Verzerrungen reflektieren (Beobachtereffekt)","Notizen auswerten, meist mittels Kategorienbildung"],
+     wann:"Wenn tatsächliches Verhalten im echten Kontext interessiert — statt dem, was Personen im Interview über ihr Verhalten berichten.",
+     kombination:"Wird häufig mit Interviews trianguliert, um beobachtetes Verhalten und subjektive Begründung dafür miteinander zu vergleichen.",
+     tools:["Feldnotiz-Apps (z. B. Evernote)","Videobeobachtungssoftware","NVivo (Auswertung)"]},
+    {title:"Fallstudie (Case Study)",
+     explain:"Detaillierte, kontextreiche Untersuchung eines einzelnen Falls — etwa ein Unternehmen, Projekt oder Ereignis — oder weniger Fälle, meist gestützt auf mehrere Datenquellen gleichzeitig.",
+     steps:["Fallauswahl begründen — typisch, extrem oder besonders aufschlussreich","Untersuchungsrahmen bzw. vorläufige Annahmen vorab festlegen","Mehrere Datenquellen erheben: Dokumente, Interviews, Beobachtung, Kennzahlen","Within-Case-Analyse: den Fall zunächst in sich verstehen","Bei mehreren Fällen: Cross-Case-Analyse zum Vergleich der Fälle","Ergebnisse gegen bestehende Theorie und Literatur spiegeln"],
+     wann:"Bei komplexen, kontextabhängigen Phänomenen, bei denen der Ablauf und die Gründe wichtiger sind als eine reine Häufigkeit — klassisch bei neuen, wenig erforschten Themen.",
+     kombination:"Bündelt typischerweise mehrere andere Methoden dieser Liste — Interviews, Dokumentenanalyse, Beobachtung — als Datenquellen innerhalb eines Falls.",
+     tools:["NVivo oder MAXQDA (Fallstrukturierung)","Unternehmensdatenbanken (z. B. Bureau van Dijk)","Timeline-Tools"]},
+    {title:"Qualitative Inhaltsanalyse (nach Mayring)",
+     explain:"Systematische, regelgeleitete Auswertung von Textmaterial — Interviews, Dokumente, Social-Media-Beiträge — durch Kategorienbildung und Kodierung statt rein subjektiver Lektüre.",
+     steps:["Material sichten und Fragestellung schärfen","Kategoriensystem entwickeln — deduktiv aus Theorie und/oder induktiv aus dem Material","Kodierleitfaden mit Ankerbeispielen erstellen","Material kodieren; bei mehreren Kodierenden Intercoder-Reliabilität prüfen","Häufigkeiten und Muster je Kategorie auswerten","Ergebnisse mit Zitaten belegen und interpretieren"],
+     wann:"Wenn größere Mengen an Textmaterial systematisch statt rein subjektiv ausgewertet werden sollen — die Brücke zwischen qualitativer Tiefe und nachvollziehbarer Systematik.",
+     kombination:"Die Standardmethode zur Auswertung von Interviews, Fokusgruppen und Fallstudienmaterial — kaum eine qualitative Erhebung kommt ohne sie aus.",
+     tools:["MAXQDA","ATLAS.ti","QDA Miner"]}
+  ],
+  quantitativ: [
+    {title:"Standardisierte Umfrage (Fragebogen)",
+     explain:"Strukturierte Erhebung mit identischen, meist geschlossenen Fragen an eine größere Stichprobe — die Standardmethode für repräsentative, statistisch auswertbare Aussagen.",
+     steps:["Konstrukte operationalisieren, z. B. Zufriedenheit über validierte Skalenitems","Fragebogen entwerfen und passende Skalen wählen, z. B. Likert-Skala","Pretest mit kleiner Stichprobe zur Prüfung der Verständlichkeit","Stichprobe ziehen — Zufallsstichprobe oder Gelegenheitsstichprobe","Durchführung online, telefonisch oder persönlich","Datenprüfung: fehlende Werte, Ausreißer, Aufmerksamkeitschecks","Statistische Auswertung — deskriptiv, ggf. Regressions- oder Faktorenanalyse"],
+     wann:"Wenn verallgemeinerbare, zahlenbasierte Aussagen über eine größere Grundgesamtheit nötig sind, etwa Kundenzufriedenheit über alle Filialen hinweg.",
+     kombination:"Wird oft nach explorativen Interviews eingesetzt, um gefundene Muster an einer größeren Stichprobe zu bestätigen oder zu widerlegen.",
+     tools:["Qualtrics","SPSS","R oder Python (Auswertung)"]},
+    {title:"Experiment (Labor- oder Feldexperiment)",
+     explain:"Systematische Manipulation einer unabhängigen Variable unter kontrollierten Bedingungen, um kausale Effekte auf eine abhängige Variable nachzuweisen.",
+     steps:["Hypothese mit klarer Kausalrichtung formulieren","Experimentaldesign festlegen — Zwischen- oder Innersubjekt-Design","Teilnehmende per Zufall Experimental- und Kontrollgruppe zuteilen (Randomisierung)","Unabhängige Variable manipulieren, Störvariablen kontrollieren","Abhängige Variable messen","Statistischer Signifikanztest zum Gruppenvergleich, z. B. t-Test oder ANOVA"],
+     wann:"Wenn tatsächliche Kausalität statt nur Korrelation nachgewiesen werden soll, etwa ob eine bestimmte Preisdarstellung das Kaufverhalten verändert.",
+     kombination:"Wird oft durch eine vorherige Umfrage zur Auswahl relevanter Variablen vorbereitet und durch qualitative Interviews zur Erklärung überraschender Effekte ergänzt.",
+     tools:["Qualtrics (Experimentaldesign)","SPSS oder R (Statistik)","Gorilla oder PsychoPy (Online-Experimente)"]},
+    {title:"Sekundärdatenanalyse",
+     explain:"Auswertung bereits vorhandener Daten — amtliche Statistiken, Unternehmensdatenbanken, frühere Studien —, die nicht eigens für die aktuelle Forschungsfrage erhoben wurden.",
+     steps:["Passende Datenquelle identifizieren und Zugang klären","Datenqualität und Erhebungsmethodik der Quelle prüfen","Daten aufbereiten — Bereinigung, Zusammenführung mehrerer Quellen","Eigene Fragestellung an die vorhandenen Variablen anpassen","Statistische Auswertung durchführen","Limitationen durch die fremde Datengrundlage explizit benennen"],
+     wann:"Wenn eine eigene Datenerhebung zu teuer, zu langsam oder unnötig wäre, weil geeignete Daten bereits existieren — etwa Bundesbank-Statistiken zu Kreditvolumina.",
+     kombination:"Liefert oft die erste Orientierung oder eine Kontrollgröße, bevor eine aufwendigere eigene Umfrage oder ein Experiment geplant wird.",
+     tools:["Destatis (Statistisches Bundesamt)","Bundesbank-Statistiken","R oder Python (Datenaufbereitung)"]},
+    {title:"Längsschnittstudie (Panel-Studie)",
+     explain:"Wiederholte Erhebung derselben Untersuchungseinheiten über mehrere Zeitpunkte hinweg, um Veränderungen und Entwicklungen statt nur eine einmalige Momentaufnahme zu erfassen.",
+     steps:["Panel — eine feste Stichprobe — rekrutieren","Erhebungsinstrument über alle Wellen konstant halten, um Vergleichbarkeit zu sichern","Mehrere Erhebungswellen in festgelegten Abständen durchführen","Panel-Mortalität, also den Ausfall von Teilnehmenden, dokumentieren und berücksichtigen","Veränderungen über Zeit statistisch modellieren, z. B. mit Wachstumskurvenmodellen"],
+     wann:"Wenn Entwicklung, die zeitliche Reihenfolge von Ursache und Wirkung oder Trends interessieren — etwa wie sich Kundenzufriedenheit nach einer Systemumstellung über ein Jahr entwickelt.",
+     kombination:"Kombiniert sich gut mit einer Sekundärdatenanalyse als Ausgangsbasis und liefert später Kandidaten für vertiefende Fallstudien oder Interviews bei auffälligen Entwicklungen.",
+     tools:["SPSS oder Stata (Panel-Datenanalyse)","R mit lme4 (Mehrebenenmodelle)","Qualtrics (wiederholte Erhebungen)"]}
+  ],
+  mixed: [
+    {title:"Delphi-Methode",
+     explain:"Ein strukturierter, mehrstufiger Befragungsprozess mit einer Gruppe von Experten, bei dem in mehreren anonymen Runden ein Konsens zu unsicheren, zukunftsgerichteten Fragen erarbeitet wird.",
+     steps:["Expertengruppe auswählen, meist zwischen 10 und 30 Personen","Erste Fragebogenrunde mit offenen oder halboffenen Fragen zur Zukunftsfrage","Antworten aggregieren und anonymisiert an alle Teilnehmenden zurückspiegeln","Zweite Runde: Teilnehmende bewerten oder kommentieren die aggregierten Antworten erneut","Runden wiederholen, bis sich eine stabile Einschätzung — Konsens oder klar begründeter Dissens — einstellt","Ergebnisse aufbereiten und Konvergenz bzw. Divergenz dokumentieren"],
+     wann:"Bei Zukunftsfragen ohne belastbare historische Daten, etwa wie sich ein Markt in zehn Jahren entwickelt — wenn Einzelmeinungen zu subjektiv, eine offene Gruppendiskussion aber durch Hierarchieeffekte verzerrt wäre.",
+     kombination:"Nutzt oft Sekundärdaten als Ausgangspunkt für die erste Runde und wird durch eine spätere Längsschnittstudie überprüft, ob die Prognosen tatsächlich eintreffen.",
+     tools:["Qualtrics oder SurveyMonkey (Rundenmanagement)","Excel oder SPSS (Aggregation)","Spezialisierte Delphi-Plattformen, z. B. Calibrum"]}
+  ]
+};
+
+const KOMBI_PFADE = [
+  {title:"Explorativ-sequenzielles Design",
+   chain:["Experteninterview","Fokusgruppe","Standardisierte Umfrage"],
+   explain:"Erst offen explorieren, dann Hypothesen in der Gruppe schärfen, danach an einer großen Stichprobe statistisch prüfen — der Standardweg, wenn zu einem Thema noch wenig bekannt ist.",
+   beispiel:"Vor der Einführung eines neuen Beratungsangebots werden zunächst Berater befragt, dann in einer Fokusgruppe mit Kunden getestet, bevor eine breite Kundenumfrage die Ergebnisse quantitativ absichert."},
+  {title:"Erklärend-sequenzielles Design",
+   chain:["Standardisierte Umfrage","Ausgewählte Experteninterviews"],
+   explain:"Erst die Breite messen, dann gezielt bei auffälligen Gruppen oder Ausreißern nachfragen, um die Zahlen zu verstehen statt nur zu berichten.",
+   beispiel:"Eine Umfrage zeigt eine überraschend niedrige Zufriedenheit in einer bestimmten Region — anschließende Interviews mit dortigen Kunden klären, woran das konkret liegt."},
+  {title:"Fallstudien-Triangulation",
+   chain:["Fallstudie","Qualitative Inhaltsanalyse","Teilnehmende Beobachtung"],
+   explain:"Mehrere Datenquellen für denselben Fall werden zusammengeführt, um ein Phänomen aus verschiedenen Blickwinkeln abzusichern, statt sich auf eine einzige Quelle zu verlassen.",
+   beispiel:"Die Einführung eines neuen Prozesses in einer Filiale wird über interne Dokumente, kodierte Interviewaussagen und direkte Beobachtung vor Ort gemeinsam ausgewertet."},
+  {title:"Prognose-Kette",
+   chain:["Sekundärdatenanalyse","Delphi-Methode","Längsschnittstudie"],
+   explain:"Vorhandene Daten liefern die Ausgangsbasis, ein Expertenkonsens schätzt die Zukunftsentwicklung ein, und eine spätere Panel-Erhebung prüft, ob sich die Prognose tatsächlich bestätigt.",
+   beispiel:"Zur Einschätzung künftiger Zinsentwicklungen werden zunächst historische Daten ausgewertet, dann Expertenmeinungen im Delphi-Verfahren gebündelt und die Prognose über die folgenden Jahre laufend überprüft."}
+];
+
+let currentTab = "qualitativ";
+
+function setAccent(tab){
+  const t = TABS.find(x => x.key === tab);
+  document.documentElement.style.setProperty("--accent", `var(${t.accent})`);
+  document.documentElement.style.setProperty("--accent-soft", `var(${t.soft})`);
+}
+
+function renderTabs(){
+  const nav = document.getElementById("tabNav");
+  nav.innerHTML = TABS.map(t => `
+    <button class="tab-btn ${t.key===currentTab?'active':''}" style="--tab-accent:var(${t.accent})" data-tab="${t.key}">
+      <span class="code">${t.code}</span>
+      <span class="name">${t.name}</span>
+    </button>
+  `).join("");
+  nav.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTab = btn.dataset.tab;
+      setAccent(currentTab);
+      renderTabs();
+      renderContent();
+      document.getElementById("content").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+}
+
+function renderContent(){
+  const tab = TABS.find(t=>t.key===currentTab);
+  const container = document.getElementById("content");
+
+  if(currentTab === "kombi"){
+    const cards = KOMBI_PFADE.map((p, i)=>{
+      const code = `KOMB-${String(i+1).padStart(2,"0")}`;
+      const chainHtml = p.chain.map((step, idx)=>{
+        const pill = `<span class="pill">${step}</span>`;
+        return idx < p.chain.length-1 ? pill + `<span class="arrow">&rarr;</span>` : pill;
+      }).join("");
+      return `
+        <article class="lesson-card">
+          <div class="lesson-head">
+            <span class="ledger-code">${code}</span>
+            <h3>${p.title}</h3>
+          </div>
+          <div class="chain">${chainHtml}</div>
+          <p class="explain">${p.explain}</p>
+          <div class="box wann"><span class="label">Praxisbeispiel</span>${p.beispiel}</div>
+        </article>
+      `;
+    }).join("");
+    container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+    return;
+  }
+
+  const items = CONTENT[currentTab];
+  const cards = items.map((it, i)=>{
+    const code = `${tab.code}-${String(i+1).padStart(2,"0")}`;
+    const stepsHtml = it.steps.map(s=>`<li>${s}</li>`).join("");
+    const toolsHtml = it.tools.map(t=>`<span class="pill">${t}</span>`).join("");
+    return `
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="ledger-code">${code}</span>
+          <h3>${it.title}</h3>
+        </div>
+        <p class="explain">${it.explain}</p>
+        <span class="steps-label">Vorgehen</span>
+        <ol class="steps">${stepsHtml}</ol>
+        <div class="box wann"><span class="label">Wann lohnt sich die Methode</span>${it.wann}</div>
+        <div class="box kombi"><span class="label">Kombination mit anderen Methoden</span>${it.kombination}</div>
+        <div class="box tools"><span class="label">Unterstützende Tools</span><div class="tool-pills">${toolsHtml}</div></div>
+      </article>
+    `;
+  }).join("");
+
+  container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+}
+
+setAccent(currentTab);
+renderTabs();
+renderContent();
+</script>
+</body>
+</html>
