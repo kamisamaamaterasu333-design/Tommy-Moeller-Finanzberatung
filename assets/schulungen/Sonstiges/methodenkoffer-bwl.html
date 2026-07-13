@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodenkoffer BWL — 20 Methoden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F0EFE6;
+    --paper-dim:#E4E2D3;
+    --panel:#FAF9F3;
+    --ink:#1F2A24;
+    --ink-dim:#5B6259;
+    --rule:#C9C4B3;
+
+    --strategie:#35507A;   --strategie-soft:#DCE2ED;
+    --markt:#B5502E;       --markt-soft:#F0DCD1;
+    --finanzen:#3B6B3F;    --finanzen-soft:#DCE7DC;
+    --organisation:#2E7A82;--organisation-soft:#D7E7E8;
+    --projekt:#A67C1E;     --projekt-soft:#EFE3C6;
+    --kombi:#6B3F5C;       --kombi-soft:#E7DCE3;
+
+    --accent: var(--strategie);
+    --accent-soft: var(--strategie-soft);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--paper),var(--paper)),
+      repeating-linear-gradient(0deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, rgba(31,42,36,0.035) 0px, rgba(31,42,36,0.035) 1px, transparent 1px, transparent 28px);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  header.cover{
+    max-width:1040px;
+    margin:0 auto;
+    padding:56px 28px 32px;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:clamp(34px, 6vw, 56px);
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .subtitle{
+    font-size:17px;
+    color:var(--ink-dim);
+    max-width:660px;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+  }
+  .meta-row strong{color:var(--ink); font-weight:600;}
+
+  nav.tabs{
+    max-width:1040px;
+    margin:0 auto;
+    padding:22px 28px 0;
+    display:flex;
+    gap:2px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:10;
+    padding-bottom:2px;
+  }
+  .tab-btn{
+    flex:1 1 150px;
+    min-width:130px;
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-bottom:none;
+    border-top:4px solid var(--tab-accent, var(--rule));
+    padding:11px 12px 9px;
+    cursor:pointer;
+    text-align:left;
+    transition:background 0.15s ease;
+  }
+  .tab-btn:hover{background:var(--paper-dim);}
+  .tab-btn .code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10px;
+    letter-spacing:0.09em;
+    color:var(--ink-dim);
+    display:block;
+    text-transform:uppercase;
+  }
+  .tab-btn .name{
+    font-family:"Fraunces", serif;
+    font-size:15.5px;
+    font-weight:600;
+    color:var(--ink);
+    display:block;
+    margin-top:2px;
+    line-height:1.25;
+  }
+  .tab-btn.active{background:var(--accent-soft);}
+  .tab-btn.active .code{color:var(--accent);}
+
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:30px 28px 80px;
+    border-bottom:1px solid var(--rule);
+  }
+
+  .tab-intro{
+    font-size:15px;
+    color:var(--ink-dim);
+    max-width:75ch;
+    margin:0 0 24px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--rule);
+  }
+
+  .lesson-card{
+    background:var(--panel);
+    border:1px solid var(--rule);
+    border-left:5px solid var(--accent);
+    border-radius:2px;
+    padding:24px 26px;
+    margin-bottom:22px;
+  }
+  .lesson-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .ledger-code{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:0.04em;
+    border:1px solid var(--accent);
+    border-radius:3px;
+    padding:2px 7px;
+    white-space:nowrap;
+  }
+  .lesson-card h3{
+    font-family:"Fraunces", serif;
+    font-size:21px;
+    font-weight:600;
+    margin:0;
+  }
+  .lesson-card p.explain{
+    margin:8px 0 14px;
+    color:var(--ink);
+    max-width:75ch;
+  }
+
+  .box{
+    margin-top:12px;
+    padding:13px 16px;
+    border-radius:4px;
+    font-size:14px;
+  }
+  .box .label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    font-weight:700;
+    display:block;
+    margin-bottom:6px;
+  }
+  .box.beispiel{
+    background:var(--paper);
+    border:1px dashed var(--rule);
+  }
+  .box.beispiel .label{color:var(--ink-dim);}
+
+  .box.kombi{
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+  }
+  .box.kombi .label{color:var(--accent);}
+
+  /* ---------- Kombinationen-Pfade ---------- */
+  .chain{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin:6px 0 16px;
+  }
+  .chain .pill{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    color:var(--ink);
+    padding:5px 11px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .chain .arrow{
+    color:var(--accent);
+    font-weight:600;
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px 28px 60px;
+    color:var(--ink-dim);
+    font-size:13px;
+  }
+
+  @media (max-width:640px){
+    header.cover{padding:36px 18px 24px;}
+    nav.tabs{padding:16px 18px 0;}
+    main{padding:22px 18px 60px;}
+    .lesson-card{padding:18px 16px;}
+  }
+
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="eyebrow">Lernmodul · tommy-moeller.de</p>
+  <h1 class="title">Methodenkoffer BWL</h1>
+  <p class="subtitle">20 Methoden, die in jedem BWL-Studium wiederkehren — von SWOT bis Kapitalwertmethode. Jede mit einem praktischen Beispiel und der Frage: Mit welcher anderen Methode ergibt sie erst ein vollständiges Bild?</p>
+  <div class="meta-row">
+    <span><strong>20</strong> Methoden</span>
+    <span><strong>5</strong> Themenfelder</span>
+    <span><strong>4</strong> Kombinationspfade</span>
+    <span><strong>Fokus:</strong> Anwendung, nicht nur Definition</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabNav"></nav>
+<main id="content"></main>
+
+<footer>
+  Eigenständiges Lernmodul — offline nutzbar, keine externen Abhängigkeiten außer Web-Fonts. Jede Methode ist über ihren Ledger-Code referenzierbar (z. B. <code>FIN-03</code> = Finanzen &amp; Controlling, Methode 3).
+</footer>
+
+<script>
+const TABS = [
+  {key:"strategie", code:"STR", name:"Strategie", accent:"--strategie", soft:"--strategie-soft",
+   intro:"Methoden, die die Position eines Unternehmens im Markt und die Richtung seiner Entwicklung bestimmen — meist der Ausgangspunkt jeder größeren unternehmerischen Entscheidung."},
+  {key:"markt", code:"MKT", name:"Markt & Kunde", accent:"--markt", soft:"--markt-soft",
+   intro:"Methoden, die die Perspektive des Kunden systematisch einbeziehen — von der Frage, was wirklich begeistert, bis zur konkreten Marketingentscheidung."},
+  {key:"finanzen", code:"FIN", name:"Finanzen & Controlling", accent:"--finanzen", soft:"--finanzen-soft",
+   intro:"Methoden, die aus Zahlen belastbare Entscheidungsgrundlagen machen — von der einfachen Mengenschwelle bis zur mehrjährigen Investitionsrechnung."},
+  {key:"organisation", code:"ORG", name:"Organisation & Prozess", accent:"--organisation", soft:"--organisation-soft",
+   intro:"Methoden, die die innere Struktur eines Unternehmens analysieren und Verantwortlichkeiten klären — die Voraussetzung, damit Strategie überhaupt umgesetzt werden kann."},
+  {key:"projekt", code:"PRJ", name:"Projekt & Umsetzung", accent:"--projekt", soft:"--projekt-soft",
+   intro:"Methoden, die aus einer Entscheidung ein konkretes, überprüfbares Vorhaben machen — der letzte Schritt von der Analyse zur tatsächlichen Wirkung."},
+  {key:"kombi", code:"KOM", name:"Kombinationen", accent:"--kombi", soft:"--kombi-soft",
+   intro:"Keine einzelne Methode liefert das vollständige Bild. Diese vier Pfade zeigen, wie erfahrene Praktiker mehrere Methoden aus dem Koffer zu einer durchgehenden Argumentationskette verbinden."}
+];
+
+const CONTENT = {
+  strategie: [
+    {title:"SWOT-Analyse",
+     explain:"Stellt interne Stärken (Strengths) und Schwächen (Weaknesses) den externen Chancen (Opportunities) und Risiken (Threats) gegenüber. Der eigentliche Wert entsteht erst in der Kombination der Felder, nicht in der reinen Auflistung.",
+     beispiel:"Ein Mittelständler mit starker Kundenbindung (Stärke) und einem wachsenden Markt für Nachhaltigkeitsprodukte (Chance) leitet daraus ab, ein Öko-Produktsegment gezielt auszubauen.",
+     kombi:"Liefert oft den Ausgangspunkt für Ansoff-Matrix oder Business Model Canvas; wird durch PESTEL (extern) und Five Forces (Wettbewerb) fundierter gemacht."},
+    {title:"Porters Five Forces",
+     explain:"Analysiert die Attraktivität einer Branche anhand von fünf Wettbewerbskräften: Rivalität unter bestehenden Wettbewerbern, Verhandlungsmacht von Lieferanten und Kunden sowie die Bedrohung durch neue Anbieter und durch Substitute.",
+     beispiel:"Im Bankensektor zeigt die Analyse eine niedrige Bedrohung durch neue Vollbanken wegen hoher regulatorischer Hürden, aber eine hohe Bedrohung durch Fintechs als Substitute im Zahlungsverkehr.",
+     kombi:"Ergänzt SWOT um eine tiefere externe Perspektive und liefert Input für die Wertkette, wenn geklärt wird, wo im Unternehmen auf diese Kräfte reagiert werden kann."},
+    {title:"PESTEL-Analyse",
+     explain:"Untersucht das Makroumfeld eines Unternehmens entlang sechs Dimensionen: Politisch, Ökonomisch, Sozial, Technologisch, Ökologisch und Rechtlich.",
+     beispiel:"Steigende Zinsen (ökonomisch) und neue EU-Vorgaben zu Nachhaltigkeitsberichten (rechtlich) verändern gleichzeitig Finanzierungskosten und Berichtspflichten eines Unternehmens.",
+     kombi:"Liefert die Chancen-Risiken-Seite für eine SWOT-Analyse und wird meist vor Five Forces durchgeführt, um von der Makro- zur Branchenebene zu gelangen."},
+    {title:"BCG-Matrix",
+     explain:"Ordnet Geschäftsfelder oder Produkte nach Marktwachstum und relativem Marktanteil in vier Felder ein: Stars, Cash Cows, Question Marks und Poor Dogs — als Basis für Investitions- oder Rückzugsentscheidungen im Portfolio.",
+     beispiel:"Ein etabliertes Kreditkartenprodukt mit stabilem Marktanteil in einem reifen Markt gilt als Cash Cow, deren Erträge ein neues digitales Bezahlprodukt als Question Mark querfinanzieren.",
+     kombi:"Baut auf einer vorherigen Markt- oder SWOT-Analyse je Geschäftsfeld auf; die Ergebnisse fließen in die Ansoff-Matrix ein, sobald Wachstumsrichtungen gesucht werden."},
+    {title:"Ansoff-Matrix",
+     explain:"Strukturiert vier Wachstumsstrategien entlang der Dimensionen Produkt (bestehend/neu) und Markt (bestehend/neu): Marktdurchdringung, Marktentwicklung, Produktentwicklung und Diversifikation.",
+     beispiel:"Ein Anbieter von Verbraucherkrediten erschließt mit dem bestehenden Produkt eine neue Zielgruppe — Marktentwicklung, statt gleich ein komplett neues Produkt zu entwickeln.",
+     kombi:"Nimmt die Stärken aus der SWOT-Analyse als Ausgangspunkt und wird häufig mit der BCG-Matrix kombiniert, um zu entscheiden, welches Feld welche Wachstumsstrategie verdient."}
+  ],
+  markt: [
+    {title:"Business Model Canvas",
+     explain:"Bildet ein Geschäftsmodell auf neun Bausteinen ab — unter anderem Wertversprechen, Kundensegmente, Kanäle, Kostenstruktur und Einnahmequellen — und macht Abhängigkeiten zwischen ihnen auf einen Blick sichtbar.",
+     beispiel:"Ein Startup erkennt beim Ausfüllen des Canvas, dass sein Wertversprechen einer schnellen Kreditzusage einen Kanal mit persönlicher Beratung erfordert — im Widerspruch zur geplanten, rein digitalen Kostenstruktur.",
+     kombi:"Wird oft nach einer SWOT-Analyse zur Konkretisierung genutzt; das Kano-Modell hilft, das Wertversprechen aus Kundensicht zu schärfen."},
+    {title:"Kano-Modell",
+     explain:"Unterteilt Produktmerkmale aus Kundensicht in Basis-, Leistungs- und Begeisterungsfaktoren. Basisfaktoren werden vorausgesetzt und fallen nur bei Fehlen auf; Begeisterungsfaktoren schaffen echte Differenzierung.",
+     beispiel:"Eine sichere Banking-App gilt als Basisfaktor, der schlicht erwartet wird, während eine proaktive Warnung vor ungewöhnlichen Kontobewegungen als Begeisterungsfaktor wahrgenommen wird.",
+     kombi:"Konkretisiert das Wertversprechen im Business Model Canvas und liefert Input für die Priorisierung im Marketing-Mix."},
+    {title:"Marketing-Mix (4P)",
+     explain:"Strukturiert Marketingentscheidungen entlang Product, Price, Place und Promotion — bei Dienstleistungen häufig erweitert um People, Process und Physical Evidence.",
+     beispiel:"Bei der Einführung eines neuen Kreditprodukts werden Zinssatz, Vertriebskanal (Filiale vs. App) und Kampagnenbotschaft bewusst aufeinander abgestimmt statt einzeln entschieden.",
+     kombi:"Setzt die Erkenntnisse aus Kano-Modell und Customer Journey Map in konkrete Marketingentscheidungen um."},
+    {title:"Customer Journey Map",
+     explain:"Visualisiert alle Kontaktpunkte eines Kunden mit einem Unternehmen entlang eines Prozesses — von der ersten Wahrnehmung bis nach dem Kauf — inklusive Emotionen und Schmerzpunkten an jeder Station.",
+     beispiel:"Die Journey-Map eines Kreditantrags zeigt einen deutlichen Frustrationspeak beim Hochladen von Dokumenten — ein klarer Ansatzpunkt für Prozessverbesserung.",
+     kombi:"Liefert konkrete Ansatzpunkte für den Marketing-Mix und für die Prozessoptimierung entlang der Wertkette."}
+  ],
+  finanzen: [
+    {title:"Break-Even-Analyse",
+     explain:"Berechnet den Punkt, an dem Erlöse die Gesamtkosten aus fixen und variablen Bestandteilen genau decken — die Basis-Kennzahl, um zu wissen, ab welcher Menge ein Angebot wirtschaftlich trägt.",
+     beispiel:"Ein neues Beratungsangebot mit 15.000 Euro Fixkosten und 40 Euro Deckungsbeitrag je Kunde erreicht den Break-Even bei 375 Kunden.",
+     kombi:"Liefert die Mengen-Basis für die Deckungsbeitragsrechnung und ist zentraler Input für die Kapitalwertmethode bei Investitionsentscheidungen."},
+    {title:"ABC-Analyse",
+     explain:"Klassifiziert Objekte wie Kunden, Produkte oder Lieferanten nach ihrem Wertbeitrag in drei Klassen. Meist gilt: Ein kleiner Anteil der Objekte in Klasse A erzeugt den überwiegenden Teil des Gesamtwerts.",
+     beispiel:"Eine Vertriebsanalyse zeigt, dass rund 15 Prozent der Firmenkunden etwa 70 Prozent des Kreditvolumens ausmachen — diese A-Kunden erhalten priorisierte Betreuung.",
+     kombi:"Liefert die Priorisierung, bevor man mit Balanced Scorecard oder Kano-Modell tiefer in einzelne Segmente einsteigt."},
+    {title:"Kapitalwertmethode (NPV)",
+     explain:"Diskontiert alle zukünftigen Ein- und Auszahlungen einer Investition auf den heutigen Zeitpunkt und summiert sie; ein positiver Kapitalwert bedeutet, die Investition schafft Wert über die Kapitalkosten hinaus.",
+     beispiel:"Eine IT-Investition mit 200.000 Euro Anschaffungskosten und danach jährlich 60.000 Euro Einzahlungsüberschuss über fünf Jahre hat bei 8 Prozent Kalkulationszins einen positiven Kapitalwert und lohnt sich.",
+     kombi:"Baut auf den Zahlen aus Break-Even-Analyse und Deckungsbeitragsrechnung auf und wird oft mit der internen Zinsfußmethode als Gegenprobe kombiniert."},
+    {title:"Balanced Scorecard",
+     explain:"Übersetzt Strategie in messbare Ziele über vier Perspektiven: Finanzen, Kunden, interne Prozesse sowie Lernen und Entwicklung — und verhindert so, dass nur finanzielle Kennzahlen betrachtet werden.",
+     beispiel:"Neben dem Ertragsziel wird zusätzlich die Kundenzufriedenheit, die Durchlaufzeit von Kreditanträgen und die Weiterbildungsquote der Mitarbeitenden gemessen und gesteuert.",
+     kombi:"Übersetzt eine übergeordnete Strategie- oder Change-Vision in Kennzahlen; die ABC-Analyse liefert oft Kennzahlen für die Kundenperspektive."},
+    {title:"Deckungsbeitragsrechnung",
+     explain:"Zieht von den Erlösen nur die variablen Kosten ab und zeigt so, was ein Produkt tatsächlich zur Deckung der Fixkosten und zum Gewinn beiträgt — für Entscheidungen aussagekräftiger als die Vollkostenrechnung.",
+     beispiel:"Ein Kreditprodukt mit niedrigerem Verkaufspreis, aber sehr geringen variablen Kosten kann trotzdem den höchsten Deckungsbeitrag je Stück liefern und wird deshalb priorisiert beworben.",
+     kombi:"Ist die Vorstufe der Break-Even-Analyse und liefert Eingangsdaten für die Kapitalwertmethode."}
+  ],
+  organisation: [
+    {title:"Wertkette nach Porter",
+     explain:"Zerlegt ein Unternehmen in primäre Aktivitäten wie Eingangslogistik, Produktion und Vertrieb sowie unterstützende Aktivitäten wie IT und Personal — und zeigt, wo Wettbewerbsvorteile entstehen oder Kosten anfallen.",
+     beispiel:"Die Analyse zeigt, dass der größte Zeitverlust im Kreditprozess nicht in der eigentlichen Kreditprüfung liegt, sondern in einer internen IT-Schnittstelle — einer unterstützenden Aktivität.",
+     kombi:"Konkretisiert, wo genau auf Erkenntnisse aus Five Forces reagiert werden kann, und liefert Ansatzpunkte für die Customer Journey Map."},
+    {title:"7-S-Modell (McKinsey)",
+     explain:"Betrachtet eine Organisation entlang sieben Faktoren — Strategy, Structure, Systems, Shared Values, Skills, Style, Staff — und prüft, ob diese konsistent zueinander passen.",
+     beispiel:"Eine neue agile Strategie scheitert, weil die Organisationsstruktur weiterhin streng hierarchisch bleibt und die Beurteilungssysteme auf Einzelleistung statt Teamarbeit ausgelegt sind.",
+     kombi:"Klassisches Diagnosewerkzeug vor einem Change-Projekt; liefert die Ausgangsanalyse, bevor Kraftfeldanalyse oder RACI-Matrix eingesetzt werden."},
+    {title:"RACI-Matrix",
+     explain:"Klärt für jede Aufgabe, wer sie ausführt (Responsible), wer die Ergebnisverantwortung trägt (Accountable), wer konsultiert (Consulted) und wer nur informiert (Informed) werden muss.",
+     beispiel:"Für die Aufgabe 'Kreditrichtlinie aktualisieren' wird ein Sachbearbeiter als Responsible, die Abteilungsleitung als Accountable und die Compliance-Abteilung als Consulted definiert.",
+     kombi:"Wird häufig direkt nach dem 7-S-Modell oder in der Umsetzungsphase eines Change-Projekts eingesetzt, um Unklarheiten in der Verantwortung zu beseitigen."}
+  ],
+  projekt: [
+    {title:"SMART-Ziele",
+     explain:"Fordert, dass Ziele spezifisch, messbar, akzeptiert beziehungsweise attraktiv, realistisch und terminiert formuliert werden — als Gegenmittel gegen vage Absichtserklärungen.",
+     beispiel:"Statt 'Kundenzufriedenheit verbessern' lautet das SMARTe Ziel: den NPS-Wert von 32 auf 45 bis Ende des dritten Quartals zu steigern, gemessen per Quartalsumfrage.",
+     kombi:"Übersetzt die Kennzahlen der Balanced Scorecard in konkrete Vorhaben und ist die Grundlage für jeden PDCA-Zyklus."},
+    {title:"PDCA-Zyklus (Deming)",
+     explain:"Strukturiert kontinuierliche Verbesserung in vier Schritten: Plan, Do, Check, Act — planen, im Kleinen umsetzen, überprüfen, anpassen und verankern — und beginnt danach erneut von vorn.",
+     beispiel:"Ein Team testet eine neue Prüfroutine für Kreditanträge zunächst in einer Filiale, wertet nach vier Wochen die Fehlerquote aus und rollt die Anpassung danach unternehmensweit aus.",
+     kombi:"Ergänzt die späteren Kotter-Schritte um eine iterative Feinjustierung; SMART-Ziele liefern die messbare Grundlage für den Check-Schritt."},
+    {title:"Kraftfeldanalyse (Lewin)",
+     explain:"Stellt treibende und bremsende Kräfte eines Vorhabens gegenüber und gewichtet sie — macht sichtbar, ob es wirksamer ist, eine Bremse zu lösen oder mehr Antrieb aufzubauen.",
+     beispiel:"Eine geplante Prozessautomatisierung wird durch Zeitdruck begünstigt, aber durch die Sorge um Arbeitsplätze verzögert — gezielte Kommunikation zu Weiterbildung statt Stellenabbau löst die Blockade.",
+     kombi:"Klassisches Werkzeug in der Auftauen-Phase nach Lewin beziehungsweise vor dem ersten Kotter-Schritt; ergänzt das 7-S-Modell um die menschliche Dimension."}
+  ]
+};
+
+const KOMBI_PFADE = [
+  {title:"Strategische Analyse-Kette",
+   chain:["PESTEL-Analyse","Five Forces","SWOT-Analyse","Ansoff- / BCG-Matrix","Business Model Canvas"],
+   explain:"Vom groben Makroumfeld über die Branchenstruktur zur eigenen Position, daraus abgeleitet die Wachstumsrichtung, konkretisiert im Geschäftsmodell — der klassische Weg von außen nach innen.",
+   beispiel:"Ein Bankinstitut nutzt genau diese Kette vor einer Digitalisierungsstrategie: erst das regulatorische Umfeld, dann die Fintech-Konkurrenz, anschließend die eigene Ausgangslage und schließlich die konkrete Wachstumsrichtung."},
+  {title:"Markteinführung eines neuen Produkts",
+   chain:["Kano-Modell","Customer Journey Map","Marketing-Mix (4P)","Break-Even-Analyse"],
+   explain:"Erst verstehen, was Kunden wirklich begeistert, dann den Erlebnispfad gestalten, daraus konkrete Marketingentscheidungen ableiten und zum Schluss die Wirtschaftlichkeit rechnen.",
+   beispiel:"Vor der Einführung einer neuen App-Funktion wird zunächst geprüft, ob sie ein Begeisterungsfaktor ist, dann an welcher Stelle der Journey sie auftaucht, wie sie beworben wird und ab welcher Nutzerzahl sie sich rechnet."},
+  {title:"Investitions- und Preisentscheidung",
+   chain:["Deckungsbeitragsrechnung","Break-Even-Analyse","Kapitalwertmethode","Balanced Scorecard"],
+   explain:"Von der Stückbetrachtung über die Mengen-Schwelle zur Gesamtwirtschaftlichkeit über mehrere Jahre, mit der Balanced Scorecard zur laufenden Erfolgskontrolle nach der Umsetzung.",
+   beispiel:"Eine neue Produktlinie wird zunächst je Stück kalkuliert, dann die nötige Mindestmenge bestimmt, danach die mehrjährige Investition bewertet und schließlich dauerhaft über mehrere Perspektiven verfolgt."},
+  {title:"Organisationswandel umsetzen",
+   chain:["7-S-Modell","Kraftfeldanalyse","RACI-Matrix","SMART-Ziele","PDCA-Zyklus"],
+   explain:"Diagnose der Organisation, Verständnis der Widerstände, Klärung von Verantwortlichkeiten, konkrete Zielformulierung und iterative Umsetzung — eine vollständige Kette von der Analyse bis zur laufenden Verbesserung.",
+   beispiel:"Vor der Einführung eines neuen Prozesses wird zunächst die organisatorische Passung geprüft, dann Widerstände analysiert, Verantwortlichkeiten geklärt, Ziele festgelegt und die Umsetzung in Zyklen verfeinert."}
+];
+
+let currentTab = "strategie";
+
+function setAccent(tab){
+  const t = TABS.find(x => x.key === tab);
+  document.documentElement.style.setProperty("--accent", `var(${t.accent})`);
+  document.documentElement.style.setProperty("--accent-soft", `var(${t.soft})`);
+}
+
+function renderTabs(){
+  const nav = document.getElementById("tabNav");
+  nav.innerHTML = TABS.map(t => `
+    <button class="tab-btn ${t.key===currentTab?'active':''}" style="--tab-accent:var(${t.accent})" data-tab="${t.key}">
+      <span class="code">${t.code}</span>
+      <span class="name">${t.name}</span>
+    </button>
+  `).join("");
+  nav.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTab = btn.dataset.tab;
+      setAccent(currentTab);
+      renderTabs();
+      renderContent();
+      document.getElementById("content").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+}
+
+function renderContent(){
+  const tab = TABS.find(t=>t.key===currentTab);
+  const container = document.getElementById("content");
+
+  if(currentTab === "kombi"){
+    const cards = KOMBI_PFADE.map((p, i)=>{
+      const code = `KOM-${String(i+1).padStart(2,"0")}`;
+      const chainHtml = p.chain.map((step, idx)=>{
+        const pill = `<span class="pill">${step}</span>`;
+        return idx < p.chain.length-1 ? pill + `<span class="arrow">&rarr;</span>` : pill;
+      }).join("");
+      return `
+        <article class="lesson-card">
+          <div class="lesson-head">
+            <span class="ledger-code">${code}</span>
+            <h3>${p.title}</h3>
+          </div>
+          <div class="chain">${chainHtml}</div>
+          <p class="explain">${p.explain}</p>
+          <div class="box beispiel"><span class="label">Praxisbeispiel</span>${p.beispiel}</div>
+        </article>
+      `;
+    }).join("");
+    container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+    return;
+  }
+
+  const items = CONTENT[currentTab];
+  const cards = items.map((it, i)=>{
+    const code = `${tab.code}-${String(i+1).padStart(2,"0")}`;
+    return `
+      <article class="lesson-card">
+        <div class="lesson-head">
+          <span class="ledger-code">${code}</span>
+          <h3>${it.title}</h3>
+        </div>
+        <p class="explain">${it.explain}</p>
+        <div class="box beispiel"><span class="label">Praxisbeispiel</span>${it.beispiel}</div>
+        <div class="box kombi"><span class="label">Kombinierbar mit</span>${it.kombi}</div>
+      </article>
+    `;
+  }).join("");
+
+  container.innerHTML = `<p class="tab-intro">${tab.intro}</p>` + cards;
+}
+
+setAccent(currentTab);
+renderTabs();
+renderContent();
+</script>
+</body>
+</html>
