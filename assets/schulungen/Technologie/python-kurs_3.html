@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Lernen – Dein Kurs</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Fraunces:ital,wght@0,300;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f14;
+    --surface: #161820;
+    --card: #1e2030;
+    --border: #2a2d3e;
+    --accent: #f7c948;
+    --accent2: #5af0c4;
+    --accent3: #ff6b6b;
+    --text: #e2e4f0;
+    --muted: #8b8fa8;
+    --code-bg: #12131a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 280px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--accent2); font-style: italic; }
+
+  .progress-bar-wrap {
+    margin-top: 14px;
+    background: var(--border);
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 20px;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .nav-section {
+    padding: 16px 12px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-weight: 600;
+    padding-left: 16px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin: 2px 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    transition: all 0.15s;
+    color: var(--muted);
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--card); color: var(--text); }
+  .nav-item.active {
+    background: var(--card);
+    color: var(--accent);
+    border-color: var(--border);
+  }
+  .nav-item.completed .nav-dot { background: var(--accent2); }
+  .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .nav-item.active .nav-dot { background: var(--accent); }
+
+  /* MAIN */
+  #main {
+    margin-left: 280px;
+    flex: 1;
+    max-width: calc(100vw - 280px);
+    padding: 48px 60px;
+    min-height: 100vh;
+  }
+
+  .lesson-header {
+    margin-bottom: 32px;
+  }
+  .lesson-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #0e0f14;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .lesson-title {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .lesson-meta {
+    color: var(--muted);
+    font-size: 14px;
+    display: flex;
+    gap: 20px;
+  }
+  .lesson-meta span { display: flex; align-items: center; gap: 5px; }
+
+  /* CONTENT */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .section h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section p {
+    color: var(--text);
+    font-size: 15.5px;
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+  .section p:last-child { margin-bottom: 0; }
+
+  .highlight-box {
+    background: rgba(247,201,72,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  .highlight-box.green {
+    background: rgba(90,240,196,0.08);
+    border-color: var(--accent2);
+  }
+  .highlight-box.red {
+    background: rgba(255,107,107,0.08);
+    border-color: var(--accent3);
+  }
+
+  code.inline {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 13px;
+    color: var(--accent2);
+  }
+
+  pre.code-block {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 16px 0;
+    color: #c0c8e8;
+    position: relative;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: var(--border);
+    border: none;
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .copy-btn:hover { background: var(--accent); color: #000; }
+
+  .keyword { color: #c792ea; }
+  .string { color: #c3e88d; }
+  .number { color: #f78c6c; }
+  .comment { color: #546e7a; font-style: italic; }
+  .func { color: #82aaff; }
+  .builtin { color: var(--accent2); }
+
+  /* QUIZ */
+  .quiz-box {
+    background: linear-gradient(135deg, rgba(90,240,196,0.05), rgba(247,201,72,0.05));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .quiz-box h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--accent2);
+    margin-bottom: 8px;
+  }
+  .quiz-question {
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    transition: all 0.15s;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .quiz-option:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-option.correct { border-color: var(--accent2); background: rgba(90,240,196,0.1); color: var(--accent2); }
+  .quiz-option.wrong { border-color: var(--accent3); background: rgba(255,107,107,0.1); color: var(--accent3); }
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    line-height: 1.6;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(90,240,196,0.1); color: var(--accent2); }
+  .quiz-feedback.fail { background: rgba(255,107,107,0.1); color: var(--accent3); }
+
+  /* TASK */
+  .task-box {
+    background: rgba(247,201,72,0.05);
+    border: 1px solid rgba(247,201,72,0.3);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .task-box h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .task-steps {
+    list-style: none;
+    margin-top: 16px;
+  }
+  .task-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .task-steps li::before {
+    content: attr(data-n);
+    background: var(--accent);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* NAV BUTTONS */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+  }
+  .btn-primary:hover { background: #ffd84d; transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .lesson-complete-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(90,240,196,0.12);
+    color: var(--accent2);
+    border: 1px solid rgba(90,240,196,0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 16px 0;
+  }
+  table.info-table th {
+    background: var(--code-bg);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.info-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  table.info-table tr:last-child td { border-bottom: none; }
+
+  .time-badge {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    #sidebar { transform: translateX(-100%); }
+    #main { margin-left: 0; padding: 24px 20px; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">Python<span>Kurs</span></div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 von 17 Lektionen abgeschlossen</div>
+  </div>
+
+  <div class="nav-section">Grundlagen</div>
+  <div class="nav-item active" data-lesson="0" onclick="goTo(0)"><div class="nav-dot"></div>Einführung & Setup</div>
+  <div class="nav-item" data-lesson="1" onclick="goTo(1)"><div class="nav-dot"></div>Variablen & Datentypen</div>
+  <div class="nav-item" data-lesson="2" onclick="goTo(2)"><div class="nav-dot"></div>Ein- & Ausgabe</div>
+  <div class="nav-item" data-lesson="3" onclick="goTo(3)"><div class="nav-dot"></div>Operatoren & Rechnen</div>
+  <div class="nav-item" data-lesson="4" onclick="goTo(4)"><div class="nav-dot"></div>Bedingungen (if/else)</div>
+  <div class="nav-item" data-lesson="5" onclick="goTo(5)"><div class="nav-dot"></div>Schleifen (for/while)</div>
+  <div class="nav-item" data-lesson="6" onclick="goTo(6)"><div class="nav-dot"></div>Listen & Datenstrukturen</div>
+  <div class="nav-item" data-lesson="7" onclick="goTo(7)"><div class="nav-dot"></div>Funktionen</div>
+  <div class="nav-section">Praxis – Spiele & Logik</div>
+  <div class="nav-item" data-lesson="8" onclick="goTo(8)"><div class="nav-dot"></div>🎯 Aufgabe 1: Taschenrechner</div>
+  <div class="nav-item" data-lesson="9" onclick="goTo(9)"><div class="nav-dot"></div>🎯 Aufgabe 2: Zahlenraten</div>
+  <div class="nav-section">Automatisierung</div>
+  <div class="nav-item" data-lesson="10" onclick="goTo(10)"><div class="nav-dot"></div>📦 pip & Bibliotheken</div>
+  <div class="nav-item" data-lesson="11" onclick="goTo(11)"><div class="nav-dot"></div>📊 Excel mit openpyxl</div>
+  <div class="nav-item" data-lesson="12" onclick="goTo(12)"><div class="nav-dot"></div>📝 Word mit python-docx</div>
+  <div class="nav-item" data-lesson="13" onclick="goTo(13)"><div class="nav-dot"></div>📁 Dateien & Ordner</div>
+  <div class="nav-item" data-lesson="14" onclick="goTo(14)"><div class="nav-dot"></div>🌐 Webseiten & APIs</div>
+  <div class="nav-section">Praxis – Automatisierung</div>
+  <div class="nav-item" data-lesson="15" onclick="goTo(15)"><div class="nav-dot"></div>🎯 Projekt: Excel-Auswertung</div>
+  <div class="nav-item" data-lesson="16" onclick="goTo(16)"><div class="nav-dot"></div>🎯 Projekt: Ordner-Aufräumer</div>
+</nav>
+
+<main id="main">
+  <div id="lessonContent"></div>
+</main>
+
+<script>
+const lessons = [
+
+// 0: EINFÜHRUNG
+{
+  tag: "Lektion 1",
+  title: "Willkommen bei Python!",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>🐍 Was ist Python?</h2>
+      <p>Python ist eine <strong>Programmiersprache</strong> – also eine Sprache, mit der du dem Computer sagen kannst, was er tun soll. Python ist besonders beliebt, weil es <strong>einfach zu lesen und zu schreiben</strong> ist.</p>
+      <p>Python wird verwendet für: Webseiten, Datenanalyse, Künstliche Intelligenz, Automatisierung, Spiele und vieles mehr.</p>
+      <div class="highlight-box">
+        💡 <strong>Gute Nachricht:</strong> Du musst kein Mathematikgenie sein. Python ist so geschrieben, dass es fast wie normales Deutsch (bzw. Englisch) klingt.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Einrichtung in Visual Studio Code</h2>
+      <p>Du hast VS Code bereits installiert – super! Jetzt brauchst du noch Python selbst:</p>
+      <ol class="task-steps">
+        <li data-n="1">Öffne <strong>code.visualstudio.com</strong> — VS Code kennst du bereits ✓</li>
+        <li data-n="2">Gehe zu <strong>python.org/downloads</strong> und lade Python herunter (aktuellste Version). Installiere es mit dem Haken bei <em>"Add Python to PATH"</em>!</li>
+        <li data-n="3">Öffne VS Code → klicke links auf das Erweiterungen-Symbol → suche <strong>Python</strong> → installiere die Extension von Microsoft.</li>
+        <li data-n="4">Erstelle einen neuen Ordner z.B. <code class="inline">python-kurs</code> und öffne ihn in VS Code (<em>Datei → Ordner öffnen</em>).</li>
+        <li data-n="5">Erstelle eine neue Datei: <code class="inline">lektion1.py</code> – die Endung <code class="inline">.py</code> zeigt Python-Dateien an.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>🖨️ Dein erstes Programm</h2>
+      <p>Schreibe in deine <code class="inline">lektion1.py</code> folgendes:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="func">print</span>(<span class="string">"Hallo, Welt!"</span>)
+<span class="func">print</span>(<span class="string">"Ich lerne Python!"</span>)</pre>
+      <p>Drücke dann <code class="inline">▶ Run</code> (oben rechts in VS Code) oder drücke <code class="inline">F5</code>. Im Terminal unten siehst du die Ausgabe!</p>
+      <div class="highlight-box green">
+        ✅ <strong>Was passiert hier?</strong> <code class="inline">print()</code> ist ein Befehl in Python. Alles in den Klammern mit Anführungszeichen wird als Text ausgegeben. Text nennt man in Python einen <strong>String</strong>.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📖 Wie Python denkt</h2>
+      <p>Python liest deinen Code von <strong>oben nach unten</strong>, eine Zeile nach der anderen – genauso wie du einen Brief liest. Jede Zeile ist ein Befehl.</p>
+      <pre class="code-block"><span class="comment"># Das ist ein Kommentar – Python ignoriert diese Zeile</span>
+<span class="comment"># Kommentare beginnen mit dem # Symbol</span>
+<span class="func">print</span>(<span class="string">"Das wird ausgegeben"</span>)  <span class="comment"># Kommentar am Zeilenende</span></pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was macht der Befehl `print()` in Python?",
+    options: ["Er druckt das Dokument auf einem Drucker aus.", "Er zeigt Text oder Werte im Terminal an.", "Er löscht die letzte Zeile.", "Er erstellt eine neue Datei."],
+    correct: 1,
+    feedback: "Genau! print() gibt Inhalte im Terminal aus – das ist dein wichtigstes Werkzeug zum Testen."
+  }
+},
+
+// 1: VARIABLEN
+{
+  tag: "Lektion 2",
+  title: "Variablen & Datentypen",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>📦 Was ist eine Variable?</h2>
+      <p>Stell dir eine Variable wie eine <strong>beschriftete Schachtel</strong> vor. Du gibst ihr einen Namen und packst einen Wert hinein. Du kannst den Wert jederzeit herausnehmen oder austauschen.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Eine Variable erstellen:</span>
+name = <span class="string">"Maria"</span>
+alter = <span class="number">25</span>
+groesse = <span class="number">1.68</span>
+
+<span class="comment"># Variable verwenden:</span>
+<span class="func">print</span>(name)    <span class="comment"># Ausgabe: Maria</span>
+<span class="func">print</span>(alter)   <span class="comment"># Ausgabe: 25</span></pre>
+      <div class="highlight-box">
+        💡 Das <code class="inline">=</code> bedeutet hier <strong>„wird gesetzt auf"</strong>, nicht „ist gleich" wie in Mathe. Du sagst also: „Die Variable <em>name</em> bekommt den Wert Maria."
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔢 Die wichtigsten Datentypen</h2>
+      <p>Python unterscheidet verschiedene Arten von Daten:</p>
+      <table class="info-table">
+        <tr><th>Typ</th><th>Name</th><th>Beispiel</th><th>Erklärung</th></tr>
+        <tr><td><code class="inline">str</code></td><td>String (Text)</td><td><code class="inline">"Hallo"</code></td><td>Text immer in Anführungszeichen</td></tr>
+        <tr><td><code class="inline">int</code></td><td>Integer (Ganzzahl)</td><td><code class="inline">42</code></td><td>Ganze Zahlen, ohne Komma</td></tr>
+        <tr><td><code class="inline">float</code></td><td>Float (Kommazahl)</td><td><code class="inline">3.14</code></td><td>Zahlen mit Dezimalstelle (Punkt, nicht Komma!)</td></tr>
+        <tr><td><code class="inline">bool</code></td><td>Boolean (Wahrheitswert)</td><td><code class="inline">True</code> / <code class="inline">False</code></td><td>Nur zwei Werte: wahr oder falsch</td></tr>
+      </table>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>name = <span class="string">"Anna"</span>         <span class="comment"># str</span>
+punkte = <span class="number">100</span>          <span class="comment"># int</span>
+temperatur = <span class="number">36.6</span>    <span class="comment"># float</span>
+regen = <span class="keyword">False</span>        <span class="comment"># bool</span>
+
+<span class="comment"># Den Typ einer Variable herausfinden:</span>
+<span class="func">print</span>(<span class="builtin">type</span>(name))     <span class="comment"># &lt;class 'str'&gt;</span>
+<span class="func">print</span>(<span class="builtin">type</span>(punkte))   <span class="comment"># &lt;class 'int'&gt;</span></pre>
+    </div>
+
+    <div class="section">
+      <h2>🔗 Text zusammensetzen</h2>
+      <p>Du kannst Texte mit <code class="inline">+</code> zusammenfügen. Noch einfacher ist der sogenannte <strong>f-String</strong>:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>name = <span class="string">"Lena"</span>
+alter = <span class="number">22</span>
+
+<span class="comment"># Methode 1: Mit + zusammenfügen (Zahlen müssen zu Text umgewandelt werden)</span>
+<span class="func">print</span>(<span class="string">"Ich heiße "</span> + name + <span class="string">" und bin "</span> + <span class="builtin">str</span>(alter) + <span class="string">" Jahre alt."</span>)
+
+<span class="comment"># Methode 2: f-String – viel einfacher! (empfohlen)</span>
+<span class="func">print</span>(<span class="string">f"Ich heiße {name} und bin {alter} Jahre alt."</span>)</pre>
+      <div class="highlight-box green">
+        ✅ Das <code class="inline">f</code> vor dem String und die <code class="inline">{}</code> mit dem Variablennamen machen f-Strings aus. Python fügt dann automatisch den Wert der Variable ein.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📝 Regeln für Variablennamen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Gültige Namen:</span>
+mein_name = <span class="string">"Tom"</span>
+alter2 = <span class="number">30</span>
+punkte_gesamt = <span class="number">150</span>
+
+<span class="comment"># UNGÜLTIGE Namen (Fehler!):</span>
+<span class="comment"># 2name = "Tom"     → darf nicht mit Zahl beginnen</span>
+<span class="comment"># mein-name = "Tom" → kein Bindestrich erlaubt</span>
+<span class="comment"># print = "test"    → print ist ein Python-Schlüsselwort</span></pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist der Unterschied zwischen `42` und `\"42\"` in Python?",
+    options: ["Kein Unterschied, Python versteht beide gleich.", "`42` ist eine Zahl (int), `\"42\"` ist Text (str) – man kann damit unterschiedlich arbeiten.", "`\"42\"` ist größer als `42`.", "Anführungszeichen sind in Python verboten."],
+    correct: 1,
+    feedback: "Richtig! 42 + 8 = 50 (Rechnung), aber \"42\" + \"8\" = \"428\" (Textzusammenfügung). Der Typ macht einen großen Unterschied!"
+  }
+},
+
+// 2: EIN- UND AUSGABE
+{
+  tag: "Lektion 3",
+  title: "Ein- & Ausgabe",
+  time: "~15 Min",
+  content: `
+    <div class="section">
+      <h2>⌨️ Eingabe vom Benutzer</h2>
+      <p>Mit <code class="inline">input()</code> kannst du den Benutzer etwas fragen. Das Programm wartet dann auf eine Eingabe.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>name = <span class="builtin">input</span>(<span class="string">"Wie heißt du? "</span>)
+<span class="func">print</span>(<span class="string">f"Hallo, {name}!"</span>)
+
+alter = <span class="builtin">input</span>(<span class="string">"Wie alt bist du? "</span>)
+<span class="func">print</span>(<span class="string">f"Du bist {alter} Jahre alt."</span>)</pre>
+      <div class="highlight-box red">
+        ⚠️ <strong>Wichtig:</strong> <code class="inline">input()</code> gibt <strong>immer einen String</strong> zurück – auch wenn der Benutzer eine Zahl eingibt! Um damit zu rechnen, muss man umwandeln.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔄 Typen umwandeln</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>alter_text = <span class="builtin">input</span>(<span class="string">"Wie alt bist du? "</span>)  <span class="comment"># z.B. "25" als Text</span>
+
+<span class="comment"># Umwandlung zu Ganzzahl:</span>
+alter_zahl = <span class="builtin">int</span>(alter_text)   <span class="comment"># jetzt 25 als Zahl</span>
+
+<span class="comment"># Oder direkt in einer Zeile:</span>
+alter = <span class="builtin">int</span>(<span class="builtin">input</span>(<span class="string">"Wie alt bist du? "</span>))
+
+<span class="comment"># In 10 Jahren wärst du:</span>
+<span class="func">print</span>(<span class="string">f"In 10 Jahren bist du {alter + 10} Jahre alt."</span>)</pre>
+      <table class="info-table">
+        <tr><th>Funktion</th><th>Wandelt um in</th><th>Beispiel</th></tr>
+        <tr><td><code class="inline">int()</code></td><td>Ganzzahl</td><td><code class="inline">int("42") → 42</code></td></tr>
+        <tr><td><code class="inline">float()</code></td><td>Kommazahl</td><td><code class="inline">float("3.14") → 3.14</code></td></tr>
+        <tr><td><code class="inline">str()</code></td><td>Text</td><td><code class="inline">str(42) → "42"</code></td></tr>
+      </table>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `type(input(\"Zahl: \"))` zurück, wenn der Benutzer `5` eingibt?",
+    options: ["int", "float", "str", "number"],
+    correct: 2,
+    feedback: "Genau! input() gibt immer einen String zurück. Auch wenn der Benutzer eine Zahl eingibt, musst du sie erst mit int() oder float() umwandeln."
+  }
+},
+
+// 3: OPERATOREN
+{
+  tag: "Lektion 4",
+  title: "Operatoren & Rechnen",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>➕ Rechenoperatoren</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>a = <span class="number">10</span>
+b = <span class="number">3</span>
+
+<span class="func">print</span>(a + b)   <span class="comment"># 13  → Addition</span>
+<span class="func">print</span>(a - b)   <span class="comment"># 7   → Subtraktion</span>
+<span class="func">print</span>(a * b)   <span class="comment"># 30  → Multiplikation</span>
+<span class="func">print</span>(a / b)   <span class="comment"># 3.333... → Division (immer float!)</span>
+<span class="func">print</span>(a // b)  <span class="comment"># 3   → Ganzzahldivision (ohne Rest)</span>
+<span class="func">print</span>(a % b)   <span class="comment"># 1   → Modulo (der Rest der Division)</span>
+<span class="func">print</span>(a ** b)  <span class="comment"># 1000 → Potenz (10 hoch 3)</span></pre>
+      <div class="highlight-box">
+        💡 Der <code class="inline">%</code> (Modulo) ist sehr nützlich! Er gibt den Rest bei einer Division zurück. Z.B.: <code class="inline">10 % 2 = 0</code> → 10 ist gerade! <code class="inline">11 % 2 = 1</code> → 11 ist ungerade!
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚖️ Vergleichsoperatoren</h2>
+      <p>Diese Operatoren vergleichen zwei Werte und geben <code class="inline">True</code> oder <code class="inline">False</code> zurück:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>x = <span class="number">5</span>
+<span class="func">print</span>(x == <span class="number">5</span>)   <span class="comment"># True  → ist gleich (DOPPELTES ==)</span>
+<span class="func">print</span>(x != <span class="number">3</span>)   <span class="comment"># True  → ist NICHT gleich</span>
+<span class="func">print</span>(x > <span class="number">3</span>)    <span class="comment"># True  → größer als</span>
+<span class="func">print</span>(x < <span class="number">3</span>)    <span class="comment"># False → kleiner als</span>
+<span class="func">print</span>(x >= <span class="number">5</span>)   <span class="comment"># True  → größer oder gleich</span>
+<span class="func">print</span>(x <= <span class="number">4</span>)   <span class="comment"># False → kleiner oder gleich</span></pre>
+      <div class="highlight-box red">
+        ⚠️ <strong>Häufiger Fehler:</strong> <code class="inline">=</code> bedeutet „setze den Wert", <code class="inline">==</code> bedeutet „vergleiche". <code class="inline">x = 5</code> setzt x auf 5. <code class="inline">x == 5</code> fragt: „Ist x gleich 5?"
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔗 Logische Operatoren</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>alter = <span class="number">20</span>
+hat_ticket = <span class="keyword">True</span>
+
+<span class="comment"># and → beide Bedingungen müssen wahr sein</span>
+<span class="func">print</span>(alter >= <span class="number">18</span> <span class="keyword">and</span> hat_ticket)  <span class="comment"># True</span>
+
+<span class="comment"># or → mindestens eine Bedingung muss wahr sein</span>
+<span class="func">print</span>(alter >= <span class="number">21</span> <span class="keyword">or</span> hat_ticket)   <span class="comment"># True</span>
+
+<span class="comment"># not → kehrt um (True wird False, False wird True)</span>
+<span class="func">print</span>(<span class="keyword">not</span> hat_ticket)               <span class="comment"># False</span></pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `17 % 5` in Python zurück?",
+    options: ["3", "2", "3.4", "0"],
+    correct: 1,
+    feedback: "Richtig! 17 geteilt durch 5 = 3, Rest 2. Der Modulo-Operator % gibt den Rest zurück. 5×3 = 15, 17-15 = 2."
+  }
+},
+
+// 4: BEDINGUNGEN
+{
+  tag: "Lektion 5",
+  title: "Bedingungen (if/else)",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>🤔 Entscheidungen treffen</h2>
+      <p>Mit <code class="inline">if</code> kann dein Programm Entscheidungen treffen – je nachdem ob etwas wahr oder falsch ist.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>alter = <span class="number">20</span>
+
+<span class="keyword">if</span> alter >= <span class="number">18</span>:
+    <span class="func">print</span>(<span class="string">"Du bist volljährig!"</span>)
+
+<span class="comment"># Ausgabe: Du bist volljährig!</span></pre>
+      <div class="highlight-box">
+        💡 <strong>Der Doppelpunkt</strong> nach <code class="inline">if</code> ist Pflicht! Und der Code <strong>darunter muss eingerückt sein</strong> (4 Leerzeichen oder Tab). Die Einrückung zeigt Python, was zu dem if gehört.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>↔️ if / elif / else</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>punkte = <span class="builtin">int</span>(<span class="builtin">input</span>(<span class="string">"Deine Punktzahl: "</span>))
+
+<span class="keyword">if</span> punkte >= <span class="number">90</span>:
+    <span class="func">print</span>(<span class="string">"Note: Sehr gut (1)"</span>)
+<span class="keyword">elif</span> punkte >= <span class="number">75</span>:
+    <span class="func">print</span>(<span class="string">"Note: Gut (2)"</span>)
+<span class="keyword">elif</span> punkte >= <span class="number">60</span>:
+    <span class="func">print</span>(<span class="string">"Note: Befriedigend (3)"</span>)
+<span class="keyword">elif</span> punkte >= <span class="number">45</span>:
+    <span class="func">print</span>(<span class="string">"Note: Ausreichend (4)"</span>)
+<span class="keyword">else</span>:
+    <span class="func">print</span>(<span class="string">"Note: Nicht bestanden (5)"</span>)</pre>
+      <p>Python prüft von oben nach unten. Sobald eine Bedingung wahr ist, führt es diesen Block aus und überspringt den Rest.</p>
+      <div class="highlight-box green">
+        ✅ <strong>Merke:</strong> <code class="inline">if</code> = erste Bedingung | <code class="inline">elif</code> = weitere Bedingungen (so viele wie nötig) | <code class="inline">else</code> = der „Sonst"-Fall (falls nichts anderes zutrifft)
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🪆 Verschachtelte Bedingungen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>alter = <span class="number">20</span>
+hat_ausweis = <span class="keyword">True</span>
+
+<span class="keyword">if</span> alter >= <span class="number">18</span>:
+    <span class="keyword">if</span> hat_ausweis:
+        <span class="func">print</span>(<span class="string">"Zutritt erlaubt!"</span>)
+    <span class="keyword">else</span>:
+        <span class="func">print</span>(<span class="string">"Bitte Ausweis mitbringen."</span>)
+<span class="keyword">else</span>:
+    <span class="func">print</span>(<span class="string">"Zu jung für den Zutritt."</span>)
+
+<span class="comment"># Oder kürzer mit and:</span>
+<span class="keyword">if</span> alter >= <span class="number">18</span> <span class="keyword">and</span> hat_ausweis:
+    <span class="func">print</span>(<span class="string">"Zutritt erlaubt!"</span>)</pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was passiert, wenn du nach `if bedingung:` den Code NICHT einrückst?",
+    options: ["Python führt den Code trotzdem aus.", "Python gibt einen IndentationError (Einrückungsfehler) aus.", "Der Code wird übersprungen.", "Python rückt automatisch ein."],
+    correct: 1,
+    feedback: "Genau! Einrückung ist in Python PFLICHT. Sie zeigt an, welcher Code zu welchem Block gehört. Ohne Einrückung gibt es einen IndentationError."
+  }
+},
+
+// 5: SCHLEIFEN
+{
+  tag: "Lektion 6",
+  title: "Schleifen (for / while)",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>🔁 Warum Schleifen?</h2>
+      <p>Stell dir vor, du willst die Zahlen 1 bis 100 ausgeben. 100 <code class="inline">print()</code>-Zeilen schreiben wäre mühsam! Mit Schleifen geht das in 2 Zeilen.</p>
+    </div>
+
+    <div class="section">
+      <h2>🔢 Die for-Schleife</h2>
+      <p>Eine <code class="inline">for</code>-Schleife wiederholt Code für jedes Element in einer Sequenz:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Zahlen 1 bis 5 ausgeben:</span>
+<span class="keyword">for</span> zahl <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">1</span>, <span class="number">6</span>):   <span class="comment"># range(1,6) = 1,2,3,4,5</span>
+    <span class="func">print</span>(zahl)
+
+<span class="comment"># Durch eine Liste iterieren:</span>
+farben = [<span class="string">"rot"</span>, <span class="string">"grün"</span>, <span class="string">"blau"</span>]
+<span class="keyword">for</span> farbe <span class="keyword">in</span> farben:
+    <span class="func">print</span>(<span class="string">f"Farbe: {farbe}"</span>)
+
+<span class="comment"># Durch einen Text iterieren:</span>
+<span class="keyword">for</span> buchstabe <span class="keyword">in</span> <span class="string">"Python"</span>:
+    <span class="func">print</span>(buchstabe)</pre>
+      <div class="highlight-box">
+        💡 <code class="inline">range(start, stop)</code> erzeugt eine Zahlenreihe. Achtung: Die letzte Zahl ist <strong>nicht</strong> dabei! <code class="inline">range(1, 6)</code> = 1, 2, 3, 4, 5
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔄 Die while-Schleife</h2>
+      <p>Eine <code class="inline">while</code>-Schleife läuft so lange, wie eine Bedingung wahr ist:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>zaehler = <span class="number">1</span>
+
+<span class="keyword">while</span> zaehler <= <span class="number">5</span>:
+    <span class="func">print</span>(<span class="string">f"Durchlauf {zaehler}"</span>)
+    zaehler += <span class="number">1</span>   <span class="comment"># zaehler = zaehler + 1</span>
+
+<span class="comment"># Benutzer-Eingabe wiederholen bis korrekt:</span>
+passwort = <span class="string">""</span>
+<span class="keyword">while</span> passwort != <span class="string">"geheim123"</span>:
+    passwort = <span class="builtin">input</span>(<span class="string">"Passwort eingeben: "</span>)
+<span class="func">print</span>(<span class="string">"Zugang gewährt!"</span>)</pre>
+      <div class="highlight-box red">
+        ⚠️ <strong>Endlosschleife vermeiden!</strong> Vergisst du, den Zähler zu erhöhen, läuft die Schleife ewig. Abbrechen mit <code class="inline">Strg+C</code> im Terminal.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⏭️ break und continue</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># break: Schleife sofort beenden</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">10</span>):
+    <span class="keyword">if</span> i == <span class="number">5</span>:
+        <span class="keyword">break</span>        <span class="comment"># Schleife endet bei 5</span>
+    <span class="func">print</span>(i)         <span class="comment"># gibt 0,1,2,3,4 aus</span>
+
+<span class="comment"># continue: diesen Durchlauf überspringen</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="number">6</span>):
+    <span class="keyword">if</span> i == <span class="number">3</span>:
+        <span class="keyword">continue</span>     <span class="comment"># 3 überspringen</span>
+    <span class="func">print</span>(i)         <span class="comment"># gibt 0,1,2,4,5 aus</span></pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `range(2, 8, 2)` zurück?",
+    options: ["2, 4, 6, 8", "2, 4, 6", "2, 3, 4, 5, 6, 7", "0, 2, 4, 6"],
+    correct: 1,
+    feedback: "Richtig! range(start, stop, schritt) zählt in Schritten. range(2, 8, 2) = 2, 4, 6 (in Zweierschritten, bis vor 8)."
+  }
+},
+
+// 6: LISTEN
+{
+  tag: "Lektion 7",
+  title: "Listen & Datenstrukturen",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>📋 Listen (list)</h2>
+      <p>Eine Liste ist wie eine geordnete Sammlung von Dingen. Du kannst beliebige Werte darin speichern.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Liste erstellen:</span>
+einkauf = [<span class="string">"Brot"</span>, <span class="string">"Milch"</span>, <span class="string">"Käse"</span>, <span class="string">"Äpfel"</span>]
+
+<span class="comment"># Auf ein Element zugreifen (Index beginnt bei 0!):</span>
+<span class="func">print</span>(einkauf[<span class="number">0</span>])   <span class="comment"># Brot</span>
+<span class="func">print</span>(einkauf[<span class="number">2</span>])   <span class="comment"># Käse</span>
+<span class="func">print</span>(einkauf[-<span class="number">1</span>])  <span class="comment"># Äpfel (letztes Element)</span>
+
+<span class="comment"># Länge der Liste:</span>
+<span class="func">print</span>(<span class="builtin">len</span>(einkauf))  <span class="comment"># 4</span></pre>
+      <div class="highlight-box">
+        💡 Der Index beginnt bei <strong>0</strong>! Das erste Element ist <code class="inline">[0]</code>, das zweite <code class="inline">[1]</code> usw. Ein negativer Index zählt von hinten: <code class="inline">[-1]</code> ist das letzte Element.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🛠️ Wichtige Listen-Methoden</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>zahlen = [<span class="number">3</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>]
+
+zahlen.append(<span class="number">9</span>)      <span class="comment"># [3,1,4,1,5,9] → hinzufügen am Ende</span>
+zahlen.insert(<span class="number">0</span>, <span class="number">10</span>)  <span class="comment"># [10,3,1,4,1,5,9] → an Position 0 einfügen</span>
+zahlen.remove(<span class="number">1</span>)      <span class="comment"># entfernt das erste Vorkommen von 1</span>
+zahlen.sort()          <span class="comment"># sortiert die Liste</span>
+zahlen.reverse()       <span class="comment"># dreht die Reihenfolge um</span>
+<span class="func">print</span>(zahlen.count(<span class="number">1</span>)) <span class="comment"># zählt wie oft 1 vorkommt</span></pre>
+    </div>
+
+    <div class="section">
+      <h2>📚 Wörterbuch (dict)</h2>
+      <p>Ein Dictionary speichert Schlüssel-Wert-Paare – wie ein echtes Wörterbuch mit Wort und Bedeutung:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>person = {
+    <span class="string">"name"</span>: <span class="string">"Max"</span>,
+    <span class="string">"alter"</span>: <span class="number">28</span>,
+    <span class="string">"stadt"</span>: <span class="string">"Berlin"</span>
+}
+
+<span class="comment"># Wert abrufen:</span>
+<span class="func">print</span>(person[<span class="string">"name"</span>])    <span class="comment"># Max</span>
+<span class="func">print</span>(person[<span class="string">"alter"</span>])   <span class="comment"># 28</span>
+
+<span class="comment"># Wert hinzufügen/ändern:</span>
+person[<span class="string">"beruf"</span>] = <span class="string">"Entwickler"</span>
+person[<span class="string">"alter"</span>] = <span class="number">29</span>
+
+<span class="comment"># Durch alle Einträge iterieren:</span>
+<span class="keyword">for</span> schluessel, wert <span class="keyword">in</span> person.items():
+    <span class="func">print</span>(<span class="string">f"{schluessel}: {wert}"</span>)</pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `[10, 20, 30, 40][2]` zurück?",
+    options: ["20", "30", "40", "Fehler – Index außerhalb der Liste"],
+    correct: 1,
+    feedback: "Richtig! Index 2 ist das DRITTE Element (0=10, 1=20, 2=30). Denke daran: Indizes starten bei 0!"
+  }
+},
+
+// 7: FUNKTIONEN
+{
+  tag: "Lektion 8",
+  title: "Funktionen",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>🎯 Was sind Funktionen?</h2>
+      <p>Funktionen sind <strong>wiederverwendbare Code-Blöcke</strong>. Du schreibst den Code einmal und kannst ihn dann beliebig oft aufrufen. Das macht deinen Code kürzer, übersichtlicher und leichter zu warten.</p>
+    </div>
+
+    <div class="section">
+      <h2>📝 Funktion erstellen und aufrufen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Funktion DEFINIEREN:</span>
+<span class="keyword">def</span> <span class="func">begruesse</span>():
+    <span class="func">print</span>(<span class="string">"Hallo!"</span>)
+    <span class="func">print</span>(<span class="string">"Willkommen beim Kurs."</span>)
+
+<span class="comment"># Funktion AUFRUFEN:</span>
+<span class="func">begruesse</span>()   <span class="comment"># Hallo! Willkommen beim Kurs.</span>
+<span class="func">begruesse</span>()   <span class="comment"># nochmal aufrufen</span></pre>
+      <div class="highlight-box">
+        💡 <code class="inline">def</code> bedeutet „define" (definieren). Nach dem Funktionsnamen kommen Klammern und ein Doppelpunkt. Der Inhalt muss eingerückt sein.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📨 Parameter und Rückgabewerte</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Funktion mit Parametern:</span>
+<span class="keyword">def</span> <span class="func">begruesse</span>(name):
+    <span class="func">print</span>(<span class="string">f"Hallo, {name}!"</span>)
+
+<span class="func">begruesse</span>(<span class="string">"Anna"</span>)   <span class="comment"># Hallo, Anna!</span>
+<span class="func">begruesse</span>(<span class="string">"Tim"</span>)    <span class="comment"># Hallo, Tim!</span>
+
+<span class="comment"># Funktion mit Rückgabewert (return):</span>
+<span class="keyword">def</span> <span class="func">addiere</span>(a, b):
+    ergebnis = a + b
+    <span class="keyword">return</span> ergebnis
+
+<span class="comment"># Rückgabewert speichern:</span>
+summe = <span class="func">addiere</span>(<span class="number">5</span>, <span class="number">3</span>)
+<span class="func">print</span>(summe)   <span class="comment"># 8</span>
+
+<span class="comment"># Standardwerte für Parameter:</span>
+<span class="keyword">def</span> <span class="func">begruesse</span>(name, sprache=<span class="string">"de"</span>):
+    <span class="keyword">if</span> sprache == <span class="string">"de"</span>:
+        <span class="func">print</span>(<span class="string">f"Hallo, {name}!"</span>)
+    <span class="keyword">else</span>:
+        <span class="func">print</span>(<span class="string">f"Hello, {name}!"</span>)
+
+<span class="func">begruesse</span>(<span class="string">"Lisa"</span>)           <span class="comment"># Hallo, Lisa!</span>
+<span class="func">begruesse</span>(<span class="string">"John"</span>, <span class="string">"en"</span>)    <span class="comment"># Hello, John!</span></pre>
+    </div>
+
+    <div class="section">
+      <h2>📦 Lokale vs. globale Variablen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>name = <span class="string">"Global"</span>   <span class="comment"># globale Variable</span>
+
+<span class="keyword">def</span> <span class="func">test</span>():
+    name = <span class="string">"Lokal"</span>   <span class="comment"># lokale Variable (nur in der Funktion)</span>
+    <span class="func">print</span>(name)      <span class="comment"># Lokal</span>
+
+<span class="func">test</span>()
+<span class="func">print</span>(name)        <span class="comment"># Global – unverändert!</span></pre>
+      <div class="highlight-box">
+        💡 Variablen in einer Funktion sind <strong>lokal</strong> – sie existieren nur innerhalb der Funktion. Das ist gut: Funktionen beeinflussen sich nicht gegenseitig.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt diese Funktion zurück? `def f(x): return x * 2` — aufgerufen mit `f(7)`",
+    options: ["7", "2", "14", "Nichts, es gibt kein print()"],
+    correct: 2,
+    feedback: "Richtig! return x * 2 gibt das Doppelte des Parameters zurück. f(7) = 7 * 2 = 14. Den Wert kannst du speichern: ergebnis = f(7)"
+  }
+},
+
+// 8: AUFGABE 1
+{
+  tag: "🎯 Praxisaufgabe 1",
+  title: "Taschenrechner bauen",
+  time: "~30–45 Min",
+  content: `
+    <div class="section">
+      <h2>🎉 Du bist bereit für die Praxis!</h2>
+      <p>Du hast alle Grundlagen gelernt: Variablen, Typen, Eingabe, Operatoren, Bedingungen, Schleifen und Funktionen. Jetzt baust du dein erstes richtiges Programm!</p>
+    </div>
+  `,
+  task: {
+    title: "💻 Projekt: Interaktiver Taschenrechner",
+    desc: "Erstelle eine neue Datei <code class='inline'>taschenrechner.py</code> und baue Schritt für Schritt einen Taschenrechner.",
+    steps: [
+      "Schreibe eine Funktion <code class='inline'>addiere(a, b)</code> die a+b zurückgibt. Mache dasselbe für subtrahiere, multipliziere und dividiere.",
+      "Bei dividiere: prüfe mit if, ob b == 0 ist. Wenn ja, gib eine Fehlermeldung zurück (Division durch 0 ist verboten!).",
+      "Im Hauptprogramm: Frage den Benutzer nach zwei Zahlen mit input() und wandle sie in float() um.",
+      "Frage welche Rechenart gewünscht ist: (+, -, *, /). Nutze if/elif/else um die richtige Funktion aufzurufen.",
+      "Zeige das Ergebnis mit print() und f-String an. Zum Beispiel: <em>10 + 5 = 15.0</em>",
+      "<strong>Bonus:</strong> Wickle alles in eine while-Schleife, damit der Benutzer mehrere Rechnungen nacheinander machen kann. Als Abbruchbedingung: gibt der Benutzer 'exit' ein, beende das Programm."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Musterlösung (erst selbst versuchen!)</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">def</span> <span class="func">addiere</span>(a, b):
+    <span class="keyword">return</span> a + b
+
+<span class="keyword">def</span> <span class="func">subtrahiere</span>(a, b):
+    <span class="keyword">return</span> a - b
+
+<span class="keyword">def</span> <span class="func">multipliziere</span>(a, b):
+    <span class="keyword">return</span> a * b
+
+<span class="keyword">def</span> <span class="func">dividiere</span>(a, b):
+    <span class="keyword">if</span> b == <span class="number">0</span>:
+        <span class="keyword">return</span> <span class="string">"Fehler: Division durch 0!"</span>
+    <span class="keyword">return</span> a / b
+
+<span class="func">print</span>(<span class="string">"=== Taschenrechner ==="</span>)
+<span class="func">print</span>(<span class="string">"Gib 'exit' ein zum Beenden."</span>)
+
+<span class="keyword">while</span> <span class="keyword">True</span>:
+    eingabe = <span class="builtin">input</span>(<span class="string">"\nErste Zahl (oder 'exit'): "</span>)
+    <span class="keyword">if</span> eingabe == <span class="string">"exit"</span>:
+        <span class="func">print</span>(<span class="string">"Tschüss!"</span>)
+        <span class="keyword">break</span>
+
+    a = <span class="builtin">float</span>(eingabe)
+    b = <span class="builtin">float</span>(<span class="builtin">input</span>(<span class="string">"Zweite Zahl: "</span>))
+    op = <span class="builtin">input</span>(<span class="string">"Rechenart (+, -, *, /): "</span>)
+
+    <span class="keyword">if</span> op == <span class="string">"+"</span>:
+        ergebnis = <span class="func">addiere</span>(a, b)
+    <span class="keyword">elif</span> op == <span class="string">"-"</span>:
+        ergebnis = <span class="func">subtrahiere</span>(a, b)
+    <span class="keyword">elif</span> op == <span class="string">"*"</span>:
+        ergebnis = <span class="func">multipliziere</span>(a, b)
+    <span class="keyword">elif</span> op == <span class="string">"/"</span>:
+        ergebnis = <span class="func">dividiere</span>(a, b)
+    <span class="keyword">else</span>:
+        ergebnis = <span class="string">"Unbekannte Rechenart!"</span>
+
+    <span class="func">print</span>(<span class="string">f"{a} {op} {b} = {ergebnis}"</span>)</pre>
+    </div>
+  `
+},
+
+// 9: AUFGABE 2
+{
+  tag: "🎯 Praxisaufgabe 2",
+  title: "Zahlenraten-Spiel",
+  time: "~30–45 Min",
+  content: `
+    <div class="section">
+      <h2>🎮 Dein zweites Projekt!</h2>
+      <p>Jetzt wird es spielerisch! Du baust ein Ratespiel. Dafür lernst du noch eine neue Sache: das <code class="inline">random</code>-Modul.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Module importieren (Erweiterungen für Python)</span>
+<span class="keyword">import</span> random
+
+<span class="comment"># Zufallszahl zwischen 1 und 100:</span>
+zahl = random.randint(<span class="number">1</span>, <span class="number">100</span>)
+<span class="func">print</span>(zahl)</pre>
+      <div class="highlight-box">
+        💡 <strong>Module</strong> sind fertige Sammlungen von Funktionen. <code class="inline">import random</code> lädt das Zufallszahlen-Modul. Python hat hunderte solcher Module!
+      </div>
+    </div>
+  `,
+  task: {
+    title: "💻 Projekt: Zahlenraten",
+    desc: "Erstelle <code class='inline'>zahlenraten.py</code> – ein Spiel, bei dem der Computer eine Zufallszahl denkt und der Spieler sie erraten muss.",
+    steps: [
+      "Importiere das <code class='inline'>random</code>-Modul und lasse Python eine Zufallszahl zwischen 1 und 100 wählen.",
+      "Erstelle eine Variable <code class='inline'>versuche = 0</code> zum Zählen der Versuche.",
+      "Starte eine while-Schleife. Darin: Frage den Spieler nach seiner Zahl (int(input(...))), erhöhe versuche um 1.",
+      "Nutze if/elif/else: Wenn zu niedrig → 'Zu niedrig!', wenn zu hoch → 'Zu hoch!', wenn richtig → Herzlichen Glückwunsch + Anzahl Versuche ausgeben + break.",
+      "<strong>Bonus:</strong> Zeige nach dem Spiel an, wie gut die Leistung war (z.B. unter 7 Versuche = 'Ausgezeichnet!').",
+      "<strong>Bonus 2:</strong> Frage am Ende ob der Spieler nochmal spielen möchte. Wenn ja, starte das Spiel neu."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Musterlösung</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> random
+
+<span class="keyword">def</span> <span class="func">spiele_runde</span>():
+    geheimzahl = random.randint(<span class="number">1</span>, <span class="number">100</span>)
+    versuche = <span class="number">0</span>
+
+    <span class="func">print</span>(<span class="string">"Ich denke an eine Zahl zwischen 1 und 100."</span>)
+
+    <span class="keyword">while</span> <span class="keyword">True</span>:
+        tipp = <span class="builtin">int</span>(<span class="builtin">input</span>(<span class="string">"Dein Tipp: "</span>))
+        versuche += <span class="number">1</span>
+
+        <span class="keyword">if</span> tipp < geheimzahl:
+            <span class="func">print</span>(<span class="string">"Zu niedrig! Versuch es höher."</span>)
+        <span class="keyword">elif</span> tipp > geheimzahl:
+            <span class="func">print</span>(<span class="string">"Zu hoch! Versuch es tiefer."</span>)
+        <span class="keyword">else</span>:
+            <span class="func">print</span>(<span class="string">f"🎉 Richtig! Die Zahl war {geheimzahl}."</span>)
+            <span class="func">print</span>(<span class="string">f"Du hast {versuche} Versuche gebraucht."</span>)
+            <span class="keyword">if</span> versuche <= <span class="number">5</span>:
+                <span class="func">print</span>(<span class="string">"Bewerung: Ausgezeichnet! 🏆"</span>)
+            <span class="keyword">elif</span> versuche <= <span class="number">8</span>:
+                <span class="func">print</span>(<span class="string">"Bewertung: Gut gemacht! 👍"</span>)
+            <span class="keyword">else</span>:
+                <span class="func">print</span>(<span class="string">"Bewertung: Weiter üben! 💪"</span>)
+            <span class="keyword">break</span>
+
+<span class="keyword">while</span> <span class="keyword">True</span>:
+    <span class="func">spiele_runde</span>()
+    nochmal = <span class="builtin">input</span>(<span class="string">"\nNochmal spielen? (ja/nein): "</span>)
+    <span class="keyword">if</span> nochmal.lower() != <span class="string">"ja"</span>:
+        <span class="func">print</span>(<span class="string">"Danke fürs Spielen!"</span>)
+        <span class="keyword">break</span></pre>
+    </div>
+  `
+}
+
+,
+
+// 10: PIP & BIBLIOTHEKEN
+{
+  tag: "Lektion 11",
+  title: "pip & Bibliotheken installieren",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>📦 Was ist pip?</h2>
+      <p>Python kommt mit vielen eingebauten Funktionen – aber die eigentliche Stärke liegt in tausenden von <strong>Zusatz-Bibliotheken</strong>, die andere Programmierer geschrieben haben. Mit dem Tool <code class="inline">pip</code> kannst du diese in Sekunden installieren.</p>
+      <p>Stell es dir vor wie einen App Store für Python-Erweiterungen – nur kostenlos.</p>
+      <div class="highlight-box">
+        💡 <code class="inline">pip</code> steht für „Pip Installs Packages". Es wird automatisch mit Python mitinstalliert.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Das Terminal in VS Code öffnen</h2>
+      <p>In VS Code: Menü <code class="inline">Terminal → Neues Terminal</code> (oder <code class="inline">Strg + ö</code>). Dort gibst du pip-Befehle ein.</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Prüfen ob pip funktioniert:</span>
+pip --version
+
+<span class="comment"># Eine Bibliothek installieren:</span>
+pip install openpyxl
+
+<span class="comment"># Mehrere auf einmal:</span>
+pip install openpyxl python-docx requests
+
+<span class="comment"># Alle installierten Pakete anzeigen:</span>
+pip list
+
+<span class="comment"># Paket deinstallieren:</span>
+pip uninstall openpyxl</pre>
+    </div>
+
+    <div class="section">
+      <h2>📋 Bibliotheken für diesen Kurs</h2>
+      <p>Installiere jetzt alle Bibliotheken, die wir in den nächsten Lektionen brauchen – kopiere diesen Befehl ins Terminal:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button>pip install openpyxl python-docx requests</pre>
+      <table class="info-table">
+        <tr><th>Bibliothek</th><th>Wofür?</th><th>Installiert als</th></tr>
+        <tr><td><code class="inline">openpyxl</code></td><td>Excel-Dateien (.xlsx) lesen & schreiben</td><td>pip install openpyxl</td></tr>
+        <tr><td><code class="inline">python-docx</code></td><td>Word-Dokumente (.docx) erstellen & bearbeiten</td><td>pip install python-docx</td></tr>
+        <tr><td><code class="inline">requests</code></td><td>Webseiten & APIs aufrufen</td><td>pip install requests</td></tr>
+        <tr><td><code class="inline">os</code></td><td>Dateien & Ordner verwalten</td><td>bereits eingebaut ✓</td></tr>
+        <tr><td><code class="inline">pathlib</code></td><td>Moderne Dateipfade</td><td>bereits eingebaut ✓</td></tr>
+        <tr><td><code class="inline">shutil</code></td><td>Dateien kopieren/verschieben</td><td>bereits eingebaut ✓</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>📥 Bibliothek im Code verwenden</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># import am Anfang jeder .py-Datei schreiben</span>
+<span class="keyword">import</span> openpyxl
+<span class="keyword">import</span> requests
+
+<span class="comment"># Oder nur einen Teil importieren:</span>
+<span class="keyword">from</span> openpyxl <span class="keyword">import</span> Workbook
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Mit Kurzname (Alias):</span>
+<span class="keyword">import</span> openpyxl <span class="keyword">as</span> xl</pre>
+      <div class="highlight-box green">
+        ✅ <strong>Regel:</strong> Alle imports kommen ganz oben in die Datei – noch vor deinem eigentlichen Code.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was macht der Befehl `pip install requests` im Terminal?",
+    options: ["Er startet das Python-Programm 'requests'.", "Er lädt und installiert die Bibliothek 'requests' aus dem Internet.", "Er importiert requests in die aktuelle .py-Datei.", "Er löscht die Bibliothek requests."],
+    correct: 1,
+    feedback: "Genau! pip install lädt die Bibliothek aus dem Python-Paketverzeichnis (PyPI) und installiert sie auf deinem Computer. Danach kannst du sie mit import in jeder .py-Datei nutzen."
+  }
+},
+
+// 11: EXCEL
+{
+  tag: "Lektion 12",
+  title: "Excel-Dateien mit openpyxl",
+  time: "~35 Min",
+  content: `
+    <div class="section">
+      <h2>📊 Warum Excel mit Python?</h2>
+      <p>Stell dir vor, du hast eine Excel-Tabelle mit 500 Zeilen und musst in jeder Zeile etwas berechnen oder formatieren. Von Hand würdest du Stunden brauchen. Mit Python erledigst du das in Sekunden – und kannst es immer wieder ausführen.</p>
+      <div class="highlight-box">
+        💡 <strong>Voraussetzung:</strong> <code class="inline">pip install openpyxl</code> muss im Terminal ausgeführt worden sein (Lektion 11).
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✨ Neue Excel-Datei erstellen</h2>
+      <p>Erstelle eine neue Datei <code class="inline">excel_basics.py</code>:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> openpyxl <span class="keyword">import</span> Workbook
+
+<span class="comment"># 1. Neue Excel-Arbeitsmappe erstellen</span>
+wb = Workbook()
+
+<span class="comment"># 2. Aktives Tabellenblatt (Sheet) holen</span>
+ws = wb.active
+ws.title = <span class="string">"Umsätze"</span>
+
+<span class="comment"># 3. Überschriften in Zeile 1 schreiben</span>
+ws[<span class="string">"A1"</span>] = <span class="string">"Produkt"</span>
+ws[<span class="string">"B1"</span>] = <span class="string">"Menge"</span>
+ws[<span class="string">"C1"</span>] = <span class="string">"Preis (€)"</span>
+ws[<span class="string">"D1"</span>] = <span class="string">"Gesamt (€)"</span>
+
+<span class="comment"># 4. Daten eintragen</span>
+produkte = [
+    [<span class="string">"Apfel"</span>, <span class="number">50</span>, <span class="number">0.49</span>],
+    [<span class="string">"Banane"</span>, <span class="number">30</span>, <span class="number">0.29</span>],
+    [<span class="string">"Orange"</span>, <span class="number">20</span>, <span class="number">0.89</span>],
+    [<span class="string">"Mango"</span>, <span class="number">10</span>, <span class="number">1.99</span>],
+]
+
+<span class="keyword">for</span> i, (produkt, menge, preis) <span class="keyword">in</span> <span class="builtin">enumerate</span>(produkte, start=<span class="number">2</span>):
+    ws[<span class="string">f"A{i}"</span>] = produkt
+    ws[<span class="string">f"B{i}"</span>] = menge
+    ws[<span class="string">f"C{i}"</span>] = preis
+    ws[<span class="string">f"D{i}"</span>] = menge * preis  <span class="comment"># Python berechnet automatisch!</span>
+
+<span class="comment"># 5. Datei speichern</span>
+wb.save(<span class="string">"umsaetze.xlsx"</span>)
+<span class="func">print</span>(<span class="string">"✅ Excel-Datei wurde erstellt: umsaetze.xlsx"</span>)</pre>
+      <p>Führe das Programm aus – du findest danach eine fertige <code class="inline">umsaetze.xlsx</code> in deinem Projektordner!</p>
+    </div>
+
+    <div class="section">
+      <h2>📖 Vorhandene Excel-Datei lesen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> openpyxl <span class="keyword">import</span> load_workbook
+
+<span class="comment"># Vorhandene Datei öffnen</span>
+wb = load_workbook(<span class="string">"umsaetze.xlsx"</span>)
+ws = wb.active
+
+<span class="comment"># Alle Zeilen durchgehen:</span>
+<span class="func">print</span>(<span class="string">"Inhalt der Tabelle:"</span>)
+<span class="keyword">for</span> zeile <span class="keyword">in</span> ws.iter_rows(values_only=<span class="keyword">True</span>):
+    <span class="func">print</span>(zeile)
+
+<span class="comment"># Einzelne Zelle lesen:</span>
+<span class="func">print</span>(ws[<span class="string">"A1"</span>].value)   <span class="comment"># Produkt</span>
+<span class="func">print</span>(ws[<span class="string">"B2"</span>].value)   <span class="comment"># 50</span>
+
+<span class="comment"># Maximale Zeilen/Spalten:</span>
+<span class="func">print</span>(<span class="string">f"Zeilen: {ws.max_row}, Spalten: {ws.max_column}"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>🎨 Formatierung: Farben, Fett, Rahmen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> openpyxl <span class="keyword">import</span> Workbook
+<span class="keyword">from</span> openpyxl.styles <span class="keyword">import</span> Font, PatternFill, Alignment, Border, Side
+
+wb = Workbook()
+ws = wb.active
+
+<span class="comment"># Überschrift fett und groß:</span>
+ws[<span class="string">"A1"</span>] = <span class="string">"Mein Bericht"</span>
+ws[<span class="string">"A1"</span>].font = Font(bold=<span class="keyword">True</span>, size=<span class="number">14</span>, color=<span class="string">"FFFFFF"</span>)
+
+<span class="comment"># Hintergrundfarbe (hex-Code):</span>
+ws[<span class="string">"A1"</span>].fill = PatternFill(fill_type=<span class="string">"solid"</span>, fgColor=<span class="string">"2E75B6"</span>)
+
+<span class="comment"># Zentriert ausrichten:</span>
+ws[<span class="string">"A1"</span>].alignment = Alignment(horizontal=<span class="string">"center"</span>)
+
+<span class="comment"># Spaltenbreite anpassen:</span>
+ws.column_dimensions[<span class="string">"A"</span>].width = <span class="number">25</span>
+
+<span class="comment"># Zeilen zusammenführen (merge):</span>
+ws.merge_cells(<span class="string">"A1:D1"</span>)
+
+wb.save(<span class="string">"formatiert.xlsx"</span>)
+<span class="func">print</span>(<span class="string">"✅ Formatierte Datei gespeichert!"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>📈 Einfache Summen-Formel einfügen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> openpyxl <span class="keyword">import</span> load_workbook
+
+wb = load_workbook(<span class="string">"umsaetze.xlsx"</span>)
+ws = wb.active
+
+<span class="comment"># Excel-Formel als String eintragen:</span>
+ws[<span class="string">"D6"</span>] = <span class="string">"=SUM(D2:D5)"</span>
+ws[<span class="string">"A6"</span>] = <span class="string">"GESAMT"</span>
+
+<span class="comment"># Oder Python berechnet selbst (ohne Formel):</span>
+gesamt = <span class="number">0</span>
+<span class="keyword">for</span> zeile <span class="keyword">in</span> ws.iter_rows(min_row=<span class="number">2</span>, max_row=<span class="number">5</span>, min_col=<span class="number">4</span>, max_col=<span class="number">4</span>):
+    <span class="keyword">for</span> zelle <span class="keyword">in</span> zeile:
+        gesamt += zelle.value <span class="keyword">or</span> <span class="number">0</span>
+
+ws[<span class="string">"D7"</span>] = gesamt
+wb.save(<span class="string">"umsaetze.xlsx"</span>)
+<span class="func">print</span>(<span class="string">f"Gesamt: {gesamt:.2f} €"</span>)</pre>
+    </div>
+  `,
+  quiz: {
+    question: "Du willst eine neue Excel-Datei erstellen und speichern. Was ist die richtige Reihenfolge?",
+    options: [
+      "load_workbook() → ws.active → wb.save()",
+      "Workbook() → ws = wb.active → Daten schreiben → wb.save()",
+      "wb.save() → Workbook() → Daten schreiben",
+      "import excel → Workbook() → wb.save()"
+    ],
+    correct: 1,
+    feedback: "Perfekt! Erst Workbook() erstellen, dann das aktive Sheet holen, Daten schreiben, und am Ende speichern mit wb.save('dateiname.xlsx')."
+  }
+},
+
+// 12: WORD
+{
+  tag: "Lektion 13",
+  title: "Word-Dokumente mit python-docx",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>📝 Word-Dokumente automatisch erstellen</h2>
+      <p>Brauchst du regelmäßig ähnliche Dokumente – Rechnungen, Berichte, Angebote? Mit <code class="inline">python-docx</code> kannst du Word-Dokumente vollautomatisch befüllen und speichern.</p>
+      <div class="highlight-box">
+        💡 <strong>Voraussetzung:</strong> <code class="inline">pip install python-docx</code> muss ausgeführt worden sein.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📄 Erstes Word-Dokument erstellen</h2>
+      <p>Erstelle <code class="inline">word_basics.py</code>:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> docx <span class="keyword">import</span> Document
+<span class="keyword">from</span> docx.shared <span class="keyword">import</span> Pt, RGBColor
+
+<span class="comment"># Neues Dokument</span>
+doc = Document()
+
+<span class="comment"># Überschrift (Heading)</span>
+doc.add_heading(<span class="string">"Mein erster Python-Bericht"</span>, level=<span class="number">0</span>)  <span class="comment"># level 0 = Titel</span>
+doc.add_heading(<span class="string">"Einleitung"</span>, level=<span class="number">1</span>)                 <span class="comment"># level 1 = H1</span>
+
+<span class="comment"># Normaler Absatz</span>
+doc.add_paragraph(
+    <span class="string">"Dieses Dokument wurde automatisch von Python erstellt. "</span>
+    <span class="string">"Kein manuelles Tippen mehr!"</span>
+)
+
+<span class="comment"># Absatz mit Formatierung</span>
+absatz = doc.add_paragraph()
+lauf = absatz.add_run(<span class="string">"Wichtiger Hinweis: "</span>)
+lauf.bold = <span class="keyword">True</span>
+lauf.font.color.rgb = RGBColor(<span class="number">0xFF</span>, <span class="number">0x00</span>, <span class="number">0x00</span>)   <span class="comment"># rot</span>
+absatz.add_run(<span class="string">"Bitte alle Angaben prüfen."</span>)
+
+<span class="comment"># Aufzählung</span>
+doc.add_heading(<span class="string">"To-Do Liste"</span>, level=<span class="number">2</span>)
+aufgaben = [<span class="string">"Bericht schreiben"</span>, <span class="string">"E-Mail senden"</span>, <span class="string">"Meeting vorbereiten"</span>]
+<span class="keyword">for</span> aufgabe <span class="keyword">in</span> aufgaben:
+    doc.add_paragraph(aufgabe, style=<span class="string">"List Bullet"</span>)  <span class="comment"># Bulletpoint</span>
+
+<span class="comment"># Nummerierte Liste:</span>
+<span class="keyword">for</span> aufgabe <span class="keyword">in</span> aufgaben:
+    doc.add_paragraph(aufgabe, style=<span class="string">"List Number"</span>)
+
+<span class="comment"># Datei speichern</span>
+doc.save(<span class="string">"mein_bericht.docx"</span>)
+<span class="func">print</span>(<span class="string">"✅ Word-Dokument gespeichert: mein_bericht.docx"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>📊 Tabelle in Word einfügen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> docx <span class="keyword">import</span> Document
+<span class="keyword">from</span> docx.shared <span class="keyword">import</span> Pt
+<span class="keyword">from</span> docx.enum.text <span class="keyword">import</span> WD_ALIGN_PARAGRAPH
+
+doc = Document()
+doc.add_heading(<span class="string">"Monatsbericht Mai 2025"</span>, level=<span class="number">0</span>)
+
+<span class="comment"># Tabelle mit 4 Zeilen, 3 Spalten</span>
+tabelle = doc.add_table(rows=<span class="number">1</span>, cols=<span class="number">3</span>)
+tabelle.style = <span class="string">"Table Grid"</span>
+
+<span class="comment"># Kopfzeile</span>
+kopf = tabelle.rows[<span class="number">0</span>].cells
+kopf[<span class="number">0</span>].text = <span class="string">"Monat"</span>
+kopf[<span class="number">1</span>].text = <span class="string">"Umsatz (€)"</span>
+kopf[<span class="number">2</span>].text = <span class="string">"Wachstum"</span>
+
+<span class="comment"># Daten hinzufügen</span>
+daten = [
+    (<span class="string">"Januar"</span>, <span class="string">"12.500"</span>, <span class="string">"+5%"</span>),
+    (<span class="string">"Februar"</span>, <span class="string">"13.200"</span>, <span class="string">"+5.6%"</span>),
+    (<span class="string">"März"</span>, <span class="string">"11.800"</span>, <span class="string">"-10.6%"</span>),
+]
+
+<span class="keyword">for</span> monat, umsatz, wachstum <span class="keyword">in</span> daten:
+    zeile = tabelle.add_row().cells
+    zeile[<span class="number">0</span>].text = monat
+    zeile[<span class="number">1</span>].text = umsatz
+    zeile[<span class="number">2</span>].text = wachstum
+
+doc.save(<span class="string">"monatsbericht.docx"</span>)
+<span class="func">print</span>(<span class="string">"✅ Monatsbericht gespeichert!"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>💡 Praxis-Idee: Rechnungsgenerator</h2>
+      <p>Mit einer Liste von Kunden und Leistungen kannst du automatisch individuelle Word-Rechnungen für jeden Kunden erstellen – eine Schleife ersetzt stundenlanges manuelles Arbeiten:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> docx <span class="keyword">import</span> Document
+
+kunden = [
+    {<span class="string">"name"</span>: <span class="string">"Firma Müller GmbH"</span>, <span class="string">"betrag"</span>: <span class="number">1200</span>},
+    {<span class="string">"name"</span>: <span class="string">"Bäckerei Schmidt"</span>, <span class="string">"betrag"</span>: <span class="number">450</span>},
+    {<span class="string">"name"</span>: <span class="string">"IT-Service König"</span>, <span class="string">"betrag"</span>: <span class="number">3800</span>},
+]
+
+<span class="keyword">for</span> kunde <span class="keyword">in</span> kunden:
+    doc = Document()
+    doc.add_heading(<span class="string">f"Rechnung für {kunde['name']}"</span>, level=<span class="number">0</span>)
+    doc.add_paragraph(<span class="string">f"Betrag: {kunde['betrag']} €"</span>)
+    doc.add_paragraph(<span class="string">"Zahlbar innerhalb von 14 Tagen."</span>)
+
+    dateiname = <span class="string">f"Rechnung_{kunde['name'].replace(' ', '_')}.docx"</span>
+    doc.save(dateiname)
+    <span class="func">print</span>(<span class="string">f"✅ {dateiname} erstellt"</span>)
+
+<span class="comment"># 3 individuelle Word-Dokumente in Sekunden!</span></pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was passiert bei `doc.add_paragraph('Text', style='List Bullet')`?",
+    options: [
+      "Der Text wird fett formatiert.",
+      "Ein Aufzählungspunkt (Bulletpoint) mit dem Text wird eingefügt.",
+      "Eine neue Überschrift wird erstellt.",
+      "Der Text wird in eine Tabelle eingefügt."
+    ],
+    correct: 1,
+    feedback: "Genau! Der style-Parameter legt die Formatierung fest. 'List Bullet' = Bulletpoint-Liste, 'List Number' = nummerierte Liste, 'Heading 1' = Überschrift usw."
+  }
+},
+
+// 13: DATEIEN & ORDNER
+{
+  tag: "Lektion 14",
+  title: "Dateien & Ordner verwalten",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>📁 Das os- und pathlib-Modul</h2>
+      <p>Mit Python kannst du Dateien und Ordner genauso verwalten wie im Windows-Explorer – nur automatisiert und viel schneller. Das Modul <code class="inline">pathlib</code> macht das besonders einfach (beide sind bereits eingebaut, kein pip nötig).</p>
+    </div>
+
+    <div class="section">
+      <h2>🗺️ Mit Pfaden arbeiten</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Aktuelles Verzeichnis:</span>
+aktuell = Path.cwd()
+<span class="func">print</span>(aktuell)   <span class="comment"># z.B. C:\Users\Du\python-kurs</span>
+
+<span class="comment"># Einen Unterordner ansprechen:</span>
+ordner = Path(<span class="string">"meine_dateien"</span>)
+
+<span class="comment"># Pfad zusammensetzen (/ funktioniert wie Backslash!)</span>
+datei = Path(<span class="string">"meine_dateien"</span>) / <span class="string">"bericht.txt"</span>
+<span class="func">print</span>(datei)  <span class="comment"># meine_dateien\bericht.txt</span>
+
+<span class="comment"># Existiert der Pfad?</span>
+<span class="func">print</span>(datei.exists())   <span class="comment"># True oder False</span>
+<span class="func">print</span>(ordner.is_dir())  <span class="comment"># Ist es ein Ordner?</span>
+<span class="func">print</span>(datei.is_file())  <span class="comment"># Ist es eine Datei?</span></pre>
+    </div>
+
+    <div class="section">
+      <h2>📂 Ordner erstellen & Dateien auflisten</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Ordner erstellen (exist_ok=True = kein Fehler wenn schon vorhanden)</span>
+Path(<span class="string">"ausgabe"</span>).mkdir(exist_ok=<span class="keyword">True</span>)
+Path(<span class="string">"ausgabe/berichte"</span>).mkdir(parents=<span class="keyword">True</span>, exist_ok=<span class="keyword">True</span>)
+
+<span class="comment"># Alle Dateien im aktuellen Ordner auflisten:</span>
+<span class="keyword">for</span> datei <span class="keyword">in</span> Path(<span class="string">"."</span>).iterdir():
+    <span class="func">print</span>(datei.name)
+
+<span class="comment"># Nur .xlsx Dateien finden:</span>
+<span class="keyword">for</span> excel_datei <span class="keyword">in</span> Path(<span class="string">"."</span>).glob(<span class="string">"*.xlsx"</span>):
+    <span class="func">print</span>(<span class="string">f"Excel: {excel_datei.name}"</span>)
+
+<span class="comment"># In Unterordnern suchen (** = rekursiv):</span>
+<span class="keyword">for</span> datei <span class="keyword">in</span> Path(<span class="string">"."</span>).glob(<span class="string">"**/*.py"</span>):
+    <span class="func">print</span>(datei)</pre>
+    </div>
+
+    <div class="section">
+      <h2>✂️ Dateien kopieren, verschieben, umbenennen</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> shutil
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="comment"># Datei kopieren:</span>
+shutil.copy(<span class="string">"original.txt"</span>, <span class="string">"backup/original_backup.txt"</span>)
+
+<span class="comment"># Datei verschieben:</span>
+shutil.move(<span class="string">"alt/datei.xlsx"</span>, <span class="string">"neu/datei.xlsx"</span>)
+
+<span class="comment"># Datei umbenennen (mit pathlib):</span>
+Path(<span class="string">"alter_name.txt"</span>).rename(<span class="string">"neuer_name.txt"</span>)
+
+<span class="comment"># Datei löschen:</span>
+Path(<span class="string">"zu_loeschen.txt"</span>).unlink()
+
+<span class="comment"># Ordner löschen (nur wenn leer):</span>
+Path(<span class="string">"leerer_ordner"</span>).rmdir()
+
+<span class="comment"># Ordner mit Inhalt löschen:</span>
+shutil.rmtree(<span class="string">"ordner_mit_inhalt"</span>)</pre>
+      <div class="highlight-box red">
+        ⚠️ <strong>Vorsicht!</strong> Gelöschte Dateien gehen in den <strong>Papierkorb</strong> – aber beim Ausführen per Python werden sie sofort endgültig gelöscht! Teste zuerst mit print(), bevor du delete-Befehle ausführst.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📄 Textdateien lesen und schreiben</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># Datei schreiben:</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"notizen.txt"</span>, <span class="string">"w"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+    f.write(<span class="string">"Erste Zeile\n"</span>)
+    f.write(<span class="string">"Zweite Zeile\n"</span>)
+
+<span class="comment"># Datei lesen:</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"notizen.txt"</span>, <span class="string">"r"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+    inhalt = f.read()
+    <span class="func">print</span>(inhalt)
+
+<span class="comment"># Zeilenweise lesen:</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"notizen.txt"</span>, <span class="string">"r"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+    <span class="keyword">for</span> zeile <span class="keyword">in</span> f:
+        <span class="func">print</span>(zeile.strip())  <span class="comment"># strip() entfernt \n am Ende</span>
+
+<span class="comment"># Anhängen (nicht überschreiben) mit "a":</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(<span class="string">"notizen.txt"</span>, <span class="string">"a"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+    f.write(<span class="string">"Dritte Zeile (angehängt)\n"</span>)</pre>
+      <div class="highlight-box green">
+        ✅ Das <code class="inline">with open(...) as f:</code>-Muster schließt die Datei automatisch – auch wenn ein Fehler passiert. Das ist die empfohlene Art, Dateien zu öffnen.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was macht `Path('.').glob('*.xlsx')`?",
+    options: [
+      "Es löscht alle .xlsx-Dateien im aktuellen Ordner.",
+      "Es erstellt eine neue .xlsx-Datei.",
+      "Es sucht und findet alle .xlsx-Dateien im aktuellen Ordner.",
+      "Es öffnet alle .xlsx-Dateien in Excel."
+    ],
+    correct: 2,
+    feedback: "Richtig! glob() sucht nach Dateien, die dem Muster entsprechen. Der Punkt '.' steht für den aktuellen Ordner, '*.xlsx' bedeutet 'alle Dateien, die auf .xlsx enden'."
+  }
+},
+
+// 14: WEBSEITEN & APIS
+{
+  tag: "Lektion 15",
+  title: "Webseiten & APIs aufrufen",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>🌐 Das requests-Modul</h2>
+      <p>Mit <code class="inline">requests</code> kann Python Webseiten aufrufen – genauso wie dein Browser, nur programmgesteuert. Das ist besonders nützlich für <strong>APIs</strong> (Schnittstellen, über die Webdienste Daten liefern).</p>
+      <div class="highlight-box">
+        💡 <strong>API</strong> steht für „Application Programming Interface". Viele Webdienste (Wetter, Währungen, Nachrichten...) bieten kostenlose APIs an.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📡 Erste Anfrage senden</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> requests
+
+<span class="comment"># GET-Anfrage an eine URL senden:</span>
+antwort = requests.get(<span class="string">"https://httpbin.org/get"</span>)
+
+<span class="comment"># Status prüfen (200 = OK, 404 = nicht gefunden):</span>
+<span class="func">print</span>(antwort.status_code)   <span class="comment"># 200</span>
+
+<span class="comment"># Text der Antwort:</span>
+<span class="func">print</span>(antwort.text)
+
+<span class="comment"># Als JSON-Daten (wenn die API JSON zurückgibt):</span>
+daten = antwort.json()
+<span class="func">print</span>(daten)</pre>
+    </div>
+
+    <div class="section">
+      <h2>☁️ Beispiel: Wetter-API (kostenlos)</h2>
+      <p>Die API <strong>open-meteo.com</strong> liefert Wetterdaten – komplett kostenlos, kein Account nötig:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> requests
+
+<span class="comment"># Wetterdaten für Berlin abrufen:</span>
+url = <span class="string">"https://api.open-meteo.com/v1/forecast"</span>
+parameter = {
+    <span class="string">"latitude"</span>: <span class="number">52.52</span>,   <span class="comment"># Berlin</span>
+    <span class="string">"longitude"</span>: <span class="number">13.41</span>,
+    <span class="string">"current_weather"</span>: <span class="keyword">True</span>,
+    <span class="string">"temperature_unit"</span>: <span class="string">"celsius"</span>
+}
+
+antwort = requests.get(url, params=parameter)
+wetter = antwort.json()
+
+aktuell = wetter[<span class="string">"current_weather"</span>]
+<span class="func">print</span>(<span class="string">f"Temperatur in Berlin: {aktuell['temperature']}°C"</span>)
+<span class="func">print</span>(<span class="string">f"Windgeschwindigkeit: {aktuell['windspeed']} km/h"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>💱 Beispiel: Währungskurse</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> requests
+
+<span class="comment"># Kostenlose Währungs-API:</span>
+url = <span class="string">"https://api.exchangerate-api.com/v4/latest/EUR"</span>
+antwort = requests.get(url)
+daten = antwort.json()
+
+<span class="comment"># Kurse ausgeben:</span>
+kurse = daten[<span class="string">"rates"</span>]
+<span class="func">print</span>(<span class="string">f"1 EUR = {kurse['USD']:.4f} USD"</span>)
+<span class="func">print</span>(<span class="string">f"1 EUR = {kurse['GBP']:.4f} GBP"</span>)
+<span class="func">print</span>(<span class="string">f"1 EUR = {kurse['CHF']:.4f} CHF"</span>)
+
+<span class="comment"># Alle verfügbaren Währungen:</span>
+<span class="keyword">for</span> waehrung, kurs <span class="keyword">in</span> kurse.items():
+    <span class="func">print</span>(<span class="string">f"EUR → {waehrung}: {kurs}"</span>)</pre>
+    </div>
+
+    <div class="section">
+      <h2>💾 API-Daten in Excel speichern</h2>
+      <p>Kombination aus requests + openpyxl – das ist wo Python richtig mächtig wird:</p>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> requests
+<span class="keyword">from</span> openpyxl <span class="keyword">import</span> Workbook
+
+<span class="comment"># 1. Wetterdaten holen</span>
+url = <span class="string">"https://api.open-meteo.com/v1/forecast"</span>
+params = {
+    <span class="string">"latitude"</span>: <span class="number">52.52</span>, <span class="string">"longitude"</span>: <span class="number">13.41</span>,
+    <span class="string">"daily"</span>: <span class="string">"temperature_2m_max,temperature_2m_min"</span>,
+    <span class="string">"timezone"</span>: <span class="string">"Europe/Berlin"</span>
+}
+daten = requests.get(url, params=params).json()[<span class="string">"daily"</span>]
+
+<span class="comment"># 2. In Excel schreiben</span>
+wb = Workbook()
+ws = wb.active
+ws.title = <span class="string">"Wettervorhersage"</span>
+ws.append([<span class="string">"Datum"</span>, <span class="string">"Max °C"</span>, <span class="string">"Min °C"</span>])
+
+<span class="keyword">for</span> datum, max_t, min_t <span class="keyword">in</span> <span class="builtin">zip</span>(
+    daten[<span class="string">"time"</span>], daten[<span class="string">"temperature_2m_max"</span>], daten[<span class="string">"temperature_2m_min"</span>]
+):
+    ws.append([datum, max_t, min_t])
+
+wb.save(<span class="string">"wetter_berlin.xlsx"</span>)
+<span class="func">print</span>(<span class="string">"✅ Wettervorhersage in Excel gespeichert!"</span>)</pre>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `antwort.status_code` zurück, wenn eine Webseite erfolgreich geladen wurde?",
+    options: ["True", "0", "200", "OK"],
+    correct: 2,
+    feedback: "Richtig! HTTP-Status 200 bedeutet 'OK' – die Anfrage war erfolgreich. 404 = Nicht gefunden, 500 = Serverfehler. requests.get() gibt immer einen Statuscode zurück."
+  }
+},
+
+// 15: PROJEKT EXCEL-AUSWERTUNG
+{
+  tag: "🎯 Praxisprojekt 3",
+  title: "Excel-Verkaufsauswertung",
+  time: "~45–60 Min",
+  content: `
+    <div class="section">
+      <h2>🏆 Dein erstes Automatisierungsprojekt!</h2>
+      <p>Du kombinierst jetzt alles: Schleifen, Funktionen, Dateien und openpyxl. Das Ergebnis: ein echtes Werkzeug, das du im Alltag einsetzen kannst.</p>
+    </div>
+  `,
+  task: {
+    title: "💼 Projekt: Automatische Verkaufsauswertung",
+    desc: "Erstelle <code class='inline'>auswertung.py</code> – ein Programm, das eine Excel-Datei mit Verkaufsdaten einliest, auswertet und einen formatierten Bericht ausgibt.",
+    steps: [
+      "<strong>Schritt 1 – Testdaten erstellen:</strong> Schreibe zuerst ein kleines Hilfsprogramm <code class='inline'>testdaten.py</code>, das eine Excel-Datei <code class='inline'>verkauf.xlsx</code> mit 3 Spalten erzeugt: Produkt, Menge, Preis. Mindestens 8 Zeilen mit verschiedenen Produkten (manche Produkte dürfen mehrfach vorkommen).",
+      "<strong>Schritt 2 – Einlesen:</strong> In <code class='inline'>auswertung.py</code> öffnest du <code class='inline'>verkauf.xlsx</code> mit load_workbook() und liest alle Zeilen (ab Zeile 2) in eine Liste von Dictionaries: [{\"produkt\": ..., \"menge\": ..., \"preis\": ...}, ...]",
+      "<strong>Schritt 3 – Auswertung:</strong> Berechne mit Schleifen: den Gesamtumsatz, das umsatzstärkste Produkt und die Gesamtmenge aller verkauften Artikel.",
+      "<strong>Schritt 4 – Ergebnis in Excel:</strong> Erstelle ein neues Sheet namens 'Auswertung' in derselben Arbeitsmappe und schreibe die Ergebnisse dort hinein.",
+      "<strong>Schritt 5 – Formatierung:</strong> Mache die Überschrift fett und mit blauem Hintergrund (Farbe <code class='inline'>2E75B6</code>, Schrift weiß). Passe die Spaltenbreite an.",
+      "<strong>Bonus:</strong> Gruppiere die Daten nach Produkt und zeige den Umsatz pro Produkt in einer übersichtlichen Zusammenfassung."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Musterlösung</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># testdaten.py – zuerst ausführen!</span>
+<span class="keyword">from</span> openpyxl <span class="keyword">import</span> Workbook
+
+wb = Workbook()
+ws = wb.active
+ws.title = <span class="string">"Verkauf"</span>
+ws.append([<span class="string">"Produkt"</span>, <span class="string">"Menge"</span>, <span class="string">"Preis"</span>])
+
+verkauf = [
+    (<span class="string">"Apfel"</span>, <span class="number">50</span>, <span class="number">0.49</span>), (<span class="string">"Banane"</span>, <span class="number">30</span>, <span class="number">0.29</span>),
+    (<span class="string">"Orange"</span>, <span class="number">20</span>, <span class="number">0.89</span>), (<span class="string">"Apfel"</span>, <span class="number">80</span>, <span class="number">0.49</span>),
+    (<span class="string">"Mango"</span>, <span class="number">10</span>, <span class="number">1.99</span>), (<span class="string">"Banane"</span>, <span class="number">60</span>, <span class="number">0.29</span>),
+    (<span class="string">"Orange"</span>, <span class="number">15</span>, <span class="number">0.89</span>), (<span class="string">"Mango"</span>, <span class="number">25</span>, <span class="number">1.99</span>),
+]
+<span class="keyword">for</span> row <span class="keyword">in</span> verkauf:
+    ws.append(row)
+wb.save(<span class="string">"verkauf.xlsx"</span>)</pre>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="comment"># auswertung.py</span>
+<span class="keyword">from</span> openpyxl <span class="keyword">import</span> load_workbook
+<span class="keyword">from</span> openpyxl.styles <span class="keyword">import</span> Font, PatternFill
+
+wb = load_workbook(<span class="string">"verkauf.xlsx"</span>)
+ws = wb[<span class="string">"Verkauf"</span>]
+
+<span class="comment"># Daten einlesen</span>
+zeilen = []
+<span class="keyword">for</span> row <span class="keyword">in</span> ws.iter_rows(min_row=<span class="number">2</span>, values_only=<span class="keyword">True</span>):
+    produkt, menge, preis = row
+    zeilen.append({<span class="string">"produkt"</span>: produkt, <span class="string">"menge"</span>: menge, <span class="string">"umsatz"</span>: menge * preis})
+
+<span class="comment"># Auswertung</span>
+gesamt_umsatz = <span class="builtin">sum</span>(z[<span class="string">"umsatz"</span>] <span class="keyword">for</span> z <span class="keyword">in</span> zeilen)
+gesamt_menge = <span class="builtin">sum</span>(z[<span class="string">"menge"</span>] <span class="keyword">for</span> z <span class="keyword">in</span> zeilen)
+
+<span class="comment"># Pro Produkt summieren</span>
+pro_produkt = {}
+<span class="keyword">for</span> z <span class="keyword">in</span> zeilen:
+    p = z[<span class="string">"produkt"</span>]
+    pro_produkt[p] = pro_produkt.get(p, <span class="number">0</span>) + z[<span class="string">"umsatz"</span>]
+
+bestes = <span class="builtin">max</span>(pro_produkt, key=<span class="keyword">lambda</span> k: pro_produkt[k])
+
+<span class="comment"># Ergebnis-Sheet erstellen</span>
+<span class="keyword">if</span> <span class="string">"Auswertung"</span> <span class="keyword">in</span> wb.sheetnames:
+    <span class="keyword">del</span> wb[<span class="string">"Auswertung"</span>]
+ws2 = wb.create_sheet(<span class="string">"Auswertung"</span>)
+
+<span class="comment"># Kopfzeile formatiert</span>
+kopf_schrift = Font(bold=<span class="keyword">True</span>, color=<span class="string">"FFFFFF"</span>)
+kopf_fill = PatternFill(fill_type=<span class="string">"solid"</span>, fgColor=<span class="string">"2E75B6"</span>)
+ws2.append([<span class="string">"Kennzahl"</span>, <span class="string">"Wert"</span>])
+<span class="keyword">for</span> cell <span class="keyword">in</span> ws2[<span class="number">1</span>]:
+    cell.font = kopf_schrift; cell.fill = kopf_fill
+
+ws2.append([<span class="string">"Gesamtumsatz (€)"</span>, <span class="builtin">round</span>(gesamt_umsatz, <span class="number">2</span>)])
+ws2.append([<span class="string">"Gesamtmenge"</span>, gesamt_menge])
+ws2.append([<span class="string">"Bestseller"</span>, bestes])
+ws2.append([])
+ws2.append([<span class="string">"Produkt"</span>, <span class="string">"Umsatz (€)"</span>])
+<span class="keyword">for</span> prod, ums <span class="keyword">in</span> <span class="builtin">sorted</span>(pro_produkt.items(), key=<span class="keyword">lambda</span> x: -x[<span class="number">1</span>]):
+    ws2.append([prod, <span class="builtin">round</span>(ums, <span class="number">2</span>)])
+
+ws2.column_dimensions[<span class="string">"A"</span>].width = <span class="number">22</span>
+ws2.column_dimensions[<span class="string">"B"</span>].width = <span class="number">15</span>
+
+wb.save(<span class="string">"verkauf.xlsx"</span>)
+<span class="func">print</span>(<span class="string">f"✅ Auswertung fertig! Umsatz gesamt: {gesamt_umsatz:.2f} € | Bestseller: {bestes}"</span>)</pre>
+    </div>
+  `
+},
+
+// 16: PROJEKT ORDNER-AUFRÄUMER
+{
+  tag: "🎯 Praxisprojekt 4",
+  title: "Automatischer Ordner-Aufräumer",
+  time: "~40–55 Min",
+  content: `
+    <div class="section">
+      <h2>🗂️ Chaos im Downloads-Ordner?</h2>
+      <p>Jeder kennt das: Der Downloads-Ordner ist ein wildes Durcheinander aus PDFs, Bildern, Excel-Dateien und Installationsprogrammen. Dein Programm sortiert das automatisch in Unterordner – nach Dateityp!</p>
+    </div>
+  `,
+  task: {
+    title: "🧹 Projekt: Ordner-Aufräumer",
+    desc: "Erstelle <code class='inline'>aufräumer.py</code> – ein Programm, das einen Ordner analysiert und alle Dateien automatisch nach Typ sortiert.",
+    steps: [
+      "<strong>Vorbereitung:</strong> Erstelle einen Testordner <code class='inline'>test_chaos</code> und lege darin verschiedene Dateien an (oder kopiere echte Dateien hinein): einige .txt, .pdf, .xlsx, .jpg – zum Testen.",
+      "<strong>Schritt 1 – Kategorien definieren:</strong> Erstelle ein Dictionary, das Dateiendungen den Ordnernamen zuordnet. Zum Beispiel: <code class='inline'>\".pdf\": \"PDFs\"</code>, <code class='inline'>\".xlsx\": \"Excel\"</code>, <code class='inline'>\".jpg\": \"Bilder\"</code>, <code class='inline'>\".txt\": \"Texte\"</code>. Unbekannte Typen kommen in einen Ordner <code class='inline'>Sonstiges</code>.",
+      "<strong>Schritt 2 – Dateien auflisten:</strong> Nutze Path und iterdir(), um alle Dateien im Testordner aufzulisten. Überspringe Unterordner (nur Dateien verarbeiten).",
+      "<strong>Schritt 3 – Sortieren:</strong> Für jede Datei: bestimme die Endung mit <code class='inline'>datei.suffix.lower()</code>, schaue im Dictionary nach, erstelle den Zielordner mit mkdir(exist_ok=True) und verschiebe die Datei mit shutil.move().",
+      "<strong>Schritt 4 – Protokoll:</strong> Schreibe eine <code class='inline'>protokoll.txt</code> in den Testordner, die auflistet: welche Datei wohin verschoben wurde – mit Datum und Uhrzeit (nutze das datetime-Modul).",
+      "<strong>Bonus:</strong> Frage den Benutzer am Anfang mit input(), welchen Ordner er aufräumen möchte, statt den Pfad fest im Code einzutragen."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Musterlösung</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="keyword">import</span> shutil
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+
+<span class="comment"># Kategorien: Endung → Ordnername</span>
+KATEGORIEN = {
+    <span class="string">".pdf"</span>: <span class="string">"PDFs"</span>, <span class="string">".docx"</span>: <span class="string">"Word"</span>, <span class="string">".doc"</span>: <span class="string">"Word"</span>,
+    <span class="string">".xlsx"</span>: <span class="string">"Excel"</span>, <span class="string">".xls"</span>: <span class="string">"Excel"</span>, <span class="string">".csv"</span>: <span class="string">"Excel"</span>,
+    <span class="string">".jpg"</span>: <span class="string">"Bilder"</span>, <span class="string">".jpeg"</span>: <span class="string">"Bilder"</span>, <span class="string">".png"</span>: <span class="string">"Bilder"</span>,
+    <span class="string">".txt"</span>: <span class="string">"Texte"</span>, <span class="string">".md"</span>: <span class="string">"Texte"</span>,
+    <span class="string">".py"</span>: <span class="string">"Python"</span>, <span class="string">".mp3"</span>: <span class="string">"Musik"</span>,
+    <span class="string">".mp4"</span>: <span class="string">"Videos"</span>, <span class="string">".zip"</span>: <span class="string">"Archive"</span>,
+}
+
+ordner_pfad = <span class="builtin">input</span>(<span class="string">"Welchen Ordner aufräumen? (Enter = test_chaos): "</span>).strip()
+<span class="keyword">if</span> <span class="keyword">not</span> ordner_pfad:
+    ordner_pfad = <span class="string">"test_chaos"</span>
+
+quell_ordner = Path(ordner_pfad)
+<span class="keyword">if</span> <span class="keyword">not</span> quell_ordner.exists():
+    <span class="func">print</span>(<span class="string">"Ordner nicht gefunden!"</span>)
+    exit()
+
+protokoll = []
+verschoben = <span class="number">0</span>
+
+<span class="keyword">for</span> datei <span class="keyword">in</span> quell_ordner.iterdir():
+    <span class="keyword">if</span> <span class="keyword">not</span> datei.is_file():
+        <span class="keyword">continue</span>  <span class="comment"># Unterordner überspringen</span>
+    <span class="keyword">if</span> datei.name == <span class="string">"protokoll.txt"</span>:
+        <span class="keyword">continue</span>  <span class="comment"># Protokolldatei nicht verschieben</span>
+
+    endung = datei.suffix.lower()
+    ziel_name = KATEGORIEN.get(endung, <span class="string">"Sonstiges"</span>)
+    ziel_ordner = quell_ordner / ziel_name
+    ziel_ordner.mkdir(exist_ok=<span class="keyword">True</span>)
+
+    ziel_pfad = ziel_ordner / datei.name
+    shutil.move(<span class="builtin">str</span>(datei), <span class="builtin">str</span>(ziel_pfad))
+
+    eintrag = <span class="string">f"{datetime.now():%Y-%m-%d %H:%M} | {datei.name} → {ziel_name}/"</span>
+    protokoll.append(eintrag)
+    verschoben += <span class="number">1</span>
+    <span class="func">print</span>(eintrag)
+
+<span class="comment"># Protokoll schreiben</span>
+<span class="keyword">with</span> <span class="builtin">open</span>(quell_ordner / <span class="string">"protokoll.txt"</span>, <span class="string">"w"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:
+    f.write(<span class="string">f"Aufräumaktion: {datetime.now():%Y-%m-%d %H:%M}\n"</span>)
+    f.write(<span class="string">f"Ordner: {quell_ordner.resolve()}\n\n"</span>)
+    f.write(<span class="string">"\n"</span>.join(protokoll))
+
+<span class="func">print</span>(<span class="string">f"\n✅ Fertig! {verschoben} Dateien sortiert. Protokoll gespeichert."</span>)</pre>
+    </div>
+  `
+}
+
+];
+
+let completed = new Set();
+let currentLesson = 0;
+
+function copyCode(btn) {
+  const pre = btn.parentElement;
+  const text = pre.innerText.replace('kopieren','').replace('✓ kopiert','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ kopiert';
+    setTimeout(() => btn.textContent = 'kopieren', 2000);
+  });
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.size / lessons.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${completed.size} von ${lessons.length} Lektionen abgeschlossen`;
+}
+
+function goTo(index) {
+  currentLesson = index;
+  renderLesson(index);
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  document.getElementById('main').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function renderLesson(index) {
+  const l = lessons[index];
+  let html = `
+    <div class="lesson-header">
+      <div class="lesson-tag">${l.tag}</div>
+      <h1 class="lesson-title">${l.title}</h1>
+      <div class="lesson-meta">
+        <span>⏱ ${l.time}</span>
+        <span>Lektion ${index + 1} von ${lessons.length}</span>
+      </div>
+    </div>
+    ${l.content}
+  `;
+
+  if (l.task) {
+    html += `
+      <div class="task-box">
+        <h3>${l.task.title}</h3>
+        <p style="font-size:14.5px;color:var(--text);margin:10px 0 4px;line-height:1.6;">${l.task.desc}</p>
+        <ol class="task-steps">
+          ${l.task.steps.map((s,i) => `<li data-n="${i+1}">${s}</li>`).join('')}
+        </ol>
+      </div>
+    `;
+  }
+
+  if (l.solution) {
+    html += `
+      <details style="margin-bottom:24px;">
+        <summary style="cursor:pointer;padding:14px 20px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--muted);list-style:none;">
+          👁 Musterlösung anzeigen (erst selbst probieren!)
+        </summary>
+        ${l.solution}
+      </details>
+    `;
+  }
+
+  if (l.quiz) {
+    html += `
+      <div class="quiz-box">
+        <h3>✏️ Wissenstest</h3>
+        <p class="quiz-question">${l.quiz.question}</p>
+        <div class="quiz-options">
+          ${l.quiz.options.map((opt, i) => `
+            <button class="quiz-option" onclick="checkQuiz(this, ${i}, ${l.quiz.correct}, ${index})">${opt}</button>
+          `).join('')}
+        </div>
+        <div class="quiz-feedback" id="feedback-${index}"></div>
+      </div>
+    `;
+  }
+
+  // Navigation
+  html += `<div class="nav-buttons">`;
+  if (index > 0) {
+    html += `<button class="btn btn-secondary" onclick="goTo(${index - 1})">← Zurück</button>`;
+  } else {
+    html += `<span></span>`;
+  }
+
+  const isCompleted = completed.has(index);
+  if (index < lessons.length - 1) {
+    html += `<button class="btn btn-primary" onclick="markAndNext(${index})">
+      ${isCompleted ? 'Weiter →' : 'Abschließen & Weiter →'}
+    </button>`;
+  } else {
+    html += `<button class="btn btn-primary" onclick="markDone(${index})">🎓 Kurs abschließen!</button>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('lessonContent').innerHTML = html;
+}
+
+function checkQuiz(btn, chosen, correct, lessonIdx) {
+  const options = btn.parentElement.querySelectorAll('.quiz-option');
+  options.forEach(o => o.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById(`feedback-${lessonIdx}`);
+    fb.className = 'quiz-feedback show ok';
+    fb.innerHTML = '✅ ' + lessons[lessonIdx].quiz.feedback;
+  } else {
+    btn.classList.add('wrong');
+    options[correct].classList.add('correct');
+    const fb = document.getElementById(`feedback-${lessonIdx}`);
+    fb.className = 'quiz-feedback show fail';
+    fb.innerHTML = '❌ Nicht ganz. Die richtige Antwort: ' + lessons[lessonIdx].quiz.options[correct];
+  }
+}
+
+function markAndNext(index) {
+  completed.add(index);
+  document.querySelectorAll('.nav-item')[index].classList.add('completed');
+  updateProgress();
+  goTo(index + 1);
+}
+
+function markDone(index) {
+  completed.add(index);
+  document.querySelectorAll('.nav-item')[index].classList.add('completed');
+  updateProgress();
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:80px 40px;">
+      <div style="font-size:64px;margin-bottom:24px;">🎓</div>
+      <h1 style="font-family:'Fraunces',serif;font-size:42px;color:#fff;margin-bottom:16px;">Herzlichen Glückwunsch!</h1>
+      <p style="font-size:18px;color:var(--muted);max-width:500px;margin:0 auto 32px;line-height:1.7;">Du hast den Python-Grundkurs abgeschlossen! Du kennst jetzt die wichtigsten Bausteine der Programmierung.</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:480px;margin:0 auto;text-align:left;">
+        <p style="font-weight:600;color:var(--accent);margin-bottom:12px;">🚀 Nächste Schritte:</p>
+        <p style="font-size:14.5px;color:var(--text);line-height:1.8;">
+          → <strong>Objektorientierung (OOP)</strong> – Klassen & Objekte<br>
+          → <strong>Fehlerbehandlung</strong> – try/except/finally<br>
+          → <strong>pandas</strong> – professionelle Datenanalyse<br>
+          → <strong>tkinter</strong> – eigene Desktop-Apps mit GUI<br>
+          → <strong>Flask</strong> – eigene Webseiten mit Python<br>
+          → <strong>selenium</strong> – Browser automatisch steuern<br>
+          → Baue eigene Projekte – das beste Lernen!
+        </p>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:28px;" onclick="goTo(0)">Von vorne beginnen</button>
+    </div>
+  `;
+}
+
+// Init
+renderLesson(0);
+updateProgress();
+</script>
+</body>
+</html>
