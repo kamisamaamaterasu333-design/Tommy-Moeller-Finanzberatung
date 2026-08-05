@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Kurs – Datenbanken meistern</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --card: #141a24;
+    --card2: #1a2233;
+    --border: #1e2d40;
+    --border2: #243044;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff7e;
+    --accent4: #ffd166;
+    --text: #d8e4f0;
+    --muted: #5a7a9a;
+    --code-bg: #070b10;
+    --glow: rgba(0,212,255,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #sidebar {
+    width: 290px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-header {
+    padding: 28px 22px 20px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(0,212,255,0.06), transparent);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-sql { color: var(--accent); }
+  .logo-kurs { color: var(--text); opacity: 0.5; font-weight: 400; }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), #0080ff);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .progress-wrap { margin-top: 16px; }
+  .progress-track {
+    background: var(--border);
+    border-radius: 20px;
+    height: 5px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 20px;
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .progress-text { margin-top: 7px; font-size: 11px; color: var(--muted); }
+
+  .db-badge {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .db-pill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .db-pill.ssms { background: rgba(0,120,215,0.2); color: #4fc3f7; border: 1px solid rgba(0,120,215,0.4); }
+  .db-pill.mysql { background: rgba(255,152,0,0.15); color: #ffb74d; border: 1px solid rgba(255,152,0,0.35); }
+
+  .nav-section {
+    padding: 16px 16px 6px;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 7px;
+    margin: 1px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+    color: var(--muted);
+    border: 1px solid transparent;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--card); color: var(--text); }
+  .nav-item.active {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    border-color: rgba(0,212,255,0.2);
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -1px; top: 20%; bottom: 20%;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .nav-item.completed { color: var(--accent3); }
+  .nav-item.completed .nav-dot { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+  .nav-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .nav-item.active .nav-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* MAIN */
+  #main {
+    margin-left: 290px;
+    flex: 1;
+    max-width: calc(100vw - 290px);
+    padding: 50px 64px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lesson-header { margin-bottom: 36px; }
+
+  .lesson-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+
+  .lesson-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -1.5px;
+  }
+  .lesson-title span { color: var(--accent); }
+
+  .lesson-meta {
+    color: var(--muted);
+    font-size: 13.5px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .meta-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 3px 12px;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent3);
+  }
+
+  /* SECTIONS */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+  }
+
+  .section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .section p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .section p:last-child { margin-bottom: 0; }
+
+  .highlight-box {
+    background: rgba(0,212,255,0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .highlight-box.green {
+    background: rgba(57,255,126,0.05);
+    border-color: var(--accent3);
+  }
+  .highlight-box.orange {
+    background: rgba(255,107,53,0.07);
+    border-color: var(--accent2);
+  }
+  .highlight-box.yellow {
+    background: rgba(255,209,102,0.06);
+    border-color: var(--accent4);
+  }
+
+  code.inline {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-size: 12.5px;
+    color: var(--accent);
+  }
+
+  /* CODE BLOCKS */
+  .code-wrap { position: relative; margin: 16px 0; }
+  .code-label {
+    position: absolute;
+    top: 0; left: 0;
+    background: var(--border2);
+    color: var(--muted);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 12px;
+    border-radius: 14px 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  pre.code-block {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px 20px;
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    color: #b0c8e0;
+  }
+  pre.code-block.has-label { padding-top: 32px; }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: var(--border2);
+    border: none;
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 600;
+    z-index: 2;
+  }
+  .copy-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 12px var(--accent); }
+
+  /* SQL syntax colors */
+  .kw  { color: #569cd6; font-weight: 700; }   /* keywords: SELECT, FROM */
+  .kw2 { color: #c586c0; }                       /* secondary: JOIN, WHERE */
+  .str { color: #ce9178; }                       /* strings */
+  .num { color: #b5cea8; }                       /* numbers */
+  .cmt { color: #3a5a4a; font-style: italic; }  /* comments */
+  .fn  { color: #dcdcaa; }                       /* functions */
+  .tbl { color: #4ec9b0; }                       /* table names */
+  .col { color: #9cdcfe; }                       /* column names */
+  .op  { color: #d4d4d4; }                       /* operators */
+  .type{ color: #4fc1ff; }                       /* data types */
+
+  /* COMPARISON TABLE */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .compare-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .compare-card h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .compare-card.ssms h4 { color: #4fc3f7; }
+  .compare-card.mysql h4 { color: #ffb74d; }
+  .compare-card p, .compare-card li {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+    list-style: none;
+    margin-bottom: 6px;
+  }
+  .compare-card li::before { content: "→ "; color: var(--accent); }
+
+  /* INFO TABLE */
+  table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+  }
+  table.info-table th {
+    background: var(--code-bg);
+    color: var(--accent);
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  table.info-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+  table.info-table tr:last-child td { border-bottom: none; }
+  table.info-table tr:hover td { background: rgba(0,212,255,0.03); }
+
+  /* VISUAL TABLE (showing query results) */
+  .result-table-wrap {
+    margin: 14px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+  }
+  .result-label {
+    background: rgba(57,255,126,0.1);
+    color: var(--accent3);
+    font-size: 10.5px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 6px 16px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border2);
+  }
+  table.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  table.result-table th {
+    background: var(--card2);
+    color: var(--accent4);
+    padding: 9px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border2);
+    font-size: 11px;
+  }
+  table.result-table td {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  table.result-table tr:last-child td { border-bottom: none; }
+  table.result-table tr:hover td { background: rgba(0,212,255,0.04); }
+
+  /* QUIZ */
+  .quiz-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(57,255,126,0.04));
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .quiz-box::before {
+    content: '✏️ WISSENSTEST';
+    position: absolute;
+    top: -1px; right: 24px;
+    background: var(--card2);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 0 0 8px 8px;
+    font-weight: 700;
+    border: 1px solid var(--border2);
+    border-top: none;
+  }
+  .quiz-question {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 20px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--text);
+    transition: all 0.15s;
+    text-align: left;
+    font-family: 'Instrument Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quiz-option::before {
+    content: attr(data-opt);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--border2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .quiz-option:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-option:hover::before { background: var(--accent); color: #000; }
+  .quiz-option.correct { border-color: var(--accent3); background: rgba(57,255,126,0.08); color: var(--accent3); }
+  .quiz-option.correct::before { background: var(--accent3); color: #000; }
+  .quiz-option.wrong { border-color: var(--accent2); background: rgba(255,107,53,0.08); color: var(--accent2); }
+  .quiz-option.wrong::before { background: var(--accent2); color: #000; }
+  .quiz-feedback {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    display: none;
+    line-height: 1.65;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(57,255,126,0.08); color: var(--accent3); border: 1px solid rgba(57,255,126,0.2); }
+  .quiz-feedback.fail { background: rgba(255,107,53,0.08); color: var(--accent2); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* TASK BOX */
+  .task-box {
+    background: linear-gradient(135deg, rgba(255,209,102,0.04), rgba(255,107,53,0.04));
+    border: 1px solid rgba(255,209,102,0.25);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+  }
+  .task-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent4);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  .task-steps { list-style: none; margin-top: 18px; }
+  .task-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .task-steps li::before {
+    content: attr(data-n);
+    background: var(--accent4);
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* NAV BUTTONS */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 44px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 12px 30px;
+    border-radius: 9px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Instrument Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0,212,255,0.3);
+  }
+  .btn-primary:hover { background: #33ddff; transform: translateY(-2px); box-shadow: 0 4px 24px rgba(0,212,255,0.5); }
+  .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border2);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  details summary {
+    cursor: pointer;
+    padding: 14px 22px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: var(--muted);
+    list-style: none;
+    margin-bottom: 16px;
+    transition: all 0.15s;
+  }
+  details summary:hover { border-color: var(--accent4); color: var(--accent4); }
+  details[open] summary { border-radius: 10px 10px 0 0; border-bottom-color: transparent; }
+
+  .step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent4);
+    margin: 4px 4px 4px 0;
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">🗄️</div>
+      <span><span class="logo-sql">SQL</span><span class="logo-kurs">kurs</span></span>
+    </div>
+    <div class="db-badge">
+      <span class="db-pill ssms">⬛ SSMS</span>
+      <span class="db-pill mysql">🐬 MySQL</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressLabel">0 von 14 Lektionen abgeschlossen</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Grundlagen</div>
+  <div class="nav-item active" data-lesson="0" onclick="goTo(0)"><div class="nav-dot"></div>Was ist SQL & Setup</div>
+  <div class="nav-item" data-lesson="1" onclick="goTo(1)"><div class="nav-dot"></div>Deine erste Datenbank</div>
+  <div class="nav-item" data-lesson="2" onclick="goTo(2)"><div class="nav-dot"></div>Tabellen erstellen (CREATE)</div>
+  <div class="nav-item" data-lesson="3" onclick="goTo(3)"><div class="nav-dot"></div>Daten einfügen (INSERT)</div>
+  <div class="nav-item" data-lesson="4" onclick="goTo(4)"><div class="nav-dot"></div>Daten abfragen (SELECT)</div>
+  <div class="nav-item" data-lesson="5" onclick="goTo(5)"><div class="nav-dot"></div>Filtern & Sortieren (WHERE)</div>
+  <div class="nav-item" data-lesson="6" onclick="goTo(6)"><div class="nav-dot"></div>Daten ändern & löschen</div>
+  <div class="nav-section">Fortgeschritten</div>
+  <div class="nav-item" data-lesson="7" onclick="goTo(7)"><div class="nav-dot"></div>Aggregatfunktionen</div>
+  <div class="nav-item" data-lesson="8" onclick="goTo(8)"><div class="nav-dot"></div>Tabellen verknüpfen (JOIN)</div>
+  <div class="nav-item" data-lesson="9" onclick="goTo(9)"><div class="nav-dot"></div>Unterabfragen</div>
+  <div class="nav-item" data-lesson="10" onclick="goTo(10)"><div class="nav-dot"></div>Indizes & Performance</div>
+  <div class="nav-section">Praxisprojekte</div>
+  <div class="nav-item" data-lesson="11" onclick="goTo(11)"><div class="nav-dot"></div>🎯 Projekt: Schuldatenbank</div>
+  <div class="nav-item" data-lesson="12" onclick="goTo(12)"><div class="nav-dot"></div>🎯 Projekt: Onlineshop-DB</div>
+  <div class="nav-item" data-lesson="13" onclick="goTo(13)"><div class="nav-dot"></div>📋 Cheatsheet & Nächste Schritte</div>
+</nav>
+
+<main id="main">
+  <div id="lessonContent"></div>
+</main>
+
+<script>
+const lessons = [
+
+// ─── 0: WAS IST SQL & SETUP ───────────────────────────────────────────────
+{
+  tag: "Lektion 1",
+  title: "Was ist <span>SQL</span> & Setup",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>🗄️ Was ist SQL?</h2>
+      <p>SQL (sprich: „Sequel" oder buchstäblich „S-Q-L") steht für <strong>Structured Query Language</strong> – also „Strukturierte Abfragesprache". Mit SQL kommunizierst du mit einer Datenbank: du kannst Daten speichern, abrufen, verändern und löschen.</p>
+      <p>SQL ist <strong>keine klassische Programmiersprache</strong> wie Python (keine Schleifen, keine Variablen im klassischen Sinn) – es ist eine <strong>Abfragesprache</strong>. Du beschreibst <em>was</em> du haben willst, nicht <em>wie</em> der Computer es holen soll.</p>
+      <div class="highlight-box">
+        💡 SQL wurde 1974 entwickelt und ist bis heute in fast jedem Unternehmen im Einsatz. Es ist eine der wertvollsten Fähigkeiten in der IT – egal ob Entwickler, Analyst oder Manager.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔄 SQL vs. Excel – was ist der Unterschied?</h2>
+      <table class="info-table">
+        <tr><th></th><th>Excel</th><th>SQL / Datenbank</th></tr>
+        <tr><td>Datenmenge</td><td>Bis ~1 Million Zeilen</td><td>Milliarden von Zeilen</td></tr>
+        <tr><td>Mehrere Tabellen</td><td>Schwierig & fehleranfällig</td><td>Kernfunktion (JOINs)</td></tr>
+        <tr><td>Mehrere Benutzer</td><td>Problematisch</td><td>Kein Problem</td></tr>
+        <tr><td>Automatisierung</td><td>Makros (VBA)</td><td>Direkte Abfragen, Skripte</td></tr>
+        <tr><td>Datensicherheit</td><td>Gering</td><td>Zugriffskontrolle, Rollen</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>⬛ SSMS vs. 🐬 MySQL – du hast beide!</h2>
+      <div class="compare-grid">
+        <div class="compare-card ssms">
+          <h4>⬛ SQL Server Management Studio (SSMS)</h4>
+          <ul>
+            <li>Von Microsoft – läuft auf Windows</li>
+            <li>Datenbank-System: Microsoft SQL Server</li>
+            <li>Typisch in Unternehmen / Windows-Umgebungen</li>
+            <li>Benutzeroberfläche: sehr umfangreich</li>
+            <li>Sprache: T-SQL (Transact-SQL)</li>
+          </ul>
+        </div>
+        <div class="compare-card mysql">
+          <h4>🐬 MySQL Workbench / MySQL</h4>
+          <ul>
+            <li>Open Source – läuft überall</li>
+            <li>Datenbank-System: MySQL</li>
+            <li>Typisch für Webprojekte, Apps</li>
+            <li>Benutzeroberfläche: MySQL Workbench</li>
+            <li>Sprache: Standard-SQL (mit kleinen Unterschieden)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box green">
+        ✅ <strong>Gute Nachricht:</strong> 95% des SQL-Codes ist auf beiden Systemen identisch! Unterschiede werden immer klar markiert.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚙️ Setup – Verbindung herstellen</h2>
+      <p><strong>In SSMS:</strong></p>
+      <ol class="task-steps" style="list-style:none;">
+        <li data-n="1">Öffne SSMS → Fenster „Verbindung mit Server herstellen" erscheint</li>
+        <li data-n="2">Servername: <code class="inline">localhost</code> oder <code class="inline">.\SQLEXPRESS</code> (je nach Installation)</li>
+        <li data-n="3">Authentifizierung: Windows-Authentifizierung → Verbinden</li>
+        <li data-n="4">Im linken Baum siehst du deine Datenbanken</li>
+      </ol>
+      <p style="margin-top:16px;"><strong>In MySQL Workbench:</strong></p>
+      <ol class="task-steps" style="list-style:none;">
+        <li data-n="1">Öffne MySQL Workbench → Klick auf <strong>+</strong> neben „MySQL Connections"</li>
+        <li data-n="2">Connection Name: z.B. <code class="inline">Lokal</code></li>
+        <li data-n="3">Hostname: <code class="inline">127.0.0.1</code> | Port: <code class="inline">3306</code> | Username: <code class="inline">root</code></li>
+        <li data-n="4">Passwort eingeben (das du bei der Installation gesetzt hast) → OK → Verbinden</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>🖊️ Wie schreibt man SQL?</h2>
+      <p>SQL-Befehle werden <strong>Abfragen (Queries)</strong> genannt. Groß- und Kleinschreibung ist in SQL egal – aber Konvention ist: <strong>SQL-Schlüsselwörter GROSS, Tabellen- und Spaltennamen klein</strong>.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Das ist ein Kommentar in SQL (doppelter Bindestrich)</span>
+<span class="cmt">/* Das ist ein
+   mehrzeiliger Kommentar */</span>
+
+<span class="cmt">-- SQL-Abfrage – zeigt alle Zeilen einer Tabelle:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">kunden</span><span class="op">;</span>
+
+<span class="cmt">-- Semikolon am Ende ist in SSMS optional,
+-- in MySQL Pflicht (wenn mehrere Abfragen)</span></pre>
+      </div>
+      <p>Eine Abfrage ausführen: In SSMS & MySQL Workbench drücke <code class="inline">F5</code> oder den Blitz-Button ⚡</p>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist der Hauptvorteil von SQL gegenüber Excel bei großen Datenmengen?",
+    options: ["SQL hat bessere Diagramme als Excel.", "SQL kann Milliarden von Zeilen verwalten und mehrere Tabellen effizient verknüpfen.", "SQL ist einfacher zu bedienen als Excel.", "SQL kann keine Zahlen speichern."],
+    correct: 1,
+    feedback: "Richtig! SQL-Datenbanken sind für große Datenmengen gebaut – Milliarden Zeilen sind kein Problem. Außerdem können mehrere Tabellen über JOINs effizient verknüpft werden."
+  }
+},
+
+// ─── 1: DEINE ERSTE DATENBANK ────────────────────────────────────────────
+{
+  tag: "Lektion 2",
+  title: "Deine erste <span>Datenbank</span>",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>🏗️ Datenbankstruktur verstehen</h2>
+      <p>Eine Datenbank ist wie ein <strong>Ordner</strong>. Darin liegen <strong>Tabellen</strong> – wie Excel-Tabellenblätter. Jede Tabelle hat <strong>Spalten</strong> (was gemessen wird) und <strong>Zeilen</strong> (einzelne Einträge).</p>
+      <div class="result-table-wrap">
+        <div class="result-label">▶ TABELLE: kunden</div>
+        <table class="result-table">
+          <tr><th>kunden_id</th><th>vorname</th><th>nachname</th><th>email</th><th>stadt</th></tr>
+          <tr><td>1</td><td>Anna</td><td>Müller</td><td>anna@mail.de</td><td>Berlin</td></tr>
+          <tr><td>2</td><td>Tim</td><td>Schmidt</td><td>tim@mail.de</td><td>München</td></tr>
+          <tr><td>3</td><td>Lisa</td><td>Weber</td><td>lisa@mail.de</td><td>Hamburg</td></tr>
+        </table>
+      </div>
+      <div class="highlight-box">
+        💡 <strong>Spalten</strong> = Art der Information (Vorname, Email...) | <strong>Zeilen</strong> = einzelne Datensätze | <strong>Primärschlüssel</strong> = eindeutige ID jeder Zeile (hier: kunden_id)
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🆕 Datenbank erstellen</h2>
+      <div class="code-wrap">
+        <span class="code-label">SQL</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="cmt">-- Neue Datenbank anlegen:</span>
+<span class="kw">CREATE DATABASE</span> <span class="tbl">meine_datenbank</span><span class="op">;</span>
+
+<span class="cmt">-- Datenbank auswählen (für alle folgenden Befehle):</span>
+<span class="kw">USE</span> <span class="tbl">meine_datenbank</span><span class="op">;</span>
+
+<span class="cmt">-- Alle vorhandenen Datenbanken anzeigen:</span>
+<span class="kw">SHOW DATABASES</span><span class="op">;</span>   <span class="cmt">-- MySQL</span>
+<span class="cmt">-- In SSMS: Datenbankordner im linken Baum aufklappen</span>
+
+<span class="cmt">-- Datenbank löschen (Vorsicht! Alles weg!):</span>
+<span class="kw">DROP DATABASE</span> <span class="tbl">meine_datenbank</span><span class="op">;</span></pre>
+      </div>
+      <div class="highlight-box orange">
+        ⚠️ <strong>SSMS-Tipp:</strong> In SSMS kannst du eine Datenbank auch per Rechtsklick auf „Datenbanken" → „Neue Datenbank" grafisch erstellen. Der SQL-Befehl oben funktioniert aber genauso.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📐 Datenbankdesign – das relationale Modell</h2>
+      <p>Professionelle Datenbanken teilen Daten auf <strong>mehrere Tabellen</strong> auf. Das vermeidet Wiederholungen und Fehler:</p>
+      <div class="compare-grid">
+        <div class="compare-card" style="border-color:rgba(255,107,53,0.3)">
+          <h4 style="color:var(--accent2)">❌ Schlechtes Design</h4>
+          <p>Alles in einer Tabelle:</p>
+          <code class="inline" style="font-size:11px">bestellung_id | kunde_name | kunde_email | produkt | preis</code>
+          <p style="margin-top:8px;font-size:12px">→ Email muss bei jedem Kauf neu eingetragen werden → Fehleranfällig!</p>
+        </div>
+        <div class="compare-card" style="border-color:rgba(57,255,126,0.3)">
+          <h4 style="color:var(--accent3)">✅ Gutes Design</h4>
+          <p>Aufgeteilt auf 3 Tabellen:</p>
+          <ul>
+            <li>Tabelle <code class="inline" style="font-size:11px">kunden</code></li>
+            <li>Tabelle <code class="inline" style="font-size:11px">produkte</code></li>
+            <li>Tabelle <code class="inline" style="font-size:11px">bestellungen</code> (mit Fremdschlüsseln)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist ein Primärschlüssel (PRIMARY KEY) in einer Tabelle?",
+    options: [
+      "Die erste Spalte – immer der Vorname.",
+      "Ein eindeutiger Wert, der jede Zeile unverwechselbar identifiziert.",
+      "Ein Passwort für die Tabelle.",
+      "Der wichtigste Wert in jeder Zeile."
+    ],
+    correct: 1,
+    feedback: "Genau! Ein Primärschlüssel ist eine eindeutige ID für jede Zeile – z.B. eine kunden_id, die sich niemals wiederholt. Damit kann man auf jede Zeile gezielt zugreifen."
+  }
+},
+
+// ─── 2: CREATE TABLE ─────────────────────────────────────────────────────
+{
+  tag: "Lektion 3",
+  title: "Tabellen erstellen <span>(CREATE)</span>",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>🔨 CREATE TABLE – Grundstruktur</h2>
+      <p>Mit <code class="inline">CREATE TABLE</code> legst du die Struktur deiner Tabelle fest: welche Spalten es gibt und was für Daten darin gespeichert werden dürfen.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="kw">CREATE TABLE</span> <span class="tbl">kunden</span> <span class="op">(</span>
+    <span class="col">kunden_id</span>   <span class="type">INT</span>           <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">vorname</span>     <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">)</span>  <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">nachname</span>    <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">)</span>  <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">email</span>       <span class="type">VARCHAR</span><span class="op">(</span><span class="num">100</span><span class="op">)</span> <span class="kw2">UNIQUE</span><span class="op">,</span>
+    <span class="col">geburtsdatum</span> <span class="type">DATE</span><span class="op">,</span>
+    <span class="col">punkte</span>      <span class="type">INT</span>           <span class="kw2">DEFAULT</span> <span class="num">0</span><span class="op">,</span>
+    <span class="col">erstellt_am</span> <span class="type">DATETIME</span>      <span class="kw2">DEFAULT</span> <span class="fn">CURRENT_TIMESTAMP</span>
+<span class="op">);</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 Die wichtigsten Datentypen</h2>
+      <table class="info-table">
+        <tr><th>Datentyp</th><th>Beschreibung</th><th>Beispiel</th><th>SSMS-Entsprechung</th></tr>
+        <tr><td><code class="inline">INT</code></td><td>Ganzzahl</td><td><code class="inline">42</code>, <code class="inline">-5</code></td><td><code class="inline">INT</code> ✓</td></tr>
+        <tr><td><code class="inline">DECIMAL(8,2)</code></td><td>Präzise Kommazahl (8 Stellen, 2 nach Komma)</td><td><code class="inline">1299.99</code></td><td><code class="inline">DECIMAL</code> ✓</td></tr>
+        <tr><td><code class="inline">VARCHAR(n)</code></td><td>Text bis n Zeichen (variabel)</td><td><code class="inline">'Hallo'</code></td><td><code class="inline">NVARCHAR(n)</code></td></tr>
+        <tr><td><code class="inline">TEXT</code></td><td>Langer Text (unbegrenzt)</td><td>Artikel-Inhalt</td><td><code class="inline">NVARCHAR(MAX)</code></td></tr>
+        <tr><td><code class="inline">DATE</code></td><td>Datum (ohne Uhrzeit)</td><td><code class="inline">2024-03-15</code></td><td><code class="inline">DATE</code> ✓</td></tr>
+        <tr><td><code class="inline">DATETIME</code></td><td>Datum + Uhrzeit</td><td><code class="inline">2024-03-15 14:30:00</code></td><td><code class="inline">DATETIME</code> ✓</td></tr>
+        <tr><td><code class="inline">BOOLEAN</code></td><td>Wahr/Falsch</td><td><code class="inline">TRUE</code> / <code class="inline">FALSE</code></td><td><code class="inline">BIT</code></td></tr>
+      </table>
+      <div class="highlight-box yellow">
+        💡 <strong>SSMS-Unterschied:</strong> In T-SQL (SSMS) heißt <code class="inline">AUTO_INCREMENT</code> → <code class="inline">IDENTITY(1,1)</code> und <code class="inline">VARCHAR</code> wird oft als <code class="inline">NVARCHAR</code> geschrieben (unterstützt Umlaute besser).
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔗 Constraints (Einschränkungen)</h2>
+      <table class="info-table">
+        <tr><th>Constraint</th><th>Bedeutung</th></tr>
+        <tr><td><code class="inline">PRIMARY KEY</code></td><td>Eindeutige ID – keine Duplikate, kein NULL erlaubt</td></tr>
+        <tr><td><code class="inline">AUTO_INCREMENT</code></td><td>Zahl wird automatisch hochgezählt (MySQL) / <code class="inline">IDENTITY(1,1)</code> in SSMS</td></tr>
+        <tr><td><code class="inline">NOT NULL</code></td><td>Pflichtfeld – darf nicht leer sein</td></tr>
+        <tr><td><code class="inline">UNIQUE</code></td><td>Kein doppelter Wert erlaubt (z.B. Email)</td></tr>
+        <tr><td><code class="inline">DEFAULT wert</code></td><td>Standardwert wenn nichts angegeben wird</td></tr>
+        <tr><td><code class="inline">FOREIGN KEY</code></td><td>Verknüpfung zu einer anderen Tabelle</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>🔗 Fremdschlüssel – Tabellen verknüpfen</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Tabelle 1: kunden (muss zuerst erstellt werden)</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">kunden</span> <span class="op">(</span>
+    <span class="col">kunden_id</span> <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">name</span>      <span class="type">VARCHAR</span><span class="op">(</span><span class="num">100</span><span class="op">)</span> <span class="kw2">NOT NULL</span>
+<span class="op">);</span>
+
+<span class="cmt">-- Tabelle 2: bestellungen (verweist auf kunden)</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">bestellungen</span> <span class="op">(</span>
+    <span class="col">bestell_id</span>  <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">kunden_id</span>   <span class="type">INT</span><span class="op">,</span>           <span class="cmt">-- Fremdschlüssel!</span>
+    <span class="col">produkt</span>     <span class="type">VARCHAR</span><span class="op">(</span><span class="num">100</span><span class="op">),</span>
+    <span class="col">betrag</span>      <span class="type">DECIMAL</span><span class="op">(</span><span class="num">10</span><span class="op">,</span><span class="num">2</span><span class="op">),</span>
+    <span class="kw2">FOREIGN KEY</span> <span class="op">(</span><span class="col">kunden_id</span><span class="op">)</span> <span class="kw2">REFERENCES</span> <span class="tbl">kunden</span><span class="op">(</span><span class="col">kunden_id</span><span class="op">)</span>
+<span class="op">);</span>
+
+<span class="cmt">-- Tabelle löschen:</span>
+<span class="kw">DROP TABLE</span> <span class="tbl">bestellungen</span><span class="op">;</span>
+
+<span class="cmt">-- Spalte nachträglich hinzufügen:</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">kunden</span> <span class="kw2">ADD</span> <span class="col">telefon</span> <span class="type">VARCHAR</span><span class="op">(</span><span class="num">20</span><span class="op">);</span></pre>
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was bewirkt `NOT NULL` bei einer Spalte?",
+    options: [
+      "Die Spalte kann nur die Zahl 0 enthalten.",
+      "Das Feld muss immer einen Wert haben – es darf nicht leer gelassen werden.",
+      "Die Spalte wird automatisch mit Nullen gefüllt.",
+      "NOT NULL löscht alle leeren Zeilen."
+    ],
+    correct: 1,
+    feedback: "Genau! NOT NULL ist ein Pflichtfeld. Wenn du beim Einfügen einer Zeile keinen Wert für diese Spalte angibst, gibt die Datenbank einen Fehler aus."
+  }
+},
+
+// ─── 3: INSERT ────────────────────────────────────────────────────────────
+{
+  tag: "Lektion 4",
+  title: "Daten einfügen <span>(INSERT)</span>",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>➕ INSERT INTO – Daten hinzufügen</h2>
+      <p>Mit <code class="inline">INSERT INTO</code> fügst du neue Zeilen in eine Tabelle ein. Du gibst an, in welche Spalten du schreiben willst, und darunter die zugehörigen Werte.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Eine Zeile einfügen:</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">kunden</span> <span class="op">(</span><span class="col">vorname</span><span class="op">,</span> <span class="col">nachname</span><span class="op">,</span> <span class="col">email</span><span class="op">,</span> <span class="col">stadt</span><span class="op">)</span>
+<span class="kw2">VALUES</span> <span class="op">(</span><span class="str">'Anna'</span><span class="op">,</span> <span class="str">'Müller'</span><span class="op">,</span> <span class="str">'anna@mail.de'</span><span class="op">,</span> <span class="str">'Berlin'</span><span class="op">);</span>
+
+<span class="cmt">-- Mehrere Zeilen auf einmal einfügen:</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">kunden</span> <span class="op">(</span><span class="col">vorname</span><span class="op">,</span> <span class="col">nachname</span><span class="op">,</span> <span class="col">email</span><span class="op">,</span> <span class="col">stadt</span><span class="op">)</span>
+<span class="kw2">VALUES</span>
+    <span class="op">(</span><span class="str">'Tim'</span><span class="op">,</span>   <span class="str">'Schmidt'</span><span class="op">,</span> <span class="str">'tim@mail.de'</span><span class="op">,</span>   <span class="str">'München'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Lisa'</span><span class="op">,</span>  <span class="str">'Weber'</span><span class="op">,</span>   <span class="str">'lisa@mail.de'</span><span class="op">,</span>  <span class="str">'Hamburg'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Max'</span><span class="op">,</span>   <span class="str">'König'</span><span class="op">,</span>   <span class="str">'max@mail.de'</span><span class="op">,</span>   <span class="str">'Berlin'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Sara'</span><span class="op">,</span>  <span class="str">'Braun'</span><span class="op">,</span>   <span class="str">'sara@mail.de'</span><span class="op">,</span>  <span class="str">'Köln'</span><span class="op">);</span></pre>
+      </div>
+      <div class="highlight-box">
+        💡 Die Reihenfolge der Spaltennamen im INSERT muss exakt zur Reihenfolge der VALUES passen. Die <code class="inline">kunden_id</code> wird automatisch vergeben (AUTO_INCREMENT) – du musst sie nicht angeben!
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📅 Datums- und NULL-Werte einfügen</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Datum einfügen (Format: YYYY-MM-DD):</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">kunden</span> <span class="op">(</span><span class="col">vorname</span><span class="op">,</span> <span class="col">nachname</span><span class="op">,</span> <span class="col">geburtsdatum</span><span class="op">)</span>
+<span class="kw2">VALUES</span> <span class="op">(</span><span class="str">'Tom'</span><span class="op">,</span> <span class="str">'Huber'</span><span class="op">,</span> <span class="str">'1990-06-15'</span><span class="op">);</span>
+
+<span class="cmt">-- NULL einfügen (= kein Wert / unbekannt):</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">kunden</span> <span class="op">(</span><span class="col">vorname</span><span class="op">,</span> <span class="col">nachname</span><span class="op">,</span> <span class="col">email</span><span class="op">)</span>
+<span class="kw2">VALUES</span> <span class="op">(</span><span class="str">'Gast'</span><span class="op">,</span> <span class="str">'Unbekannt'</span><span class="op">,</span> <span class="kw2">NULL</span><span class="op">);</span>
+
+<span class="cmt">-- Aktuelles Datum/Zeit automatisch einfügen:</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">bestellungen</span> <span class="op">(</span><span class="col">kunden_id</span><span class="op">,</span> <span class="col">produkt</span><span class="op">,</span> <span class="col">datum</span><span class="op">)</span>
+<span class="kw2">VALUES</span> <span class="op">(</span><span class="num">1</span><span class="op">,</span> <span class="str">'Laptop'</span><span class="op">,</span> <span class="fn">NOW</span><span class="op">());</span>   <span class="cmt">-- NOW() = aktuelles Datum+Zeit</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>✅ Praxis: Testdaten anlegen</h2>
+      <p>Kopiere dieses komplette Skript in SSMS oder MySQL Workbench – es erstellt eine Datenbank mit Beispieldaten, die wir in den nächsten Lektionen benutzen:</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- ══════════════════════════════════════
+   Übungsdatenbank "schule" erstellen
+   ══════════════════════════════════════</span>
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> <span class="tbl">schule</span><span class="op">;</span>
+<span class="kw">USE</span> <span class="tbl">schule</span><span class="op">;</span>
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">schueler</span> <span class="op">(</span>
+    <span class="col">id</span>       <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">name</span>     <span class="type">VARCHAR</span><span class="op">(</span><span class="num">80</span><span class="op">)</span> <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">klasse</span>   <span class="type">VARCHAR</span><span class="op">(</span><span class="num">10</span><span class="op">),</span>
+    <span class="col">note</span>     <span class="type">DECIMAL</span><span class="op">(</span><span class="num">3</span><span class="op">,</span><span class="num">1</span><span class="op">),</span>
+    <span class="col">stadt</span>    <span class="type">VARCHAR</span><span class="op">(</span><span class="num">60</span><span class="op">)</span>
+<span class="op">);</span>
+
+<span class="kw">INSERT INTO</span> <span class="tbl">schueler</span> <span class="op">(</span><span class="col">name</span><span class="op">,</span> <span class="col">klasse</span><span class="op">,</span> <span class="col">note</span><span class="op">,</span> <span class="col">stadt</span><span class="op">)</span> <span class="kw2">VALUES</span>
+    <span class="op">(</span><span class="str">'Anna Müller'</span><span class="op">,</span>   <span class="str">'10A'</span><span class="op">,</span> <span class="num">1.5</span><span class="op">,</span> <span class="str">'Berlin'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Tim Schmidt'</span><span class="op">,</span>   <span class="str">'10A'</span><span class="op">,</span> <span class="num">2.8</span><span class="op">,</span> <span class="str">'Berlin'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Lisa Weber'</span><span class="op">,</span>    <span class="str">'10B'</span><span class="op">,</span> <span class="num">1.2</span><span class="op">,</span> <span class="str">'München'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Max König'</span><span class="op">,</span>     <span class="str">'10B'</span><span class="op">,</span> <span class="num">3.5</span><span class="op">,</span> <span class="str">'Hamburg'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Sara Braun'</span><span class="op">,</span>    <span class="str">'11A'</span><span class="op">,</span> <span class="num">2.0</span><span class="op">,</span> <span class="str">'Berlin'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Kai Fischer'</span><span class="op">,</span>   <span class="str">'11A'</span><span class="op">,</span> <span class="num">1.8</span><span class="op">,</span> <span class="str">'Köln'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Emma Schulz'</span><span class="op">,</span>   <span class="str">'11B'</span><span class="op">,</span> <span class="num">4.2</span><span class="op">,</span> <span class="str">'München'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Leon Richter'</span><span class="op">,</span>  <span class="str">'11B'</span><span class="op">,</span> <span class="num">2.5</span><span class="op">,</span> <span class="str">'Hamburg'</span><span class="op">);</span></pre>
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Du fügst eine neue Zeile ein und gibst keinen Wert für `kunden_id` (AUTO_INCREMENT) an. Was passiert?",
+    options: [
+      "Die Datenbank gibt einen Fehler aus – kunden_id ist Pflicht.",
+      "Die kunden_id wird automatisch auf den nächsthöheren Wert gesetzt.",
+      "Die kunden_id wird 0.",
+      "Die Zeile wird ohne ID gespeichert."
+    ],
+    correct: 1,
+    feedback: "Richtig! AUTO_INCREMENT (MySQL) oder IDENTITY(1,1) (SSMS) vergeben die ID automatisch. Du musst – und sollst – sie beim INSERT weglassen."
+  }
+},
+
+// ─── 4: SELECT ────────────────────────────────────────────────────────────
+{
+  tag: "Lektion 5",
+  title: "Daten abfragen <span>(SELECT)</span>",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>🔍 SELECT – die wichtigste Anweisung</h2>
+      <p>Mit <code class="inline">SELECT</code> liest du Daten aus der Datenbank. Es ist die Abfrage, die du am häufigsten verwenden wirst.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Alle Spalten, alle Zeilen (* = alles):</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Nur bestimmte Spalten auswählen:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">klasse</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Spalte umbenennen (Alias) mit AS:</span>
+<span class="kw">SELECT</span>
+    <span class="col">name</span>    <span class="kw2">AS</span> <span class="str">'Schülername'</span><span class="op">,</span>
+    <span class="col">klasse</span>  <span class="kw2">AS</span> <span class="str">'Schulklasse'</span><span class="op">,</span>
+    <span class="col">note</span>    <span class="kw2">AS</span> <span class="str">'Ø Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Berechnungen direkt in SELECT:</span>
+<span class="kw">SELECT</span>
+    <span class="col">name</span><span class="op">,</span>
+    <span class="col">note</span><span class="op">,</span>
+    <span class="col">note</span> <span class="op">* 20</span> <span class="kw2">AS</span> <span class="str">'note_in_prozent'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔢 DISTINCT – Duplikate entfernen</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Alle Städte, aber jede nur einmal:</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">stadt</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span></pre>
+      </div>
+      <div class="result-table-wrap">
+        <div class="result-label">▶ ERGEBNIS</div>
+        <table class="result-table">
+          <tr><th>stadt</th></tr>
+          <tr><td>Berlin</td></tr>
+          <tr><td>München</td></tr>
+          <tr><td>Hamburg</td></tr>
+          <tr><td>Köln</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📋 ORDER BY – Ergebnisse sortieren</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Nach Note sortieren (beste Note zuerst = ASC):</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">klasse</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">note</span> <span class="kw2">ASC</span><span class="op">;</span>    <span class="cmt">-- ASC = aufsteigend (Standard)</span>
+
+<span class="cmt">-- Schlechteste Note zuerst:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">klasse</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">note</span> <span class="kw2">DESC</span><span class="op">;</span>   <span class="cmt">-- DESC = absteigend</span>
+
+<span class="cmt">-- Zuerst nach Klasse, dann nach Note:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">klasse</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">klasse</span> <span class="kw2">ASC</span><span class="op">,</span> <span class="col">note</span> <span class="kw2">ASC</span><span class="op">;</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔢 LIMIT / TOP – Anzahl begrenzen</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- MySQL: nur die ersten 3 Ergebnisse:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">note</span> <span class="kw2">ASC</span>
+<span class="kw2">LIMIT</span> <span class="num">3</span><span class="op">;</span>   <span class="cmt">-- MySQL</span>
+
+<span class="cmt">-- SSMS / T-SQL: TOP statt LIMIT</span>
+<span class="kw">SELECT TOP</span> <span class="num">3</span> <span class="col">name</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">note</span> <span class="kw2">ASC</span><span class="op">;</span>   <span class="cmt">-- T-SQL</span></pre>
+      </div>
+      <div class="highlight-box orange">
+        ⚠️ <strong>Wichtiger Unterschied!</strong> <code class="inline">LIMIT</code> steht in MySQL am Ende. In SSMS/T-SQL steht <code class="inline">TOP n</code> direkt nach SELECT – am Anfang der Abfrage!
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist der Unterschied zwischen `SELECT *` und `SELECT name, note`?",
+    options: [
+      "Kein Unterschied – beide geben dasselbe aus.",
+      "SELECT * gibt alle Spalten zurück, SELECT name, note nur die zwei genannten Spalten.",
+      "SELECT * ist langsamer und sollte nie benutzt werden.",
+      "SELECT name, note funktioniert nur wenn die Tabelle genau 2 Spalten hat."
+    ],
+    correct: 1,
+    feedback: "Richtig! * ist eine Abkürzung für 'alle Spalten'. In der Praxis solltest du lieber explizit die benötigten Spalten nennen – das ist schneller und übersichtlicher."
+  }
+},
+
+// ─── 5: WHERE ────────────────────────────────────────────────────────────
+{
+  tag: "Lektion 6",
+  title: "Filtern & Sortieren <span>(WHERE)</span>",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>🔎 WHERE – Zeilen filtern</h2>
+      <p>Mit <code class="inline">WHERE</code> kannst du nur die Zeilen abrufen, die eine bestimmte Bedingung erfüllen – wie ein Filter in Excel, nur mächtiger.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Nur Schüler aus Berlin:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Berlin'</span><span class="op">;</span>
+
+<span class="cmt">-- Schüler mit Note besser als 2.0:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">note</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">note</span> <span class="op">&lt;</span> <span class="num">2.0</span><span class="op">;</span>
+
+<span class="cmt">-- Vergleichsoperatoren:</span>
+<span class="cmt">-- =   gleich         |  !=  oder <>  ungleich</span>
+<span class="cmt">-- >   größer als     |  >=  größer oder gleich</span>
+<span class="cmt">-- <   kleiner als    |  <=  kleiner oder gleich</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔗 AND, OR, NOT – Bedingungen kombinieren</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- AND: beide Bedingungen müssen stimmen</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Berlin'</span> <span class="kw2">AND</span> <span class="col">note</span> <span class="op">&lt;</span> <span class="num">2.0</span><span class="op">;</span>
+
+<span class="cmt">-- OR: mindestens eine Bedingung muss stimmen</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Berlin'</span> <span class="kw2">OR</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'München'</span><span class="op">;</span>
+
+<span class="cmt">-- NOT: Bedingung umkehren</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="kw2">NOT</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Berlin'</span><span class="op">;</span>   <span class="cmt">-- alle außer Berlin</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⚡ IN, BETWEEN, LIKE – mächtige Filter</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- IN: einer von mehreren Werten</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="kw2">IN</span> <span class="op">(</span><span class="str">'Berlin'</span><span class="op">,</span> <span class="str">'Hamburg'</span><span class="op">,</span> <span class="str">'Köln'</span><span class="op">);</span>
+
+<span class="cmt">-- BETWEEN: Wertebereich (inklusive Grenzen!)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">note</span> <span class="kw2">BETWEEN</span> <span class="num">2.0</span> <span class="kw2">AND</span> <span class="num">3.0</span><span class="op">;</span>
+
+<span class="cmt">-- LIKE: Textsuche mit Platzhaltern
+   %  = beliebig viele Zeichen
+   _  = genau ein Zeichen</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">name</span> <span class="kw2">LIKE</span> <span class="str">'A%'</span><span class="op">;</span>           <span class="cmt">-- Name beginnt mit A</span>
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">name</span> <span class="kw2">LIKE</span> <span class="str">'%müller%'</span><span class="op">;</span>     <span class="cmt">-- enthält "müller"</span>
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">name</span> <span class="kw2">LIKE</span> <span class="str">'_i%'</span><span class="op">;</span>           <span class="cmt">-- 2. Buchstabe ist 'i'</span>
+
+<span class="cmt">-- IS NULL / IS NOT NULL:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">email</span> <span class="kw2">IS NULL</span><span class="op">;</span>            <span class="cmt">-- kein Email eingetragen</span></pre>
+      </div>
+      <div class="highlight-box">
+        💡 <strong>NULL ist besonders!</strong> Man kann nicht schreiben <code class="inline">WHERE email = NULL</code> – das funktioniert nicht! Immer <code class="inline">IS NULL</code> oder <code class="inline">IS NOT NULL</code> verwenden.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt `WHERE name LIKE 'M%'` zurück?",
+    options: [
+      "Alle Einträge, wo der Name genau 'M' ist.",
+      "Alle Einträge, wo der Name mit dem Buchstaben M beginnt.",
+      "Alle Einträge, wo der Name ein M enthält.",
+      "Alle Einträge, wo der Name auf M endet."
+    ],
+    correct: 1,
+    feedback: "Genau! % ist ein Platzhalter für beliebig viele Zeichen. 'M%' bedeutet: beginnt mit M, gefolgt von irgendwas. '%M%' würde alle bedeuten, die ein M enthalten."
+  }
+},
+
+// ─── 6: UPDATE & DELETE ───────────────────────────────────────────────────
+{
+  tag: "Lektion 7",
+  title: "Daten ändern <span>& löschen</span>",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>✏️ UPDATE – Daten verändern</h2>
+      <p>Mit <code class="inline">UPDATE</code> änderst du vorhandene Werte in einer oder mehreren Zeilen.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Note eines Schülers ändern:</span>
+<span class="kw">UPDATE</span> <span class="tbl">schueler</span>
+<span class="kw2">SET</span> <span class="col">note</span> <span class="op">=</span> <span class="num">1.0</span>
+<span class="kw2">WHERE</span> <span class="col">name</span> <span class="op">=</span> <span class="str">'Anna Müller'</span><span class="op">;</span>
+
+<span class="cmt">-- Mehrere Spalten gleichzeitig ändern:</span>
+<span class="kw">UPDATE</span> <span class="tbl">schueler</span>
+<span class="kw2">SET</span>
+    <span class="col">note</span>  <span class="op">=</span> <span class="num">2.5</span><span class="op">,</span>
+    <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Frankfurt'</span>
+<span class="kw2">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">3</span><span class="op">;</span>
+
+<span class="cmt">-- Alle Schüler einer Klasse updaten:</span>
+<span class="kw">UPDATE</span> <span class="tbl">schueler</span>
+<span class="kw2">SET</span> <span class="col">note</span> <span class="op">=</span> <span class="col">note</span> <span class="op">- 0.3</span>     <span class="cmt">-- Note um 0.3 verbessern</span>
+<span class="kw2">WHERE</span> <span class="col">klasse</span> <span class="op">=</span> <span class="str">'10A'</span><span class="op">;</span></pre>
+      </div>
+      <div class="highlight-box orange">
+        ⚠️ <strong>GEFAHR!</strong> Ein UPDATE ohne WHERE verändert <em>alle Zeilen</em> in der Tabelle. Immer zuerst mit SELECT prüfen, welche Zeilen betroffen wären!
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🛡️ Sicher updaten – erst prüfen!</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Schritt 1: Erst mit SELECT prüfen:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">klasse</span> <span class="op">=</span> <span class="str">'10A'</span><span class="op">;</span>
+
+<span class="cmt">-- Schritt 2: Erst wenn die richtigen Zeilen sichtbar sind, updaten:</span>
+<span class="kw">UPDATE</span> <span class="tbl">schueler</span>
+<span class="kw2">SET</span> <span class="col">klasse</span> <span class="op">=</span> <span class="str">'11A'</span>
+<span class="kw2">WHERE</span> <span class="col">klasse</span> <span class="op">=</span> <span class="str">'10A'</span><span class="op">;</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🗑️ DELETE – Daten löschen</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Einen Schüler löschen:</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">5</span><span class="op">;</span>
+
+<span class="cmt">-- Alle Schüler einer Stadt löschen:</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Hamburg'</span><span class="op">;</span>
+
+<span class="cmt">-- ALLE Zeilen löschen (Struktur bleibt erhalten):</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">schueler</span><span class="op">;</span>          <span class="cmt">-- langsam, aber rückgängig machbar</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">schueler</span><span class="op">;</span>      <span class="cmt">-- schnell, aber NICHT rückgängig!</span></pre>
+      </div>
+      <div class="highlight-box orange">
+        ⚠️ <strong>DELETE ohne WHERE = alles weg!</strong> Merke: In der Datenbank gibt es keinen Papierkorb. Gelöschte Daten sind weg – es sei denn, du hast ein Backup oder nutzt Transaktionen.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔄 Transaktionen – Sicherheitsnetz</h2>
+      <p>Mit Transaktionen kannst du Änderungen erst „ausprobieren" und dann entscheiden ob du sie wirklich speicherst:</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Transaktion starten:</span>
+<span class="kw">BEGIN TRANSACTION</span><span class="op">;</span>   <span class="cmt">-- SSMS</span>
+<span class="kw">START TRANSACTION</span><span class="op">;</span>   <span class="cmt">-- MySQL</span>
+
+<span class="cmt">-- Änderungen vornehmen:</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">schueler</span> <span class="kw2">WHERE</span> <span class="col">id</span> <span class="op">=</span> <span class="num">3</span><span class="op">;</span>
+
+<span class="cmt">-- Überprüfen ob es richtig ist:</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Alles OK? Dann dauerhaft speichern:</span>
+<span class="kw">COMMIT</span><span class="op">;</span>
+
+<span class="cmt">-- Oder: Rückgängig machen!</span>
+<span class="kw">ROLLBACK</span><span class="op">;</span></pre>
+      </div>
+      <div class="highlight-box green">
+        ✅ <strong>Tipp:</strong> Bei kritischen Updates und Deletes immer zuerst <code class="inline">BEGIN TRANSACTION</code> eingeben. Dann kannst du mit <code class="inline">ROLLBACK</code> alles rückgängig machen, falls etwas falsch war.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was passiert bei `UPDATE schueler SET note = 1.0` OHNE eine WHERE-Klausel?",
+    options: [
+      "Nichts – SQL erkennt den Fehler und bricht ab.",
+      "Nur die erste Zeile wird geändert.",
+      "Die Note ALLER Schüler in der gesamten Tabelle wird auf 1.0 gesetzt.",
+      "Eine Fehlermeldung erscheint."
+    ],
+    correct: 2,
+    feedback: "Genau das ist die häufigste Katastrophe bei SQL! Ohne WHERE wird JEDE Zeile geändert. Deshalb: Immer erst mit SELECT prüfen, dann die WHERE-Bedingung 1:1 ins UPDATE übernehmen."
+  }
+},
+
+// ─── 7: AGGREGATFUNKTIONEN ────────────────────────────────────────────────
+{
+  tag: "Lektion 8",
+  title: "Aggregat&shy;funktionen <span>& GROUP BY</span>",
+  time: "~30 Min",
+  content: `
+    <div class="section">
+      <h2>🔢 Aggregatfunktionen – rechnen über viele Zeilen</h2>
+      <p>Aggregatfunktionen berechnen einen Wert aus mehreren Zeilen – z.B. Durchschnitt, Summe, Maximum.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Anzahl aller Schüler:</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span><span class="op">(*)</span> <span class="kw2">AS</span> <span class="str">'Anzahl Schüler'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Durchschnittsnote:</span>
+<span class="kw">SELECT</span> <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Ø Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Beste und schlechteste Note:</span>
+<span class="kw">SELECT</span>
+    <span class="fn">MIN</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Beste Note'</span><span class="op">,</span>
+    <span class="fn">MAX</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Schlechteste Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span>
+
+<span class="cmt">-- Summe (z.B. Gesamtumsatz):</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span><span class="op">(</span><span class="col">betrag</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Gesamtumsatz'</span>
+<span class="kw2">FROM</span> <span class="tbl">bestellungen</span><span class="op">;</span>
+
+<span class="cmt">-- Alles zusammen:</span>
+<span class="kw">SELECT</span>
+    <span class="fn">COUNT</span><span class="op">(*)</span>    <span class="kw2">AS</span> <span class="str">'Anzahl'</span><span class="op">,</span>
+    <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span>   <span class="kw2">AS</span> <span class="str">'Durchschnitt'</span><span class="op">,</span>
+    <span class="fn">MIN</span><span class="op">(</span><span class="col">note</span><span class="op">)</span>   <span class="kw2">AS</span> <span class="str">'Beste'</span><span class="op">,</span>
+    <span class="fn">MAX</span><span class="op">(</span><span class="col">note</span><span class="op">)</span>   <span class="kw2">AS</span> <span class="str">'Schlechteste'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">;</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 GROUP BY – gruppiert auswerten</h2>
+      <p><code class="inline">GROUP BY</code> gruppiert Zeilen mit gleichem Wert und wendet Aggregatfunktionen auf jede Gruppe an:</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Durchschnittsnote pro Klasse:</span>
+<span class="kw">SELECT</span>
+    <span class="col">klasse</span><span class="op">,</span>
+    <span class="fn">COUNT</span><span class="op">(*)</span>          <span class="kw2">AS</span> <span class="str">'Anzahl'</span><span class="op">,</span>
+    <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span>         <span class="kw2">AS</span> <span class="str">'Ø Note'</span><span class="op">,</span>
+    <span class="fn">MIN</span><span class="op">(</span><span class="col">note</span><span class="op">)</span>         <span class="kw2">AS</span> <span class="str">'Beste Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">GROUP BY</span> <span class="col">klasse</span>
+<span class="kw2">ORDER BY</span> <span class="col">klasse</span><span class="op">;</span></pre>
+      </div>
+      <div class="result-table-wrap">
+        <div class="result-label">▶ ERGEBNIS</div>
+        <table class="result-table">
+          <tr><th>klasse</th><th>Anzahl</th><th>Ø Note</th><th>Beste Note</th></tr>
+          <tr><td>10A</td><td>2</td><td>2.15</td><td>1.5</td></tr>
+          <tr><td>10B</td><td>2</td><td>2.35</td><td>1.2</td></tr>
+          <tr><td>11A</td><td>2</td><td>1.90</td><td>1.8</td></tr>
+          <tr><td>11B</td><td>2</td><td>3.35</td><td>2.5</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 HAVING – Gruppen filtern</h2>
+      <p><code class="inline">HAVING</code> ist wie <code class="inline">WHERE</code>, aber für Gruppen (nach GROUP BY):</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Nur Klassen mit Durchschnitt schlechter als 2.5 anzeigen:</span>
+<span class="kw">SELECT</span> <span class="col">klasse</span><span class="op">,</span> <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Ø Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">GROUP BY</span> <span class="col">klasse</span>
+<span class="kw2">HAVING</span> <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="op">&gt;</span> <span class="num">2.5</span><span class="op">;</span>
+
+<span class="cmt">-- WHERE filtert VOR GROUP BY (einzelne Zeilen)
+   HAVING filtert NACH GROUP BY (Gruppen)</span></pre>
+      </div>
+      <div class="highlight-box">
+        💡 <strong>Merke:</strong> WHERE → BEFORE grouping (filtert Zeilen) | HAVING → AFTER grouping (filtert Gruppen)
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist der Unterschied zwischen `WHERE` und `HAVING`?",
+    options: [
+      "HAVING ist neuer und moderner – WHERE ist veraltet.",
+      "WHERE filtert einzelne Zeilen VOR der Gruppierung, HAVING filtert Gruppen NACH GROUP BY.",
+      "HAVING kann nur mit COUNT() verwendet werden.",
+      "Kein Unterschied – sie sind austauschbar."
+    ],
+    correct: 1,
+    feedback: "Perfekt! WHERE kommt vor GROUP BY und filtert einzelne Datensätze. HAVING kommt nach GROUP BY und filtert die berechneten Gruppenergebnisse."
+  }
+},
+
+// ─── 8: JOIN ──────────────────────────────────────────────────────────────
+{
+  tag: "Lektion 9",
+  title: "Tabellen verknüpfen <span>(JOIN)</span>",
+  time: "~35 Min",
+  content: `
+    <div class="section">
+      <h2>🔗 Warum JOINs?</h2>
+      <p>In einer gut strukturierten Datenbank sind Daten auf mehrere Tabellen verteilt. Mit JOINs holst du Daten aus mehreren Tabellen gleichzeitig – als wären es eine.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Testdaten für JOIN-Beispiele erstellen:</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">lehrer</span> <span class="op">(</span>
+    <span class="col">id</span>     <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">name</span>   <span class="type">VARCHAR</span><span class="op">(</span><span class="num">80</span><span class="op">)</span><span class="op">,</span>
+    <span class="col">fach</span>   <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">)</span>
+<span class="op">);</span>
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">klassen</span> <span class="op">(</span>
+    <span class="col">klasse</span>     <span class="type">VARCHAR</span><span class="op">(</span><span class="num">10</span><span class="op">)</span> <span class="kw2">PRIMARY KEY</span><span class="op">,</span>
+    <span class="col">lehrer_id</span>  <span class="type">INT</span><span class="op">,</span>
+    <span class="kw2">FOREIGN KEY</span> <span class="op">(</span><span class="col">lehrer_id</span><span class="op">)</span> <span class="kw2">REFERENCES</span> <span class="tbl">lehrer</span><span class="op">(</span><span class="col">id</span><span class="op">)</span>
+<span class="op">);</span>
+
+<span class="kw">INSERT INTO</span> <span class="tbl">lehrer</span> <span class="op">(</span><span class="col">name</span><span class="op">,</span> <span class="col">fach</span><span class="op">)</span> <span class="kw2">VALUES</span>
+    <span class="op">(</span><span class="str">'Herr Meier'</span><span class="op">,</span> <span class="str">'Mathe'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Frau Lange'</span><span class="op">,</span> <span class="str">'Deutsch'</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'Herr Bauer'</span><span class="op">,</span> <span class="str">'Englisch'</span><span class="op">);</span>
+
+<span class="kw">INSERT INTO</span> <span class="tbl">klassen</span> <span class="op">(</span><span class="col">klasse</span><span class="op">,</span> <span class="col">lehrer_id</span><span class="op">)</span> <span class="kw2">VALUES</span>
+    <span class="op">(</span><span class="str">'10A'</span><span class="op">,</span> <span class="num">1</span><span class="op">),</span> <span class="op">(</span><span class="str">'10B'</span><span class="op">,</span> <span class="num">2</span><span class="op">),</span>
+    <span class="op">(</span><span class="str">'11A'</span><span class="op">,</span> <span class="num">1</span><span class="op">),</span> <span class="op">(</span><span class="str">'11B'</span><span class="op">,</span> <span class="num">3</span><span class="op">);</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>➡️ INNER JOIN – nur übereinstimmende Zeilen</h2>
+      <p>Der häufigste JOIN. Gibt nur Zeilen zurück, die in BEIDEN Tabellen einen passenden Eintrag haben.</p>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Schüler mit ihrem Klassenlehrer:</span>
+<span class="kw">SELECT</span>
+    <span class="tbl">s</span><span class="op">.</span><span class="col">name</span>        <span class="kw2">AS</span> <span class="str">'Schüler'</span><span class="op">,</span>
+    <span class="tbl">s</span><span class="op">.</span><span class="col">klasse</span><span class="op">,</span>
+    <span class="tbl">l</span><span class="op">.</span><span class="col">name</span>        <span class="kw2">AS</span> <span class="str">'Lehrer'</span><span class="op">,</span>
+    <span class="tbl">l</span><span class="op">.</span><span class="col">fach</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span> <span class="tbl">s</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">klassen</span> <span class="tbl">k</span>  <span class="kw2">ON</span> <span class="tbl">s</span><span class="op">.</span><span class="col">klasse</span>     <span class="op">=</span> <span class="tbl">k</span><span class="op">.</span><span class="col">klasse</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">lehrer</span> <span class="tbl">l</span>   <span class="kw2">ON</span> <span class="tbl">k</span><span class="op">.</span><span class="col">lehrer_id</span>  <span class="op">=</span> <span class="tbl">l</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">ORDER BY</span> <span class="tbl">s</span><span class="op">.</span><span class="col">klasse</span><span class="op">;</span></pre>
+      </div>
+      <div class="highlight-box">
+        💡 Tabellen-Aliase (<code class="inline">s</code>, <code class="inline">k</code>, <code class="inline">l</code>) machen den Code kürzer. Statt <code class="inline">schueler.name</code> schreibst du <code class="inline">s.name</code>. Pflicht wenn zwei Tabellen eine gleichnamige Spalte haben!
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>⬅️ LEFT JOIN – alle aus der linken Tabelle</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Alle Lehrer, auch die ohne Klasse (NULL in klassen-Spalten):</span>
+<span class="kw">SELECT</span>
+    <span class="tbl">l</span><span class="op">.</span><span class="col">name</span>    <span class="kw2">AS</span> <span class="str">'Lehrer'</span><span class="op">,</span>
+    <span class="tbl">l</span><span class="op">.</span><span class="col">fach</span><span class="op">,</span>
+    <span class="tbl">k</span><span class="op">.</span><span class="col">klasse</span>
+<span class="kw2">FROM</span> <span class="tbl">lehrer</span> <span class="tbl">l</span>
+<span class="kw2">LEFT JOIN</span> <span class="tbl">klassen</span> <span class="tbl">k</span> <span class="kw2">ON</span> <span class="tbl">l</span><span class="op">.</span><span class="col">id</span> <span class="op">=</span> <span class="tbl">k</span><span class="op">.</span><span class="col">lehrer_id</span><span class="op">;</span></pre>
+      </div>
+      <table class="info-table">
+        <tr><th>JOIN-Typ</th><th>Gibt zurück</th><th>Wann benutzen?</th></tr>
+        <tr><td><code class="inline">INNER JOIN</code></td><td>Nur Zeilen mit Übereinstimmung in BEIDEN Tabellen</td><td>Am häufigsten – wenn du nur vollständige Datensätze willst</td></tr>
+        <tr><td><code class="inline">LEFT JOIN</code></td><td>Alle Zeilen der linken Tabelle + passende rechts (sonst NULL)</td><td>Wenn du alle linken Einträge willst, auch ohne Match</td></tr>
+        <tr><td><code class="inline">RIGHT JOIN</code></td><td>Alle Zeilen der rechten Tabelle + passende links</td><td>Selten – meistens LEFT JOIN bevorzugt</td></tr>
+        <tr><td><code class="inline">FULL OUTER JOIN</code></td><td>Alle Zeilen aus beiden Tabellen</td><td>Nur SSMS; in MySQL mit UNION simulieren</td></tr>
+      </table>
+    </div>
+  `,
+  quiz: {
+    question: "Was gibt ein LEFT JOIN zurück, wenn eine Zeile der linken Tabelle keinen passenden Eintrag in der rechten Tabelle hat?",
+    options: [
+      "Diese Zeile wird ausgelassen – genau wie beim INNER JOIN.",
+      "Die Zeile erscheint trotzdem, aber die Spalten der rechten Tabelle sind NULL.",
+      "Ein Fehler wird ausgegeben.",
+      "Die Zeile erscheint doppelt."
+    ],
+    correct: 1,
+    feedback: "Richtig! Das ist der wichtige Unterschied: LEFT JOIN behält ALLE Zeilen der linken Tabelle. Fehlende Werte aus der rechten Tabelle werden als NULL angezeigt."
+  }
+},
+
+// ─── 9: UNTERABFRAGEN ────────────────────────────────────────────────────
+{
+  tag: "Lektion 10",
+  title: "Unterabfragen <span>(Subqueries)</span>",
+  time: "~25 Min",
+  content: `
+    <div class="section">
+      <h2>🪆 Was ist eine Unterabfrage?</h2>
+      <p>Eine Unterabfrage (Subquery) ist eine SELECT-Abfrage, die innerhalb einer anderen Abfrage steht. Damit kannst du komplexe Fragen in einfachere Teilfragen zerlegen.</p>
+    </div>
+
+    <div class="section">
+      <h2>📋 Unterabfragen in WHERE</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Alle Schüler, die besser als der Durchschnitt sind:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">note</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">note</span> <span class="op">&lt;</span> <span class="op">(</span>
+    <span class="kw">SELECT</span> <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span>    <span class="cmt">← Unterabfrage</span>
+<span class="op">);</span>
+
+<span class="cmt">-- Schüler aus Städten mit mehr als einem Schüler:</span>
+<span class="kw">SELECT</span> <span class="col">name</span><span class="op">,</span> <span class="col">stadt</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="kw2">IN</span> <span class="op">(</span>
+    <span class="kw">SELECT</span> <span class="col">stadt</span>
+    <span class="kw2">FROM</span> <span class="tbl">schueler</span>
+    <span class="kw2">GROUP BY</span> <span class="col">stadt</span>
+    <span class="kw2">HAVING</span> <span class="fn">COUNT</span><span class="op">(*)</span> <span class="op">&gt;</span> <span class="num">1</span>
+<span class="op">);</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 Unterabfragen in SELECT (berechnete Spalten)</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Schüler mit Abweichung vom Gesamtdurchschnitt:</span>
+<span class="kw">SELECT</span>
+    <span class="col">name</span><span class="op">,</span>
+    <span class="col">note</span><span class="op">,</span>
+    <span class="fn">ROUND</span><span class="op">(</span>
+        <span class="col">note</span> <span class="op">- (</span><span class="kw">SELECT</span> <span class="fn">AVG</span><span class="op">(</span><span class="col">note</span><span class="op">)</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span><span class="op">)</span>
+    <span class="op">,</span> <span class="num">2</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Abweichung'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span>
+<span class="kw2">ORDER BY</span> <span class="col">note</span><span class="op">;</span></pre>
+      </div>
+      <div class="highlight-box green">
+        ✅ <strong>Tipp:</strong> Wenn Unterabfragen zu komplex werden, sind CTEs (Common Table Expressions) mit <code class="inline">WITH</code> eine elegantere Alternative – ein Thema für fortgeschrittene SQL-Lernende.
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Wann verwendet man eine Unterabfrage statt einem JOIN?",
+    options: [
+      "Unterabfragen sind immer besser als JOINs.",
+      "Wenn man einen berechneten Wert (wie Durchschnitt) als Filter braucht, oder wenn die Abfrage ohne Unterabfrage nicht lesbar wäre.",
+      "Unterabfragen funktionieren nur in WHERE, nicht in SELECT.",
+      "Unterabfragen sind langsamer und sollte man nie benutzen."
+    ],
+    correct: 1,
+    feedback: "Genau! Unterabfragen sind ideal wenn man berechnete Werte (AVG, MAX...) als Filter benötigt. JOINs sind besser wenn man Spalten aus mehreren Tabellen in der Ausgabe will."
+  }
+},
+
+// ─── 10: INDIZES & PERFORMANCE ────────────────────────────────────────────
+{
+  tag: "Lektion 11",
+  title: "Indizes & <span>Performance</span>",
+  time: "~20 Min",
+  content: `
+    <div class="section">
+      <h2>⚡ Was ist ein Index?</h2>
+      <p>Ein Index ist wie das Stichwortverzeichnis in einem Buch. Ohne Index muss die Datenbank bei einer Abfrage <em>jede einzelne Zeile</em> durchsuchen. Mit Index springt sie direkt zum richtigen Eintrag.</p>
+      <div class="compare-grid">
+        <div class="compare-card" style="border-color:rgba(255,107,53,0.3)">
+          <h4 style="color:var(--accent2)">❌ Ohne Index</h4>
+          <p>1.000.000 Zeilen durchsuchen<br>→ <strong>Sekunden bis Minuten</strong></p>
+        </div>
+        <div class="compare-card" style="border-color:rgba(57,255,126,0.3)">
+          <h4 style="color:var(--accent3)">✅ Mit Index</h4>
+          <p>Direkt zur richtigen Zeile springen<br>→ <strong>Millisekunden</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🏗️ Index erstellen und verwalten</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- Einfachen Index erstellen:</span>
+<span class="kw">CREATE INDEX</span> <span class="col">idx_stadt</span>
+<span class="kw2">ON</span> <span class="tbl">schueler</span><span class="op">(</span><span class="col">stadt</span><span class="op">);</span>
+
+<span class="cmt">-- Eindeutiger Index (wie UNIQUE Constraint):</span>
+<span class="kw">CREATE UNIQUE INDEX</span> <span class="col">idx_email</span>
+<span class="kw2">ON</span> <span class="tbl">kunden</span><span class="op">(</span><span class="col">email</span><span class="op">);</span>
+
+<span class="cmt">-- Zusammengesetzter Index (mehrere Spalten):</span>
+<span class="kw">CREATE INDEX</span> <span class="col">idx_klasse_note</span>
+<span class="kw2">ON</span> <span class="tbl">schueler</span><span class="op">(</span><span class="col">klasse</span><span class="op">,</span> <span class="col">note</span><span class="op">);</span>
+
+<span class="cmt">-- Alle Indizes einer Tabelle anzeigen:</span>
+<span class="kw">SHOW INDEX FROM</span> <span class="tbl">schueler</span><span class="op">;</span>    <span class="cmt">-- MySQL</span>
+
+<span class="cmt">-- Index löschen:</span>
+<span class="kw">DROP INDEX</span> <span class="col">idx_stadt</span> <span class="kw2">ON</span> <span class="tbl">schueler</span><span class="op">;</span>   <span class="cmt">-- MySQL</span>
+<span class="kw">DROP INDEX</span> <span class="col">idx_stadt</span><span class="op">;</span>               <span class="cmt">-- SSMS</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 EXPLAIN – Abfragen analysieren</h2>
+      <div class="code-wrap">
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block"><span class="cmt">-- MySQL: zeigt wie die Abfrage intern ausgeführt wird</span>
+<span class="kw">EXPLAIN</span> <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw2">FROM</span> <span class="tbl">schueler</span> <span class="kw2">WHERE</span> <span class="col">stadt</span> <span class="op">=</span> <span class="str">'Berlin'</span><span class="op">;</span>
+
+<span class="cmt">-- SSMS: Ausführungsplan anzeigen (grafisch)
+   Strg+M → dann F5 ausführen</span></pre>
+      </div>
+      <table class="info-table">
+        <tr><th>Wann Index sinnvoll?</th><th>Wann kein Index?</th></tr>
+        <tr><td>Spalten, die oft in WHERE stehen</td><td>Kleine Tabellen (&lt; 1000 Zeilen)</td></tr>
+        <tr><td>Spalten für JOINs (Fremdschlüssel)</td><td>Spalten die selten abgefragt werden</td></tr>
+        <tr><td>Spalten für ORDER BY</td><td>Tabellen mit sehr vielen Updates/Inserts</td></tr>
+      </table>
+    </div>
+  `,
+  quiz: {
+    question: "Auf welche Spalten sollte man bevorzugt einen Index setzen?",
+    options: [
+      "Auf alle Spalten – mehr Indizes = immer schneller.",
+      "Nur auf die Primärschlüssel-Spalte.",
+      "Auf Spalten, die oft in WHERE-Bedingungen und JOINs verwendet werden.",
+      "Indizes machen keinen Unterschied bei modernen Datenbanken."
+    ],
+    correct: 2,
+    feedback: "Richtig! Indizes helfen vor allem bei WHERE-Filtern und JOIN-Verknüpfungen. Zu viele Indizes können aber INSERT/UPDATE verlangsamen, da die Datenbank alle Indizes aktualisieren muss."
+  }
+},
+
+// ─── 11: PROJEKT SCHULDATENBANK ───────────────────────────────────────────
+{
+  tag: "🎯 Praxisprojekt 1",
+  title: "Projekt: <span>Schuldatenbank</span>",
+  time: "~60–90 Min",
+  content: `
+    <div class="section">
+      <h2>🏫 Dein erstes vollständiges Datenbankprojekt</h2>
+      <p>Du wendest jetzt alles an, was du gelernt hast. Das Ergebnis ist eine vollständige, professionell strukturierte Datenbank für eine Schule – mit mehreren verknüpften Tabellen und realistischen Abfragen.</p>
+    </div>
+  `,
+  task: {
+    title: "📚 Vollständige Schuldatenbank bauen",
+    desc: "Erstelle ein neues SQL-Skript <code class='inline'>schuldatenbank.sql</code> und baue die Datenbank Schritt für Schritt auf.",
+    steps: [
+      "<strong>Datenbank & Tabellen erstellen:</strong> Erstelle die Datenbank <code class='inline'>schule_komplett</code>. Erstelle dann 4 Tabellen: <code class='inline'>lehrer</code> (id, name, fach, gehalt), <code class='inline'>klassen</code> (id, name, lehrer_id als FK), <code class='inline'>schueler</code> (id, vorname, nachname, geburtsdatum, klassen_id als FK), <code class='inline'>noten</code> (id, schueler_id als FK, fach, note, datum).",
+      "<strong>Testdaten einfügen:</strong> Füge mindestens 3 Lehrer, 4 Klassen, 12 Schüler (3 pro Klasse) und 24 Noteneinträge (je 2 pro Schüler) ein.",
+      "<strong>Abfrage 1:</strong> Zeige alle Schüler mit vollständigem Namen (vorname + ' ' + nachname), ihrer Klasse und dem Namen des Klassenlehrers. Nutze INNER JOIN.",
+      "<strong>Abfrage 2:</strong> Berechne den Notendurchschnitt pro Schüler. Sortiere nach bestem Durchschnitt zuerst. Zeige nur Schüler mit Durchschnitt besser als 3.0.",
+      "<strong>Abfrage 3:</strong> Zeige die Durchschnittsnote pro Klasse und pro Fach. Nutze GROUP BY mit zwei Spalten.",
+      "<strong>Bonus:</strong> Füge einen Index auf <code class='inline'>schueler.klassen_id</code> hinzu und erkläre mit einem Kommentar warum dieser Index Sinn macht."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Musterlösung</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button><span class="kw">CREATE DATABASE IF NOT EXISTS</span> <span class="tbl">schule_komplett</span><span class="op">;</span>
+<span class="kw">USE</span> <span class="tbl">schule_komplett</span><span class="op">;</span>
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">lehrer</span> <span class="op">(</span>
+    <span class="col">id</span>      <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">name</span>    <span class="type">VARCHAR</span><span class="op">(</span><span class="num">80</span><span class="op">)</span> <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">fach</span>    <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">),</span>
+    <span class="col">gehalt</span>  <span class="type">DECIMAL</span><span class="op">(</span><span class="num">8</span><span class="op">,</span><span class="num">2</span><span class="op">)</span>
+<span class="op">);</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">klassen</span> <span class="op">(</span>
+    <span class="col">id</span>         <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">name</span>       <span class="type">VARCHAR</span><span class="op">(</span><span class="num">10</span><span class="op">)</span> <span class="kw2">UNIQUE</span><span class="op">,</span>
+    <span class="col">lehrer_id</span>  <span class="type">INT</span><span class="op">,</span>
+    <span class="kw2">FOREIGN KEY</span> <span class="op">(</span><span class="col">lehrer_id</span><span class="op">)</span> <span class="kw2">REFERENCES</span> <span class="tbl">lehrer</span><span class="op">(</span><span class="col">id</span><span class="op">)</span>
+<span class="op">);</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">schueler</span> <span class="op">(</span>
+    <span class="col">id</span>           <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">vorname</span>      <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">)</span> <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">nachname</span>     <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">)</span> <span class="kw2">NOT NULL</span><span class="op">,</span>
+    <span class="col">geburtsdatum</span> <span class="type">DATE</span><span class="op">,</span>
+    <span class="col">klassen_id</span>   <span class="type">INT</span><span class="op">,</span>
+    <span class="kw2">FOREIGN KEY</span> <span class="op">(</span><span class="col">klassen_id</span><span class="op">)</span> <span class="kw2">REFERENCES</span> <span class="tbl">klassen</span><span class="op">(</span><span class="col">id</span><span class="op">)</span>
+<span class="op">);</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">noten</span> <span class="op">(</span>
+    <span class="col">id</span>          <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span>
+    <span class="col">schueler_id</span> <span class="type">INT</span><span class="op">,</span>
+    <span class="col">fach</span>        <span class="type">VARCHAR</span><span class="op">(</span><span class="num">50</span><span class="op">),</span>
+    <span class="col">note</span>        <span class="type">DECIMAL</span><span class="op">(</span><span class="num">3</span><span class="op">,</span><span class="num">1</span><span class="op">),</span>
+    <span class="col">datum</span>       <span class="type">DATE</span><span class="op">,</span>
+    <span class="kw2">FOREIGN KEY</span> <span class="op">(</span><span class="col">schueler_id</span><span class="op">)</span> <span class="kw2">REFERENCES</span> <span class="tbl">schueler</span><span class="op">(</span><span class="col">id</span><span class="op">)</span>
+<span class="op">);</span>
+
+<span class="cmt">-- Abfrage 1: Schüler + Klasse + Lehrer</span>
+<span class="kw">SELECT</span>
+    <span class="fn">CONCAT</span><span class="op">(</span><span class="tbl">s</span><span class="op">.</span><span class="col">vorname</span><span class="op">,</span> <span class="str">' '</span><span class="op">,</span> <span class="tbl">s</span><span class="op">.</span><span class="col">nachname</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Schüler'</span><span class="op">,</span>
+    <span class="tbl">k</span><span class="op">.</span><span class="col">name</span>  <span class="kw2">AS</span> <span class="str">'Klasse'</span><span class="op">,</span>
+    <span class="tbl">l</span><span class="op">.</span><span class="col">name</span>  <span class="kw2">AS</span> <span class="str">'Klassenlehrer'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span> <span class="tbl">s</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">klassen</span> <span class="tbl">k</span> <span class="kw2">ON</span> <span class="tbl">s</span><span class="op">.</span><span class="col">klassen_id</span> <span class="op">=</span> <span class="tbl">k</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">lehrer</span>  <span class="tbl">l</span> <span class="kw2">ON</span> <span class="tbl">k</span><span class="op">.</span><span class="col">lehrer_id</span>  <span class="op">=</span> <span class="tbl">l</span><span class="op">.</span><span class="col">id</span><span class="op">;</span>
+
+<span class="cmt">-- Abfrage 2: Notendurchschnitt pro Schüler</span>
+<span class="kw">SELECT</span>
+    <span class="fn">CONCAT</span><span class="op">(</span><span class="tbl">s</span><span class="op">.</span><span class="col">vorname</span><span class="op">,</span> <span class="str">' '</span><span class="op">,</span> <span class="tbl">s</span><span class="op">.</span><span class="col">nachname</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Schüler'</span><span class="op">,</span>
+    <span class="fn">ROUND</span><span class="op">(</span><span class="fn">AVG</span><span class="op">(</span><span class="tbl">n</span><span class="op">.</span><span class="col">note</span><span class="op">),</span> <span class="num">2</span><span class="op">)</span>  <span class="kw2">AS</span> <span class="str">'Ø Note'</span>
+<span class="kw2">FROM</span> <span class="tbl">schueler</span> <span class="tbl">s</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">noten</span> <span class="tbl">n</span> <span class="kw2">ON</span> <span class="tbl">s</span><span class="op">.</span><span class="col">id</span> <span class="op">=</span> <span class="tbl">n</span><span class="op">.</span><span class="col">schueler_id</span>
+<span class="kw2">GROUP BY</span> <span class="tbl">s</span><span class="op">.</span><span class="col">id</span><span class="op">,</span> <span class="tbl">s</span><span class="op">.</span><span class="col">vorname</span><span class="op">,</span> <span class="tbl">s</span><span class="op">.</span><span class="col">nachname</span>
+<span class="kw2">HAVING</span> <span class="fn">AVG</span><span class="op">(</span><span class="tbl">n</span><span class="op">.</span><span class="col">note</span><span class="op">)</span> <span class="op">&lt;</span> <span class="num">3.0</span>
+<span class="kw2">ORDER BY</span> <span class="str">'Ø Note'</span> <span class="kw2">ASC</span><span class="op">;</span>
+
+<span class="cmt">-- Index auf Fremdschlüssel – beschleunigt JOINs:</span>
+<span class="kw">CREATE INDEX</span> <span class="col">idx_schueler_klasse</span> <span class="kw2">ON</span> <span class="tbl">schueler</span><span class="op">(</span><span class="col">klassen_id</span><span class="op">);</span></pre>
+    </div>
+  `
+},
+
+// ─── 12: PROJEKT ONLINESHOP ───────────────────────────────────────────────
+{
+  tag: "🎯 Praxisprojekt 2",
+  title: "Projekt: <span>Onlineshop-DB</span>",
+  time: "~60–90 Min",
+  content: `
+    <div class="section">
+      <h2>🛒 Ein realistisches Geschäftsprojekt</h2>
+      <p>Jetzt baust du eine Datenbank, die einem echten Onlineshop ähnelt – mit Kunden, Produkten, Bestellungen und Rechnungen. Genau solche Strukturen findest du in realen Unternehmen.</p>
+    </div>
+  `,
+  task: {
+    title: "🏪 Onlineshop-Datenbank",
+    desc: "Erstelle <code class='inline'>onlineshop.sql</code> – eine vollständige Datenbank für einen fiktiven Onlineshop.",
+    steps: [
+      "<strong>Tabellen planen & erstellen:</strong> <code class='inline'>kunden</code> (id, vorname, nachname, email UNIQUE, registriert_am), <code class='inline'>kategorien</code> (id, name), <code class='inline'>produkte</code> (id, name, preis DECIMAL(10,2), lagerbestand INT, kategorie_id FK), <code class='inline'>bestellungen</code> (id, kunden_id FK, datum, status VARCHAR(20)), <code class='inline'>bestellpositionen</code> (id, bestell_id FK, produkt_id FK, menge, einzelpreis).",
+      "<strong>Testdaten einfügen:</strong> Mindestens 5 Kunden, 3 Kategorien, 8 Produkte, 6 Bestellungen und passende Bestellpositionen.",
+      "<strong>Umsatz-Report:</strong> Erstelle eine Abfrage, die den Gesamtumsatz pro Kunde zeigt (Summe aus menge × einzelpreis), sortiert nach höchstem Umsatz. Nutze JOINs über alle Tabellen.",
+      "<strong>Lager-Check:</strong> Zeige alle Produkte mit einem Lagerbestand unter 5 Stück an, sortiert nach Kategorie.",
+      "<strong>Bestellübersicht:</strong> Zeige für jede Bestellung: Bestellnummer, Kundenname, Datum, Anzahl der Positionen und Bestellwert gesamt.",
+      "<strong>Bonus UPDATE:</strong> Schreibe ein UPDATE, das den Lagerbestand aller Produkte der Kategorie 'Elektronik' um 10 erhöht. Nutze zuerst SELECT zum Prüfen, dann UPDATE."
+    ]
+  },
+  solution: `
+    <div class="section">
+      <h2>💡 Schlüssel-Abfragen Musterlösung</h2>
+      <pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">kopieren</button"><span class="cmt">-- Umsatz pro Kunde (JOINs über alle Tabellen):</span>
+<span class="kw">SELECT</span>
+    <span class="fn">CONCAT</span><span class="op">(</span><span class="tbl">k</span><span class="op">.</span><span class="col">vorname</span><span class="op">,</span> <span class="str">' '</span><span class="op">,</span> <span class="tbl">k</span><span class="op">.</span><span class="col">nachname</span><span class="op">)</span> <span class="kw2">AS</span> <span class="str">'Kunde'</span><span class="op">,</span>
+    <span class="fn">COUNT</span><span class="op">(</span><span class="kw2">DISTINCT</span> <span class="tbl">b</span><span class="op">.</span><span class="col">id</span><span class="op">)</span>               <span class="kw2">AS</span> <span class="str">'Bestellungen'</span><span class="op">,</span>
+    <span class="fn">SUM</span><span class="op">(</span><span class="tbl">bp</span><span class="op">.</span><span class="col">menge</span> <span class="op">*</span> <span class="tbl">bp</span><span class="op">.</span><span class="col">einzelpreis</span><span class="op">)</span>     <span class="kw2">AS</span> <span class="str">'Gesamtumsatz (€)'</span>
+<span class="kw2">FROM</span> <span class="tbl">kunden</span> <span class="tbl">k</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">bestellungen</span>   <span class="tbl">b</span>  <span class="kw2">ON</span> <span class="tbl">k</span><span class="op">.</span><span class="col">id</span>          <span class="op">=</span> <span class="tbl">b</span><span class="op">.</span><span class="col">kunden_id</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">bestellpositionen</span> <span class="tbl">bp</span> <span class="kw2">ON</span> <span class="tbl">b</span><span class="op">.</span><span class="col">id</span>  <span class="op">=</span> <span class="tbl">bp</span><span class="op">.</span><span class="col">bestell_id</span>
+<span class="kw2">GROUP BY</span> <span class="tbl">k</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">ORDER BY</span> <span class="fn">SUM</span><span class="op">(</span><span class="tbl">bp</span><span class="op">.</span><span class="col">menge</span> <span class="op">*</span> <span class="tbl">bp</span><span class="op">.</span><span class="col">einzelpreis</span><span class="op">)</span> <span class="kw2">DESC</span><span class="op">;</span>
+
+<span class="cmt">-- Produkte mit niedrigem Lagerbestand:</span>
+<span class="kw">SELECT</span>
+    <span class="tbl">p</span><span class="op">.</span><span class="col">name</span>           <span class="kw2">AS</span> <span class="str">'Produkt'</span><span class="op">,</span>
+    <span class="tbl">c</span><span class="op">.</span><span class="col">name</span>           <span class="kw2">AS</span> <span class="str">'Kategorie'</span><span class="op">,</span>
+    <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span>
+<span class="kw2">FROM</span> <span class="tbl">produkte</span> <span class="tbl">p</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">kategorien</span> <span class="tbl">c</span> <span class="kw2">ON</span> <span class="tbl">p</span><span class="op">.</span><span class="col">kategorie_id</span> <span class="op">=</span> <span class="tbl">c</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">WHERE</span> <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span> <span class="op">&lt;</span> <span class="num">5</span>
+<span class="kw2">ORDER BY</span> <span class="tbl">c</span><span class="op">.</span><span class="col">name</span><span class="op">,</span> <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span><span class="op">;</span>
+
+<span class="cmt">-- Lager-Update für Elektronik:</span>
+<span class="kw">SELECT</span> <span class="tbl">p</span><span class="op">.</span><span class="col">name</span><span class="op">,</span> <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span>
+<span class="kw2">FROM</span> <span class="tbl">produkte</span> <span class="tbl">p</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">kategorien</span> <span class="tbl">c</span> <span class="kw2">ON</span> <span class="tbl">p</span><span class="op">.</span><span class="col">kategorie_id</span> <span class="op">=</span> <span class="tbl">c</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">WHERE</span> <span class="tbl">c</span><span class="op">.</span><span class="col">name</span> <span class="op">=</span> <span class="str">'Elektronik'</span><span class="op">;</span>   <span class="cmt">-- erst prüfen!</span>
+
+<span class="kw">UPDATE</span> <span class="tbl">produkte</span> <span class="tbl">p</span>
+<span class="kw2">INNER JOIN</span> <span class="tbl">kategorien</span> <span class="tbl">c</span> <span class="kw2">ON</span> <span class="tbl">p</span><span class="op">.</span><span class="col">kategorie_id</span> <span class="op">=</span> <span class="tbl">c</span><span class="op">.</span><span class="col">id</span>
+<span class="kw2">SET</span> <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span> <span class="op">=</span> <span class="tbl">p</span><span class="op">.</span><span class="col">lagerbestand</span> <span class="op">+</span> <span class="num">10</span>
+<span class="kw2">WHERE</span> <span class="tbl">c</span><span class="op">.</span><span class="col">name</span> <span class="op">=</span> <span class="str">'Elektronik'</span><span class="op">;</span></pre>
+    </div>
+  `
+},
+
+// ─── 13: CHEATSHEET ───────────────────────────────────────────────────────
+{
+  tag: "Lektion 14",
+  title: "SQL <span>Cheatsheet</span> & nächste Schritte",
+  time: "Referenz",
+  content: `
+    <div class="section">
+      <h2>📋 Das komplette SQL-Cheatsheet</h2>
+      <div class="code-wrap">
+        <span class="code-label">DATENBANK</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="kw">CREATE DATABASE</span> <span class="tbl">name</span><span class="op">;</span>    <span class="kw">USE</span> <span class="tbl">name</span><span class="op">;</span>    <span class="kw">DROP DATABASE</span> <span class="tbl">name</span><span class="op">;</span></pre>
+      </div>
+      <div class="code-wrap">
+        <span class="code-label">TABELLEN</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="kw">CREATE TABLE</span> <span class="tbl">t</span> <span class="op">(</span><span class="col">id</span> <span class="type">INT</span> <span class="kw2">PRIMARY KEY</span> <span class="kw2">AUTO_INCREMENT</span><span class="op">,</span> <span class="col">spalte</span> <span class="type">VARCHAR</span><span class="op">(</span><span class="num">100</span><span class="op">)</span> <span class="kw2">NOT NULL</span><span class="op">);</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">t</span> <span class="kw2">ADD</span> <span class="col">spalte</span> <span class="type">INT</span><span class="op">;</span>    <span class="kw">DROP TABLE</span> <span class="tbl">t</span><span class="op">;</span></pre>
+      </div>
+      <div class="code-wrap">
+        <span class="code-label">DATEN EINFÜGEN / ÄNDERN / LÖSCHEN</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="kw">INSERT INTO</span> <span class="tbl">t</span> <span class="op">(</span><span class="col">a</span><span class="op">,</span><span class="col">b</span><span class="op">)</span> <span class="kw2">VALUES</span> <span class="op">(</span><span class="str">'x'</span><span class="op">,</span><span class="num">1</span><span class="op">);</span>
+<span class="kw">UPDATE</span> <span class="tbl">t</span> <span class="kw2">SET</span> <span class="col">a</span><span class="op">=</span><span class="str">'y'</span> <span class="kw2">WHERE</span> <span class="col">id</span><span class="op">=</span><span class="num">1</span><span class="op">;</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">t</span> <span class="kw2">WHERE</span> <span class="col">id</span><span class="op">=</span><span class="num">1</span><span class="op">;</span>    <span class="kw">TRUNCATE TABLE</span> <span class="tbl">t</span><span class="op">;</span></pre>
+      </div>
+      <div class="code-wrap">
+        <span class="code-label">SELECT – VOLLSTÄNDIGE REIHENFOLGE</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="kw">SELECT</span>   <span class="col">spalten</span> / <span class="op">*</span> / <span class="fn">AGGREGAT</span><span class="op">(</span><span class="col">spalte</span><span class="op">)</span>
+<span class="kw2">FROM</span>     <span class="tbl">tabelle</span>
+<span class="kw2">JOIN</span>     <span class="tbl">andere_tabelle</span> <span class="kw2">ON</span> <span class="tbl">t1</span><span class="op">.</span><span class="col">id</span> <span class="op">=</span> <span class="tbl">t2</span><span class="op">.</span><span class="col">t1_id</span>
+<span class="kw2">WHERE</span>    <span class="col">bedingung</span>
+<span class="kw2">GROUP BY</span> <span class="col">spalte</span>
+<span class="kw2">HAVING</span>   <span class="col">gruppen_bedingung</span>
+<span class="kw2">ORDER BY</span> <span class="col">spalte</span> <span class="kw2">ASC</span><span class="op">|</span><span class="kw2">DESC</span>
+<span class="kw2">LIMIT</span>    <span class="num">n</span><span class="op">;</span>   <span class="cmt">-- MySQL  |  TOP n nach SELECT in SSMS</span></pre>
+      </div>
+      <div class="code-wrap">
+        <span class="code-label">WICHTIGE UNTERSCHIEDE: MySQL vs. SSMS / T-SQL</span>
+        <button class="copy-btn" onclick="copyCode(this)">kopieren</button>
+        <pre class="code-block has-label"><span class="cmt">Feature           MySQL                    SSMS / T-SQL</span>
+<span class="cmt">─────────────────────────────────────────────────────────</span>
+<span class="cmt">Auto-ID           AUTO_INCREMENT           IDENTITY(1,1)</span>
+<span class="cmt">Ergebnisse begr.  LIMIT n                  TOP n (nach SELECT)</span>
+<span class="cmt">Text-Typ          VARCHAR(n)               NVARCHAR(n)</span>
+<span class="cmt">Transaktion       START TRANSACTION         BEGIN TRANSACTION</span>
+<span class="cmt">Aktuelles Datum   NOW()                    GETDATE()</span>
+<span class="cmt">Text verbinden    CONCAT(a,b)              a + b  oder CONCAT(a,b)</span>
+<span class="cmt">DB wechseln       USE name                 USE name  (gleich!)</span></pre>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🚀 Nächste Schritte auf deinem SQL-Weg</h2>
+      <table class="info-table">
+        <tr><th>Thema</th><th>Was du lernst</th><th>Niveau</th></tr>
+        <tr><td><strong>Views</strong></td><td>Virtuelle Tabellen aus gespeicherten Abfragen</td><td>⭐⭐</td></tr>
+        <tr><td><strong>Stored Procedures</strong></td><td>Wiederverwendbare SQL-Programme mit Parametern</td><td>⭐⭐⭐</td></tr>
+        <tr><td><strong>Triggers</strong></td><td>Automatische Aktionen bei INSERT/UPDATE/DELETE</td><td>⭐⭐⭐</td></tr>
+        <tr><td><strong>Window Functions</strong></td><td>ROW_NUMBER(), RANK(), LAG() – Ranking & Vergleiche</td><td>⭐⭐⭐</td></tr>
+        <tr><td><strong>CTEs (WITH)</strong></td><td>Komplexe Abfragen lesbar strukturieren</td><td>⭐⭐⭐</td></tr>
+        <tr><td><strong>Python + SQL</strong></td><td>Datenbanken aus Python heraus ansprechen (pyodbc, mysql-connector)</td><td>⭐⭐⭐</td></tr>
+      </table>
+      <div class="highlight-box green">
+        ✅ <strong>Glückwunsch!</strong> Du hast die wichtigsten SQL-Konzepte gelernt – von der ersten Datenbank bis zu JOINs und Projekten. Die beste Übung: Baue deine eigene Datenbank für ein Thema, das dich interessiert!
+      </div>
+    </div>
+  `,
+  quiz: {
+    question: "Was ist die richtige Reihenfolge der SQL-Klauseln in einer SELECT-Abfrage?",
+    options: [
+      "FROM → SELECT → WHERE → GROUP BY → HAVING → ORDER BY",
+      "SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT",
+      "SELECT → WHERE → FROM → GROUP BY → ORDER BY",
+      "FROM → WHERE → SELECT → ORDER BY → GROUP BY"
+    ],
+    correct: 1,
+    feedback: "Perfekt! Die Reihenfolge ist: SELECT → FROM → JOIN → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT. Diese Reihenfolge muss immer eingehalten werden – SQL gibt sonst einen Syntax-Fehler."
+  }
+}
+
+];
+
+// ─── JS ENGINE ────────────────────────────────────────────────────────────
+let completed = new Set();
+let currentLesson = 0;
+
+function copyCode(btn) {
+  const block = btn.closest('.code-wrap') || btn.parentElement;
+  const pre = block.querySelector('pre') || btn.parentElement;
+  // Get text, remove button text
+  let text = pre.innerText || pre.textContent;
+  text = text.replace(/^kopieren\n?/, '').replace(/^✓ kopiert\n?/, '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ kopiert';
+    setTimeout(() => btn.textContent = 'kopieren', 2000);
+  });
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.size / lessons.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    completed.size + ' von ' + lessons.length + ' Lektionen abgeschlossen';
+}
+
+function goTo(index) {
+  currentLesson = index;
+  renderLesson(index);
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  window.scrollTo(0, 0);
+}
+
+function renderLesson(index) {
+  const l = lessons[index];
+  let html = `
+    <div class="lesson-header">
+      <div class="lesson-tag">⟐ ${l.tag}</div>
+      <h1 class="lesson-title">${l.title}</h1>
+      <div class="lesson-meta">
+        <span class="meta-pill">⏱ ${l.time}</span>
+        <span style="color:var(--muted)">Lektion ${index + 1} / ${lessons.length}</span>
+      </div>
+    </div>
+    ${l.content}
+  `;
+
+  if (l.task) {
+    html += `
+      <div class="task-box">
+        <h3>${l.task.title}</h3>
+        <p style="font-size:14px;color:var(--muted);margin:8px 0 4px;line-height:1.7;">${l.task.desc}</p>
+        <ol class="task-steps">
+          ${l.task.steps.map((s, i) => `<li data-n="${i+1}">${s}</li>`).join('')}
+        </ol>
+      </div>
+    `;
+  }
+
+  if (l.solution) {
+    html += `
+      <details style="margin-bottom:22px;">
+        <summary>💡 Musterlösung anzeigen (erst selbst probieren!)</summary>
+        ${l.solution}
+      </details>
+    `;
+  }
+
+  if (l.quiz) {
+    const opts = ['A', 'B', 'C', 'D'];
+    html += `
+      <div class="quiz-box">
+        <p class="quiz-question">${l.quiz.question}</p>
+        <div class="quiz-options">
+          ${l.quiz.options.map((opt, i) => `
+            <button class="quiz-option" data-opt="${opts[i]}"
+              onclick="checkQuiz(this, ${i}, ${l.quiz.correct}, ${index})">${opt}</button>
+          `).join('')}
+        </div>
+        <div class="quiz-feedback" id="qf-${index}"></div>
+      </div>
+    `;
+  }
+
+  html += `<div class="nav-buttons">`;
+  if (index > 0) {
+    html += `<button class="btn btn-secondary" onclick="goTo(${index - 1})">← Zurück</button>`;
+  } else {
+    html += `<span></span>`;
+  }
+  if (index < lessons.length - 1) {
+    html += `<button class="btn btn-primary" onclick="markAndNext(${index})">Weiter →</button>`;
+  } else {
+    html += `<button class="btn btn-primary" onclick="markDone(${index})">🎓 Kurs abschließen!</button>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('lessonContent').innerHTML = html;
+}
+
+function checkQuiz(btn, chosen, correct, idx) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-option');
+  opts.forEach(o => o.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById('qf-' + idx);
+    fb.className = 'quiz-feedback show ok';
+    fb.innerHTML = '✅ ' + lessons[idx].quiz.feedback;
+  } else {
+    btn.classList.add('wrong');
+    opts[correct].classList.add('correct');
+    const fb = document.getElementById('qf-' + idx);
+    fb.className = 'quiz-feedback show fail';
+    fb.innerHTML = '❌ Nicht ganz. Richtige Antwort: ' + lessons[idx].quiz.options[correct];
+  }
+}
+
+function markAndNext(index) {
+  completed.add(index);
+  document.querySelectorAll('.nav-item')[index].classList.add('completed');
+  updateProgress();
+  goTo(index + 1);
+}
+
+function markDone(index) {
+  completed.add(index);
+  document.querySelectorAll('.nav-item')[index].classList.add('completed');
+  updateProgress();
+  document.getElementById('lessonContent').innerHTML = `
+    <div style="text-align:center;padding:80px 40px;">
+      <div style="font-size:72px;margin-bottom:28px;filter:drop-shadow(0 0 30px var(--accent))">🗄️</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:46px;font-weight:800;color:#fff;letter-spacing:-2px;margin-bottom:16px;">
+        SQL gemeistert!
+      </h1>
+      <p style="font-size:17px;color:var(--muted);max-width:520px;margin:0 auto 36px;line-height:1.8;">
+        Du kannst jetzt Datenbanken erstellen, Daten abfragen, verknüpfen und auswerten.
+        Das ist eine der gefragtesten Fähigkeiten in der IT-Welt.
+      </p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;max-width:500px;margin:0 auto 32px;text-align:left;">
+        <p style="font-weight:700;color:var(--accent);margin-bottom:14px;font-family:'Syne',sans-serif;">🚀 Nächste Schritte:</p>
+        <p style="font-size:14px;color:var(--text);line-height:2;">
+          → <strong>Views & Stored Procedures</strong> bauen<br>
+          → <strong>Python + pyodbc / mysql-connector</strong> – SQL aus Python<br>
+          → <strong>Window Functions</strong> – RANK(), ROW_NUMBER()<br>
+          → <strong>Normalisierung</strong> – professionelles DB-Design<br>
+          → Echte Datenbank für dein nächstes Projekt bauen!
+        </p>
+      </div>
+      <button class="btn btn-secondary" onclick="goTo(0)">Von vorne beginnen</button>
+    </div>
+  `;
+}
+
+renderLesson(0);
+updateProgress();
+</script>
+</body>
+</html>
