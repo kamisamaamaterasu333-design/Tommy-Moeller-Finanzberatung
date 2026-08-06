@@ -315,6 +315,64 @@
       .sch-sidebar { position: static; max-height: none; }
       .sch-form-row { grid-template-columns: 1fr; }
     }
+
+    /* ══ VOLLBILD-MODUS FÜR EINE EINZELNE SCHULUNG ══ */
+    body.sch-fs-active {
+      overflow: hidden;
+    }
+
+    body.sch-fs-active .navbar,
+    body.sch-fs-active .page-header,
+    body.sch-fs-active .footer,
+    body.sch-fs-active .sch-sidebar,
+    body.sch-fs-active .sch-admin-toggle,
+    body.sch-fs-active .sch-admin-panel {
+      display: none !important;
+    }
+
+    body.sch-fs-active .section { padding: 0; }
+    body.sch-fs-active .container { max-width: none; padding: 0; margin: 0; }
+    body.sch-fs-active .sch-layout { display: block; gap: 0; }
+
+    .sch-main.sch-fs-main {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      border: none;
+      border-radius: 0;
+      min-height: 100vh;
+      height: 100vh;
+    }
+
+    .sch-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 7px;
+      border: 1px solid var(--border, #333);
+      background: transparent;
+      color: var(--text-dim, #ccc);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .sch-back-btn:hover {
+      border-color: var(--gold, #c9a84c);
+      color: var(--gold, #c9a84c);
+    }
+
+    .sch-fs-main .sch-main-header {
+      gap: 12px;
+    }
+
+    .sch-fs-main .sch-frame-wrap iframe {
+      min-height: 0;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
@@ -455,6 +513,12 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('sch-fs-active')) {
+        closeFullscreen();
+      }
+    });
+
     let currentUser = null;
     let currentLektionId = null;
     let fortschrittMap = {};       // lektion_id -> abgeschlossen (bool)
@@ -594,6 +658,7 @@
 
       main.innerHTML = `
         <div class="sch-main-header">
+          <button class="sch-back-btn" id="schBackBtn">← Zurück zur Kursübersicht</button>
           <div class="sch-main-title">${escHtml(titel)}</div>
           <button class="sch-mark-btn ${isDone ? 'done' : ''}" id="schMarkBtn">
             ${isDone ? '✓ Abgeschlossen' : 'Als abgeschlossen markieren'}
@@ -608,6 +673,29 @@
         const cb = document.querySelector(`.sch-checkbox[data-lektion-id="${lektionId}"]`);
         toggleFortschritt(lektionId, cb);
       });
+
+      document.getElementById('schBackBtn').addEventListener('click', closeFullscreen);
+
+      // Vollbildmodus aktivieren: nur der Kurs ist sichtbar
+      document.body.classList.add('sch-fs-active');
+      main.classList.add('sch-fs-main');
+    }
+
+    /* ═══ VOLLBILD VERLASSEN → zurück zur Kursübersicht ═══ */
+    function closeFullscreen() {
+      document.body.classList.remove('sch-fs-active');
+      const main = document.getElementById('schMain');
+      main.classList.remove('sch-fs-main');
+      currentLektionId = null;
+
+      document.querySelectorAll('.sch-lektion').forEach(el => el.classList.remove('active'));
+
+      main.innerHTML = `
+        <div class="sch-empty">
+          <div class="sch-empty-icon">📚</div>
+          <div>Wählen Sie links eine Lektion aus, um zu starten.</div>
+        </div>
+      `;
     }
 
     /* ═══ FORTSCHRITT TOGGLE ═══ */
