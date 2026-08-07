@@ -819,7 +819,8 @@
         </div>
       </div>
       <div class="info-box purple">
-                <span>Im Controlling-Kontext: RAG könnte interne Richtlinien, Kreditrichtlinien oder regulatorische Dokumente abrufbar machen – und ein LLM stellt dann fundierte Fragen dazu, ohne das Modell neu trainieren zu müssen.</span>
+        <span class="icon">🏦</span>
+        <span>Im Controlling-Kontext (SKP): RAG könnte interne Richtlinien, Kreditrichtlinien oder regulatorische Dokumente abrufbar machen – und ein LLM stellt dann fundierte Fragen dazu, ohne das Modell neu trainieren zu müssen.</span>
       </div>
     </div>
   </div>
