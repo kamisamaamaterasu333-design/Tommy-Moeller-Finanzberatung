@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Redirect: KI Lernmodul</title>
+</head>
+<body>
+  <script>
+    // Lade die vorhandene Datei ohne Erweiterung und ersetze das Dokument dadurch.
+    fetch('./ki-lernmodul')
+      .then(function(response){ return response.text(); })
+      .then(function(html){ document.open(); document.write(html); document.close(); })
+      .catch(function(){ /* Falls das Laden fehlschlägt, zeigen wir einen Link an. */
+        var p = document.createElement('p');
+        p.textContent = 'Kann das Lernmodul nicht laden. Klicken Sie hier: ';
+        var a = document.createElement('a');
+        a.href = './ki-lernmodul';
+        a.textContent = 'ki-lernmodul';
+        p.appendChild(a);
+        document.body.appendChild(p);
+      });
+  </script>
+  <noscript>
+    <p>JavaScript ist deaktiviert. Bitte öffnen Sie die Datei direkt: <a href="./ki-lernmodul">ki-lernmodul</a></p>
+  </noscript>
+</body>
+</html>
