@@ -309,6 +309,32 @@
 
     .sch-icon-btn:hover { border-color: var(--gold, #c9a84c); color: var(--gold, #c9a84c); }
     .sch-icon-btn.danger:hover { border-color: #ef4444; color: #fca5a5; }
+    .sch-icon-btn:disabled { opacity: 0.3; cursor: default; }
+    .sch-icon-btn:disabled:hover { border-color: var(--border, #444); color: var(--text-dim, #ccc); }
+
+    .sch-edit-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .sch-edit-row input,
+    .sch-edit-row textarea {
+      background: #0e0e0e;
+      border: 1px solid var(--gold, #c9a84c);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--bright, #fff);
+      font-size: 12.5px;
+      font-family: var(--font-sans, 'DM Sans', sans-serif);
+      outline: none;
+    }
+
+    .sch-edit-row .sch-edit-titel { flex: 1 1 160px; }
+    .sch-edit-row .sch-edit-pfad { flex: 2 1 220px; font-family: 'DM Mono', monospace; }
+    .sch-edit-row .sch-edit-beschreibung { flex: 1 1 100%; }
+    .sch-edit-row .sch-edit-reihenfolge { width: 60px; flex: 0 0 auto; }
 
     @media (max-width: 860px) {
       .sch-layout { grid-template-columns: 1fr; }
@@ -523,6 +549,8 @@
     let currentLektionId = null;
     let fortschrittMap = {};       // lektion_id -> abgeschlossen (bool)
     let schulungenCache = [];      // zuletzt geladene Schulungen+Lektionen, für Admin-Liste & Dropdown
+    let editingSchulungId = null;  // welche Schulung gerade im Bearbeiten-Modus ist
+    let editingLektionId = null;   // welche Lektion gerade im Bearbeiten-Modus ist
 
     /* ═══ INIT ═══ */
     async function initSchulungen() {
@@ -823,22 +851,60 @@
         return;
       }
 
-      list.innerHTML = schulungenCache
-        .slice()
-        .sort((a, b) => a.reihenfolge - b.reihenfolge)
-        .map(s => {
+      const sortedSchulungen = schulungenCache.slice().sort((a, b) => a.reihenfolge - b.reihenfolge);
+
+      list.innerHTML = sortedSchulungen
+        .map((s, sIdx) => {
           const lektionen = (s.lektionen || []).slice().sort((a, b) => a.reihenfolge - b.reihenfolge);
-          const lektionenHtml = lektionen.map(l => `
-            <div class="sch-admin-list-item" style="margin-left:18px">
-              <div>
-                <div>${escHtml(l.titel)}</div>
-                <div class="sch-path">${escHtml(l.storage_pfad)}</div>
+
+          const lektionenHtml = lektionen.map((l, lIdx) => {
+            if (editingLektionId === l.id) {
+              return `
+                <div class="sch-admin-list-item" style="margin-left:18px;background:rgba(201,168,76,0.06)">
+                  <div class="sch-edit-row">
+                    <input type="text" class="sch-edit-titel" id="editLektionTitel_${l.id}" value="${escHtml(l.titel)}" placeholder="Titel">
+                    <input type="text" class="sch-edit-pfad" id="editLektionPfad_${l.id}" value="${escHtml(l.storage_pfad)}" placeholder="Pfad zur HTML-Datei">
+                  </div>
+                  <div class="sch-admin-list-actions">
+                    <button class="sch-icon-btn" title="Speichern" onclick="saveLektionEdit('${l.id}')">💾</button>
+                    <button class="sch-icon-btn" title="Abbrechen" onclick="cancelLektionEdit()">✕</button>
+                  </div>
+                </div>
+              `;
+            }
+            return `
+              <div class="sch-admin-list-item" style="margin-left:18px">
+                <div>
+                  <div>${escHtml(l.titel)}</div>
+                  <div class="sch-path">${escHtml(l.storage_pfad)}</div>
+                </div>
+                <div class="sch-admin-list-actions">
+                  <button class="sch-icon-btn" title="Nach oben" onclick="moveLektion('${l.id}', -1)" ${lIdx === 0 ? 'disabled' : ''}>▲</button>
+                  <button class="sch-icon-btn" title="Nach unten" onclick="moveLektion('${l.id}', 1)" ${lIdx === lektionen.length - 1 ? 'disabled' : ''}>▼</button>
+                  <button class="sch-icon-btn" title="Bearbeiten" onclick="editLektion('${l.id}')">✎</button>
+                  <button class="sch-icon-btn danger" title="Lektion löschen" onclick="deleteLektion('${l.id}')">🗑</button>
+                </div>
               </div>
-              <div class="sch-admin-list-actions">
-                <button class="sch-icon-btn danger" title="Lektion löschen" onclick="deleteLektion('${l.id}')">🗑</button>
+            `;
+          }).join('');
+
+          if (editingSchulungId === s.id) {
+            return `
+              <div style="margin-bottom:16px">
+                <div class="sch-admin-list-item" style="background:rgba(201,168,76,0.06)">
+                  <div class="sch-edit-row">
+                    <input type="text" class="sch-edit-titel" id="editSchulungTitel_${s.id}" value="${escHtml(s.titel)}" placeholder="Titel">
+                    <textarea class="sch-edit-beschreibung" id="editSchulungBeschreibung_${s.id}" rows="2" placeholder="Beschreibung">${escHtml(s.beschreibung || '')}</textarea>
+                  </div>
+                  <div class="sch-admin-list-actions">
+                    <button class="sch-icon-btn" title="Speichern" onclick="saveSchulungEdit('${s.id}')">💾</button>
+                    <button class="sch-icon-btn" title="Abbrechen" onclick="cancelSchulungEdit()">✕</button>
+                  </div>
+                </div>
+                ${lektionenHtml || '<div style="margin-left:18px;font-size:12px;color:var(--text-dim)">Noch keine Lektionen.</div>'}
               </div>
-            </div>
-          `).join('');
+            `;
+          }
 
           return `
             <div style="margin-bottom:16px">
@@ -848,6 +914,9 @@
                   <span style="margin-left:8px;font-size:11px;color:${s.aktiv ? '#86efac' : '#fca5a5'}">${s.aktiv ? '● aktiv' : '○ inaktiv'}</span>
                 </div>
                 <div class="sch-admin-list-actions">
+                  <button class="sch-icon-btn" title="Nach oben" onclick="moveSchulung('${s.id}', -1)" ${sIdx === 0 ? 'disabled' : ''}>▲</button>
+                  <button class="sch-icon-btn" title="Nach unten" onclick="moveSchulung('${s.id}', 1)" ${sIdx === sortedSchulungen.length - 1 ? 'disabled' : ''}>▼</button>
+                  <button class="sch-icon-btn" title="Bearbeiten" onclick="editSchulung('${s.id}')">✎</button>
                   <button class="sch-icon-btn" title="${s.aktiv ? 'Deaktivieren' : 'Aktivieren'}" onclick="toggleSchulungAktiv('${s.id}', ${s.aktiv})">${s.aktiv ? '⏸' : '▶'}</button>
                   <button class="sch-icon-btn danger" title="Schulung löschen (inkl. aller Lektionen)" onclick="deleteSchulung('${s.id}')">🗑</button>
                 </div>
@@ -856,6 +925,128 @@
             </div>
           `;
         }).join('');
+    }
+
+    /* ═══ ADMIN: SCHULUNG BEARBEITEN (Titel/Beschreibung) ═══ */
+    function editSchulung(id) {
+      editingSchulungId = id;
+      editingLektionId = null;
+      renderAdminList();
+    }
+
+    function cancelSchulungEdit() {
+      editingSchulungId = null;
+      renderAdminList();
+    }
+
+    async function saveSchulungEdit(id) {
+      const titel = document.getElementById(`editSchulungTitel_${id}`).value.trim();
+      const beschreibung = document.getElementById(`editSchulungBeschreibung_${id}`).value.trim();
+
+      if (!titel) {
+        showToast('Bitte einen Titel eingeben.', 'error');
+        return;
+      }
+
+      const { error } = await sb.from('schulungen')
+        .update({ titel, beschreibung: beschreibung || null })
+        .eq('id', id);
+
+      if (error) {
+        showToast('Fehler beim Speichern.', 'error');
+        console.error(error);
+        return;
+      }
+
+      showToast('Schulung aktualisiert.', 'success');
+      editingSchulungId = null;
+      await loadSchulungen();
+    }
+
+    /* ═══ ADMIN: LEKTION BEARBEITEN (Titel/Pfad) ═══ */
+    function editLektion(id) {
+      editingLektionId = id;
+      editingSchulungId = null;
+      renderAdminList();
+    }
+
+    function cancelLektionEdit() {
+      editingLektionId = null;
+      renderAdminList();
+    }
+
+    async function saveLektionEdit(id) {
+      const titel = document.getElementById(`editLektionTitel_${id}`).value.trim();
+      const pfad = document.getElementById(`editLektionPfad_${id}`).value.trim();
+
+      if (!titel || !pfad) {
+        showToast('Bitte Titel und Pfad angeben.', 'error');
+        return;
+      }
+
+      const { error } = await sb.from('lektionen')
+        .update({ titel, storage_pfad: pfad })
+        .eq('id', id);
+
+      if (error) {
+        showToast('Fehler beim Speichern.', 'error');
+        console.error(error);
+        return;
+      }
+
+      showToast('Lektion aktualisiert.', 'success');
+      editingLektionId = null;
+      await loadSchulungen();
+    }
+
+    /* ═══ ADMIN: REIHENFOLGE ÄNDERN (Schulungen & Lektionen) ═══ */
+    async function moveSchulung(id, richtung) {
+      const sorted = schulungenCache.slice().sort((a, b) => a.reihenfolge - b.reihenfolge);
+      const idx = sorted.findIndex(s => s.id === id);
+      const zielIdx = idx + richtung;
+      if (idx === -1 || zielIdx < 0 || zielIdx >= sorted.length) return;
+
+      const a = sorted[idx];
+      const b = sorted[zielIdx];
+
+      const { error } = await sb.from('schulungen').upsert([
+        { id: a.id, reihenfolge: b.reihenfolge },
+        { id: b.id, reihenfolge: a.reihenfolge }
+      ]);
+
+      if (error) {
+        showToast('Fehler beim Ändern der Reihenfolge.', 'error');
+        console.error(error);
+        return;
+      }
+
+      await loadSchulungen();
+    }
+
+    async function moveLektion(id, richtung) {
+      const schulung = schulungenCache.find(s => (s.lektionen || []).some(l => l.id === id));
+      if (!schulung) return;
+
+      const sorted = (schulung.lektionen || []).slice().sort((a, b) => a.reihenfolge - b.reihenfolge);
+      const idx = sorted.findIndex(l => l.id === id);
+      const zielIdx = idx + richtung;
+      if (idx === -1 || zielIdx < 0 || zielIdx >= sorted.length) return;
+
+      const a = sorted[idx];
+      const b = sorted[zielIdx];
+
+      const { error } = await sb.from('lektionen').upsert([
+        { id: a.id, schulung_id: schulung.id, storage_pfad: a.storage_pfad, titel: a.titel, reihenfolge: b.reihenfolge },
+        { id: b.id, schulung_id: schulung.id, storage_pfad: b.storage_pfad, titel: b.titel, reihenfolge: a.reihenfolge }
+      ]);
+
+      if (error) {
+        showToast('Fehler beim Ändern der Reihenfolge.', 'error');
+        console.error(error);
+        return;
+      }
+
+      await loadSchulungen();
     }
 
     /* ═══ ADMIN: AKTIONEN (Aktivieren/Deaktivieren, Löschen) ═══ */
@@ -908,6 +1099,14 @@
     window.toggleSchulungAktiv = toggleSchulungAktiv;
     window.deleteSchulung = deleteSchulung;
     window.deleteLektion = deleteLektion;
+    window.editSchulung = editSchulung;
+    window.cancelSchulungEdit = cancelSchulungEdit;
+    window.saveSchulungEdit = saveSchulungEdit;
+    window.editLektion = editLektion;
+    window.cancelLektionEdit = cancelLektionEdit;
+    window.saveLektionEdit = saveLektionEdit;
+    window.moveSchulung = moveSchulung;
+    window.moveLektion = moveLektion;
 
     initSchulungen();
   </script>
