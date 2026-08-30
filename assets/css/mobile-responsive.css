@@ -1,0 +1,746 @@
+/* ═══════════════════════════════════════════════════════════════
+   mobile-responsive.css
+   Comprehensive mobile optimizations for:
+   - Versicherungsvergleich.html
+   - Produktempfehlungen.html
+   - immobilien-rechner.html
+   - etf-rechner.html
+   - Finanz_Analyse.html (enhancements)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────
+   VERSICHERUNGSVERGLEICH - Mobile Optimizations
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Wizard card padding */
+  .wizard-inner {
+    padding: 24px 18px !important;
+  }
+
+  /* Step questions responsive */
+  .step-q {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+
+  /* Options grid - 2 columns on tablet, 1 on mobile */
+  .options {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+
+  @media (max-width: 500px) {
+    .options {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .opt {
+      padding: 12px 10px;
+    }
+
+    .opt-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .opt-label {
+      font-size: 12px;
+    }
+
+    .opt-sub {
+      font-size: 10px;
+    }
+  }
+
+  /* Chips - wrap better on mobile */
+  .chips {
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* Navigation buttons */
+  .quiz-nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-next,
+  .btn-back {
+    width: 100%;
+  }
+
+  /* Results section */
+  .results-header {
+    padding: 24px 18px 0 !important;
+  }
+
+  .prio-section {
+    padding: 0 18px 24px !important;
+  }
+
+  .ins-card {
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .ins-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ins-icon {
+    font-size: 20px;
+  }
+
+  .ins-title {
+    font-size: 14px;
+  }
+
+  .ins-details {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .ins-detail-box {
+    padding: 10px 12px;
+  }
+
+  .restart-row {
+    padding: 16px 18px 24px !important;
+    flex-direction: column;
+  }
+
+  .btn-restart,
+  .btn-contact {
+    width: 100%;
+  }
+
+  .disclaimer {
+    padding: 0 18px 24px !important;
+  }
+
+  .disclaimer p {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   PRODUKTEMPFEHLUNGEN - Mobile Optimizations
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .quiz-inner {
+    padding: 24px 20px !important;
+  }
+
+  .step-q {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+
+  /* Options grid */
+  .options {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  @media (max-width: 500px) {
+    .options {
+      grid-template-columns: 1fr;
+    }
+
+    .opt {
+      padding: 14px 12px;
+    }
+
+    .opt-icon {
+      font-size: 22px;
+    }
+  }
+
+  /* Slider section */
+  .slider-wrap {
+    margin-bottom: 24px;
+  }
+
+  .slider-val {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  input[type="range"] {
+    height: 8px;
+    cursor: pointer;
+  }
+
+  .slider-labels {
+    font-size: 10px;
+    gap: 6px;
+  }
+
+  /* Navigation */
+  .quiz-nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-next,
+  .btn-back {
+    width: 100%;
+  }
+
+  /* Results */
+  #results {
+    padding: 24px 20px !important;
+  }
+
+  .results-header h2 {
+    font-size: 22px;
+  }
+
+  .profile-badge {
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-bottom: 20px;
+  }
+
+  .rec-group {
+    margin-bottom: 24px;
+  }
+
+  .rec-card {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .rec-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .rec-body {
+    min-width: 0;
+  }
+
+  .rec-title {
+    font-size: 14px;
+  }
+
+  .rec-sub {
+    font-size: 12px;
+  }
+
+  .rec-yield {
+    text-align: left;
+    margin-top: 8px;
+  }
+
+  .rec-yield-num {
+    font-size: 18px;
+  }
+
+  /* AI Chat */
+  .ai-card {
+    padding: 24px 20px !important;
+  }
+
+  .ai-input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-input,
+  .ai-send {
+    width: 100%;
+  }
+
+  .ai-messages {
+    max-height: 300px;
+  }
+
+  .restart-row {
+    padding: 16px 20px 24px !important;
+    flex-direction: column;
+  }
+
+  .btn-restart,
+  .btn-contact {
+    width: 100%;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   IMMOBILIEN-RECHNER - Mobile Optimizations
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 800px) {
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+
+  .slider-row {
+    margin-bottom: 14px;
+  }
+
+  .slider-row label {
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .slider-row .val {
+    font-size: 12px;
+    flex-basis: 100%;
+    text-align: right;
+  }
+
+  input[type="range"] {
+    height: 6px;
+  }
+
+  .result-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .result-cards {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+
+  .result-card {
+    padding: 12px 10px;
+  }
+
+  .result-card .label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .result-card .value {
+    font-size: clamp(14px, 3vw, 18px);
+  }
+
+  .winner-banner {
+    padding: 12px 16px;
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .hint-box {
+    padding: 12px 14px;
+    font-size: 12px;
+    margin-top: 18px;
+  }
+
+  #chart-wrap {
+    margin: 20px 0 12px 0;
+    overflow-x: auto;
+  }
+
+  .chart-legend {
+    gap: 12px;
+    font-size: 11px;
+  }
+
+  .cta-box {
+    padding: 20px 18px;
+    margin-top: 28px;
+  }
+
+  .cta-box h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .cta-box p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ETF-RECHNER - Mobile Optimizations
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .tool-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+
+  .slider-row {
+    margin-bottom: 16px;
+  }
+
+  .slider-row label {
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .slider-row .val {
+    font-size: 12px;
+    flex-basis: 100%;
+    text-align: right;
+  }
+
+  input[type="range"] {
+    height: 6px;
+    margin: 8px 0;
+  }
+
+  .result-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .result-card {
+    padding: 12px 10px;
+  }
+
+  .result-card .label {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .result-card .value {
+    font-size: clamp(14px, 3vw, 20px);
+  }
+
+  #chart-wrap {
+    margin: 20px 0 12px 0;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .chart-legend {
+    gap: 12px;
+    font-size: 11px;
+  }
+
+  .cta-box {
+    padding: 20px 18px;
+    margin-top: 28px;
+  }
+
+  .cta-box h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .cta-box p {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   FINANZ_ANALYSE - Additional Mobile Enhancements
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Tabellen mit Scrollbar */
+  .data-table {
+    font-size: 11px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 4px 5px;
+  }
+
+  .data-table input[type="text"],
+  .data-table input[type="number"],
+  .data-table input[type="date"] {
+    padding: 4px 5px;
+    font-size: 11px;
+  }
+
+  /* Bessere Touch-Targets für Buttons */
+  .btn-print,
+  .btn-reset {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  /* Budget Grid für Mobile */
+  .budget-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .budget-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Goal Grid */
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Saver Types */
+  .saver-types {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .saver-card {
+    padding: 12px 14px;
+  }
+
+  .saver-card h3 {
+    font-size: 14px;
+  }
+
+  .saver-card ul {
+    font-size: 11px;
+  }
+
+  /* Formular Responsiveness */
+  .form-row.cols-2,
+  .form-row.cols-3,
+  .form-row.cols-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Checkbox/Radio Groups */
+  .check-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Sum Bar */
+  .sum-bar {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .sum-bar .value {
+    width: 100%;
+    text-align: right;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row.cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main {
+    padding: 8px;
+  }
+
+  .section-header h2 {
+    font-size: 16px;
+  }
+
+  .card-title {
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   UNIVERSAL - General Mobile Touch Optimizations
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Better touch targets */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  a.btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improved spacing between interactive elements */
+  .btn,
+  button,
+  input[type="range"] {
+    padding: 10px 16px;
+  }
+
+  /* Prevent zoom on input focus (iOS) */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Better visibility of focus states */
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: 2px solid var(--gold, #C9A84C);
+    outline-offset: 2px;
+  }
+
+  /* Tablet and smaller - reduce margins */
+  .section {
+    padding: 48px 0;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 32px 0;
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+
+  /* Reduce font sizes on very small screens */
+  body {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: clamp(20px, 5vw, 28px);
+  }
+
+  h2 {
+    font-size: clamp(16px, 4vw, 22px);
+  }
+
+  h3 {
+    font-size: clamp(14px, 3.5vw, 18px);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   LANDSCAPE ORIENTATION - Tablet & Mobile Landscape
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  .wizard-inner,
+  .quiz-inner,
+  #results {
+    padding: 20px 24px !important;
+  }
+
+  .step-q {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .step-hint {
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .options {
+    gap: 8px;
+  }
+
+  .result-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .quiz-nav,
+  .restart-row {
+    flex-direction: row;
+  }
+
+  .btn-next,
+  .btn-back,
+  .btn-restart,
+  .btn-contact {
+    width: auto;
+    flex: 1;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ACCESSIBILITY - Improve readability and contrast on mobile
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Increase line-height for mobile readability */
+  p,
+  li,
+  label {
+    line-height: 1.6;
+  }
+
+  /* Better text contrast on buttons */
+  .btn-primary,
+  .btn-next,
+  .btn-contact {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* Ensure form labels are readable */
+  .form-label,
+  label {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  /* Increase card padding for better spacing */
+  .card {
+    padding: 16px;
+  }
+
+  .ins-card,
+  .rec-card {
+    padding: 12px 14px;
+  }
+}
