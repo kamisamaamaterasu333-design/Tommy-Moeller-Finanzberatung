@@ -336,6 +336,110 @@
     .sch-edit-row .sch-edit-beschreibung { flex: 1 1 100%; }
     .sch-edit-row .sch-edit-reihenfolge { width: 60px; flex: 0 0 auto; }
 
+    /* ══ TEILNEHMER-FORTSCHRITT (Admin) ══ */
+    .sch-tn-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 8px;
+    }
+
+    .sch-tn-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .sch-tn-table th,
+    .sch-tn-table td {
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border, #2a2a2a);
+    }
+
+    .sch-tn-table tr:last-child td { border-bottom: none; }
+
+    .sch-tn-table th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-dim, #999);
+      background: rgba(255,255,255,0.03);
+      white-space: nowrap;
+    }
+
+    .sch-tn-row { cursor: pointer; transition: background 0.15s ease; }
+    .sch-tn-row:hover { background: rgba(255,255,255,0.04); }
+    .sch-tn-row.open { background: rgba(201,168,76,0.08); }
+
+    .sch-tn-person { color: var(--bright, #fff); font-weight: 500; }
+
+    .sch-tn-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim, #888);
+      margin-top: 2px;
+    }
+
+    .sch-tn-done { color: #86efac; font-weight: 600; white-space: nowrap; }
+
+    .sch-tn-partial {
+      color: var(--text-dim, #999);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .sch-tn-date {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim, #888);
+      margin-top: 2px;
+    }
+
+    .sch-tn-detail td { background: rgba(0,0,0,0.25); padding: 16px 18px; }
+
+    .sch-tn-schulung { margin-bottom: 16px; }
+    .sch-tn-schulung:last-child { margin-bottom: 0; }
+
+    .sch-tn-schulung-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+      font-size: 13.5px;
+      color: var(--bright, #fff);
+    }
+
+    .sch-tn-lektion {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0 5px 8px;
+      font-size: 12.5px;
+      color: var(--text-dim, #ccc);
+    }
+
+    .sch-tn-lektion.offen { opacity: 0.55; }
+    .sch-tn-l-title { flex: 1; }
+    .sch-tn-l-datum { font-family: 'DM Mono', monospace; font-size: 11.5px; color: var(--text-dim, #888); white-space: nowrap; }
+
+    .sch-tn-remove {
+      background: none;
+      border: 1px solid var(--border, #444);
+      color: var(--text-dim, #ccc);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .sch-tn-remove:hover { border-color: #ef4444; color: #fca5a5; }
+
     @media (max-width: 860px) {
       .sch-layout { grid-template-columns: 1fr; }
       .sch-sidebar { position: static; max-height: none; }
@@ -450,6 +554,15 @@
 
         <!-- ADMIN PANEL -->
         <div class="sch-admin-panel" id="schAdminPanel">
+
+          <div class="sch-admin-section">
+            <div class="sch-admin-h">Teilnehmer-Fortschritt</div>
+            <div class="sch-form-hint" style="margin-top:0">
+              Person anklicken, um die einzelnen Lektionen mit Abschlussdatum zu sehen.
+              Abschlüsse können hier nur entfernt, nicht gesetzt werden.
+            </div>
+            <div id="schTeilnehmer" style="font-size:13px;color:var(--text-dim)">Lade…</div>
+          </div>
 
           <div class="sch-admin-section">
             <div class="sch-admin-h">Neue Schulung anlegen</div>
@@ -608,6 +721,7 @@
       if (Auth.isAdmin()) {
         renderAdminList();
         renderLektionSchulungDropdown();
+        await loadTeilnehmer();
       }
     }
 
@@ -764,6 +878,202 @@
       renderSidebar();
 
       showToast(neuerStatus ? 'Als abgeschlossen markiert.' : 'Markierung entfernt.', 'success');
+    }
+
+    /* ═══ ADMIN: TEILNEHMER-FORTSCHRITT ═══ */
+    let teilnehmerRows = [];        // Rohdaten aus admin_lern_uebersicht()
+    let openTeilnehmerId = null;    // aktuell aufgeklappte Person
+
+    function schDatum(ts) {
+      if (!ts) return '–';
+      return new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    async function loadTeilnehmer() {
+      const wrap = document.getElementById('schTeilnehmer');
+
+      const { data, error } = await sb.rpc('admin_lern_uebersicht');
+
+      if (error) {
+        console.error(error);
+        let msg = 'Fehler beim Laden der Teilnehmer-Übersicht.';
+        if (error.code === '42501') {
+          msg = 'Keine Admin-Berechtigung in der Datenbank. Bitte SQL-Migration 01 ausführen und danach neu einloggen.';
+        } else if (error.code === 'PGRST202') {
+          msg = 'Die Datenbank-Funktion fehlt noch. Bitte SQL-Migration 01 im Supabase SQL Editor ausführen.';
+        }
+        wrap.innerHTML = `<div style="color:#fca5a5">${escHtml(msg)}</div>`;
+        return;
+      }
+
+      teilnehmerRows = data || [];
+      renderTeilnehmer();
+    }
+
+    function renderTeilnehmer() {
+      const wrap = document.getElementById('schTeilnehmer');
+
+      // Zeilen je Person bündeln: done = { lektion_id: abgeschlossen_am }
+      const personen = new Map();
+      teilnehmerRows.forEach(r => {
+        if (!personen.has(r.user_id)) {
+          personen.set(r.user_id, {
+            id: r.user_id, email: r.email, login: r.letzter_login, done: {}
+          });
+        }
+        if (r.lektion_id) personen.get(r.user_id).done[r.lektion_id] = r.abgeschlossen_am || null;
+      });
+
+      if (personen.size === 0) {
+        wrap.innerHTML = 'Keine Nutzer gefunden.';
+        return;
+      }
+
+      const schulungen = schulungenCache
+        .filter(s => (s.lektionen || []).length > 0)
+        .slice()
+        .sort((a, b) => a.reihenfolge - b.reihenfolge)
+        .map(s => ({
+          ...s,
+          lektionen: s.lektionen.slice().sort((a, b) => a.reihenfolge - b.reihenfolge)
+        }));
+
+      if (schulungen.length === 0) {
+        wrap.innerHTML = 'Noch keine Schulungen mit Lektionen angelegt.';
+        return;
+      }
+
+      // Status einer Person in einer Schulung; Datum = letzter Abschluss
+      const statusVon = (p, s) => {
+        const erledigt = s.lektionen.filter(l => l.id in p.done);
+        const zeiten = erledigt
+          .map(l => p.done[l.id])
+          .filter(Boolean)
+          .map(t => new Date(t).getTime());
+        return {
+          n: erledigt.length,
+          total: s.lektionen.length,
+          komplett: erledigt.length === s.lektionen.length,
+          letztes: zeiten.length ? Math.max(...zeiten) : null
+        };
+      };
+
+      const sortiert = Array.from(personen.values())
+        .sort((a, b) => String(a.email).localeCompare(String(b.email), 'de'));
+
+      const kopf = schulungen.map(s =>
+        `<th>${escHtml(s.titel)}${s.aktiv ? '' : ' <span style="font-weight:400;text-transform:none">(inaktiv)</span>'}</th>`
+      ).join('');
+
+      const zeilen = sortiert.map(p => {
+        const stati = schulungen.map(s => statusVon(p, s));
+        const komplettAnzahl = stati.filter(st => st.komplett).length;
+        const offen = openTeilnehmerId === p.id;
+
+        const zellen = stati.map(st => {
+          if (st.komplett) {
+            return `<td><span class="sch-tn-done">✓ komplett</span><span class="sch-tn-date">${schDatum(st.letztes)}</span></td>`;
+          }
+          if (st.n > 0) {
+            return `<td><span class="sch-tn-partial">${st.n} / ${st.total}</span></td>`;
+          }
+          return `<td><span class="sch-tn-partial">–</span></td>`;
+        }).join('');
+
+        let html = `
+          <tr class="sch-tn-row ${offen ? 'open' : ''}" data-user-id="${escHtml(p.id)}">
+            <td>
+              <div class="sch-tn-person">${offen ? '▾' : '▸'} ${escHtml(p.email || '(ohne E-Mail)')}</div>
+              <div class="sch-tn-sub">zuletzt angemeldet: ${schDatum(p.login)}</div>
+            </td>
+            ${zellen}
+            <td><span class="sch-tn-partial">${komplettAnzahl} / ${schulungen.length}</span></td>
+          </tr>`;
+
+        if (offen) {
+          const detail = schulungen.map((s, i) => {
+            const st = stati[i];
+            const lektionenHtml = s.lektionen.map(l => {
+              if (l.id in p.done) {
+                return `
+                  <div class="sch-tn-lektion">
+                    <span class="sch-checkbox done">✓</span>
+                    <span class="sch-tn-l-title">${escHtml(l.titel)}</span>
+                    <span class="sch-tn-l-datum">${p.done[l.id] ? formatDateTime(p.done[l.id]) : '–'}</span>
+                    <button class="sch-tn-remove" data-action="remove"
+                            data-user-id="${escHtml(p.id)}" data-lektion-id="${escHtml(l.id)}">Entfernen</button>
+                  </div>`;
+              }
+              return `
+                <div class="sch-tn-lektion offen">
+                  <span class="sch-checkbox"></span>
+                  <span class="sch-tn-l-title">${escHtml(l.titel)}</span>
+                  <span class="sch-tn-l-datum">offen</span>
+                </div>`;
+            }).join('');
+
+            return `
+              <div class="sch-tn-schulung">
+                <div class="sch-tn-schulung-title">
+                  <strong>${escHtml(s.titel)}</strong>
+                  <span class="sch-tn-partial">${st.n} / ${st.total} Lektionen${st.komplett ? ' · komplett am ' + schDatum(st.letztes) : ''}</span>
+                </div>
+                ${lektionenHtml}
+              </div>`;
+          }).join('');
+
+          html += `<tr class="sch-tn-detail"><td colspan="${schulungen.length + 2}">${detail}</td></tr>`;
+        }
+
+        return html;
+      }).join('');
+
+      wrap.innerHTML = `
+        <div class="sch-tn-wrap">
+          <table class="sch-tn-table">
+            <thead><tr><th>Person</th>${kopf}<th>Gesamt</th></tr></thead>
+            <tbody>${zeilen}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // Ein Klick-Handler für Aufklappen und Entfernen (Event-Delegation)
+    document.getElementById('schTeilnehmer').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action="remove"]');
+      if (btn) {
+        entferneAbschluss(btn.dataset.userId, btn.dataset.lektionId);
+        return;
+      }
+      const row = e.target.closest('.sch-tn-row');
+      if (row) {
+        openTeilnehmerId = openTeilnehmerId === row.dataset.userId ? null : row.dataset.userId;
+        renderTeilnehmer();
+      }
+    });
+
+    // Admin darf einen Abschluss nur ENTFERNEN – es gibt bewusst kein "Setzen"
+    async function entferneAbschluss(userId, lektionId) {
+      const person = teilnehmerRows.find(r => r.user_id === userId);
+      let titel = 'diese Lektion';
+      schulungenCache.forEach(s => (s.lektionen || []).forEach(l => {
+        if (l.id === lektionId) titel = '„' + l.titel + '“';
+      }));
+
+      if (!confirm(`Abschluss von ${person ? person.email : 'diesem Nutzer'} für ${titel} wirklich entfernen?`)) return;
+
+      const { error } = await sb.rpc('admin_abschluss_entfernen', {
+        p_user_id: userId,
+        p_lektion_id: lektionId
+      });
+
+      if (error) {
+        showToast('Abschluss konnte nicht entfernt werden.', 'error');
+        console.error(error);
+        return;
+      }
+
+      showToast('Abschluss entfernt.', 'success');
+      await loadSchulungen();   // lädt Sidebar + Übersicht neu
     }
 
     /* ═══ ADMIN: SCHULUNG ANLEGEN ═══ */
