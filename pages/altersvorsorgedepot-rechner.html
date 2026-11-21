@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altersvorsorgedepot-Rechner</title>
+<meta name="description" content="Rechner für das Altersvorsorgedepot ab 2027: Zulagen, Kinderzulage, Steuervorteil, Rendite und Endvermögen.">
+<style>
+:root{
+  --navy:#0b1157; --blue:#2437ff; --blue-soft:#93acff; --lime:#e6ee5c;
+  --bg:#ffffff; --card:#f5f8fe; --text:#14193a; --muted:#566080; --line:#dfe5f3;
+  --ok:#0b7a3e;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+.eyebrow{font-size:12px;letter-spacing:.08em;font-weight:700;text-transform:uppercase;color:var(--blue)}
+h1{margin:4px 0 6px;font-size:clamp(26px,4vw,38px);color:var(--navy);line-height:1.15}
+.lead{color:var(--muted);max-width:760px;margin:0 0 24px}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border-top:6px solid var(--blue);padding:18px 18px 8px}
+.panel h2{margin:0 0 12px;font-size:15px;color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
+.field{margin-bottom:16px}
+.field label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px;margin-bottom:4px}
+.field .hint{font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px}
+.row{display:flex;gap:10px;align-items:center}
+input[type=range]{flex:1;accent-color:var(--blue);min-width:0}
+input[type=number]{width:92px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border-top:6px solid var(--blue);padding:14px 16px}
+.kpi.hl{background:var(--lime);border-top-color:var(--navy)}
+.kpi.dark{background:var(--navy);color:#fff;border-top-color:var(--blue)}
+.kpi .l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+.kpi.hl .l{color:var(--navy)} .kpi.dark .l{color:var(--lime)}
+.kpi .v{font-size:clamp(24px,3.4vw,32px);font-weight:800;color:var(--navy);line-height:1.2;margin:2px 0}
+.kpi.dark .v{color:#fff}
+.kpi .s{font-size:13px;color:var(--muted)} .kpi.dark .s{color:#c9d2ff}
+.kpi.hl .s{color:#3b4210}
+.box{border:1px solid var(--line);padding:16px;margin-bottom:16px;background:#fff}
+.box h3{margin:0 0 10px;font-size:16px;color:var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+tr.sum td{font-weight:800;border-top:2px solid var(--navy)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;margin:8px 0 0}
+.legend i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--muted)}
+.warn{background:#fff6d6;border-left:4px solid #d9a400;padding:8px 12px;font-size:13.5px;margin-bottom:12px;display:none}
+svg text{font-family:inherit}
+.src{margin-top:28px;font-size:13px;color:var(--muted)}
+.src a{color:var(--blue)}
+.src ul{padding-left:18px;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Rechner · Altersvorsorgedepot ab 2027</div>
+  <h1>Was zahlt der Staat dazu – und was wird daraus?</h1>
+  <p class="lead">Gib deinen Monatsbeitrag ein und sieh, wie hoch Grundzulage, Kinderzulage und Steuervorteil ausfallen und wie sich dein Depot über die Jahre entwickelt. Alle Werte sind eine Beispielrechnung, keine Prognose.</p>
+
+  <div class="grid">
+    <section class="panel" aria-label="Eingaben">
+      <h2>Deine Eingaben</h2>
+
+      <div class="field">
+        <label for="monthly">Monatlicher Beitrag <span id="monthlyOut"></span></label>
+        <div class="row"><input type="range" id="monthlyR" min="0" max="300" step="5"><input type="number" id="monthly" min="0" max="570" step="5"></div>
+        <div class="hint">Volle Grundzulage ab 150 € im Monat (1.800 € im Jahr). Mindestens 10 € im Monat.</div>
+      </div>
+
+      <div class="field">
+        <label for="years">Laufzeit in Jahren <span id="yearsOut"></span></label>
+        <div class="row"><input type="range" id="yearsR" min="1" max="45" step="1"><input type="number" id="years" min="1" max="45"></div>
+      </div>
+
+      <div class="field">
+        <label for="kids">Kindergeldberechtigte Kinder</label>
+        <div class="row"><input type="number" id="kids" min="0" max="8" step="1"></div>
+        <div class="hint">Pro Kind: 1 € Zulage je eingezahltem Euro, höchstens 300 € im Jahr.</div>
+      </div>
+
+      <div class="field check"><input type="checkbox" id="under25"><label for="under25" style="display:block;margin:0">Ich bin zu Beginn des Beitragsjahres unter 25 <div class="hint">Einmaliger Berufseinsteigerbonus von 200 €.</div></label></div>
+
+      <div class="field">
+        <label for="tax">Grenzsteuersatz (Ansparphase) <span id="taxOut"></span></label>
+        <div class="row"><input type="range" id="taxR" min="0" max="45" step="1"><input type="number" id="tax" min="0" max="45"></div>
+        <div class="hint">Steuersatz auf den letzten verdienten Euro, ohne Soli und Kirchensteuer.</div>
+      </div>
+
+      <div class="field">
+        <label for="gross">Angenommene Rendite vor Kosten (% p. a.)</label>
+        <div class="row"><input type="range" id="grossR" min="0" max="10" step="0.5"><input type="number" id="gross" min="0" max="15" step="0.1"></div>
+      </div>
+
+      <div class="field">
+        <label for="cost">Laufende Kosten (% p. a.)</label>
+        <div class="row"><input type="range" id="costR" min="0" max="2" step="0.1"><input type="number" id="cost" min="0" max="3" step="0.1"></div>
+        <div class="hint">Im Standarddepot höchstens 1,0 % pro Jahr. Ein günstiger ETF liegt oft bei etwa 0,3 %.</div>
+      </div>
+
+      <div class="field">
+        <label for="payTax">Steuersatz in der Auszahlung (% )</label>
+        <div class="row"><input type="number" id="payTax" min="0" max="45" step="1"></div>
+        <div class="hint">Nur für die grobe Netto-Schätzung. Die Auszahlung wird mit dem persönlichen Steuersatz besteuert.</div>
+      </div>
+    </section>
+
+    <section aria-label="Ergebnisse">
+      <div class="warn" id="warn"></div>
+
+      <div class="kpis">
+        <div class="kpi hl"><div class="l">Staat zahlt pro Jahr</div><div class="v" id="kZulage">–</div><div class="s" id="kZulageS"></div></div>
+        <div class="kpi"><div class="l">Du investierst selbst</div><div class="v" id="kEigen">–</div><div class="s" id="kEigenS"></div></div>
+        <div class="kpi dark"><div class="l">Endvermögen (vor Steuer)</div><div class="v" id="kEnd">–</div><div class="s" id="kEndS"></div></div>
+      </div>
+
+      <div class="box">
+        <h3>So setzt sich die Förderung pro Jahr zusammen</h3>
+        <table>
+          <tbody id="fTable"></tbody>
+        </table>
+        <p class="note" id="fNote"></p>
+      </div>
+
+      <div class="box">
+        <h3>Steuervorteil: Zulage oder Sonderausgabenabzug?</h3>
+        <table>
+          <tbody id="sTable"></tbody>
+        </table>
+        <p class="note">Das Finanzamt prüft automatisch, ob der Steuerabzug mehr bringt als die Zulage (Günstigerprüfung). Die Differenz erhältst du über die Steuererklärung. Vereinfacht gerechnet, ohne Soli und Kirchensteuer.</p>
+      </div>
+
+      <div class="box">
+        <h3>Vermögensentwicklung</h3>
+        <div id="chart"></div>
+        <div class="legend">
+          <span><i style="background:var(--blue)"></i>Eigene Beiträge</span>
+          <span><i style="background:var(--lime);border:1px solid #b9c23a"></i>Zulagen</span>
+          <span><i style="background:var(--blue-soft)"></i>Erträge (nach Kosten)</span>
+        </div>
+      </div>
+
+      <div class="box">
+        <h3>Gesamtbild nach <span id="yTxt"></span> Jahren</h3>
+        <table>
+          <tbody id="tTable"></tbody>
+        </table>
+        <p class="note">Die Nettoschätzung zieht den eingegebenen Auszahlungssteuersatz pauschal vom gesamten Endvermögen ab. Die genaue Besteuerung (z. B. bei Einmalauszahlung von bis zu 30 %) kann abweichen.</p>
+      </div>
+
+      <div class="box">
+        <h3>Kosten machen den Unterschied</h3>
+        <table>
+          <tbody id="cTable"></tbody>
+        </table>
+        <p class="note">Gleiche Beiträge, gleiche Rendite vor Kosten – nur die laufenden Kosten unterscheiden sich.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="src">
+    <strong>Rechenannahmen:</strong>
+    <ul>
+      <li>Grundzulage: 50 Cent je Euro auf die ersten 360 € Eigenbeitrag, 25 Cent je Euro auf weitere Beiträge bis 1.800 € im Jahr, maximal 540 €. Zulage erst ab 120 € Jahresbeitrag.</li>
+      <li>Kinderzulage: 1 € je eingezahltem Euro, höchstens 300 € pro Kind und Jahr. Berufseinsteigerbonus: einmalig 200 € (im ersten Jahr angesetzt).</li>
+      <li>Einzahlen darfst du bis zu 6.840 € im Jahr, gefördert werden höchstens 1.800 €. Darüber gibt es keine Zulage; der Rechner investiert den Mehrbetrag trotzdem.</li>
+      <li>Sonderausgabenabzug: Eigenbeitrag (bis 1.800 €) plus Zulagen. Der Berufseinsteigerbonus ist hier nicht eingerechnet.</li>
+      <li>Monatliche Einzahlung, Rendite rechnerisch gleichmäßig, Zulage jeweils am Jahresende gutgeschrieben, Zulagen und Steuervorteil nicht über die Jahre angepasst, keine Inflation, Beitragsgrenzen ab 2030 nicht berücksichtigt.</li>
+    </ul>
+    <strong>Quellen:</strong>
+    <ul>
+      <li><a href="https://www.bundesfinanzministerium.de/Content/DE/FAQ/reform-der-privaten-altersvorsorge.html" target="_blank" rel="noopener">Bundesfinanzministerium – Fragen und Antworten zur Reform der geförderten privaten Altersvorsorge</a></li>
+      <li><a href="https://www.deutsche-rentenversicherung.de/DRV/DE/Rente/Moeglichkeiten-der-Altersvorsorge/Altervorsorgereformgesetz" target="_blank" rel="noopener">Deutsche Rentenversicherung – Altersvorsorge-Reformgesetz</a></li>
+      <li><a href="https://www.bundesregierung.de/breg-de/aktuelles/reform-private-altersvorsorge-2400072" target="_blank" rel="noopener">Bundesregierung – Fragen und Antworten: Private Altersvorsorge reformiert</a></li>
+    </ul>
+    <p>Hinweis: Beispielrechnung zu Informationszwecken, keine Anlage-, Steuer- oder Rechtsberatung und keine Prognose. Stand: 20.11.2026. Maßgeblich sind Gesetz und Vertragsbedingungen des jeweiligen Anbieters.</p>
+  </div>
+</div>
+
+<script>
+/* ---------- Rechenlogik ---------- */
+function calcFoerderung(monthly, kids, under25){
+  var eigen = monthly * 12;
+  var foerd = Math.min(eigen, 1800);
+  var ok = eigen >= 120;
+  var stufe1 = ok ? Math.min(foerd, 360) * 0.5 : 0;
+  var stufe2 = ok ? Math.max(0, foerd - 360) * 0.25 : 0;
+  var kinder = ok ? kids * Math.min(foerd, 300) : 0;
+  var bonus = (ok && under25) ? 200 : 0;
+  return {eigen: eigen, foerd: foerd, ok: ok, stufe1: stufe1, stufe2: stufe2,
+          grund: stufe1 + stufe2, kinder: kinder, bonus: bonus,
+          zulage: stufe1 + stufe2 + kinder};
+}
+
+function calcSteuer(f, taxPct){
+  var abzug = f.foerd + f.zulage;               // 1.800 € + Zulagen
+  var ersparnis = abzug * taxPct / 100;
+  var extra = Math.max(0, ersparnis - f.zulage);
+  return {abzug: abzug, ersparnis: ersparnis, extra: extra};
+}
+
+function simulate(monthly, years, f, grossPct, costPct){
+  var net = (grossPct - costPct) / 100;
+  var m = Math.pow(1 + net, 1/12) - 1;
+  var v = 0, cumEigen = 0, cumZul = 0, rows = [];
+  for (var y = 1; y <= years; y++){
+    for (var k = 0; k < 12; k++){ v = v * (1 + m) + monthly; }
+    cumEigen += monthly * 12;
+    var z = f.zulage + (y === 1 ? f.bonus : 0);
+    v += z; cumZul += z;
+    rows.push({year: y, eigen: cumEigen, zulagen: cumZul, ertrag: v - cumEigen - cumZul, total: v});
+  }
+  return {end: v, eigen: cumEigen, zulagen: cumZul, ertrag: v - cumEigen - cumZul, rows: rows};
+}
+
+/* ---------- UI ---------- */
+if (typeof document !== 'undefined') (function(){
+  var eur = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  var pct = new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
+  var $ = function(id){return document.getElementById(id);};
+  var pairs = [['monthly','monthlyR'],['years','yearsR'],['tax','taxR'],['gross','grossR'],['cost','costR']];
+  var defaults = {monthly:150, years:30, kids:0, tax:30, gross:6, cost:1.0, payTax:20};
+  Object.keys(defaults).forEach(function(k){ $(k).value = defaults[k]; });
+  pairs.forEach(function(p){ $(p[1]).value = $(p[0]).value; });
+
+  pairs.forEach(function(p){
+    $(p[1]).addEventListener('input', function(){ $(p[0]).value = $(p[1]).value; render(); });
+    $(p[0]).addEventListener('input', function(){ $(p[1]).value = $(p[0]).value; render(); });
+  });
+  ['kids','under25','payTax'].forEach(function(id){ $(id).addEventListener('input', render); $(id).addEventListener('change', render); });
+
+  function num(id, lo, hi){
+    var x = parseFloat($(id).value);
+    if (isNaN(x)) x = 0;
+    return Math.min(hi, Math.max(lo, x));
+  }
+  function row(l, v, cls){ return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+l+'</td><td>'+v+'</td></tr>'; }
+
+  function chart(rows){
+    var W = 640, H = 280, pl = 56, pr = 8, pt = 8, pb = 28;
+    var max = 0; rows.forEach(function(r){ if (r.total > max) max = r.total; });
+    if (max <= 0) { $('chart').innerHTML = '<p class="note">Gib einen Beitrag ein, um die Entwicklung zu sehen.</p>'; return; }
+    var step = Math.pow(10, Math.floor(Math.log10(max))); var tick = step;
+    if (max / tick < 3) tick = step / 2; if (max / tick > 7) tick = step * 2;
+    var top = Math.ceil(max / tick) * tick;
+    var bw = (W - pl - pr) / rows.length;
+    var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Gestapeltes Säulendiagramm der Vermögensentwicklung">';
+    for (var t = 0; t <= top + 1e-6; t += tick){
+      var y = pt + (H - pt - pb) * (1 - t / top);
+      s += '<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" stroke="#dfe5f3"/>';
+      s += '<text x="'+(pl-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#566080">'+(t>=1000?pct.format(t/1000)+' T€':'0')+'</text>';
+    }
+    var every = Math.max(1, Math.ceil(rows.length / 10));
+    rows.forEach(function(r, i){
+      var x = pl + i * bw + bw * 0.12, w = bw * 0.76, base = H - pb;
+      var parts = [[r.eigen,'#2437ff'],[r.zulagen,'#e6ee5c'],[Math.max(0,r.ertrag),'#93acff']];
+      parts.forEach(function(p){
+        var h = (H - pt - pb) * p[0] / top;
+        base -= h;
+        s += '<rect x="'+x.toFixed(1)+'" y="'+base.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" fill="'+p[1]+'"/>';
+      });
+      if ((i+1) % every === 0 || i === rows.length - 1)
+        s += '<text x="'+(x+w/2)+'" y="'+(H-10)+'" text-anchor="middle" font-size="11" fill="#566080">'+r.year+'</text>';
+    });
+    s += '<text x="'+pl+'" y="'+(H-0)+'" font-size="10" fill="#566080">Jahre</text></svg>';
+    $('chart').innerHTML = s;
+  }
+
+  function render(){
+    var monthly = num('monthly',0,570), years = Math.round(num('years',1,45)), kids = Math.round(num('kids',0,8));
+    var tax = num('tax',0,45), gross = num('gross',0,15), cost = num('cost',0,3), payTax = num('payTax',0,45);
+    var under25 = $('under25').checked;
+
+    $('monthlyOut').textContent = eur.format(monthly) + ' / Monat';
+    $('yearsOut').textContent = years + ' Jahre';
+    $('taxOut').textContent = pct.format(tax) + ' %';
+
+    var f = calcFoerderung(monthly, kids, under25);
+    var st = calcSteuer(f, tax);
+    var sim = simulate(monthly, years, f, gross, cost);
+
+    var w = [];
+    if (monthly > 0 && !f.ok) w.push('Unter 120 € Eigenbeitrag im Jahr (10 € im Monat) gibt es keine Zulage.');
+    if (f.eigen > 6840) w.push('Pro Jahr dürfen höchstens 6.840 € eingezahlt werden. Dein Beitrag liegt darüber.');
+    else if (f.eigen > 1800) w.push('Gefördert werden nur 1.800 € Eigenbeitrag im Jahr. Der Mehrbetrag von ' + eur.format(f.eigen - 1800) + ' bringt keine Zulage.');
+    $('warn').style.display = w.length ? 'block' : 'none';
+    $('warn').innerHTML = w.join('<br>');
+
+    $('kZulage').textContent = eur.format(f.zulage);
+    $('kZulageS').textContent = f.eigen > 0 && f.ok ? 'Förderquote ' + pct.format(f.zulage / f.foerd * 100) + ' % auf den geförderten Beitrag' : 'keine Zulage';
+    $('kEigen').textContent = eur.format(sim.eigen);
+    $('kEigenS').textContent = eur.format(f.eigen) + ' pro Jahr über ' + years + ' Jahre';
+    $('kEnd').textContent = eur.format(sim.end);
+    $('kEndS').textContent = 'davon Zulagen ' + eur.format(sim.zulagen) + ', Erträge ' + eur.format(sim.ertrag);
+
+    $('fTable').innerHTML =
+      row('Eigenbeitrag pro Jahr', eur.format(f.eigen)) +
+      row('Grundzulage Stufe 1 (50 Cent je Euro bis 360 €)', eur.format(f.stufe1)) +
+      row('Grundzulage Stufe 2 (25 Cent je Euro bis 1.800 €)', eur.format(f.stufe2)) +
+      row('Kinderzulage (' + kids + (kids === 1 ? ' Kind' : ' Kinder') + ')', eur.format(f.kinder)) +
+      row('Zulagen gesamt pro Jahr', eur.format(f.zulage), 'sum') +
+      (f.bonus ? row('Zusätzlich: Berufseinsteigerbonus (einmalig)', eur.format(f.bonus)) : '');
+    $('fNote').textContent = 'Die höchste Förderquote gibt es bei kleinen Beiträgen: bis 360 € Eigenbeitrag sind es 50 %, bei 1.800 € noch 30 % (ohne Kinder).';
+
+    $('sTable').innerHTML =
+      row('Absetzbar als Sonderausgaben (Eigenbeitrag + Zulagen)', eur.format(st.abzug)) +
+      row('Steuerersparnis bei ' + pct.format(tax) + ' % Grenzsteuersatz', eur.format(st.ersparnis)) +
+      row('Davon bereits als Zulage gezahlt', eur.format(f.zulage)) +
+      row('Zusätzlicher Steuervorteil pro Jahr', st.extra > 0 ? eur.format(st.extra) : 'keiner – die Zulage ist höher', 'sum');
+
+    $('yTxt').textContent = years;
+    var staatTotal = sim.zulagen + st.extra * years;
+    var net = sim.end * (1 - payTax / 100);
+    $('tTable').innerHTML =
+      row('Eigene Einzahlungen', eur.format(sim.eigen)) +
+      row('Zulagen vom Staat', eur.format(sim.zulagen)) +
+      row('Zusätzlicher Steuervorteil (Summe, nicht investiert)', eur.format(st.extra * years)) +
+      row('Erträge nach Kosten', eur.format(sim.ertrag)) +
+      row('Endvermögen im Depot (vor Steuer)', eur.format(sim.end), 'sum') +
+      row('Staatliche Förderung insgesamt (Zulagen + Steuervorteil)', eur.format(staatTotal)) +
+      row('Grobe Nettoschätzung nach ' + pct.format(payTax) + ' % Steuer', eur.format(net));
+
+    var lo = simulate(monthly, years, f, gross, 0.3).end;
+    var hi = simulate(monthly, years, f, gross, 1.0).end;
+    $('cTable').innerHTML =
+      row('Endvermögen bei 0,3 % Kosten p. a.', eur.format(lo)) +
+      row('Endvermögen bei 1,0 % Kosten p. a. (Kostendeckel Standarddepot)', eur.format(hi)) +
+      row('Unterschied', eur.format(lo - hi), 'sum');
+
+    chart(sim.rows);
+  }
+  render();
+})();
+</script>
+</body>
+</html>
